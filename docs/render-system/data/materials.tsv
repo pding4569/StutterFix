@@ -1,0 +1,238 @@
+파일	재질	셰이더	큐	키워드
+globalgamemanagers.assets	Sprites-Default	None	-1	
+level26	New Material (Instance) (Instance) (Instance)	None	-1	
+level27	New Material (Instance) (Instance) (Instance) (Instance) (Instance) (Instance) (Instance) (Instance) (Instance)	None	-1	
+level27	New Material (Instance) (Instance) (Instance) (Instance) (Instance) (Instance) (Instance) (Instance) (Instance)	None	-1	
+level28	New Material (Instance) (Instance) (Instance)	None	-1	
+level29	New Material (Instance) (Instance) (Instance) (Instance) (Instance) (Instance) (Instance) (Instance) (Instance)	None	-1	
+level29	New Material (Instance) (Instance) (Instance) (Instance) (Instance) (Instance) (Instance) (Instance) (Instance)	None	-1	
+resources.assets	cjkFonts-regular-normalized SDF Material	TextMeshPro/Distance Field	-1	
+resources.assets	cjkFonts-regular-normalized SDF Material	TextMeshPro/Distance Field Overlay	-1	
+resources.assets	Unity Atlas Material	None	3000	
+resources.assets	SourceHanSans-Light Material	TextMeshPro/Distance Field	-1	
+resources.assets	SourceHanSansSC-Normal Atlas Material	TextMeshPro/Distance Field	-1	
+resources.assets	SourceHanSans-Normal Material	TextMeshPro/Distance Field	-1	
+resources.assets	SourceHanSansK-Normal Atlas Material	TextMeshPro/Distance Field	-1	
+resources.assets	SourceHanSans-Bold Material	TextMeshPro/Distance Field	-1	
+resources.assets	SourceHanSans-Medium Atlas Material	TextMeshPro/Distance Field	-1	
+resources.assets	SourceHanSans-Medium Material	TextMeshPro/Distance Field	-1	
+resources.assets	SourceHanSansK-Bold Atlas Material	TextMeshPro/Distance Field	-1	
+resources.assets	Default-Particle	Legacy Shaders/Particles/Alpha Blended Premultiply	-1	
+resources.assets	Default-Diffuse	Legacy Shaders/Diffuse	-1	
+resources.assets	Sprites-Mask	None	-1	
+resources.assets	PortalCloudA	Particles/Standard Unlit	3000	_ALPHABLEND_ON,_EMISSION
+resources.assets	FloorSpriteDefault	ADOFAI/FloorSprite	-1	
+resources.assets	zWriteUI	ADOFAI/zWriteUI	-1	
+resources.assets	RenderMaterial	Mobile/Unlit (Supports Lightmap)	-1	
+resources.assets	Trail	Legacy Shaders/Particles/Additive	-1	
+resources.assets	IndicatorSprite	ADOFAI/IndicatorSprite	-1	
+resources.assets	PlanetGlow	Mobile/Particles/Additive	-1	
+resources.assets	PlanetRing	ADOFAI/TiledSpriteWithGap	-1	
+resources.assets	SpritesAndMask	ADOFAI/Sprites and Mask	-1	ETC1_EXTERNAL_ALPHA
+resources.assets	SpritesAndMaskCLS	ADOFAI/Sprites and Mask CLS	3000	ETC1_EXTERNAL_ALPHA
+resources.assets	SpritesAndMaskGrayscale	ADOFAI/Sprites and Mask	-1	ETC1_EXTERNAL_ALPHA
+resources.assets	AchievementIconSprite	ADOFAI/MaskedSprite	-1	
+resources.assets	Mix	Unlit/AchievementRTMixer	-1	
+resources.assets	Particles	Particles/Standard Surface	3000	_ALPHABLEND_ON,_EMISSION
+resources.assets	FloorMeshDefault	ADOFAI/FloorMesh	-1	
+resources.assets	FloorMeshLevelSelect	ADOFAI/FloorMeshLevelSelect	-1	
+resources.assets	UI_PausePlanets	UI/Pause Planets	-1	
+resources.assets	UI_VignetteEffect	UI/Vignette Effect	-1	
+resources.assets	UI_Wave	UI/Wave	-1	
+resources.assets	CoopTrail	Legacy Shaders/Particles/Alpha Blended Premultiply	-1	
+resources.assets	NewPlanetBlue	ADOFAI/Frames	-1	
+resources.assets	NewPlanetGold	ADOFAI/Frames	-1	
+resources.assets	NewPlanetRed	ADOFAI/Frames	-1	
+resources.assets	NewPlanetWhite	ADOFAI/Frames	-1	
+resources.assets	petals1	Rhythm Doctor/RDAnimBlendFrame	-1	
+resources.assets	petals2	Rhythm Doctor/RDAnimBlendFrame	-1	
+resources.assets	petals3	Rhythm Doctor/RDAnimBlendFrame	-1	
+resources.assets	TNOMaterial	ADOFAI/TNOSpriteShader	-1	
+resources.assets	cjkFonts-regular-normalized SDF Atlas XPerfect Border Material	TextMeshPro/Distance Field Overlay	-1	UNDERLAY_ON
+resources.assets	godoMaum Atlas Achievement Name	TextMeshPro/Distance Field Overlay	-1	UNDERLAY_ON
+resources.assets	godoMaum Atlas Achievement White	TextMeshPro/Distance Field Overlay	-1	UNDERLAY_ON
+resources.assets	godoMaum SDF Shadow	TextMeshPro/Distance Field Overlay	-1	UNDERLAY_ON
+resources.assets	godoMaum SDF XPerfect Border	TextMeshPro/Distance Field Overlay	-1	
+resources.assets	godoMaum SDF	TextMeshPro/Distance Field Overlay	-1	UNDERLAY_ON
+resources.assets	MPLUSRounded1c-Bold XPerfect Border Atlas Material	TextMeshPro/Distance Field Overlay	-1	
+resources.assets	SourceHanSans-Bold + Beta Shadow	TextMeshPro/Distance Field	-1	UNDERLAY_ON
+resources.assets	SourceHanSans-Medium Shadow	TextMeshPro/Distance Field	-1	UNDERLAY_ON
+resources.assets	portal_particle	Particles/Standard Unlit	3000	_ALPHABLEND_ON,_COLOROVERLAY_ON
+resources.assets	portal_particle_adofai	Particles/Standard Unlit	3000	_ALPHABLEND_ON,_COLOROVERLAY_ON
+resources.assets	portal_particle_neo	Particles/Standard Unlit	3000	_ALPHABLEND_ON,_COLOROVERLAY_ON
+resources.assets	triangleWhite	None	-1	
+resources.assets	triangleWorld1	None	-1	
+resources.assets	triangleWorld11	None	-1	
+resources.assets	triangleWorld12	None	-1	
+resources.assets	triangleWorld2	None	-1	
+resources.assets	triangleWorld3	None	-1	
+resources.assets	triangleWorld4	None	-1	
+resources.assets	triangleWorld5	None	-1	
+resources.assets	triangleWorld9	None	-1	
+resources.assets	triangleWorldRJ	None	-1	
+resources.assets	triangleWorldXH	None	-1	
+resources.assets	triangleWorldXN	None	-1	
+resources.assets	TorchFire	Particles/Standard Unlit	3000	_ALPHABLEND_ON
+resources.assets	glass-material	UI/Unlit/Transparent	-1	
+resources.assets	ExplosionParticles	Mobile/Particles/Additive	-1	
+resources.assets	JudgementTextParticle	None	-1	
+resources.assets	PlanetBlue	Standard	-1	
+resources.assets	PlanetRed	Standard	-1	
+resources.assets	Additive	Mobile/Particles/Additive	-1	
+resources.assets	AlphaMask	ADOFAI/SpriteAlphaMask	-1	
+resources.assets	MergeSprite	ADOFAI/MergeSprite	-1	
+resources.assets	New Material	None	-1	
+resources.assets	VisualDeco	Hidden/BlendModes/VisualDeco/Grab	-1	
+resources.assets	FloorMeshWorld1	ADOFAI/FloorMesh	-1	
+resources.assets	FloorMeshWorld10	ADOFAI/FloorMesh	-1	
+resources.assets	FloorMeshWorld11	ADOFAI/FloorMesh	-1	
+resources.assets	FloorMeshWorld12	ADOFAI/FloorMesh	-1	
+resources.assets	FloorMeshWorld12Alt	ADOFAI/FloorMesh	-1	
+resources.assets	FloorMeshWorld2	ADOFAI/FloorMesh	-1	
+resources.assets	FloorMeshWorld3	ADOFAI/FloorMesh	-1	
+resources.assets	FloorMeshWorld4	ADOFAI/FloorMesh	-1	
+resources.assets	FloorMeshWorld5	ADOFAI/FloorMesh	-1	
+resources.assets	FloorMeshWorld6	ADOFAI/FloorMesh	-1	
+resources.assets	FloorMeshWorld7	ADOFAI/FloorMesh	-1	
+resources.assets	FloorMeshWorld8	ADOFAI/FloorMesh	-1	
+resources.assets	FloorMeshWorld9	ADOFAI/FloorMesh	-1	
+resources.assets	FloorMeshWorldB	ADOFAI/FloorMesh	-1	
+resources.assets	FloorMeshWorldMN	ADOFAI/FloorMesh	-1	
+resources.assets	FloorMeshWorldPA	ADOFAI/FloorMesh	-1	
+resources.assets	FloorMeshWorldT1	ADOFAI/FloorMesh	-1	
+resources.assets	FloorMeshWorldT1Neon	ADOFAI/FloorMesh	-1	
+resources.assets	FloorMeshWorldT1NeonLight	ADOFAI/FloorMesh	-1	
+resources.assets	FloorMeshWorldXC	ADOFAI/FloorMesh	-1	
+resources.assets	FloorMeshWorldXF	ADOFAI/FloorMesh	-1	
+resources.assets	FloorMeshWorldXH	ADOFAI/FloorMesh	-1	
+resources.assets	FloorMeshWorldXHNeon	ADOFAI/FloorMesh	-1	
+resources.assets	FloorMeshWorldXHNeonLight	ADOFAI/FloorMesh	-1	
+resources.assets	FloorMeshWorldXO	ADOFAI/FloorMesh	-1	
+resources.assets	FloorMeshWorldXONeon	ADOFAI/FloorMesh	-1	
+resources.assets	FloorMeshWorldXPNeon	ADOFAI/FloorMesh	-1	
+resources.assets	FloorMeshWorldXPNeonLight	ADOFAI/FloorMesh	-1	
+resources.assets	FloorMeshWorldXT	ADOFAI/FloorMesh	-1	
+resources.assets	Anton SDF - Drop Shadow	TextMeshPro/Mobile/Distance Field	-1	OUTLINE_ON,UNDERLAY_ON
+resources.assets	Anton SDF - Outline	TextMeshPro/Mobile/Distance Field	-1	OUTLINE_ON
+resources.assets	Anton SDF - Sunny Days	TextMeshPro/Distance Field	-1	BEVEL_ON,UNDERLAY_ON
+resources.assets	Bangers SDF - Drop Shadow - 2 Pass	TextMeshPro/Mobile/Distance Field - 2 Pass	-1	OUTLINE_ON,UNDERLAY_ON
+resources.assets	Bangers SDF - Drop Shadow	TextMeshPro/Mobile/Distance Field	-1	OUTLINE_ON,UNDERLAY_ON
+resources.assets	Bangers SDF - Outline	TextMeshPro/Mobile/Distance Field	-1	OUTLINE_ON
+resources.assets	Bangers SDF Glow	TextMeshPro/Distance Field	-1	GLOW_ON,UNDERLAY_ON
+resources.assets	Bangers SDF Logo - URP	None	-1	
+resources.assets	Bangers SDF Logo	TextMeshPro/Distance Field (Surface)	-1	GLOW_ON
+resources.assets	Bangers SDF Material	TextMeshPro/Distance Field	-1	
+resources.assets	LiberationSans SDF - Metalic Green	TextMeshPro/Distance Field	-1	BEVEL_ON,GLOW_ON,OUTLINE_ON,UNDERLAY_ON
+resources.assets	LiberationSans SDF - Overlay	TextMeshPro/Mobile/Distance Field Overlay	-1	
+resources.assets	LiberationSans SDF - Soft Mask	TextMeshPro/Mobile/Distance Field - Masking	-1	
+resources.assets	Roboto-Bold SDF - Drop Shadow	TextMeshPro/Mobile/Distance Field	-1	OUTLINE_ON,UNDERLAY_ON
+resources.assets	Roboto-Bold SDF - HDRP Unlit	None	2750	
+resources.assets	Roboto-Bold SDF - Surface	TextMeshPro/Mobile/Distance Field (Surface)	-1	
+resources.assets	Roboto-Bold SDF - URP	None	-1	
+resources.assets	Unity SDF - HDRP LIT - Bloom	None	3000	
+resources.assets	Unity SDF - HDRP LIT - Outline	None	3000	
+resources.assets	LiberationSans SDF - Drop Shadow	TextMeshPro/Mobile/Distance Field	-1	OUTLINE_ON,UNDERLAY_ON
+resources.assets	LiberationSans SDF - Outline	TextMeshPro/Mobile/Distance Field	-1	OUTLINE_ON
+resources.assets	CapeWave	ADOFAI/CoatTailTest	-1	
+resources.assets	CoatTail1	ADOFAI/CoatTailTest	-1	
+resources.assets	CoatTail2	ADOFAI/CoatTailTest	-1	
+resources.assets	HairWave1	ADOFAI/CoatTailTest	-1	
+resources.assets	HairWave2	ADOFAI/CoatTailTest	-1	
+resources.assets	HairWave3	ADOFAI/CoatTailTest	-1	
+resources.assets	HairWave4	ADOFAI/CoatTailTest	-1	
+resources.assets	TieWave	ADOFAI/CoatTailTest	-1	
+resources.assets	Sprites default	None	-1	
+resources.assets	SkyTP2	ADOFAI/CustomTextureRectBetterFade	-1	
+resources.assets	spaceWrap	ADOFAI/CustomTextureRectBetterFade	-1	
+resources.assets	Font Material	None	-1	
+resources.assets	Font Material	None	-1	
+resources.assets	Font Material	None	-1	
+resources.assets	Font Material	None	-1	
+resources.assets	Font Material	None	-1	
+resources.assets	Font Material	None	-1	
+resources.assets	Font Material	None	-1	
+resources.assets	Font Material	None	-1	
+resources.assets	Font Material	None	-1	
+resources.assets	Font Material	None	-1	
+resources.assets	Font Material	None	-1	
+resources.assets	Font Material	None	-1	
+resources.assets	Font Material	None	-1	
+resources.assets	Font Material	None	-1	
+resources.assets	Font Material	None	-1	
+resources.assets	Font Material	None	-1	
+resources.assets	Font Material	None	-1	
+resources.assets	Font Material	None	-1	
+resources.assets	Font Material	None	-1	
+resources.assets	Font Material	None	-1	
+resources.assets	Font Material	None	-1	
+resources.assets	Font Material	None	-1	
+resources.assets	Font Material	None	-1	
+resources.assets	Font Material	None	-1	
+resources.assets	Font Material	None	-1	
+resources.assets	Font Material	None	-1	
+resources.assets	Font Material	None	-1	
+resources.assets	Font Material	None	-1	
+resources.assets	Font Material	None	-1	
+resources.assets	TMPro/Sprite	TextMeshPro/Sprite	-1	
+resources.assets	TextMeshPro/Sprite	TextMeshPro/Sprite	-1	UNITY_UI_CLIP_RECT
+resources.assets	Electronic Highway Sign SDF Material	TextMeshPro/Mobile/Distance Field	-1	
+resources.assets	Anton SDF Material	TextMeshPro/Mobile/Distance Field	-1	
+resources.assets	Oswald Bold SDF Material	TextMeshPro/Distance Field	-1	
+resources.assets	Roboto-Bold SDF Material	TextMeshPro/Mobile/Distance Field	-1	
+resources.assets	TextMeshPro/Sprite	TextMeshPro/Sprite	-1	
+resources.assets	LiberationSans SDF Material	TextMeshPro/Mobile/Distance Field	-1	
+resources.assets	LiberationSans SDF Material	TextMeshPro/Mobile/Distance Field	-1	
+resources.assets	SourceHanSansSC-Bold Atlas Material	TextMeshPro/Distance Field	-1	
+resources.assets	SourceHanSans-Normal Atlas Material	TextMeshPro/Distance Field	-1	
+resources.assets	SourceHanSansTC-Bold Atlas Material	TextMeshPro/Distance Field	-1	
+resources.assets	MPLUSRounded1c-Bold Atlas Material	TextMeshPro/Distance Field Overlay	-1	
+resources.assets	SourceHanSansTC-Medium Atlas Material	TextMeshPro/Distance Field	-1	
+resources.assets	SourceSans3-Normal Atlas Material	TextMeshPro/Distance Field	-1	
+resources.assets	SourceSans3-Medium Atlas Material	TextMeshPro/Distance Field	-1	
+resources.assets	SourceSans3-Bold Atlas Material	TextMeshPro/Distance Field	-1	
+resources.assets	godoMaum Atlas Material	TextMeshPro/Distance Field Overlay	-1	UNDERLAY_ON
+resources.assets	SourceHanSansK-Medium Atlas Material	TextMeshPro/Distance Field	-1	
+resources.assets	TextMeshPro/Sprite	TextMeshPro/Sprite	-1	
+resources.assets	SourceHanSans-Bold Atlas Material	TextMeshPro/Distance Field	-1	
+resources.assets	SourceHanSansSC-Medium Atlas Material	TextMeshPro/Distance Field	-1	
+resources.assets	SourceHanSansTC-Normal Atlas Material	TextMeshPro/Distance Field	-1	
+resources.assets	SourceHanSans-Heavy Material	TextMeshPro/Distance Field	-1	
+resources.assets	SourceHanSans-ExtraLight Material	TextMeshPro/Distance Field	-1	
+sharedassets0.assets	Font Material	None	-1	
+sharedassets0.assets	Font Material	None	-1	
+sharedassets0.assets	Font Material	None	-1	
+sharedassets1.assets	Default-Material	Standard	-1	
+sharedassets1.assets	crabParticles	Particles/Standard Unlit	3000	_ALPHABLEND_ON,_EMISSION
+sharedassets1.assets	qhar	Particles/Standard Unlit	3000	_ALPHABLEND_ON,_EMISSION
+sharedassets1.assets	MixUI	UI/AchievementRTMixerUI	-1	
+sharedassets1.assets	Inter-Bold Beta Indicator	TextMeshPro/Distance Field	-1	UNDERLAY_ON
+sharedassets1.assets	BirthdayParticles	Particles/Standard Unlit	-1	
+sharedassets1.assets	GemParticle	Particles/Standard Unlit	3000	_ALPHABLEND_ON,_COLOROVERLAY_ON
+sharedassets1.assets	Overlay	ADOFAI/Overlay	-1	
+sharedassets1.assets	UIFlashColor	Custom/UIFlashColor	-1	
+sharedassets1.assets	Font Material	None	-1	
+sharedassets1.assets	Font Material	None	-1	
+sharedassets1.assets	Font Material	None	-1	
+sharedassets1.assets	Font Material	None	-1	
+sharedassets1.assets	Font Material	None	-1	
+sharedassets1.assets	Font Material	None	-1	
+sharedassets1.assets	Font Material	None	-1	
+sharedassets1.assets	Font Material	None	-1	
+sharedassets1.assets	Font Material	None	-1	
+sharedassets1.assets	Inter-Bold Atlas Material	TextMeshPro/Distance Field	-1	
+sharedassets2.assets	Default-Line	Legacy Shaders/Particles/Alpha Blended Premultiply	-1	
+sharedassets2.assets	CalibrationStars	Particles/Standard Unlit	3000	_ALPHABLEND_ON
+sharedassets4.assets	ScrollingSprite	ADOFAI/ScrollingSprite	-1	
+sharedassets4.assets	SpritesDefaultWithFiltering	Sprites/DefaultWithFiltering	-1	
+sharedassets4.assets	ParticleDecoration	None	-1	
+sharedassets4.assets	VisualDecorationTiled	Sprites/Tile	-1	
+sharedassets5.assets	TileSilhouette	Sprites/Silhouette	-1	ETC1_EXTERNAL_ALPHA
+sharedassets6.assets	Default-ParticleSystem	Particles/Standard Unlit	3000	_ALPHABLEND_ON
+sharedassets6.assets	godoMaum CLS	TextMeshPro/Distance Field Overlay	-1	
+sharedassets7.assets	Hold	ADOFAI/HoldShader	-1	
+sharedassets10.assets	BeanstalkParticle	Particles/Standard Unlit	3000	_ALPHABLEND_ON
+sharedassets16.assets	ColorUnlitCircle	None	-1	
+sharedassets24.assets	Inter-SemiBold Atlas Material	TextMeshPro/Distance Field	-1	
+sharedassets24.assets	Back	Unlit/Back	-1	
+sharedassets24.assets	BackGray	Unlit/Back	1999	
+sharedassets24.assets	New Material	Unlit/Transparent	-1	

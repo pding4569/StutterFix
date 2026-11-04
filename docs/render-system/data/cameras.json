@@ -1,0 +1,2594 @@
+[
+{
+"file": "level0",
+"go": "Camera",
+"enabled": 1,
+"clear": 2,
+"depth": -1.0,
+"mask": 4294967295,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level1",
+"go": "Camera",
+"enabled": 1,
+"clear": 4,
+"depth": -1.0,
+"mask": 3142551,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level1",
+"go": "BGMovingCam",
+"enabled": 1,
+"clear": 3,
+"depth": -1.1100000143051147,
+"mask": 1024,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level1",
+"go": "BGStaticCam",
+"enabled": 1,
+"clear": 2,
+"depth": -1.6299999952316284,
+"mask": 2048,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level1",
+"go": "PausePlanets",
+"enabled": 1,
+"clear": 2,
+"depth": 0.0,
+"mask": 256,
+"ortho": true,
+"size": 480.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": true,
+"msaa": true,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level1",
+"go": "OverlayCam",
+"enabled": 1,
+"clear": 2,
+"depth": -1.6299999952316284,
+"mask": 1048576,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level2",
+"go": "Camera",
+"enabled": 1,
+"clear": 2,
+"depth": -1.0,
+"mask": 4294967263,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level4",
+"go": "Camera",
+"enabled": 1,
+"clear": 4,
+"depth": -1.0,
+"mask": 652055,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level4",
+"go": "BGMovingCam",
+"enabled": 1,
+"clear": 3,
+"depth": -1.1100000143051147,
+"mask": 1024,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level4",
+"go": "BGStaticCam",
+"enabled": 1,
+"clear": 2,
+"depth": -1.6299999952316284,
+"mask": 2048,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level4",
+"go": "PausePlanets",
+"enabled": 1,
+"clear": 2,
+"depth": 0.0,
+"mask": 256,
+"ortho": true,
+"size": 480.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": true,
+"msaa": true,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level4",
+"go": "OverlayCam",
+"enabled": 1,
+"clear": 2,
+"depth": -1.6299999952316284,
+"mask": 1048576,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level5",
+"go": "Thumbnail Maker",
+"enabled": 0,
+"clear": 2,
+"depth": 1.0,
+"mask": 131072,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": true,
+"msaa": false,
+"near": 0.009999999776482582,
+"far": 1000.0
+},
+{
+"file": "level5",
+"go": "preview cam",
+"enabled": 1,
+"clear": 1,
+"depth": 0.0,
+"mask": 1048576,
+"ortho": true,
+"size": 10.0,
+"target": {
+"m_FileID": 2,
+"m_PathID": 52
+},
+"hdr": true,
+"msaa": true,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level6",
+"go": "Camera",
+"enabled": 1,
+"clear": 4,
+"depth": -1.0,
+"mask": 1045399,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.0,
+"far": 10000.0
+},
+{
+"file": "level6",
+"go": "BGMovingCam",
+"enabled": 1,
+"clear": 3,
+"depth": -1.1100000143051147,
+"mask": 1024,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level6",
+"go": "BGStaticCam",
+"enabled": 1,
+"clear": 2,
+"depth": -1.6299999952316284,
+"mask": 2048,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level6",
+"go": "PausePlanets",
+"enabled": 1,
+"clear": 2,
+"depth": 0.0,
+"mask": 256,
+"ortho": true,
+"size": 480.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": true,
+"msaa": true,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level6",
+"go": "OverlayCam",
+"enabled": 1,
+"clear": 2,
+"depth": -1.6299999952316284,
+"mask": 1048576,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level7",
+"go": "Camera",
+"enabled": 1,
+"clear": 4,
+"depth": -1.0,
+"mask": 3142551,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level7",
+"go": "BGMovingCam",
+"enabled": 1,
+"clear": 3,
+"depth": -1.1100000143051147,
+"mask": 1024,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level7",
+"go": "BGStaticCam",
+"enabled": 1,
+"clear": 2,
+"depth": -1.6299999952316284,
+"mask": 2048,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level7",
+"go": "PausePlanets",
+"enabled": 1,
+"clear": 2,
+"depth": 0.0,
+"mask": 256,
+"ortho": true,
+"size": 480.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": true,
+"msaa": true,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level7",
+"go": "OverlayCam",
+"enabled": 1,
+"clear": 2,
+"depth": -1.6299999952316284,
+"mask": 1048576,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level8",
+"go": "Camera",
+"enabled": 1,
+"clear": 4,
+"depth": -1.0,
+"mask": 3142551,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level8",
+"go": "BGMovingCam",
+"enabled": 1,
+"clear": 3,
+"depth": -1.1100000143051147,
+"mask": 1024,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level8",
+"go": "BGStaticCam",
+"enabled": 1,
+"clear": 2,
+"depth": -1.6299999952316284,
+"mask": 2048,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level8",
+"go": "PausePlanets",
+"enabled": 1,
+"clear": 2,
+"depth": 0.0,
+"mask": 256,
+"ortho": true,
+"size": 480.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": true,
+"msaa": true,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level8",
+"go": "OverlayCam",
+"enabled": 1,
+"clear": 2,
+"depth": -1.6299999952316284,
+"mask": 1048576,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level9",
+"go": "Camera",
+"enabled": 1,
+"clear": 4,
+"depth": -1.0,
+"mask": 3142551,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level9",
+"go": "BGMovingCam",
+"enabled": 1,
+"clear": 3,
+"depth": -1.1100000143051147,
+"mask": 1024,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level9",
+"go": "BGStaticCam",
+"enabled": 1,
+"clear": 2,
+"depth": -1.6299999952316284,
+"mask": 2048,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level9",
+"go": "PausePlanets",
+"enabled": 1,
+"clear": 2,
+"depth": 0.0,
+"mask": 256,
+"ortho": true,
+"size": 480.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": true,
+"msaa": true,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level9",
+"go": "OverlayCam",
+"enabled": 1,
+"clear": 2,
+"depth": -1.6299999952316284,
+"mask": 1048576,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level10",
+"go": "Camera",
+"enabled": 1,
+"clear": 4,
+"depth": -1.0,
+"mask": 3142551,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level10",
+"go": "BGMovingCam",
+"enabled": 1,
+"clear": 3,
+"depth": -1.1100000143051147,
+"mask": 1024,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level10",
+"go": "BGStaticCam",
+"enabled": 1,
+"clear": 2,
+"depth": -1.6299999952316284,
+"mask": 2048,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level10",
+"go": "PausePlanets",
+"enabled": 1,
+"clear": 2,
+"depth": 0.0,
+"mask": 256,
+"ortho": true,
+"size": 480.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": true,
+"msaa": true,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level10",
+"go": "OverlayCam",
+"enabled": 1,
+"clear": 2,
+"depth": -1.6299999952316284,
+"mask": 1048576,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level11",
+"go": "Camera",
+"enabled": 1,
+"clear": 4,
+"depth": -1.0,
+"mask": 3142551,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level11",
+"go": "BGMovingCam",
+"enabled": 1,
+"clear": 3,
+"depth": -1.1100000143051147,
+"mask": 1024,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level11",
+"go": "BGStaticCam",
+"enabled": 1,
+"clear": 2,
+"depth": -1.6299999952316284,
+"mask": 2048,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level11",
+"go": "PausePlanets",
+"enabled": 1,
+"clear": 2,
+"depth": 0.0,
+"mask": 256,
+"ortho": true,
+"size": 480.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": true,
+"msaa": true,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level11",
+"go": "OverlayCam",
+"enabled": 1,
+"clear": 2,
+"depth": -1.6299999952316284,
+"mask": 1048576,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level12",
+"go": "Camera",
+"enabled": 1,
+"clear": 4,
+"depth": -1.0,
+"mask": 3142551,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level12",
+"go": "BGMovingCam",
+"enabled": 1,
+"clear": 3,
+"depth": -1.1100000143051147,
+"mask": 1024,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level12",
+"go": "BGStaticCam",
+"enabled": 1,
+"clear": 2,
+"depth": -1.6299999952316284,
+"mask": 2048,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level12",
+"go": "PausePlanets",
+"enabled": 1,
+"clear": 2,
+"depth": 0.0,
+"mask": 256,
+"ortho": true,
+"size": 480.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": true,
+"msaa": true,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level12",
+"go": "OverlayCam",
+"enabled": 1,
+"clear": 2,
+"depth": -1.6299999952316284,
+"mask": 1048576,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level13",
+"go": "Camera",
+"enabled": 1,
+"clear": 4,
+"depth": -1.0,
+"mask": 3142551,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level13",
+"go": "BGMovingCam",
+"enabled": 1,
+"clear": 3,
+"depth": -1.1100000143051147,
+"mask": 1024,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level13",
+"go": "BGStaticCam",
+"enabled": 1,
+"clear": 2,
+"depth": -1.6299999952316284,
+"mask": 2048,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level13",
+"go": "PausePlanets",
+"enabled": 1,
+"clear": 2,
+"depth": 0.0,
+"mask": 256,
+"ortho": true,
+"size": 480.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": true,
+"msaa": true,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level13",
+"go": "OverlayCam",
+"enabled": 1,
+"clear": 2,
+"depth": -1.6299999952316284,
+"mask": 1048576,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level14",
+"go": "Camera",
+"enabled": 1,
+"clear": 4,
+"depth": -1.0,
+"mask": 3142551,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level14",
+"go": "BGMovingCam",
+"enabled": 1,
+"clear": 3,
+"depth": -1.1100000143051147,
+"mask": 1024,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level14",
+"go": "BGStaticCam",
+"enabled": 1,
+"clear": 2,
+"depth": -1.6299999952316284,
+"mask": 2048,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level14",
+"go": "PausePlanets",
+"enabled": 1,
+"clear": 2,
+"depth": 0.0,
+"mask": 256,
+"ortho": true,
+"size": 480.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": true,
+"msaa": true,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level14",
+"go": "OverlayCam",
+"enabled": 1,
+"clear": 2,
+"depth": -1.6299999952316284,
+"mask": 1048576,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level15",
+"go": "Camera",
+"enabled": 1,
+"clear": 4,
+"depth": -1.0,
+"mask": 3142551,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level15",
+"go": "BGMovingCam",
+"enabled": 1,
+"clear": 3,
+"depth": -1.1100000143051147,
+"mask": 1024,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level15",
+"go": "BGStaticCam",
+"enabled": 1,
+"clear": 2,
+"depth": -1.6299999952316284,
+"mask": 2048,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level15",
+"go": "PausePlanets",
+"enabled": 1,
+"clear": 2,
+"depth": 0.0,
+"mask": 256,
+"ortho": true,
+"size": 480.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": true,
+"msaa": true,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level15",
+"go": "OverlayCam",
+"enabled": 1,
+"clear": 2,
+"depth": -1.6299999952316284,
+"mask": 1048576,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level16",
+"go": "Camera",
+"enabled": 1,
+"clear": 4,
+"depth": -1.0,
+"mask": 3142551,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": true,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level16",
+"go": "BGMovingCam",
+"enabled": 1,
+"clear": 3,
+"depth": -1.1100000143051147,
+"mask": 1024,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level16",
+"go": "BGStaticCam",
+"enabled": 1,
+"clear": 2,
+"depth": -1.6299999952316284,
+"mask": 2048,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level16",
+"go": "PausePlanets",
+"enabled": 1,
+"clear": 2,
+"depth": 0.0,
+"mask": 256,
+"ortho": true,
+"size": 480.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": true,
+"msaa": true,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level16",
+"go": "OverlayCam",
+"enabled": 1,
+"clear": 2,
+"depth": -1.6299999952316284,
+"mask": 1048576,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level17",
+"go": "Camera",
+"enabled": 1,
+"clear": 4,
+"depth": -1.0,
+"mask": 3142551,
+"ortho": true,
+"size": 7.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level17",
+"go": "BGMovingCam",
+"enabled": 1,
+"clear": 3,
+"depth": -1.1100000143051147,
+"mask": 1024,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level17",
+"go": "BGStaticCam",
+"enabled": 1,
+"clear": 2,
+"depth": -1.6299999952316284,
+"mask": 2048,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level17",
+"go": "PausePlanets",
+"enabled": 1,
+"clear": 2,
+"depth": 0.0,
+"mask": 256,
+"ortho": true,
+"size": 480.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": true,
+"msaa": true,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level17",
+"go": "OverlayCam",
+"enabled": 1,
+"clear": 2,
+"depth": -1.6299999952316284,
+"mask": 1048576,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level18",
+"go": "Camera",
+"enabled": 1,
+"clear": 4,
+"depth": -1.0,
+"mask": 3142551,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level18",
+"go": "BGMovingCam",
+"enabled": 1,
+"clear": 3,
+"depth": -1.1100000143051147,
+"mask": 1024,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level18",
+"go": "BGStaticCam",
+"enabled": 1,
+"clear": 2,
+"depth": -1.6299999952316284,
+"mask": 2048,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level18",
+"go": "PausePlanets",
+"enabled": 1,
+"clear": 2,
+"depth": 0.0,
+"mask": 256,
+"ortho": true,
+"size": 480.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": true,
+"msaa": true,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level18",
+"go": "OverlayCam",
+"enabled": 1,
+"clear": 2,
+"depth": -1.6299999952316284,
+"mask": 1048576,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level19",
+"go": "Camera",
+"enabled": 1,
+"clear": 4,
+"depth": -1.0,
+"mask": 3142551,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level19",
+"go": "BGMovingCam",
+"enabled": 1,
+"clear": 3,
+"depth": -1.1100000143051147,
+"mask": 1024,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level19",
+"go": "BGStaticCam",
+"enabled": 1,
+"clear": 2,
+"depth": -1.6299999952316284,
+"mask": 2048,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level19",
+"go": "PausePlanets",
+"enabled": 1,
+"clear": 2,
+"depth": 0.0,
+"mask": 256,
+"ortho": true,
+"size": 480.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": true,
+"msaa": true,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level19",
+"go": "OverlayCam",
+"enabled": 1,
+"clear": 2,
+"depth": -1.6299999952316284,
+"mask": 1048576,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level20",
+"go": "Camera",
+"enabled": 1,
+"clear": 4,
+"depth": -1.0,
+"mask": 3142551,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level20",
+"go": "BGMovingCam",
+"enabled": 1,
+"clear": 3,
+"depth": -1.1100000143051147,
+"mask": 1024,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level20",
+"go": "BGStaticCam",
+"enabled": 1,
+"clear": 2,
+"depth": -1.6299999952316284,
+"mask": 2048,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level20",
+"go": "PausePlanets",
+"enabled": 1,
+"clear": 2,
+"depth": 0.0,
+"mask": 256,
+"ortho": true,
+"size": 480.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": true,
+"msaa": true,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level20",
+"go": "OverlayCam",
+"enabled": 1,
+"clear": 2,
+"depth": -1.6299999952316284,
+"mask": 1048576,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level21",
+"go": "Camera",
+"enabled": 1,
+"clear": 4,
+"depth": -1.0,
+"mask": 3142551,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level21",
+"go": "BGMovingCam",
+"enabled": 1,
+"clear": 3,
+"depth": -1.1100000143051147,
+"mask": 1024,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level21",
+"go": "BGStaticCam",
+"enabled": 1,
+"clear": 2,
+"depth": -1.6299999952316284,
+"mask": 2048,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level21",
+"go": "PausePlanets",
+"enabled": 1,
+"clear": 2,
+"depth": 0.0,
+"mask": 256,
+"ortho": true,
+"size": 480.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": true,
+"msaa": true,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level21",
+"go": "OverlayCam",
+"enabled": 1,
+"clear": 2,
+"depth": -1.6299999952316284,
+"mask": 1048576,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level22",
+"go": "Camera",
+"enabled": 1,
+"clear": 4,
+"depth": -1.0,
+"mask": 3142551,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level22",
+"go": "BGMovingCam",
+"enabled": 1,
+"clear": 3,
+"depth": -1.1100000143051147,
+"mask": 1024,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level22",
+"go": "BGStaticCam",
+"enabled": 1,
+"clear": 2,
+"depth": -1.6299999952316284,
+"mask": 2048,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level22",
+"go": "PausePlanets",
+"enabled": 1,
+"clear": 2,
+"depth": 0.0,
+"mask": 256,
+"ortho": true,
+"size": 480.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": true,
+"msaa": true,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level22",
+"go": "OverlayCam",
+"enabled": 1,
+"clear": 2,
+"depth": -1.6299999952316284,
+"mask": 1048576,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level23",
+"go": "Camera",
+"enabled": 1,
+"clear": 4,
+"depth": -1.0,
+"mask": 3142551,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level23",
+"go": "BGMovingCam",
+"enabled": 1,
+"clear": 3,
+"depth": -1.1100000143051147,
+"mask": 1024,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level23",
+"go": "BGStaticCam",
+"enabled": 1,
+"clear": 2,
+"depth": -1.6299999952316284,
+"mask": 2048,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level23",
+"go": "PausePlanets",
+"enabled": 1,
+"clear": 2,
+"depth": 0.0,
+"mask": 256,
+"ortho": true,
+"size": 480.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": true,
+"msaa": true,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level23",
+"go": "OverlayCam",
+"enabled": 1,
+"clear": 2,
+"depth": -1.6299999952316284,
+"mask": 1048576,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level24",
+"go": "Camera",
+"enabled": 1,
+"clear": 4,
+"depth": -1.0,
+"mask": 3142551,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level24",
+"go": "BGMovingCam",
+"enabled": 1,
+"clear": 3,
+"depth": -1.1100000143051147,
+"mask": 1024,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level24",
+"go": "BGStaticCam",
+"enabled": 1,
+"clear": 2,
+"depth": -1.6299999952316284,
+"mask": 2048,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level24",
+"go": "CrossesCamera",
+"enabled": 0,
+"clear": 2,
+"depth": -1.399999976158142,
+"mask": 4294967295,
+"ortho": false,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": true,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level24",
+"go": "PausePlanets",
+"enabled": 1,
+"clear": 2,
+"depth": 0.0,
+"mask": 256,
+"ortho": true,
+"size": 480.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": true,
+"msaa": true,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level24",
+"go": "OverlayCam",
+"enabled": 1,
+"clear": 2,
+"depth": -1.6299999952316284,
+"mask": 1048576,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level25",
+"go": "Camera",
+"enabled": 1,
+"clear": 4,
+"depth": -1.0,
+"mask": 3142551,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level25",
+"go": "BGMovingCam",
+"enabled": 1,
+"clear": 3,
+"depth": -1.1100000143051147,
+"mask": 1024,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level25",
+"go": "BGStaticCam",
+"enabled": 1,
+"clear": 2,
+"depth": -1.6299999952316284,
+"mask": 2048,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level25",
+"go": "PausePlanets",
+"enabled": 1,
+"clear": 2,
+"depth": 0.0,
+"mask": 256,
+"ortho": true,
+"size": 480.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": true,
+"msaa": true,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level25",
+"go": "OverlayCam",
+"enabled": 1,
+"clear": 2,
+"depth": -1.6299999952316284,
+"mask": 1048576,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level26",
+"go": "Camera",
+"enabled": 1,
+"clear": 4,
+"depth": -1.0,
+"mask": 3142551,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level26",
+"go": "BGMovingCam",
+"enabled": 1,
+"clear": 3,
+"depth": -1.1100000143051147,
+"mask": 1024,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level26",
+"go": "BGStaticCam",
+"enabled": 1,
+"clear": 2,
+"depth": -1.6299999952316284,
+"mask": 2048,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level26",
+"go": "PausePlanets",
+"enabled": 1,
+"clear": 2,
+"depth": 0.0,
+"mask": 256,
+"ortho": true,
+"size": 480.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": true,
+"msaa": true,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level26",
+"go": "OverlayCam",
+"enabled": 1,
+"clear": 2,
+"depth": -1.6299999952316284,
+"mask": 1048576,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level27",
+"go": "Camera",
+"enabled": 1,
+"clear": 4,
+"depth": -1.0,
+"mask": 3142551,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level27",
+"go": "BGMovingCam",
+"enabled": 1,
+"clear": 3,
+"depth": -1.1100000143051147,
+"mask": 1024,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level27",
+"go": "BGStaticCam",
+"enabled": 1,
+"clear": 2,
+"depth": -1.6299999952316284,
+"mask": 2048,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level27",
+"go": "PausePlanets",
+"enabled": 1,
+"clear": 2,
+"depth": 0.0,
+"mask": 256,
+"ortho": true,
+"size": 480.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": true,
+"msaa": true,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level27",
+"go": "OverlayCam",
+"enabled": 1,
+"clear": 2,
+"depth": -1.6299999952316284,
+"mask": 1048576,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level28",
+"go": "Camera",
+"enabled": 1,
+"clear": 4,
+"depth": -1.0,
+"mask": 3142551,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level28",
+"go": "BGMovingCam",
+"enabled": 1,
+"clear": 3,
+"depth": -1.1100000143051147,
+"mask": 1024,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level28",
+"go": "BGStaticCam",
+"enabled": 1,
+"clear": 2,
+"depth": -1.6299999952316284,
+"mask": 2048,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level28",
+"go": "PausePlanets",
+"enabled": 1,
+"clear": 2,
+"depth": 0.0,
+"mask": 256,
+"ortho": true,
+"size": 480.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": true,
+"msaa": true,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level28",
+"go": "OverlayCam",
+"enabled": 1,
+"clear": 2,
+"depth": -1.6299999952316284,
+"mask": 1048576,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level29",
+"go": "Camera",
+"enabled": 1,
+"clear": 4,
+"depth": -1.0,
+"mask": 3142551,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level29",
+"go": "BGMovingCam",
+"enabled": 1,
+"clear": 3,
+"depth": -1.1100000143051147,
+"mask": 1024,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level29",
+"go": "BGStaticCam",
+"enabled": 1,
+"clear": 2,
+"depth": -1.6299999952316284,
+"mask": 2048,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level29",
+"go": "TNOCamera",
+"enabled": 1,
+"clear": 2,
+"depth": -1.0800000429153442,
+"mask": 1024,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level29",
+"go": "PausePlanets",
+"enabled": 1,
+"clear": 2,
+"depth": 0.0,
+"mask": 256,
+"ortho": true,
+"size": 480.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": true,
+"msaa": true,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "level29",
+"go": "OverlayCam",
+"enabled": 1,
+"clear": 2,
+"depth": -1.6299999952316284,
+"mask": 1048576,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "resources.assets",
+"go": "BGMovingCam",
+"enabled": 1,
+"clear": 3,
+"depth": -1.1100000143051147,
+"mask": 1024,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "resources.assets",
+"go": "BGStaticCam",
+"enabled": 1,
+"clear": 2,
+"depth": -1.6299999952316284,
+"mask": 2048,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "resources.assets",
+"go": "Camera",
+"enabled": 1,
+"clear": 4,
+"depth": -1.0,
+"mask": 3142551,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "resources.assets",
+"go": "TNOCamera",
+"enabled": 1,
+"clear": 2,
+"depth": -1.0800000429153442,
+"mask": 1024,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "resources.assets",
+"go": "PausePlanets",
+"enabled": 1,
+"clear": 2,
+"depth": 0.0,
+"mask": 256,
+"ortho": true,
+"size": 480.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": true,
+"msaa": true,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "resources.assets",
+"go": "OverlayCam",
+"enabled": 1,
+"clear": 2,
+"depth": -1.6299999952316284,
+"mask": 1048576,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"hdr": false,
+"msaa": false,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "resources.assets",
+"go": "cameraBubble",
+"enabled": 1,
+"clear": 2,
+"depth": 0.0,
+"mask": 4294967295,
+"ortho": true,
+"size": 3.799999952316284,
+"target": {
+"m_FileID": 0,
+"m_PathID": 3419
+},
+"hdr": true,
+"msaa": true,
+"near": 0.30000001192092896,
+"far": 1000.0
+},
+{
+"file": "resources.assets",
+"go": "cameraContent",
+"enabled": 1,
+"clear": 2,
+"depth": 0.0,
+"mask": 4294967295,
+"ortho": true,
+"size": 5.0,
+"target": {
+"m_FileID": 0,
+"m_PathID": 3420
+},
+"hdr": true,
+"msaa": true,
+"near": 0.30000001192092896,
+"far": 1000.0
+}
+]

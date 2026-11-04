@@ -1,0 +1,5087 @@
+{
+"PlayerSettings": {
+"__err": "read_str out of bounds"
+},
+"TagManager": {
+"tags": [
+"Beat",
+"Bar",
+"X",
+"NewgroundsAPI",
+"MovingFloor",
+"MissIndicator",
+"EventIndicator",
+"IgnoreClick",
+"HitDecoration",
+"ReviveBubble"
+],
+"layers": [
+"Default",
+"TransparentFX",
+"Ignore Raycast",
+"",
+"Water",
+"UI",
+"",
+"Foreground",
+"Planet",
+"Floor",
+"BG",
+"BG Static",
+"Camera",
+"Flash",
+"TopGlow",
+"FloorTemp",
+"Review",
+"WorkshopThumbnail",
+"textDeco",
+"Handles",
+"RenderTexture",
+"Hitbox",
+"",
+"",
+"",
+"",
+"",
+"",
+"",
+"",
+"",
+""
+],
+"m_SortingLayers": [
+{
+"name": "Bg3",
+"uniqueID": 1281023201
+},
+{
+"name": "Bg2(Lights)",
+"uniqueID": 1456742089
+},
+{
+"name": "Bg",
+"uniqueID": 1320933907
+},
+{
+"name": "Floor",
+"uniqueID": 2973111929
+},
+{
+"name": "FloorCover",
+"uniqueID": 3627498465
+},
+{
+"name": "FloorTop",
+"uniqueID": 1116417277
+},
+{
+"name": "Ring",
+"uniqueID": 2236660977
+},
+{
+"name": "Planet",
+"uniqueID": 20593777
+},
+{
+"name": "Default",
+"uniqueID": 0
+},
+{
+"name": "Petals",
+"uniqueID": 4228497229
+},
+{
+"name": "FgFlash",
+"uniqueID": 353734097
+},
+{
+"name": "ForegroundUI",
+"uniqueID": 1360410871
+}
+],
+"m_RenderingLayers": [
+"Default"
+]
+},
+"AudioManager": {
+"m_Volume": 1.0,
+"Rolloff Scale": 1.0,
+"Doppler Factor": 1.0,
+"Default Speaker Mode": 2,
+"m_SampleRate": 0,
+"m_DSPBufferSize": 1024,
+"m_VirtualVoiceCount": 4095,
+"m_RealVoiceCount": 255,
+"m_SpatializerPlugin": "",
+"m_AmbisonicDecoderPlugin": "",
+"m_DisableAudio": false,
+"m_VirtualizeEffects": true,
+"m_RequestedDSPBufferSize": 1024,
+"m_AudioFoundation": 0,
+"m_OutputChannelLayout": 2,
+"m_OutputSamplingRate": 48000
+},
+"ScriptMapper": {
+"m_Shaders": {
+"m_ObjectToName": [
+[
+{
+"m_FileID": 2,
+"m_PathID": 17
+},
+"Hidden/InternalErrorShader"
+],
+[
+{
+"m_FileID": 2,
+"m_PathID": 68
+},
+"Hidden/InternalClear"
+],
+[
+{
+"m_FileID": 2,
+"m_PathID": 69
+},
+"Hidden/Internal-Colored"
+],
+[
+{
+"m_FileID": 2,
+"m_PathID": 70
+},
+"Hidden/Internal-Loading"
+],
+[
+{
+"m_FileID": 2,
+"m_PathID": 10101
+},
+"GUI/Text Shader"
+],
+[
+{
+"m_FileID": 2,
+"m_PathID": 10755
+},
+"Hidden/FrameDebuggerRenderTargetDisplay"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Legacy Shaders/Diffuse Fast"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Legacy Shaders/Bumped Diffuse"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Legacy Shaders/Specular"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Legacy Shaders/Bumped Specular"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Legacy Shaders/Diffuse Detail"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2520
+},
+"Legacy Shaders/VertexLit"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2521
+},
+"Legacy Shaders/Diffuse"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Legacy Shaders/Parallax Diffuse"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Legacy Shaders/Parallax Specular"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Legacy Shaders/Self-Illumin/Diffuse"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Legacy Shaders/Self-Illumin/Bumped Diffuse"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Legacy Shaders/Self-Illumin/Specular"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Legacy Shaders/Self-Illumin/Bumped Specular"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Legacy Shaders/Self-Illumin/VertexLit"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Legacy Shaders/Self-Illumin/Parallax Diffuse"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Legacy Shaders/Self-Illumin/Parallax Specular"
+],
+[
+{
+"m_FileID": 4,
+"m_PathID": 19
+},
+"Hidden/Internal-StencilWrite"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Legacy Shaders/Reflective/Diffuse"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Legacy Shaders/Reflective/Bumped Diffuse"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Legacy Shaders/Reflective/Specular"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Legacy Shaders/Reflective/Bumped Specular"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Legacy Shaders/Reflective/VertexLit"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Legacy Shaders/Reflective/Bumped Unlit"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Legacy Shaders/Reflective/Bumped VertexLit"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Legacy Shaders/Reflective/Parallax Diffuse"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Legacy Shaders/Reflective/Parallax Specular"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Legacy Shaders/Transparent/Diffuse"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Legacy Shaders/Transparent/Bumped Diffuse"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Legacy Shaders/Transparent/Specular"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Legacy Shaders/Transparent/Bumped Specular"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Legacy Shaders/Transparent/VertexLit"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Legacy Shaders/Transparent/Parallax Diffuse"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Legacy Shaders/Transparent/Parallax Specular"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Legacy Shaders/Lightmapped/VertexLit"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Legacy Shaders/Lightmapped/Diffuse"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Legacy Shaders/Lightmapped/Bumped Diffuse"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Legacy Shaders/Lightmapped/Specular"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Legacy Shaders/Lightmapped/Bumped Specular"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Standard (Specular setup)"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2522
+},
+"Standard"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Autodesk Interactive"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Legacy Shaders/Transparent/Cutout/VertexLit"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Legacy Shaders/Transparent/Cutout/Diffuse"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Legacy Shaders/Transparent/Cutout/Bumped Diffuse"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Legacy Shaders/Transparent/Cutout/Specular"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Legacy Shaders/Transparent/Cutout/Bumped Specular"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Hidden/Internal-DepthNormalsTexture"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Hidden/Internal-ScreenSpaceShadows"
+],
+[
+{
+"m_FileID": 4,
+"m_PathID": 65
+},
+"Hidden/Internal-CombineDepthNormals"
+],
+[
+{
+"m_FileID": 4,
+"m_PathID": 66
+},
+"Hidden/BlitCopy"
+],
+[
+{
+"m_FileID": 4,
+"m_PathID": 67
+},
+"Hidden/BlitCopyDepth"
+],
+[
+{
+"m_FileID": 4,
+"m_PathID": 68
+},
+"Hidden/ConvertTexture"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Hidden/Internal-DeferredShading"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Hidden/Internal-DeferredReflections"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Hidden/Internal-MotionVectors"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Legacy Shaders/Decal"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"FX/Flare"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Hidden/Internal-Flare"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Skybox/Cubemap"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Skybox/6 Sided"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Hidden/Internal-Halo"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Skybox/Procedural"
+],
+[
+{
+"m_FileID": 4,
+"m_PathID": 107
+},
+"Hidden/BlitCopyWithDepth"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Skybox/Panoramic"
+],
+[
+{
+"m_FileID": 4,
+"m_PathID": 109
+},
+"Hidden/BlitToDepth"
+],
+[
+{
+"m_FileID": 4,
+"m_PathID": 110
+},
+"Hidden/BlitToDepth_MSAA"
+],
+[
+{
+"m_FileID": 4,
+"m_PathID": 111
+},
+"Hidden/BlitCopyHDRTonemap"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Hidden/BlitCopyHDRTonemappedToHDRTonemap"
+],
+[
+{
+"m_FileID": 4,
+"m_PathID": 113
+},
+"Hidden/Internal-DebugPattern"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Hidden/BlitCopyHDRTonemappedToSDR"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2523
+},
+"Legacy Shaders/Particles/Additive"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Legacy Shaders/Particles/~Additive-Multiply"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Legacy Shaders/Particles/Additive (Soft)"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Legacy Shaders/Particles/Alpha Blended"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Legacy Shaders/Particles/Multiply"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Legacy Shaders/Particles/Multiply (Double)"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2524
+},
+"Legacy Shaders/Particles/Alpha Blended Premultiply"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Legacy Shaders/Particles/VertexLit Blended"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Legacy Shaders/Particles/Anim Alpha Blended"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2525
+},
+"Particles/Standard Surface"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2526
+},
+"Particles/Standard Unlit"
+],
+[
+{
+"m_FileID": 4,
+"m_PathID": 9000
+},
+"Hidden/Internal-GUITextureClip"
+],
+[
+{
+"m_FileID": 4,
+"m_PathID": 9001
+},
+"Hidden/Internal-GUITextureClipText"
+],
+[
+{
+"m_FileID": 4,
+"m_PathID": 9002
+},
+"Hidden/Internal-GUITexture"
+],
+[
+{
+"m_FileID": 4,
+"m_PathID": 9003
+},
+"Hidden/Internal-GUITextureBlit"
+],
+[
+{
+"m_FileID": 4,
+"m_PathID": 9004
+},
+"Hidden/Internal-GUIRoundedRect"
+],
+[
+{
+"m_FileID": 4,
+"m_PathID": 9007
+},
+"Hidden/Internal-GUIRoundedRectWithColorPerBorder"
+],
+[
+{
+"m_FileID": 4,
+"m_PathID": 9100
+},
+"Hidden/Internal-UIRDefault"
+],
+[
+{
+"m_FileID": 4,
+"m_PathID": 9101
+},
+"Hidden/Internal-UIRAtlasBlitCopy"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Hidden/Internal-UIRDefaultWorld"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Hidden/UIElements/EditorUIE"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Hidden/GraphView/GraphViewUIE"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Hidden/Internal-UIE-ColorConversionBlit"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Hidden/GTF/GTFUIE"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Hidden/Nature/Terrain/Utilities"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Hidden/TerrainEngine/Details/Vertexlit"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Hidden/TerrainEngine/Details/WavingDoublePass"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Hidden/TerrainEngine/Details/BillboardWavingDoublePass"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Hidden/TerrainEngine/Splatmap/Diffuse-AddPass"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Hidden/TerrainEngine/Splatmap/Diffuse-Base"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Nature/Terrain/Diffuse"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Hidden/TerrainEngine/Splatmap/Diffuse-BaseGen"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Hidden/TerrainEngine/BillboardTree"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Hidden/Nature/Tree Soft Occlusion Bark Rendertex"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Nature/Tree Soft Occlusion Bark"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Hidden/Nature/Tree Soft Occlusion Leaves Rendertex"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Nature/Tree Soft Occlusion Leaves"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Legacy Shaders/Transparent/Cutout/Soft Edge Unlit"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Hidden/TerrainEngine/CameraFacingBillboardTree"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Nature/Tree Creator Bark"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Nature/Tree Creator Leaves"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Hidden/Nature/Tree Creator Bark Rendertex"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Hidden/Nature/Tree Creator Leaves Rendertex"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Hidden/Nature/Tree Creator Bark Optimized"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Hidden/Nature/Tree Creator Leaves Optimized"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Nature/Tree Creator Leaves Fast"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Hidden/Nature/Tree Creator Leaves Fast Optimized"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Hidden/Nature/Tree Creator Albedo Rendertex"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Hidden/Nature/Tree Creator Normal Rendertex"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Nature/Terrain/Specular"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Hidden/TerrainEngine/Splatmap/Specular-AddPass"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Hidden/TerrainEngine/Splatmap/Specular-Base"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Nature/Terrain/Standard"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Hidden/TerrainEngine/Splatmap/Standard-AddPass"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Hidden/TerrainEngine/Splatmap/Standard-Base"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Hidden/TerrainEngine/Splatmap/Standard-BaseGen"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Mobile/Skybox"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Mobile/VertexLit"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Mobile/Diffuse"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Mobile/Bumped Diffuse"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Mobile/Bumped Specular"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Mobile/Bumped Specular (1 Directional Realtime Light)"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Mobile/VertexLit (Only Directional Lights)"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2527
+},
+"Mobile/Unlit (Supports Lightmap)"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2528
+},
+"Mobile/Particles/Additive"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Mobile/Particles/Alpha Blended"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Mobile/Particles/VertexLit Blended"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Mobile/Particles/Multiply"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2529
+},
+"Unlit/Transparent"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Unlit/Transparent Cutout"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Unlit/Texture"
+],
+[
+{
+"m_FileID": 4,
+"m_PathID": 10753
+},
+"Sprites/Default"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Unlit/Color"
+],
+[
+{
+"m_FileID": 4,
+"m_PathID": 10757
+},
+"Sprites/Mask"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2530
+},
+"UI/Unlit/Transparent"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"UI/Unlit/Detail"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"UI/Unlit/Text"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"UI/Unlit/Text Detail"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"UI/Lit/Transparent"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"UI/Lit/Bumped"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"UI/Lit/Detail"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"UI/Lit/Refraction"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"UI/Lit/Refraction Detail"
+],
+[
+{
+"m_FileID": 4,
+"m_PathID": 10770
+},
+"UI/Default"
+],
+[
+{
+"m_FileID": 4,
+"m_PathID": 10782
+},
+"UI/Default Font"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"UI/DefaultETC1"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Hidden/UI/CompositeOverdraw"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Hidden/UI/Overdraw"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Sprites/Diffuse"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Hidden/VisualizeShadingRateImage"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Nature/SpeedTree"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Nature/SpeedTree Billboard"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Nature/SpeedTree8"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Nature/SpeedTree9"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Hidden/GIDebug/TextureUV"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Hidden/GIDebug/ShowLightMask"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Hidden/GIDebug/UV1sAsPositions"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Hidden/GIDebug/VertexColors"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Hidden/CubeBlur"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Hidden/CubeCopy"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Hidden/CubeBlend"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"VR/SpatialMapping/Occlusion"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"VR/SpatialMapping/Wireframe"
+],
+[
+{
+"m_FileID": 4,
+"m_PathID": 15304
+},
+"Hidden/VR/BlitTexArraySlice"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Hidden/VR/Internal-VRDistortion"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Hidden/VR/BlitTexArraySliceToDepth"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Hidden/VR/BlitTexArraySliceToDepth_MSAA"
+],
+[
+{
+"m_FileID": 4,
+"m_PathID": 15308
+},
+"Hidden/Internal-ODSWorldTexture"
+],
+[
+{
+"m_FileID": 4,
+"m_PathID": 15309
+},
+"Hidden/Internal-CubemapToEquirect"
+],
+[
+{
+"m_FileID": 4,
+"m_PathID": 15312
+},
+"Hidden/VR/BlitFromTex2DToTexArraySlice"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Hidden/VR/BlitCopyHDRTonemapTexArraySlice"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Hidden/VR/BlitCopyHDRTonemappedToHDRTonemapTexArraySlice"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Hidden/VR/BlitCopyHDRTonemappedToSDRTexArraySlice"
+],
+[
+{
+"m_FileID": 4,
+"m_PathID": 16000
+},
+"Hidden/VideoComposite"
+],
+[
+{
+"m_FileID": 4,
+"m_PathID": 16001
+},
+"Hidden/VideoDecode"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Hidden/VideoDecodeOSX"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Hidden/VideoDecodeAndroid"
+],
+[
+{
+"m_FileID": 4,
+"m_PathID": 17000
+},
+"Hidden/Compositing"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Hidden/TerrainEngine/PaintHeight"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Hidden/TerrainEngine/HeightBlitCopy"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Hidden/TerrainEngine/GenerateNormalmap"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Hidden/TerrainEngine/TerrainLayerUtils"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Hidden/TerrainEngine/BrushPreview"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Hidden/TerrainEngine/CrossBlendNeighbors"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Hidden/TerrainEngine/TerrainBlitCopyZWrite"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Hidden/TextCore/Distance Field"
+],
+[
+{
+"m_FileID": 4,
+"m_PathID": 19011
+},
+"Hidden/TextCore/Distance Field SSD"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Hidden/TextCore/Sprite"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Hidden/UIR/GaussianBlur"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Hidden/UIR/ColorEffect"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Hidden/VectorGraphics/Vector"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Hidden/VectorGraphics/VectorGradient"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Hidden/VectorGraphics/VectorBlendMax"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Hidden/VectorGraphics/VectorDemultiply"
+],
+[
+{
+"m_FileID": 0,
+"m_PathID": 0
+},
+"Hidden/VectorGraphics/VectorExpandEdges"
+],
+[
+{
+"m_FileID": 4,
+"m_PathID": 20500
+},
+"Hidden/Physics2D/SDF_CircleGeometry"
+],
+[
+{
+"m_FileID": 4,
+"m_PathID": 20501
+},
+"Hidden/Physics2D/SDF_CapsuleGeometry"
+],
+[
+{
+"m_FileID": 4,
+"m_PathID": 20502
+},
+"Hidden/Physics2D/SDF_PolygonGeometry"
+],
+[
+{
+"m_FileID": 4,
+"m_PathID": 20506
+},
+"Hidden/Physics2D/SDF_Line"
+],
+[
+{
+"m_FileID": 4,
+"m_PathID": 20507
+},
+"Hidden/Physics2D/SDF_Point"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2633
+},
+"Hidden/VideoBloom"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2611
+},
+"CameraFilterPack/Blend2Camera_SplitScreen3D"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2793
+},
+"CameraFilterPack/Pixelisation_Sweater"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2864
+},
+"ADOFAI/FloorSprite"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2921
+},
+"Hidden/BlendOneOne"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2713
+},
+"CameraFilterPack/TV_Chromatical"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2647
+},
+"CameraFilterPack/Color_YUV"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2607
+},
+"CameraFilterPack/Drawing_Crosshatch"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2763
+},
+"CameraFilterPack/Blend2Camera_HardLight"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2815
+},
+"Hidden/BlendModes/SpritesDefault/Grab"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2863
+},
+"CameraFilterPack/FX_DigitalMatrix"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2822
+},
+"CameraFilterPack/Distortion_FishEye"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2720
+},
+"ADOFAI/SpriteAlphaMask"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2667
+},
+"CameraFilterPack/Color_Levels"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2827
+},
+"CameraFilterPackLegacy/Atmosphere_Rain"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2715
+},
+"ADOFAI/TiledSpriteWithGap"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2843
+},
+"CameraFilterPack/Drawing_Paper"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2698
+},
+"Rhythm Doctor/RDAnimBlendFrame"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2855
+},
+"CameraFilterPack/EXTRA_SHOWFPS"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2920
+},
+"Hidden/BlendModes/SpritesDefault/OverlayMasked"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2541
+},
+"CameraFilterPack/Glasses_OnX"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2898
+},
+"CameraFilterPack/Blend2Camera_LighterColor"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2684
+},
+"CameraFilterPack/Vision_Tunnel"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2682
+},
+"CameraFilterPack/Drawing_Manga_FlashWhite"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2567
+},
+"CameraFilterPackLegacy/TV_50"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2536
+},
+"CameraFilterPack/Gradients_Desert"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2751
+},
+"CameraFilterPack/Drawing_Manga_Flash"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2661
+},
+"CameraFilterPack/FX_Mirror"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2723
+},
+"CameraFilterPack/Vision_Rainbow"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2573
+},
+"CameraFilterPack/Blend2Camera_VividLight"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2872
+},
+"CameraFilterPack/Distortion_Twist"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2738
+},
+"TextMeshPro/Mobile/Distance Field (Surface)"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2916
+},
+"CameraFilterPack/FX_Hexagon_Black"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2807
+},
+"CameraFilterPack/CameraFilterPack_NewGlitch7"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2717
+},
+"CameraFilterPack/Blur_Focus"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2833
+},
+"CameraFilterPack/Gradients_Stripe"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2601
+},
+"CameraFilterPack/Lut_Simple"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2724
+},
+"CameraFilterPack/NightVision_4"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2752
+},
+"CameraFilterPack/FX_superDot"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2893
+},
+"CameraFilterPack/Blizzard"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2735
+},
+"CameraFilterPack/EyesVision_2"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2865
+},
+"CameraFilterPack/Lut_2_lut"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2878
+},
+"Hidden/SunShaftsComposite"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2598
+},
+"CameraFilterPack/Color_Switching"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2545
+},
+"CameraFilterPack/Edge_Sobel"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2917
+},
+"CameraFilterPack/Blend2Camera_LinearBurn"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2631
+},
+"CameraFilterPack/Edge_Golden"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2880
+},
+"CameraFilterPack/CameraFilterPack_Broken_Spliter"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2700
+},
+"CameraFilterPack/Gradients_Hue"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2539
+},
+"CameraFilterPack/Blend2Camera_SplitScreen"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2766
+},
+"CameraFilterPack/EyesVision_1"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2804
+},
+"CameraFilterPack/Gradients_Ansi"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2768
+},
+"CameraFilterPack/TV_Artefact"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2625
+},
+"CameraFilterPack/TV_Horror"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2623
+},
+"ADOFAI/CustomTextureRectBetterFade"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2924
+},
+"ADOFAI/FloorMesh"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2783
+},
+"CameraFilterPack/TV_Old_Movie_2"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2706
+},
+"CameraFilterPackLegacy/Blizzard"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2896
+},
+"CameraFilterPack/3D_Inverse"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2733
+},
+"CameraFilterPackLegacy/FX_superDot"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2653
+},
+"CameraFilterPack/3D_Binary"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2891
+},
+"CameraFilterPack/TV_BrokenGlass"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2907
+},
+"CameraFilterPack/Blend2Camera_SoftLight"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2540
+},
+"CameraFilterPack/Blend2Camera_Divide"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2854
+},
+"CameraFilterPack/Drawing_Manga2"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2710
+},
+"CameraFilterPack/Lut_Mask"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2708
+},
+"CameraFilterPack/Color_RGB"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2649
+},
+"CameraFilterPack/BlurTiltShift_V"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2674
+},
+"CameraFilterPack/Blur_Steam"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2883
+},
+"CameraFilterPack/AAA_Super_Computer"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2544
+},
+"Hidden/BlendModes/UnlitTransparent/FramebufferMasked"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2559
+},
+"CameraFilterPack/Drawing_BluePrint"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2784
+},
+"CameraFilterPack/FX_DigitalMatrixDistortion"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2590
+},
+"ADOFAI/MaskedSprite"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2635
+},
+"CameraFilterPack/Drawing_Manga3"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2560
+},
+"CameraFilterPack/TV_ARCADE"
+],
+[
+{
+"m_FileID": 1,
+"m_PathID": 7
+},
+"ADOFAI/Overlay"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2656
+},
+"CameraFilterPack/Film_Grain"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2637
+},
+"CameraFilterPack/Light_Rainbow"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2821
+},
+"CameraFilterPack/Gradients_Rainbow"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2672
+},
+"CameraFilterPack/3D_Computer"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2721
+},
+"CameraFilterPack/Drawing_Manga"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2840
+},
+"CameraFilterPack/Blur_Noise"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2699
+},
+"CameraFilterPack/Atmosphere_Fog"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2693
+},
+"CameraFilterPack/Colors_DarkColor"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2679
+},
+"CameraFilterPack/FX_Hypno"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2558
+},
+"CameraFilterPack/TV_Rgb"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2584
+},
+"CameraFilterPack/Color_Invert"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2789
+},
+"CameraFilterPack/Lut_2_lut_Extra"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2551
+},
+"CameraFilterPack/CameraFilterPack_NewGlitch4"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2643
+},
+"CameraFilterPack/AAA_Blood"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2677
+},
+"CameraFilterPackLegacy/Real_VHS"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2606
+},
+"CameraFilterPack/Colors_Adjust_PreFilters"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2895
+},
+"CameraFilterPack/Blend2Camera_Multiply"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2556
+},
+"CameraFilterPack/TV_PlanetMars"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2897
+},
+"CameraFilterPack/3D_Dust"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2866
+},
+"CameraFilterPack/Pixelisation_OilPaint"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2771
+},
+"CameraFilterPack/Antialiasing_FXAA"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2593
+},
+"CameraFilterPack/Lut_TestMode"
+],
+[
+{
+"m_FileID": 1,
+"m_PathID": 10
+},
+"ADOFAI/ScreenScroll"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2903
+},
+"CameraFilterPack/Blend2Camera_PinLight"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2850
+},
+"Hidden/BlendModes/SpritesDefault/Framebuffer"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2557
+},
+"CameraFilterPack/FX_ZebraColor"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2685
+},
+"CameraFilterPack/TV_ARCADE_Fast"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2575
+},
+"CameraFilterPack/FX_Scan"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2732
+},
+"CameraFilterPack/Distortion_ShockWave"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2595
+},
+"CameraFilterPack/Distortion_Flag"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2791
+},
+"CameraFilterPack/Blur_GaussianBlur"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2602
+},
+"CameraFilterPack/Drawing_Manga5"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2901
+},
+"CameraFilterPack/Distortion_Lens"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2599
+},
+"CameraFilterPack/Blend2Camera_Exclusion"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2759
+},
+"CameraFilterPack/Drawing_floattone"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2814
+},
+"CameraFilterPack/Gradients_Therma"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2923
+},
+"CameraFilterPack/Blend2Camera_ColorDodge"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2796
+},
+"CameraFilterPack/3D_Distortion"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2538
+},
+"CameraFilterPack/Distortion_Aspiration"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2549
+},
+"CameraFilterPack/Distortion_Heat"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2744
+},
+"Hidden/FisheyeShader"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2930
+},
+"ADOFAI/Frames"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2534
+},
+"CameraFilterPack/Light_Rainbow2"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2697
+},
+"CameraFilterPack/VHS_Tracking"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2578
+},
+"CameraFilterPack/TV_80"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2662
+},
+"CameraFilterPack/BlurTiltShift"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2749
+},
+"CameraFilterPack/Lut_Plus"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2630
+},
+"CameraFilterPack/Gradients_NeonGradient"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2571
+},
+"CameraFilterPack/TV_MovieNoise"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2876
+},
+"CameraFilterPack/FX_Glitch2"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2687
+},
+"UI/Wave"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2829
+},
+"Hidden/BlendModes/SpritesDefault/Overlay"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2933
+},
+"CameraFilterPack/Fly_Vision"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2792
+},
+"CameraFilterPack/Blend2Camera_LinearDodge"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2906
+},
+"CameraFilterPack/Distortion_ShockWaveManual"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2780
+},
+"CameraFilterPackLegacy/Light_Water2"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2862
+},
+"CameraFilterPackLegacy/Drawing_Paper"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2638
+},
+"CameraFilterPack/Color_BrightContrastSaturation"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2705
+},
+"CameraFilterPack/AAA_BloodOnScreen"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2690
+},
+"CameraFilterPack/Pixelisation_Dot"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2640
+},
+"ADOFAI/Sprites and Mask CLS"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2851
+},
+"CameraFilterPack/TV_Vignetting"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2594
+},
+"CameraFilterPack/Edge_BlackLine"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2803
+},
+"CameraFilterPack/BlurHole"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2790
+},
+"CameraFilterPack/Real_VHS"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2874
+},
+"CameraFilterPack/Special_Bubble"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2629
+},
+"CameraFilterPack/Blend2Camera_ColorBurn"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2746
+},
+"CameraFilterPack/TV_VHS_Rewind"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2581
+},
+"ADOFAI/CoatTailTest"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2729
+},
+"CameraFilterPack/Vision_SniperScore"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2830
+},
+"CameraFilterPack/Blend2Camera_Overlay"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2745
+},
+"CameraFilterPackLegacy/FX_Funk"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2813
+},
+"CameraFilterPack/TV_VHS"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2727
+},
+"CameraFilterPack/Oculus_NightVision3"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2543
+},
+"CameraFilterPack/FX_Funk"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2605
+},
+"CameraFilterPack/Blend2Camera_DarkerColor"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2555
+},
+"CameraFilterPack/CameraFilterPack_Classic_ThermalVision"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2694
+},
+"CameraFilterPack/FX_Screens"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2614
+},
+"CameraFilterPack/3D_Ghost"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2776
+},
+"CameraFilterPack/NightVisionFX"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2603
+},
+"CameraFilterPack/AAA_Super_Hexagon"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2546
+},
+"CameraFilterPack/FlipScreen"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2628
+},
+"CameraFilterPackLegacy/FX_Hexagon_Black"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2728
+},
+"CameraFilterPack/Atmosphere_Rain"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2642
+},
+"CameraFilterPack/AAA_WaterDropPro"
+],
+[
+{
+"m_FileID": 5,
+"m_PathID": 21
+},
+"Unlit/Back"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2770
+},
+"UI/Vignette Effect"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2641
+},
+"CameraFilterPack/Vision_Hell_Blood"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2703
+},
+"CameraFilterPack/Blur_Regular"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2587
+},
+"CameraFilterPack/Blur_Radial"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2888
+},
+"CameraFilterPack/FX_Drunk2"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2914
+},
+"CameraFilterPack/Colors_BleachBypass"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2857
+},
+"CameraFilterPack/TV_WideScreenVertical"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2828
+},
+"CameraFilterPack/OldFilm_Cutting1"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2868
+},
+"CameraFilterPack/FX_Plasma"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2632
+},
+"CameraFilterPack/Drawing_NewCellShading"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2585
+},
+"CameraFilterPack/Blend2Camera_BlueScreen"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2725
+},
+"CameraFilterPack/Distortion_Dream"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2572
+},
+"ADOFAI/zWriteUI"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2582
+},
+"CameraFilterPack/Color_GrayScale"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2695
+},
+"CameraFilterPack/Drawing_Lines"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2645
+},
+"CameraFilterPack/OldFilm_Cutting2"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2847
+},
+"CameraFilterPack/CameraFilterPack_NewGlitch3"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2844
+},
+"CameraFilterPack/FX_Glitch3"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2816
+},
+"CameraFilterPackLegacy/Color_Contrast"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2885
+},
+"ADOFAI/MergeSprite"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2730
+},
+"CameraFilterPack/CameraFilterPack_Broken_Simple"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2810
+},
+"CameraFilterPack/Vision_Crystal"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2867
+},
+"CameraFilterPack/Vision_Warp2"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2552
+},
+"CameraFilterPack/Drawing_Curve"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2604
+},
+"CameraFilterPack/Retro_Loading"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2668
+},
+"CameraFilterPack/Film_ColorPerfection"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2670
+},
+"CameraFilterPackLegacy/Atmosphere_Snow_8bits"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2927
+},
+"CameraFilterPack/Noise_TV_2"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2704
+},
+"CameraFilterPack/Vision_Warp"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2802
+},
+"CameraFilterPack/Oculus_NightVision5"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2845
+},
+"Hidden/BlendModes/UnlitTransparent/OverlayMasked"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2811
+},
+"ADOFAI/Sprites and Mask"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2570
+},
+"CameraFilterPackLegacy/TV_Posterize"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2692
+},
+"CameraFilterPack/FX_Glitch1"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2892
+},
+"CameraFilterPackLegacy/Blur_Blurry"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2879
+},
+"CameraFilterPack/Color_Convert_Normal"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2846
+},
+"Hidden/BlendModes/UnlitTransparent/Overlay"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2588
+},
+"CameraFilterPack/CameraFilterPack_NewGlitch2"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2535
+},
+"CameraFilterPack/Drawing_Paper3"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2861
+},
+"CameraFilterPack/Distortion_Water_Drop"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2531
+},
+"TextMeshPro/Mobile/Distance Field - 2 Pass"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2882
+},
+"CameraFilterPackLegacy/Blur_GaussianBlur"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2652
+},
+"CameraFilterPack/FX_Hexagon"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2701
+},
+"CameraFilterPackLegacy/AAA_WaterDrop"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2852
+},
+"CameraFilterPack/Alien_Vision"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2664
+},
+"CameraFilterPack/Distortion_float_Sphere"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2726
+},
+"CameraFilterPack/Edge_Edge_filter"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2762
+},
+"CameraFilterPack/Light_Water2"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2650
+},
+"CameraFilterPack/Broken_Screen"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2563
+},
+"CameraFilterPack/FX_Drunk"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2836
+},
+"TextMeshPro/Mobile/Distance Field - Masking"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2651
+},
+"CameraFilterPackLegacy/Color_GrayScale"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2925
+},
+"CameraFilterPack/TV_WideScreenHorizontal"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2736
+},
+"CameraFilterPack/Gradients_ElectricGradient"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2817
+},
+"CameraFilterPack/FX_8bits"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2819
+},
+"CameraFilterPack/Noise_TV_3"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2786
+},
+"CameraFilterPackLegacy/Distortion_FishEye"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2761
+},
+"CameraFilterPack/Blend2Camera_Lighten"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2750
+},
+"CameraFilterPack/Oculus_NightVision2"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2926
+},
+"CameraFilterPack/TV_WideScreenCircle"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2689
+},
+"Hidden/BlendModes/UnlitTransparent/Grab"
+],
+[
+{
+"m_FileID": 6,
+"m_PathID": 23
+},
+"Sprites/Tile"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2660
+},
+"CameraFilterPack/Glow_Glow"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2755
+},
+"CameraFilterPack/Glitch_Mozaic"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2870
+},
+"CameraFilterPack/CameraFilterPack_NewGlitch5"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2597
+},
+"Hidden/BlendModes/SpritesDefault/FramebufferMasked"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2696
+},
+"ADOFAI/TNOFilter"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2834
+},
+"CameraFilterPack/EXTRA_Rotation"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2722
+},
+"CameraFilterPack/Edge_Neon"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2659
+},
+"CameraFilterPack/BlurTiltShift_Hole"
+],
+[
+{
+"m_FileID": 6,
+"m_PathID": 24
+},
+"Sprites/DefaultWithFiltering"
+],
+[
+{
+"m_FileID": 1,
+"m_PathID": 4
+},
+"ADOFAI/ScrollingSprite"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2806
+},
+"CameraFilterPack/Distortion_Twist_Square"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2798
+},
+"CameraFilterPack/TV_ARCADE_2"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2782
+},
+"CameraFilterPack/Distortion_Flush"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2681
+},
+"CameraFilterPack/Blur_DitherOffset"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2765
+},
+"CameraFilterPack/Oculus_NightVision1"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2932
+},
+"Hidden/BlendModes/SpritesDefault/UnifiedGrabMasked"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2566
+},
+"CameraFilterPack/FX_Spot"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2702
+},
+"CameraFilterPack/RainFX"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2928
+},
+"CameraFilterPackLegacy/Blur_Focus"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2579
+},
+"CameraFilterPack/Colors_Adjust_FullColors"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2871
+},
+"CameraFilterPack/TV_Old"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2636
+},
+"CameraFilterPack/TV_Vintage"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2737
+},
+"CameraFilterPack/AAA_Blood_Plus"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2805
+},
+"CameraFilterPack/Vision_AuraDistortion"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2609
+},
+"CameraFilterPack/FX_DarkMatter"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2589
+},
+"CameraFilterPack/Vision_Blood"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2910
+},
+"Hidden/CameraMotionBlurDX11"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2542
+},
+"CameraFilterPack/Lut_PlayWith"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2800
+},
+"Hidden/SeparableBlurPlus"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2779
+},
+"CameraFilterPack/Distortion_BigFace"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2711
+},
+"CameraFilterPackLegacy/Pixelisation_OilPaint"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2909
+},
+"CameraFilterPack/FX_InverChromiLum"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2905
+},
+"CameraFilterPack/FX_8bits_gb"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2894
+},
+"Hidden/MultipassHollywoodFlares"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2825
+},
+"CameraFilterPack/Color_Sepia"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2639
+},
+"CameraFilterPack/Blend2Camera_Subtract"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2680
+},
+"Hidden/BlendModes/UnlitTransparent/UnifiedGrabMasked"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2767
+},
+"CameraFilterPack/Colors_NewPosterize"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2547
+},
+"CameraFilterPackLegacy/TV_CompressionFX"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2875
+},
+"CameraFilterPack/Blur_Blurry"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2655
+},
+"Hidden/BlurEffectConeTap"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2853
+},
+"CameraFilterPack/Blend2Camera_Darken"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2740
+},
+"Hidden/CameraMotionBlur"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2615
+},
+"ADOFAI/TNOSpriteShader"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2884
+},
+"CameraFilterPack/Gradients_FireGradient"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2617
+},
+"CameraFilterPack/TV_ARCADE_3"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2707
+},
+"CameraFilterPack/Oculus_ThermaVision"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2777
+},
+"CameraFilterPack/Glow_Glow_Color"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2756
+},
+"CameraFilterPack/TV_WideScreenHV"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2860
+},
+"ADOFAI/IndicatorSprite"
+],
+[
+{
+"m_FileID": 7,
+"m_PathID": 156
+},
+"Custom/UIFlashColor"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2794
+},
+"CameraFilterPack/Gradients_Tech"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2569
+},
+"Hidden/BlendModes/SpritesDefault/UnifiedGrab"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2634
+},
+"CameraFilterPack/Drawing_Comics"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2890
+},
+"TextMeshPro/Distance Field Overlay"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2908
+},
+"CameraFilterPack/Distortion_Dissipation"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2858
+},
+"CameraFilterPack/TV_Chromatical2"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2619
+},
+"CameraFilterPack/FX_EarthQuake"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2931
+},
+"CameraFilterPack/Blend2Camera_Luminosity"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2774
+},
+"CameraFilterPack/TV_Distorted"
+],
+[
+{
+"m_FileID": 1,
+"m_PathID": 5
+},
+"ADOFAI/HoldShader"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2537
+},
+"CameraFilterPack/Vision_Plasma"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2671
+},
+"CameraFilterPack/Colors_HSV"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2801
+},
+"CameraFilterPack/Vision_Drost"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2675
+},
+"CameraFilterPackLegacy/Pixel_Pixelisation"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2838
+},
+"CameraFilterPack/Colors_Adjust_ColorRGB"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2719
+},
+"Hidden/MotionBlurClear"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2778
+},
+"CameraFilterPackLegacy/Color_Chromatic_Aberration"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2912
+},
+"CameraFilterPackLegacy/Distortion_Wave_Horizontal"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2887
+},
+"Hidden/Grayscale Effect"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2620
+},
+"CameraFilterPack/Color_Chromatic_Plus"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2818
+},
+"CameraFilterPackLegacy/FX_8bits_gb"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2627
+},
+"CameraFilterPack/Blend2Camera_Blend"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2915
+},
+"CameraFilterPack/FX_Psycho"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2718
+},
+"CameraFilterPack/Blend2Camera_LinearLight"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2608
+},
+"CameraFilterPackLegacy/TV_Video3D"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2554
+},
+"CameraFilterPack/TV_50"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2837
+},
+"CameraFilterPack/FX_Dot_Circle"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2799
+},
+"CameraFilterPack/Colors_Brightness"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2823
+},
+"CameraFilterPack/TV_Video3D"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2748
+},
+"CameraFilterPack/Blur_Dithering2x2"
+],
+[
+{
+"m_FileID": 8,
+"m_PathID": 51
+},
+"Sprites/Silhouette"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2646
+},
+"CameraFilterPack/3D_Shield"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2781
+},
+"CameraFilterPackLegacy/Color_Invert"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2775
+},
+"CameraFilterPack/Colors_HUE_Rotate"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2592
+},
+"CameraFilterPack/Glow_Glow"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2787
+},
+"CameraFilterPack/Blur_Radial_Fast"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2785
+},
+"TextMeshPro/Mobile/Distance Field Overlay"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2742
+},
+"Hidden/BlendModes/UnlitTransparent/UnifiedGrab"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2648
+},
+"CameraFilterPack/Blend2Camera_GreenScreen"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2564
+},
+"CameraFilterPack/Drawing_CellShading"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2610
+},
+"CameraFilterPack/Blend2Camera_Hue"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2741
+},
+"CameraFilterPack/Light_Water"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2561
+},
+"CameraFilterPack/Pixel_Pixelisation"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2739
+},
+"CameraFilterPack/Blend2Camera_ColorKey"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2831
+},
+"CameraFilterPack/3D_Matrix"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2673
+},
+"Hidden/Vignetting"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2583
+},
+"CameraFilterPack/Atmosphere_Rain_Pro_3D"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2904
+},
+"CameraFilterPack/TV_Vcr"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2820
+},
+"CameraFilterPack/Drawing_Manga_Color"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2835
+},
+"Hidden/BlendModes/SpritesDefault/GrabMasked"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2899
+},
+"Hidden/BlendModes/VisualDeco/Grab"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2877
+},
+"CameraFilterPackLegacy/TV_ARCADE"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2663
+},
+"CameraFilterPack/Color_Contrast"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2797
+},
+"CameraFilterPack/Color_Noise"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2565
+},
+"Hidden/BrightPassFilterForBloom"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2881
+},
+"CameraFilterPack/Pixelisation_OilPaintHQ"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2734
+},
+"CameraFilterPack/Vision_Blood_Fast"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2886
+},
+"ImageEffects/BlurEffectConeTap"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2658
+},
+"CameraFilterPack/AAA_WaterDrop"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2758
+},
+"CameraFilterPack/Edge_Sigmoid"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2769
+},
+"CameraFilterPack/TV_Old_Movie"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2666
+},
+"CameraFilterPack/CameraFilterPack_NewGlitch6"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2747
+},
+"CameraFilterPack/Blend2Camera_Screen"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2795
+},
+"CameraFilterPack/Glow_Glow_Color"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2577
+},
+"CameraFilterPack/Distortion_Wave_Horizontal"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2548
+},
+"CameraFilterPack/FX_Ascii"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2550
+},
+"CameraFilterPack/TV_Videoflip"
+],
+[
+{
+"m_FileID": 7,
+"m_PathID": 155
+},
+"UI/AchievementRTMixerUI"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2624
+},
+"Hidden/LensFlareCreate"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2596
+},
+"CameraFilterPack/Sharpen_Sharpen"
+],
+[
+{
+"m_FileID": 1,
+"m_PathID": 6
+},
+"ADOFAI/TileBlur"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2657
+},
+"CameraFilterPack/Vision_Psycho"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2849
+},
+"CameraFilterPackLegacy/Film_Grain"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2839
+},
+"CameraFilterPack/Atmosphere_Snow_8bits"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2714
+},
+"CameraFilterPack/3D_Mirror"
+],
+[
+{
+"m_FileID": 1,
+"m_PathID": 8
+},
+"ADOFAI/PolarScreen"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2832
+},
+"CameraFilterPack/TV_Posterize"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2859
+},
+"CameraFilterPack/AAA_Blood_Hit"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2678
+},
+"CameraFilterPack/Blur_Movie"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2848
+},
+"CameraFilterPack/Deep_OilPaintHQ"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2644
+},
+"Hidden/Blend"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2753
+},
+"Hidden/BlendModesOverlay"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2654
+},
+"CameraFilterPackLegacy/TV_LED"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2900
+},
+"CameraFilterPack/Blend2Camera_Saturation"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2913
+},
+"Hidden/BlendModes/UnlitTransparent/GrabMasked"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2842
+},
+"CameraFilterPack/3D_Fog_Smoke"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2626
+},
+"CameraFilterPack/Vision_Aura"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2716
+},
+"CameraFilterPack/Drawing_Toon"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2621
+},
+"CameraFilterPack/3D_BlackHole"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2686
+},
+"TextMeshPro/Distance Field"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2772
+},
+"CameraFilterPackLegacy/Noise_TV"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2600
+},
+"CameraFilterPack/Drawing_Paper2"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2586
+},
+"CameraFilterPack/Blur_Bloom"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2665
+},
+"CameraFilterPackLegacy/Oculus_NightVision1"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2622
+},
+"CameraFilterPack/BlurTiltShift"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2532
+},
+"CameraFilterPack/Colors_RgbClamp"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2919
+},
+"Hidden/SimpleClear"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2743
+},
+"CameraFilterPack/3D_Scan_Scene"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2618
+},
+"CameraFilterPackLegacy/TV_80"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2562
+},
+"CameraFilterPack/Distortion_Noise"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2757
+},
+"CameraFilterPack/Noise_TV"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2688
+},
+"CameraFilterPack/Drawing_CellShading2"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2929
+},
+"TextMeshPro/Mobile/Distance Field"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2788
+},
+"CameraFilterPack/TV_LED"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2553
+},
+"Hidden/BlendModes/UnlitTransparent/Framebuffer"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2676
+},
+"CameraFilterPack/Drawing_Manga_Flash_Color"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2856
+},
+"Unlit/AchievementRTMixer"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2869
+},
+"CameraFilterPack/3D_Myst"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2808
+},
+"CameraFilterPack/Drawing_Manga4"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2754
+},
+"CameraFilterPackLegacy/Edge_BlackLine"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2568
+},
+"CameraFilterPack/Distortion_Dream2"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2902
+},
+"CameraFilterPack/Blend2Camera_Difference"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2731
+},
+"CameraFilterPack/BlurTiltShift_V"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2612
+},
+"CameraFilterPackLegacy/FX_Glitch1"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2889
+},
+"CameraFilterPack/Blend2Camera_Color"
+],
+[
+{
+"m_FileID": 1,
+"m_PathID": 9
+},
+"ADOFAI/ScreenTile"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2773
+},
+"CameraFilterPack/Atmosphere_Rain_Pro"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2824
+},
+"ADOFAI/FloorMeshLevelSelect"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2826
+},
+"CameraFilterPack/Drawing_EnhancedComics"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2712
+},
+"CameraFilterPack/Colors_Threshold"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2764
+},
+"CameraFilterPack/TV_Tiles"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2918
+},
+"CameraFilterPack/TV_BrokenGlass2"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2533
+},
+"CameraFilterPack/Blend2Camera_HardMix"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2873
+},
+"TextMeshPro/Sprite"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2616
+},
+"CameraFilterPack/Glasses_On"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2669
+},
+"CameraFilterPack/TV_CompressionFX"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2709
+},
+"CameraFilterPack/Color_Chromatic_Aberration"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2683
+},
+"CameraFilterPackLegacy/Sharpen_Sharpen"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2576
+},
+"CameraFilterPackLegacy/Edge_Neon"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2922
+},
+"TextMeshPro/Distance Field (Surface)"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2591
+},
+"CameraFilterPackLegacy/Color_Sepia"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2809
+},
+"UI/Pause Planets"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2580
+},
+"CameraFilterPack/Drawing_Laplacian"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2613
+},
+"CameraFilterPack/CameraFilterPack_NewGlitch1"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2911
+},
+"CameraFilterPack/Distortion_BlackHole"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2812
+},
+"CameraFilterPack/TV_Noise"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2841
+},
+"CameraFilterPack/3D_Anomaly"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2691
+},
+"CameraFilterPack/FX_Grid"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2760
+},
+"CameraFilterPack/BlurTiltShift_Hole"
+],
+[
+{
+"m_FileID": 3,
+"m_PathID": 2574
+},
+"CameraFilterPack/3D_Snow"
+]
+]
+},
+"m_PreloadShaders": false
+},
+"GraphicsSettings": {
+"m_Deferred": {
+"m_Mode": 0,
+"m_Shader": {
+"m_FileID": 0,
+"m_PathID": 0
+}
+},
+"m_DeferredReflections": {
+"m_Mode": 0,
+"m_Shader": {
+"m_FileID": 0,
+"m_PathID": 0
+}
+},
+"m_ScreenSpaceShadows": {
+"m_Mode": 0,
+"m_Shader": {
+"m_FileID": 0,
+"m_PathID": 0
+}
+},
+"m_DepthNormals": {
+"m_Mode": 0,
+"m_Shader": {
+"m_FileID": 0,
+"m_PathID": 0
+}
+},
+"m_MotionVectors": {
+"m_Mode": 0,
+"m_Shader": {
+"m_FileID": 0,
+"m_PathID": 0
+}
+},
+"m_LightHalo": {
+"m_Mode": 0,
+"m_Shader": {
+"m_FileID": 0,
+"m_PathID": 0
+}
+},
+"m_LensFlare": {
+"m_Mode": 0,
+"m_Shader": {
+"m_FileID": 0,
+"m_PathID": 0
+}
+},
+"m_VideoShadersIncludeMode": 2,
+"m_AlwaysIncludedShaders": [
+{
+"m_FileID": 4,
+"m_PathID": 10770
+},
+{
+"m_FileID": 4,
+"m_PathID": 10782
+},
+{
+"m_FileID": 4,
+"m_PathID": 16000
+},
+{
+"m_FileID": 4,
+"m_PathID": 17000
+},
+{
+"m_FileID": 4,
+"m_PathID": 16001
+},
+{
+"m_FileID": 1,
+"m_PathID": 6
+},
+{
+"m_FileID": 1,
+"m_PathID": 5
+},
+{
+"m_FileID": 1,
+"m_PathID": 7
+},
+{
+"m_FileID": 1,
+"m_PathID": 8
+},
+{
+"m_FileID": 1,
+"m_PathID": 9
+},
+{
+"m_FileID": 1,
+"m_PathID": 4
+},
+{
+"m_FileID": 1,
+"m_PathID": 10
+},
+{
+"m_FileID": 4,
+"m_PathID": 10753
+},
+{
+"m_FileID": 4,
+"m_PathID": 19
+},
+{
+"m_FileID": 4,
+"m_PathID": 65
+},
+{
+"m_FileID": 4,
+"m_PathID": 66
+},
+{
+"m_FileID": 4,
+"m_PathID": 67
+},
+{
+"m_FileID": 4,
+"m_PathID": 109
+},
+{
+"m_FileID": 4,
+"m_PathID": 110
+},
+{
+"m_FileID": 4,
+"m_PathID": 107
+},
+{
+"m_FileID": 4,
+"m_PathID": 111
+},
+{
+"m_FileID": 4,
+"m_PathID": 9000
+},
+{
+"m_FileID": 4,
+"m_PathID": 9001
+},
+{
+"m_FileID": 4,
+"m_PathID": 9002
+},
+{
+"m_FileID": 4,
+"m_PathID": 9003
+},
+{
+"m_FileID": 4,
+"m_PathID": 9004
+},
+{
+"m_FileID": 4,
+"m_PathID": 9007
+},
+{
+"m_FileID": 4,
+"m_PathID": 9100
+},
+{
+"m_FileID": 4,
+"m_PathID": 9101
+},
+{
+"m_FileID": 4,
+"m_PathID": 68
+},
+{
+"m_FileID": 4,
+"m_PathID": 10757
+},
+{
+"m_FileID": 4,
+"m_PathID": 20500
+},
+{
+"m_FileID": 4,
+"m_PathID": 20501
+},
+{
+"m_FileID": 4,
+"m_PathID": 20502
+},
+{
+"m_FileID": 4,
+"m_PathID": 20506
+},
+{
+"m_FileID": 4,
+"m_PathID": 20507
+},
+{
+"m_FileID": 4,
+"m_PathID": 15309
+},
+{
+"m_FileID": 4,
+"m_PathID": 15308
+},
+{
+"m_FileID": 4,
+"m_PathID": 19011
+},
+{
+"m_FileID": 4,
+"m_PathID": 15304
+},
+{
+"m_FileID": 4,
+"m_PathID": 15312
+},
+{
+"m_FileID": 4,
+"m_PathID": 113
+},
+{
+"m_FileID": 4,
+"m_PathID": 16000
+},
+{
+"m_FileID": 4,
+"m_PathID": 16001
+}
+],
+"m_PreloadedShaders": [],
+"m_PreloadShadersBatchTimeLimit": -1,
+"m_SpritesDefaultMaterial": {
+"m_FileID": 1,
+"m_PathID": 2
+},
+"m_CustomRenderPipeline": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"m_TransparencySortMode": 0,
+"m_TransparencySortAxis": {
+"x": 0.0,
+"y": 0.0,
+"z": 1.0
+},
+"m_TierSettings_Tier1": {
+"renderingPath": 1,
+"hdrMode": 1,
+"realtimeGICPUUsage": 25,
+"useCascadedShadowMaps": true,
+"prefer32BitShadowMaps": false,
+"enableLPPV": true,
+"useHDR": false
+},
+"m_TierSettings_Tier2": {
+"renderingPath": 1,
+"hdrMode": 1,
+"realtimeGICPUUsage": 25,
+"useCascadedShadowMaps": true,
+"prefer32BitShadowMaps": false,
+"enableLPPV": true,
+"useHDR": false
+},
+"m_TierSettings_Tier3": {
+"renderingPath": 1,
+"hdrMode": 1,
+"realtimeGICPUUsage": 50,
+"useCascadedShadowMaps": true,
+"prefer32BitShadowMaps": false,
+"enableLPPV": true,
+"useHDR": false
+},
+"m_ShaderDefinesPerShaderCompiler": [
+{
+"shaderPlatform": 4,
+"defines_Tier1": [
+80070144,
+64
+],
+"defines_Tier2": [
+80070144,
+64
+],
+"defines_Tier3": [
+80070144,
+64
+]
+}
+],
+"m_LightsUseLinearIntensity": false,
+"m_LightsUseColorTemperature": false,
+"m_LogWhenShaderIsCompiled": false,
+"m_CurrentRenderPipelineGlobalSettings": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"m_LightProbeOutsideHullStrategy": 0,
+"m_CameraRelativeLightCulling": false,
+"m_CameraRelativeShadowCulling": false
+},
+"TimeManager": {
+"Fixed Timestep": {
+"m_Count": 2822399,
+"m_Rate": {
+"m_Denominator": 1,
+"m_Numerator": 141120000
+}
+},
+"Maximum Allowed Timestep": 0.3333333432674408,
+"m_TimeScale": 1.0,
+"Maximum Particle Timestep": 0.029999999329447746
+},
+"BuildSettings": {
+"scenes": [
+"Assets/scenes/scnSplash.unity",
+"Assets/scenes/scnLevelSelect.unity",
+"Assets/scenes/scnCalibration.unity",
+"Assets/scenes/scnLoading.unity",
+"Assets/scenes/scnGame.unity",
+"Assets/scenes/scnEditor.unity",
+"Assets/scenes/scnCLS.unity",
+"Assets/scenes/scnMinesweeper.unity",
+"Assets/scenes/Levels/1-X.unity",
+"Assets/scenes/Levels/2-X.unity",
+"Assets/scenes/Levels/4-X.unity",
+"Assets/scenes/Levels/6-X.unity",
+"Assets/scenes/Levels/B-X.unity",
+"Assets/scenes/Levels/7-X.unity",
+"Assets/scenes/Levels/8-X.unity",
+"Assets/scenes/Levels/9-X.unity",
+"Assets/scenes/Levels/10-X.unity",
+"Assets/scenes/Levels/11-X.unity",
+"Assets/scenes/Levels/12-X.unity",
+"Assets/scenes/Levels/XF-X.unity",
+"Assets/scenes/Levels/XO-X.unity",
+"Assets/scenes/Levels/XC-X.unity",
+"Assets/scenes/Levels/XH-X.unity",
+"Assets/scenes/Levels/AB-X.unity",
+"Assets/scenes/Levels/XT-X.unity",
+"Assets/scenes/Levels/XR-X.unity",
+"Assets/scenes/Levels/MN-X.unity",
+"Assets/scenes/Levels/ML-X.unity",
+"Assets/scenes/Levels/RJ-X.unity",
+"Assets/scenes/Levels/XN-X.unity"
+],
+"preloadedPlugins": [
+"libufb"
+],
+"enabledVRDevices": [],
+"buildTags": [],
+"hasPROVersion": true,
+"isNoWatermarkBuild": true,
+"isPrototypingBuild": false,
+"isEducationalBuild": false,
+"isEmbedded": false,
+"isTrial": false,
+"hasPublishingRights": false,
+"hasShadows": true,
+"hasSoftShadows": true,
+"hasLocalLightShadows": true,
+"hasAdvancedVersion": true,
+"enableDynamicBatching": true,
+"usesOnMouseEvents": true,
+"hasClusterRendering": false,
+"m_Version": "6000.3.25f1",
+"m_AuthToken": "ed884c6e4514dfbe000c9fb4a81cf021bd84dd6eaa9cf4064a307520773ae396a92e98d290fc1b30",
+"m_GraphicsAPIs": [
+2
+]
+},
+"QualitySettings": {
+"m_CurrentQuality": 0,
+"m_QualitySettings": [
+{
+"name": "Default",
+"pixelLightCount": 0,
+"shadows": 0,
+"shadowResolution": 0,
+"shadowProjection": 1,
+"shadowCascades": 1,
+"shadowDistance": 40.0,
+"shadowNearPlaneOffset": 2.0,
+"shadowCascade2Split": 0.3333333432674408,
+"shadowCascade4Split": {
+"x": 0.06666667014360428,
+"y": 0.20000000298023224,
+"z": 0.46666666865348816
+},
+"shadowmaskMode": 1,
+"skinWeights": 1,
+"globalTextureMipmapLimit": 0,
+"textureMipmapLimitSettings": [],
+"anisotropicTextures": 0,
+"antiAliasing": 8,
+"softParticles": false,
+"softVegetation": true,
+"realtimeReflectionProbes": false,
+"billboardsFaceCameraPosition": true,
+"useLegacyDetailDistribution": true,
+"adaptiveVsync": false,
+"vSyncCount": 0,
+"realtimeGICPUUsage": 25,
+"adaptiveVsyncExtraA": 0,
+"adaptiveVsyncExtraB": 0,
+"lodBias": 1.0,
+"meshLodThreshold": 1.0,
+"maximumLODLevel": 0,
+"enableLODCrossFade": true,
+"streamingMipmapsActive": false,
+"streamingMipmapsAddAllCameras": true,
+"streamingMipmapsMemoryBudget": 512.0,
+"streamingMipmapsRenderersPerFrame": 512,
+"streamingMipmapsMaxLevelReduction": 2,
+"streamingMipmapsMaxFileIORequests": 1024,
+"particleRaycastBudget": 256,
+"asyncUploadTimeSlice": 2,
+"asyncUploadBufferSize": 4,
+"asyncUploadPersistentBuffer": true,
+"resolutionScalingFixedDPIFactor": 1.0,
+"customRenderPipeline": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"terrainQualityOverrides": 0,
+"terrainPixelError": 1.0,
+"terrainDetailDensityScale": 1.0,
+"terrainBasemapDistance": 1000.0,
+"terrainDetailDistance": 80.0,
+"terrainTreeDistance": 5000.0,
+"terrainBillboardStart": 50.0,
+"terrainFadeLength": 5.0,
+"terrainMaxTrees": 50
+}
+],
+"m_TextureMipmapLimitGroupNames": [],
+"m_StrippedMaximumLODLevel": 0
+},
+"Physics2DSettings": {
+"m_Gravity": {
+"x": 0.0,
+"y": -9.8100004196167
+},
+"m_DefaultMaterial": {
+"m_FileID": 0,
+"m_PathID": 0
+},
+"m_VelocityIterations": 8,
+"m_PositionIterations": 3,
+"m_BounceThreshold": 1.0,
+"m_MaxLinearCorrection": 0.20000000298023224,
+"m_MaxAngularCorrection": 8.0,
+"m_MaxTranslationSpeed": 100.0,
+"m_MaxRotationSpeed": 360.0,
+"m_BaumgarteScale": 0.20000000298023224,
+"m_BaumgarteTimeOfImpactScale": 0.75,
+"m_TimeToSleep": 0.5,
+"m_LinearSleepTolerance": 0.009999999776482582,
+"m_AngularSleepTolerance": 2.0,
+"m_DefaultContactOffset": 0.009999999776482582,
+"m_ContactThreshold": 0.0,
+"m_JobOptions": {
+"useMultithreading": false,
+"useConsistencySorting": false,
+"m_InterpolationPosesPerJob": 100,
+"m_NewContactsPerJob": 30,
+"m_CollideContactsPerJob": 100,
+"m_ClearFlagsPerJob": 200,
+"m_ClearBodyForcesPerJob": 200,
+"m_SyncDiscreteFixturesPerJob": 50,
+"m_SyncContinuousFixturesPerJob": 50,
+"m_FindNearestContactsPerJob": 100,
+"m_UpdateTriggerContactsPerJob": 100,
+"m_IslandSolverCostThreshold": 100,
+"m_IslandSolverBodyCostScale": 1,
+"m_IslandSolverContactCostScale": 10,
+"m_IslandSolverJointCostScale": 10,
+"m_IslandSolverBodiesPerJob": 50,
+"m_IslandSolverContactsPerJob": 50
+},
+"m_SimulationMode": 0,
+"m_SimulationLayers": {
+"m_Bits": 4294967295
+},
+"m_MaxSubStepCount": 4,
+"m_MinSubStepFPS": 30.0,
+"m_UseSubStepping": false,
+"m_UseSubStepContacts": false,
+"m_QueriesHitTriggers": true,
+"m_QueriesStartInColliders": true,
+"m_CallbacksOnDisable": true,
+"m_ReuseCollisionCallbacks": false,
+"m_AutoSyncTransforms": true,
+"m_LayerCollisionMatrix": [
+4290773320,
+4292870142,
+4292870142,
+4294967295,
+4292870142,
+4292870142,
+4294967295,
+4292870142,
+4294967295,
+4292870142,
+4292870142,
+4292870142,
+4292870142,
+4292870142,
+4292870142,
+4292870142,
+4292870142,
+4292870142,
+4292870142,
+4292870142,
+4292870142,
+4292870472,
+4294967295,
+4294967295,
+4294967295,
+4294967295,
+4294967295,
+4294967295,
+4294967295,
+4294967295,
+4294967295,
+4294967295
+],
+"m_PhysicsLowLevelSettings": {
+"m_FileID": 0,
+"m_PathID": 0
+}
+},
+"RuntimeInitializeOnLoadManager": {}
+}
