@@ -1,0 +1,40 @@
+[StutterFix] [이미지] 미리 푼 것 2733장(넣기 1226ms), 원래 방식 2장(20ms, 순서 어긋남 0), 기다림 35ms, GC 0번, 전체 4.3초, 미리 압축 넣음 16장 (쓰지 않음 0, 크기·형식 달라 원래대로 0, 압축 1120ms/작업 스레드 합), 처음부터 압축으로 넣음 2648장 (뒤이어 압축 불림 2648, 안 불림 0) | 장식 만들기 6314개 2122ms, 그중 텍스처 불러오기 2129ms
+[StutterFix] [framecmp] diff N0 N1 threshold=0 maxRGBA=0,0,0,0 changed=0/3686400 ratio=0 PSNR=Infinity top32(bottom-left,x,y,w,h,L1)=
+[StutterFix] [framecmp] noise outside=0 inside=0 rendererStateEqual=True warning=False; noise floor advisory, continuing
+[StutterFix] [tightsprite] restored=0 externally_replaced=0
+[StutterFix] [tightsprite] api=override cap=4 candidates=3342 changed=0 shader_or_state_rejected=3342 bounds_changed=0 api_rejected=0 cloned_sprites=0 vertices_include_two_unused_extrema=1
+[StutterFix] [tightsprite] rejected=shader/Sprites/Tile=2796;mask=10;shader/Hidden/BlendModes/SpritesDefault/Grab=27;format/DXT5=509
+[StutterFix] [framecmp] diff Aoverride B4 threshold=0 maxRGBA=0,0,0,0 changed=0/3686400 ratio=0 PSNR=Infinity top32(bottom-left,x,y,w,h,L1)=
+[StutterFix] [tightsprite] restored=0 externally_replaced=0
+[StutterFix] [framecmp] diff Aoverride R4 threshold=0 maxRGBA=0,0,0,0 changed=0/3686400 ratio=0 PSNR=Infinity top32(bottom-left,x,y,w,h,L1)=
+[StutterFix] [tightsprite] restored=0 externally_replaced=0
+[StutterFix] [tightsprite] api=override cap=6 candidates=3387 changed=0 shader_or_state_rejected=3387 bounds_changed=0 api_rejected=0 cloned_sprites=0 vertices_include_two_unused_extrema=1
+[StutterFix] [tightsprite] rejected=shader/Sprites/Tile=2841;mask=10;shader/Hidden/BlendModes/SpritesDefault/Grab=27;format/DXT5=509
+[StutterFix] [framecmp] diff Aoverride B6 threshold=0 maxRGBA=0,0,0,0 changed=0/3686400 ratio=0 PSNR=Infinity top32(bottom-left,x,y,w,h,L1)=
+[StutterFix] [tightsprite] restored=0 externally_replaced=0
+[StutterFix] [framecmp] diff Aoverride R6 threshold=0 maxRGBA=0,0,0,0 changed=0/3686400 ratio=0 PSNR=Infinity top32(bottom-left,x,y,w,h,L1)=
+[StutterFix] [tightsprite] restored=0 externally_replaced=0
+[StutterFix] [tightsprite] api=override cap=8 candidates=3393 changed=0 shader_or_state_rejected=3393 bounds_changed=0 api_rejected=0 cloned_sprites=0 vertices_include_two_unused_extrema=1
+[StutterFix] [tightsprite] rejected=shader/Sprites/Tile=2847;mask=10;shader/Hidden/BlendModes/SpritesDefault/Grab=27;format/DXT5=509
+[StutterFix] [framecmp] diff Aoverride B8 threshold=0 maxRGBA=0,0,0,0 changed=0/3686400 ratio=0 PSNR=Infinity top32(bottom-left,x,y,w,h,L1)=
+[StutterFix] [tightsprite] restored=0 externally_replaced=0
+[StutterFix] [framecmp] diff Aoverride R8 threshold=0 maxRGBA=0,0,0,0 changed=0/3686400 ratio=0 PSNR=Infinity top32(bottom-left,x,y,w,h,L1)=
+[StutterFix] [tightsprite] restored=0 externally_replaced=0
+[StutterFix] [tightsprite] api=data cap=4 candidates=3342 changed=0 shader_or_state_rejected=3342 bounds_changed=0 api_rejected=0 cloned_sprites=0 vertices_include_two_unused_extrema=1
+[StutterFix] [tightsprite] rejected=shader/Sprites/Tile=2796;mask=10;shader/Hidden/BlendModes/SpritesDefault/Grab=27;format/DXT5=509
+[StutterFix] [framecmp] diff Adata Bdata4 threshold=0 maxRGBA=0,0,0,0 changed=0/3686400 ratio=0 PSNR=Infinity top32(bottom-left,x,y,w,h,L1)=
+[StutterFix] [tightsprite] restored=0 externally_replaced=0
+[StutterFix] [framecmp] diff Adata Rdata4 threshold=0 maxRGBA=0,0,0,0 changed=0/3686400 ratio=0 PSNR=Infinity top32(bottom-left,x,y,w,h,L1)=
+[StutterFix] [tightsprite] restored=0 externally_replaced=0
+[StutterFix] [tightsprite] api=data cap=6 candidates=3387 changed=0 shader_or_state_rejected=3387 bounds_changed=0 api_rejected=0 cloned_sprites=0 vertices_include_two_unused_extrema=1
+[StutterFix] [tightsprite] rejected=shader/Sprites/Tile=2841;mask=10;shader/Hidden/BlendModes/SpritesDefault/Grab=27;format/DXT5=509
+[StutterFix] [framecmp] diff Adata Bdata6 threshold=0 maxRGBA=0,0,0,0 changed=0/3686400 ratio=0 PSNR=Infinity top32(bottom-left,x,y,w,h,L1)=
+[StutterFix] [tightsprite] restored=0 externally_replaced=0
+[StutterFix] [framecmp] diff Adata Rdata6 threshold=0 maxRGBA=0,0,0,0 changed=0/3686400 ratio=0 PSNR=Infinity top32(bottom-left,x,y,w,h,L1)=
+[StutterFix] [tightsprite] restored=0 externally_replaced=0
+[StutterFix] [tightsprite] api=data cap=8 candidates=3393 changed=0 shader_or_state_rejected=3393 bounds_changed=0 api_rejected=0 cloned_sprites=0 vertices_include_two_unused_extrema=1
+[StutterFix] [tightsprite] rejected=shader/Sprites/Tile=2847;mask=10;shader/Hidden/BlendModes/SpritesDefault/Grab=27;format/DXT5=509
+[StutterFix] [framecmp] diff Adata Bdata8 threshold=0 maxRGBA=0,0,0,0 changed=0/3686400 ratio=0 PSNR=Infinity top32(bottom-left,x,y,w,h,L1)=
+[StutterFix] [tightsprite] restored=0 externally_replaced=0
+[StutterFix] [framecmp] diff Adata Rdata8 threshold=0 maxRGBA=0,0,0,0 changed=0/3686400 ratio=0 PSNR=Infinity top32(bottom-left,x,y,w,h,L1)=
+[StutterFix] [tightsprite] restored=0 externally_replaced=0

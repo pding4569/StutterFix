@@ -262,6 +262,7 @@ namespace StutterFix
                 case "resume": FrameCompare.Resume(); return true;
                 case "framecmp": return FrameCompare.Step(arg);
                 case "coldopen": ColdOpenProbe.Step(arg); return true;
+                case "tightsprite": TightSpriteProbe.Step(arg); return true;
 #endif
                 case "pick":
                     {
@@ -1784,6 +1785,7 @@ namespace StutterFix
             HiddenDecoSynergy.Reset();
             LiveDecoGate2.Abort(why);
             LiveDeco.Stop();
+            TightSpriteProbe.Stop();
             FrameCompare.Stop();
 #endif
             if (finished) return;
@@ -1811,6 +1813,7 @@ namespace StutterFix
 #if DEV || AUTOTEST
             HiddenDecoSynergy.Reset();
             LiveDecoGate2.Abort(why);
+            TightSpriteProbe.Stop();
             FrameCompare.Stop();
             MatShare.Stop();
             LiveDeco.Stop();

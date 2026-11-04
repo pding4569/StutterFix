@@ -1,0 +1,611 @@
+[
+  {
+    "run": "tight-dd-override",
+    "failed": true,
+    "installs": [],
+    "comparisons": [
+      {
+        "a": "N0",
+        "b": "N1",
+        "maximum": "0,0,0,0",
+        "changed_pixels": 0
+      }
+    ]
+  },
+  {
+    "run": "tight-dd-v2",
+    "failed": true,
+    "installs": [],
+    "comparisons": [
+      {
+        "a": "N0",
+        "b": "N1",
+        "maximum": "0,0,0,0",
+        "changed_pixels": 0
+      }
+    ]
+  },
+  {
+    "run": "tight-dd-v3",
+    "failed": false,
+    "installs": [
+      {
+        "api": "override",
+        "cap": 4,
+        "changed": 0,
+        "bounds_changed": 0,
+        "api_rejected": 0
+      },
+      {
+        "api": "override",
+        "cap": 6,
+        "changed": 0,
+        "bounds_changed": 0,
+        "api_rejected": 0
+      },
+      {
+        "api": "override",
+        "cap": 8,
+        "changed": 0,
+        "bounds_changed": 0,
+        "api_rejected": 0
+      },
+      {
+        "api": "data",
+        "cap": 4,
+        "changed": 0,
+        "bounds_changed": 0,
+        "api_rejected": 0
+      },
+      {
+        "api": "data",
+        "cap": 6,
+        "changed": 0,
+        "bounds_changed": 0,
+        "api_rejected": 0
+      },
+      {
+        "api": "data",
+        "cap": 8,
+        "changed": 0,
+        "bounds_changed": 0,
+        "api_rejected": 0
+      }
+    ],
+    "comparisons": [
+      {
+        "a": "N0",
+        "b": "N1",
+        "maximum": "0,0,0,0",
+        "changed_pixels": 0
+      },
+      {
+        "a": "Aoverride",
+        "b": "B4",
+        "maximum": "0,0,0,0",
+        "changed_pixels": 0
+      },
+      {
+        "a": "Aoverride",
+        "b": "R4",
+        "maximum": "0,0,0,0",
+        "changed_pixels": 0
+      },
+      {
+        "a": "Aoverride",
+        "b": "B6",
+        "maximum": "0,0,0,0",
+        "changed_pixels": 0
+      },
+      {
+        "a": "Aoverride",
+        "b": "R6",
+        "maximum": "0,0,0,0",
+        "changed_pixels": 0
+      },
+      {
+        "a": "Aoverride",
+        "b": "B8",
+        "maximum": "0,0,0,0",
+        "changed_pixels": 0
+      },
+      {
+        "a": "Aoverride",
+        "b": "R8",
+        "maximum": "0,0,0,0",
+        "changed_pixels": 0
+      },
+      {
+        "a": "Adata",
+        "b": "Bdata4",
+        "maximum": "0,0,0,0",
+        "changed_pixels": 0
+      },
+      {
+        "a": "Adata",
+        "b": "Rdata4",
+        "maximum": "0,0,0,0",
+        "changed_pixels": 0
+      },
+      {
+        "a": "Adata",
+        "b": "Bdata6",
+        "maximum": "0,0,0,0",
+        "changed_pixels": 0
+      },
+      {
+        "a": "Adata",
+        "b": "Rdata6",
+        "maximum": "0,0,0,0",
+        "changed_pixels": 0
+      },
+      {
+        "a": "Adata",
+        "b": "Bdata8",
+        "maximum": "0,0,0,0",
+        "changed_pixels": 0
+      },
+      {
+        "a": "Adata",
+        "b": "Rdata8",
+        "maximum": "0,0,0,0",
+        "changed_pixels": 0
+      }
+    ]
+  },
+  {
+    "run": "tight-dd-v4",
+    "failed": false,
+    "installs": [
+      {
+        "api": "override",
+        "cap": 4,
+        "changed": 0,
+        "bounds_changed": 0,
+        "api_rejected": 0
+      },
+      {
+        "api": "override",
+        "cap": 6,
+        "changed": 0,
+        "bounds_changed": 0,
+        "api_rejected": 0
+      },
+      {
+        "api": "override",
+        "cap": 8,
+        "changed": 0,
+        "bounds_changed": 0,
+        "api_rejected": 0
+      },
+      {
+        "api": "data",
+        "cap": 4,
+        "changed": 0,
+        "bounds_changed": 0,
+        "api_rejected": 0
+      },
+      {
+        "api": "data",
+        "cap": 6,
+        "changed": 0,
+        "bounds_changed": 0,
+        "api_rejected": 0
+      },
+      {
+        "api": "data",
+        "cap": 8,
+        "changed": 0,
+        "bounds_changed": 0,
+        "api_rejected": 0
+      }
+    ],
+    "comparisons": [
+      {
+        "a": "N0",
+        "b": "N1",
+        "maximum": "0,0,0,0",
+        "changed_pixels": 0
+      },
+      {
+        "a": "Aoverride",
+        "b": "B4",
+        "maximum": "0,0,0,0",
+        "changed_pixels": 0
+      },
+      {
+        "a": "Aoverride",
+        "b": "R4",
+        "maximum": "0,0,0,0",
+        "changed_pixels": 0
+      },
+      {
+        "a": "Aoverride",
+        "b": "B6",
+        "maximum": "0,0,0,0",
+        "changed_pixels": 0
+      },
+      {
+        "a": "Aoverride",
+        "b": "R6",
+        "maximum": "0,0,0,0",
+        "changed_pixels": 0
+      },
+      {
+        "a": "Aoverride",
+        "b": "B8",
+        "maximum": "0,0,0,0",
+        "changed_pixels": 0
+      },
+      {
+        "a": "Aoverride",
+        "b": "R8",
+        "maximum": "0,0,0,0",
+        "changed_pixels": 0
+      },
+      {
+        "a": "Adata",
+        "b": "Bdata4",
+        "maximum": "0,0,0,0",
+        "changed_pixels": 0
+      },
+      {
+        "a": "Adata",
+        "b": "Rdata4",
+        "maximum": "0,0,0,0",
+        "changed_pixels": 0
+      },
+      {
+        "a": "Adata",
+        "b": "Bdata6",
+        "maximum": "0,0,0,0",
+        "changed_pixels": 0
+      },
+      {
+        "a": "Adata",
+        "b": "Rdata6",
+        "maximum": "0,0,0,0",
+        "changed_pixels": 0
+      },
+      {
+        "a": "Adata",
+        "b": "Bdata8",
+        "maximum": "0,0,0,0",
+        "changed_pixels": 0
+      },
+      {
+        "a": "Adata",
+        "b": "Rdata8",
+        "maximum": "0,0,0,0",
+        "changed_pixels": 0
+      }
+    ]
+  },
+  {
+    "run": "tight-dd-v5",
+    "failed": false,
+    "installs": [
+      {
+        "api": "override",
+        "cap": 4,
+        "changed": 0,
+        "bounds_changed": 0,
+        "api_rejected": 0
+      },
+      {
+        "api": "override",
+        "cap": 6,
+        "changed": 0,
+        "bounds_changed": 0,
+        "api_rejected": 0
+      },
+      {
+        "api": "override",
+        "cap": 8,
+        "changed": 0,
+        "bounds_changed": 0,
+        "api_rejected": 0
+      },
+      {
+        "api": "data",
+        "cap": 4,
+        "changed": 0,
+        "bounds_changed": 0,
+        "api_rejected": 0
+      },
+      {
+        "api": "data",
+        "cap": 6,
+        "changed": 0,
+        "bounds_changed": 0,
+        "api_rejected": 0
+      },
+      {
+        "api": "data",
+        "cap": 8,
+        "changed": 0,
+        "bounds_changed": 0,
+        "api_rejected": 0
+      }
+    ],
+    "comparisons": [
+      {
+        "a": "N0",
+        "b": "N1",
+        "maximum": "0,0,0,0",
+        "changed_pixels": 0
+      },
+      {
+        "a": "Aoverride",
+        "b": "B4",
+        "maximum": "0,0,0,0",
+        "changed_pixels": 0
+      },
+      {
+        "a": "Aoverride",
+        "b": "R4",
+        "maximum": "0,0,0,0",
+        "changed_pixels": 0
+      },
+      {
+        "a": "Aoverride",
+        "b": "B6",
+        "maximum": "0,0,0,0",
+        "changed_pixels": 0
+      },
+      {
+        "a": "Aoverride",
+        "b": "R6",
+        "maximum": "0,0,0,0",
+        "changed_pixels": 0
+      },
+      {
+        "a": "Aoverride",
+        "b": "B8",
+        "maximum": "0,0,0,0",
+        "changed_pixels": 0
+      },
+      {
+        "a": "Aoverride",
+        "b": "R8",
+        "maximum": "0,0,0,0",
+        "changed_pixels": 0
+      },
+      {
+        "a": "Adata",
+        "b": "Bdata4",
+        "maximum": "0,0,0,0",
+        "changed_pixels": 0
+      },
+      {
+        "a": "Adata",
+        "b": "Rdata4",
+        "maximum": "0,0,0,0",
+        "changed_pixels": 0
+      },
+      {
+        "a": "Adata",
+        "b": "Bdata6",
+        "maximum": "0,0,0,0",
+        "changed_pixels": 0
+      },
+      {
+        "a": "Adata",
+        "b": "Rdata6",
+        "maximum": "0,0,0,0",
+        "changed_pixels": 0
+      },
+      {
+        "a": "Adata",
+        "b": "Bdata8",
+        "maximum": "0,0,0,0",
+        "changed_pixels": 0
+      },
+      {
+        "a": "Adata",
+        "b": "Rdata8",
+        "maximum": "0,0,0,0",
+        "changed_pixels": 0
+      }
+    ]
+  },
+  {
+    "run": "tight-dd-v6",
+    "failed": false,
+    "installs": [
+      {
+        "api": "override",
+        "cap": 4,
+        "changed": 200,
+        "bounds_changed": 0,
+        "api_rejected": 0
+      },
+      {
+        "api": "override",
+        "cap": 6,
+        "changed": 200,
+        "bounds_changed": 0,
+        "api_rejected": 0
+      },
+      {
+        "api": "override",
+        "cap": 8,
+        "changed": 200,
+        "bounds_changed": 0,
+        "api_rejected": 0
+      },
+      {
+        "api": "data",
+        "cap": 4,
+        "changed": 200,
+        "bounds_changed": 0,
+        "api_rejected": 0
+      },
+      {
+        "api": "data",
+        "cap": 6,
+        "changed": 200,
+        "bounds_changed": 0,
+        "api_rejected": 0
+      },
+      {
+        "api": "data",
+        "cap": 8,
+        "changed": 200,
+        "bounds_changed": 0,
+        "api_rejected": 0
+      }
+    ],
+    "comparisons": [
+      {
+        "a": "N0",
+        "b": "N1",
+        "maximum": "0,0,0,0",
+        "changed_pixels": 0
+      },
+      {
+        "a": "Aoverride",
+        "b": "B4",
+        "maximum": "2,3,2,0",
+        "changed_pixels": 3814
+      },
+      {
+        "a": "Aoverride",
+        "b": "R4",
+        "maximum": "0,0,0,0",
+        "changed_pixels": 0
+      },
+      {
+        "a": "Aoverride",
+        "b": "B6",
+        "maximum": "2,2,2,0",
+        "changed_pixels": 3680
+      },
+      {
+        "a": "Aoverride",
+        "b": "R6",
+        "maximum": "0,0,0,0",
+        "changed_pixels": 0
+      },
+      {
+        "a": "Aoverride",
+        "b": "B8",
+        "maximum": "2,3,2,0",
+        "changed_pixels": 3632
+      },
+      {
+        "a": "Aoverride",
+        "b": "R8",
+        "maximum": "0,0,0,0",
+        "changed_pixels": 0
+      },
+      {
+        "a": "Adata",
+        "b": "Bdata4",
+        "maximum": "2,3,2,0",
+        "changed_pixels": 3809
+      },
+      {
+        "a": "Adata",
+        "b": "Rdata4",
+        "maximum": "0,0,0,0",
+        "changed_pixels": 0
+      },
+      {
+        "a": "Adata",
+        "b": "Bdata6",
+        "maximum": "2,2,2,0",
+        "changed_pixels": 3680
+      },
+      {
+        "a": "Adata",
+        "b": "Rdata6",
+        "maximum": "0,0,0,0",
+        "changed_pixels": 0
+      },
+      {
+        "a": "Adata",
+        "b": "Bdata8",
+        "maximum": "2,3,2,0",
+        "changed_pixels": 3631
+      },
+      {
+        "a": "Adata",
+        "b": "Rdata8",
+        "maximum": "0,0,0,0",
+        "changed_pixels": 0
+      }
+    ]
+  },
+  {
+    "run": "tight-dd-v7-diagnose",
+    "failed": false,
+    "installs": [
+      {
+        "api": "clone",
+        "cap": 4,
+        "changed": 200,
+        "bounds_changed": 0,
+        "api_rejected": 0
+      },
+      {
+        "api": "override",
+        "cap": 4,
+        "changed": 200,
+        "bounds_changed": 0,
+        "api_rejected": 0
+      },
+      {
+        "api": "override",
+        "cap": 4,
+        "changed": 200,
+        "bounds_changed": 0,
+        "api_rejected": 0
+      }
+    ],
+    "comparisons": [
+      {
+        "a": "N0",
+        "b": "N1",
+        "maximum": "0,0,0,0",
+        "changed_pixels": 0
+      },
+      {
+        "a": "Aclone",
+        "b": "Bclone4",
+        "maximum": "0,0,0,0",
+        "changed_pixels": 0
+      },
+      {
+        "a": "Aclone",
+        "b": "Rclone4",
+        "maximum": "0,0,0,0",
+        "changed_pixels": 0
+      },
+      {
+        "a": "Apad4",
+        "b": "Bpad44",
+        "maximum": "2,2,2,0",
+        "changed_pixels": 3966
+      },
+      {
+        "a": "Apad4",
+        "b": "Rpad44",
+        "maximum": "0,0,0,0",
+        "changed_pixels": 0
+      },
+      {
+        "a": "Apad8",
+        "b": "Bpad84",
+        "maximum": "2,2,2,0",
+        "changed_pixels": 3765
+      },
+      {
+        "a": "Apad8",
+        "b": "Rpad84",
+        "maximum": "0,0,0,0",
+        "changed_pixels": 0
+      }
+    ]
+  }
+]

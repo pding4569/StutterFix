@@ -1,0 +1,12 @@
+﻿{
+    "checked_at":  "2026-11-04T10:34:22.4684774+09:00",
+    "installed_sha256":  "B0EFE68D6CCCE3217310DA0AD65CBA4048C19D2D25F738C97F14D7822898C795",
+    "reference_sha256":  "B0EFE68D6CCCE3217310DA0AD65CBA4048C19D2D25F738C97F14D7822898C795",
+    "installed_matches_reference":  true,
+    "gpuprobe_absent":  true,
+    "GpuDeco":  0,
+    "original_cache_present":  true,
+    "temporary_original_backup_absent":  true,
+    "game_lock_absent":  true,
+    "game_process_count":  0
+}

@@ -59,7 +59,7 @@ def measure(path):
                 hull_triangles=max(0, len(polygon)-2))
 
 
-def audit(chart):
+def audit(chart, minimum_instances=0):
     original_hash = hashlib.sha256(chart.read_bytes()).hexdigest()
     data = load(chart)
     decorations = [d for d in data.get('decorations', []) if d.get('eventType') == 'AddDecoration']
@@ -71,6 +71,10 @@ def audit(chart):
     records = []
     for name in sorted(set(counts) | set(swaps)):
         row = dict(image=name, instances=counts[name], image_change_events=swaps[name])
+        if counts[name] < minimum_instances:
+            row['excluded'] = 'below initial-instance sampling threshold'
+            records.append(row)
+            continue
         p = (chart.parent / name.replace('\\', '/')).resolve()
         # Keep reads scoped to the selected map directory.
         if not p.is_relative_to(chart.parent.resolve()) or not name:
@@ -81,7 +85,7 @@ def audit(chart):
             except (OSError, ValueError) as e:
                 row['error'] = str(e)
         records.append(row)
-    valid = [r for r in records if 'error' not in r and r['instances']]
+    valid = [r for r in records if 'hull_area' in r and r['instances']]
     n = sum(r['instances'] for r in valid)
     pixels = sum(r['instances']*r['pixels'] for r in valid)
     def weighted(key):
@@ -89,8 +93,8 @@ def audit(chart):
     result = dict(chart=str(chart), chart_sha256=original_hash,
         scope='all source AddDecoration instances, initial images; no time/projection/visibility weighting',
         source_instances=sum(counts.values()), measured_instances=n,
-        unmeasured_instances=sum(r['instances'] for r in records if 'error' in r),
-        unique_references=len(records), measured_images=sum('error' not in r for r in records),
+        unmeasured_instances=sum(r['instances'] for r in records if 'hull_area' not in r),
+        unique_references=len(records), measured_images=sum('hull_area' in r for r in records),
         instance_weighted_bbox_reduction_percent=100*(1-weighted('bbox_ratio')/n),
         texel_area_weighted_bbox_reduction_percent=100*(1-weighted('bbox_area')/pixels),
         instance_weighted_hull_proxy_reduction_percent=100*(1-weighted('hull_ratio')/n),

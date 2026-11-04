@@ -558,6 +558,9 @@ ParticleTextWatch.Install(harmony);
             Try(RestoreQueued);
             Try(EffectBudget.Reset);       // 색 나누기 대기열도 같이 비운다
             Try(ImagePrefetch.Stop);       // 이미지 작업 스레드와 풀어 둔 메모리
+#if DEV || AUTOTEST
+            Try(TightSpriteProbe.Stop);
+#endif
             Try(() => SystemMonitor.Keep = false);
             Try(FastBlend.Uninstall);      // 바꿔 끼운 블렌드 장식 재질을 원래대로
 #if DEV || AUTOTEST

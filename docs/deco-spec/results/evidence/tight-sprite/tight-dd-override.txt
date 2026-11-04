@@ -1,0 +1,7 @@
+[StutterFix] [이미지] 미리 푼 것 2733장(넣기 1216ms), 원래 방식 2장(19ms, 순서 어긋남 0), 기다림 7211ms, GC 0번, 전체 13.2초, 미리 압축 넣음 16장 (쓰지 않음 0, 크기·형식 달라 원래대로 0, 압축 9131ms/작업 스레드 합), 처음부터 압축으로 넣음 2648장 (뒤이어 압축 불림 2648, 안 불림 0) | 장식 만들기 6314개 2423ms, 그중 텍스처 불러오기 10836ms, 압축 마저 기다림 6028ms
+[StutterFix] [framecmp] diff N0 N1 threshold=0 maxRGBA=0,0,0,0 changed=0/3686400 ratio=0 PSNR=Infinity top32(bottom-left,x,y,w,h,L1)=
+[StutterFix] [framecmp] noise outside=0 inside=0 rendererStateEqual=True warning=False; noise floor advisory, continuing
+[StutterFix] [tightsprite] restored=0 externally_replaced=0
+[StutterFix] [자동 시험] 단계 실패 'tightsprite 4 E:\StutterFixWork\wt-partial\docs\deco-spec\results\evidence\tight-dd.json': Value cannot be null.
+[StutterFix] [tightsprite] restored=0 externally_replaced=0
+[StutterFix] [자동 시험] 단계 실패 'tightsprite 4 E:\StutterFixWork\wt-partial\docs\deco-spec\results\evidence\tight-dd.json': Value cannot be null.

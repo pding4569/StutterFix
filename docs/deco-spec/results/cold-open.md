@@ -46,3 +46,7 @@ Windflower `cold2-wf-wait-first`는 24.9초 이미지 처리·30.4초 맵 열기
 [원시 추출·실행 단계](evidence/cold-open/summary.json), 전체 로그 `E:/StutterFixWork/night-results/cold*.log`. `cold-open-report.py`로 실패와 느린 판을 포함해 다시 추출할 수 있다. 원래 캐시 복원 메시지를 확인했다. 최종 설치 복원 검사는 B 종료 뒤 다시 기록한다.
 
 미확인: 과거 76 FPS/132 FPS의 페이징 원인, 드라이버 내부 원본 잔류, 원래 방식 대비 모든 이미지의 압축 오차. 압축 알고리즘·품질 설정·캐시 키는 바꾸지 않았으며 기존 DXT 결과를 소비하는 시점만 확정한다. 압축 끔 사용자 경로는 두 DD 판으로만 확인했다.
+
+## 최종 복원
+
+B 종료 뒤 설치 DLL이 `restore/StutterFix-rc-player.dll`과 SHA256까지 같고, `gpuprobe.dll` 없음·Settings.xml의 GpuDeco=0·게임 프로세스/잠금 없음·원래 asset-cache 경로 복원을 확인했다. [검사 원시값](evidence/final-restoration.json). 시험 중 새로 생성한 캐시 7개는 파일 수와 바이트 합을 확인해 `E:/StutterFixWork/night-results/cold-open-caches`로 옮겼다. 원래 asset-cache는 그대로 두었다. [이동 목록](evidence/cache-artifacts-moved.txt).
