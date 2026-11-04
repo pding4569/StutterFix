@@ -167,5 +167,31 @@
     "wait_ms": "0.62",
     "loop_ms": "4.86",
     "complete": true
+  },
+  {
+    "run": "cold4-full-ar-wait-first",
+    "open_s": "22.3",
+    "image_s": "8.0",
+    "fps": "165.4",
+    "gpu_ms": "2.6337",
+    "late": "0",
+    "order_miss": "0",
+    "vram_MB": "2726",
+    "wait_ms": "NA",
+    "loop_ms": "6.04",
+    "complete": true
+  },
+  {
+    "run": "cold4-full-ar-wait-second",
+    "open_s": "22.7",
+    "image_s": "7.1",
+    "fps": "165.0",
+    "gpu_ms": "2.7228",
+    "late": "0",
+    "order_miss": "0",
+    "vram_MB": "2589",
+    "wait_ms": "NA",
+    "loop_ms": "6.06",
+    "complete": true
   }
 ]

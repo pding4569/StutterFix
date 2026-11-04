@@ -16,7 +16,7 @@ OUT = ROOT / 'night-results'
 MAPS = {
     'dd': ('DDONGSSADA3302 asansis remake/level.adofai', 50),
     'wf': ('Windflower/Windflower.adofai', 258),
-    'ar': (str(next(Path('D:/얼불춤 맵 파일/Arche').glob('*.adofai')).relative_to(Path('D:/얼불춤 맵 파일'))), 270),
+    'ar': (str(next(p for p in Path('D:/얼불춤 맵 파일/Arche').glob('*.adofai') if p.name.endswith(' FULL.adofai')).relative_to(Path('D:/얼불춤 맵 파일'))), 270),
 }
 
 
