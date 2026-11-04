@@ -1,0 +1,10 @@
+[StutterFix] [coldopen] mode=wait-all
+[StutterFix] [이미지] 미리 푼 것 1075장(넣기 1466ms), 원래 방식 0장(0ms, 순서 어긋남 0), 기다림 19479ms, GC 0번, 전체 24.9초, 미리 압축 넣음 16장 (쓰지 않음 0, 크기·형식 달라 원래대로 0, 압축 10053ms/작업 스레드 합), 처음부터 압축으로 넣음 902장 (뒤이어 압축 불림 902, 안 불림 0) | 장식 만들기 6290개 5107ms, 그중 텍스처 불러오기 22264ms, 압축 마저 기다림 11461ms
+[StutterFix] [이미지] 맵 연 뒤: 올라와 있는 이미지 1076장, VRAM 전체 4889MB / 게임 3966MB
+[StutterFix] [자동 시험] 게임 화면 맵 열림 (30.4초, 2초 기다림 포함)
+[StutterFix] [coldopen] group=ready/DXT1/readable=False count=143 runtime_MB=0.00
+[StutterFix] [coldopen] group=ready/DXT5/readable=False count=775 runtime_MB=0.00
+[StutterFix] [coldopen] group=ready/RGBA32/readable=False count=120 runtime_MB=0.00
+[StutterFix] [coldopen] group=ready/RGB24/readable=False count=26 runtime_MB=0.00
+[StutterFix] [coldopen] group=ready/ARGB32/readable=False count=11 runtime_MB=0.00
+[StutterFix] [coldopen] all_textures=1744 profiler_runtime_MB=33.09 game_VRAM_MB=3967 total_VRAM_MB=4884 shared_game_MB=10 RAM_game_MB=7823

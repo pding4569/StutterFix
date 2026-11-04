@@ -1,0 +1,19 @@
+[StutterFix] [coldopen] mode=legacy-half
+[StutterFix] [이미지] 미리 푼 것 2733장(넣기 1993ms), 원래 방식 2장(20ms, 순서 어긋남 0), 기다림 809ms, GC 0번, 전체 6.6초, 미리 압축 넣음 16장 (쓰지 않음 0, 크기·형식 달라 원래대로 0, 압축 3213ms/작업 스레드 합), 처음부터 압축으로 넣음 2256장 (뒤이어 압축 불림 2256, 안 불림 0), 압축이 늦어 원래대로 392장 | 장식 만들기 6314개 2223ms, 그중 텍스처 불러오기 4258ms, 압축 마저 기다림 203ms
+[StutterFix] [이미지] 맵 연 뒤: 올라와 있는 이미지 2737장, VRAM 전체 6320MB / 게임 5820MB
+[StutterFix] [자동 시험] 게임 화면 맵 열림 (27.3초, 2초 기다림 포함)
+[StutterFix] [coldopen] group=ready/DXT5/readable=False count=2267 runtime_MB=0.00
+[StutterFix] [coldopen] group=ready/RGBA32/readable=False count=64 runtime_MB=0.00
+[StutterFix] [coldopen] group=ready/ARGB32/readable=False count=3 runtime_MB=0.00
+[StutterFix] [coldopen] group=ready/RGB24/readable=False count=2 runtime_MB=0.00
+[StutterFix] [coldopen] group=ready/DXT1/readable=False count=5 runtime_MB=0.00
+[StutterFix] [coldopen] group=late/RGBA32/readable=False count=392 runtime_MB=0.00
+[StutterFix] [coldopen] all_textures=3402 runtime_MB=33.09 game_VRAM_MB=5907 total_VRAM_MB=6452
+[StutterFix] [자동 시험] [FPS 구간] cold-dd-legacy-second : 235.0 FPS (1882프레임 8.01초) | 표본 없음
+[StutterFix] [자동 시험] phase_window end frames=1884 CPU_time=False GPU_time=False includes_waits=True 합계 4.25ms | Update/ScriptRunBehaviourUpdate 1.11ms, TimeUpdate/WaitForLastPresentationAndUpdateTime 0.82ms, PreLateUpdate/ScriptRunBehaviourLateUpdate 0.76ms, PostLateUpdate/FinishFrameRendering 0.63ms, PostLateUpdate/PlayerUpdateCanvases 0.24ms, PostLateUpdate/UpdateAllRenderers 0.13ms, PostLateUpdate/UpdateAudio 0.11ms, PreUpdate/SendMouseEvents 0.10ms, PostLateUpdate/PlayerEmitCanvasGeometry 0.04ms, PostLateUpdate/UpdateRectTransform 0.04ms, PreLateUpdate/ParticleSystemBeginUpdateAll 0.02ms, EarlyUpdate/UpdateCanvasRectTransform 0.02ms, PostLateUpdate/TileCullStep 0.01ms, TimeUpdate/end 0.01ms, EarlyUpdate/UpdateInputManager 0.01ms, PostLateUpdate/PlayerSendFrameComplete 0.01ms
+[StutterFix] [gpuprobe] render_counter=Draw_Calls_Count scope=whole-frame valid=1 frames=1884 mean=442.188
+[StutterFix] [gpuprobe] render_counter=SetPass_Calls_Count scope=whole-frame valid=1 frames=1884 mean=378.381
+[StutterFix] [gpuprobe] render_counter=Batches_Count scope=whole-frame valid=1 frames=1884 mean=441.188
+[StutterFix] [gpuprobe] render_counter=Triangles_Count scope=whole-frame valid=1 frames=1884 mean=7653.808
+[StutterFix] [gpuprobe] render_counter=Vertices_Count scope=whole-frame valid=1 frames=1884 mean=11863.020
+[StutterFix] [gpuprobe] frame:first-camera-preCull->end-of-frame active_frames=236 calls=236 mean_frame_ms=3.7411 mean_active_ms=3.7411 max_frame_ms=6.4348

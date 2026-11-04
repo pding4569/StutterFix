@@ -32,6 +32,7 @@
 
   <ItemGroup>
     <Compile Include="StutterFix.cs" />
+    <Compile Include="ColdOpenProbe.cs" />
     <Compile Include="LightProbe.cs" />
     <Compile Include="BeatProbe.cs" />
     <Compile Include="GpuDecoPlayer.cs" />

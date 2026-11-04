@@ -261,6 +261,7 @@ namespace StutterFix
                 case "pause": FrameCompare.Pause(); return true;
                 case "resume": FrameCompare.Resume(); return true;
                 case "framecmp": return FrameCompare.Step(arg);
+                case "coldopen": ColdOpenProbe.Step(arg); return true;
 #endif
                 case "pick":
                     {
