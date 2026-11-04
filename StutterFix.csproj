@@ -39,6 +39,7 @@
     <Compile Include="GpuDecoPlayer.cs" />
     <Compile Include="MonoOptProbe.cs" Condition="'$(AutoTestBuild)' == '1'" />
     <Compile Include="RuntimeCensus.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
+    <Compile Include="FlashSkip.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="HierarchyFlat.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="GpuDecoResearchDisabled.cs" />
     <Compile Include="GpuDecoPerItemPrepare.cs" />
