@@ -36,6 +36,34 @@ namespace StutterFix
             Main.Entry.Logger.Log("[camskip] " + arg);
         }
 
+        // 키보드 입력은 Unity Input 을 쓰고 Rewired 는 조이스틱에만 쓴다. 곡 중 Rewired 갱신을 끈 비용 비교.
+        internal static void RewiredOff()
+        {
+            int n = 0;
+            foreach (var b in Object.FindObjectsByType<MonoBehaviour>(FindObjectsInactive.Exclude, FindObjectsSortMode.None))
+                if (b.GetType().FullName == "Rewired.InputManager") { b.enabled = false; n++; }
+            Main.Entry.Logger.Log("[rewiredoff] 끔 " + n);
+        }
+
+        // OnMouse* 는 곡 중 객체에 없다. PreUpdate 의 SendMouseEvents 단계를 뺀 비용 비교.
+        internal static void DropMouseEvents()
+        {
+            var loop = UnityEngine.LowLevel.PlayerLoop.GetCurrentPlayerLoop();
+            var top = loop.subSystemList;
+            int removed = 0;
+            for (int i = 0; i < top.Length; i++)
+            {
+                var subs = top[i].subSystemList;
+                if (subs == null) continue;
+                var keep = new System.Collections.Generic.List<UnityEngine.LowLevel.PlayerLoopSystem>();
+                foreach (var s in subs) { if (s.type != null && s.type.Name == "SendMouseEvents") removed++; else keep.Add(s); }
+                top[i].subSystemList = keep.ToArray();
+            }
+            loop.subSystemList = top;
+            UnityEngine.LowLevel.PlayerLoop.SetPlayerLoop(loop);
+            Main.Entry.Logger.Log("[mousedrop] 뺀 단계 " + removed);
+        }
+
         private static void Flatten(string containerName)
         {
             var container = GameObject.Find(containerName);
