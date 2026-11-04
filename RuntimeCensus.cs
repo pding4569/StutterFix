@@ -112,6 +112,9 @@ namespace StutterFix
         private static void Other(StringBuilder o)
         {
             var sources = UnityEngine.Object.FindObjectsByType<AudioSource>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
+            var masks = UnityEngine.Object.FindObjectsByType<SpriteMask>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
+            var maskedSprites = UnityEngine.Object.FindObjectsByType<SpriteRenderer>(FindObjectsInactive.Exclude, FindObjectsSortMode.None).Where(s => s.enabled && !s.forceRenderingOff && s.maskInteraction != SpriteMaskInteraction.None).ToArray();
+            o.AppendLine("## 마스크 활성 " + masks.Length + " 켜짐 " + masks.Count(m => m.enabled) + " 보임 " + masks.Count(m => m.enabled && m.isVisible) + " / 마스크 영향 받는 스프라이트 켜짐 " + maskedSprites.Length + " 보임 " + maskedSprites.Count(s => s.isVisible));
             o.AppendLine("## 오디오 소스 활성 " + sources.Length + " 재생 중 " + sources.Count(s => s.isPlaying));
             var ps = UnityEngine.Object.FindObjectsByType<ParticleSystem>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
             o.AppendLine("## 입자 활성 " + ps.Length + " 살아 있음 " + ps.Count(p => p.IsAlive(false)));
