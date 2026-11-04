@@ -928,6 +928,8 @@ namespace StutterFix
                 case "flatten": HierarchyFlat.Command(arg); return true;
                 case "camskip": HierarchyFlat.SkipCameras(arg); return true;
                 case "maskgrow": EnginePatch.MaskGrow(); return true;
+                case "rflags": HierarchyFlat.RendererFlags(); return true;
+                case "tilempb": TileMpb.Enable(); return true;
                 case "holdskip": HoldFix.Command(arg); return true;
                 case "rewiredoff": HierarchyFlat.RewiredOff(); return true;
                 case "mousedrop": HierarchyFlat.DropMouseEvents(); return true;

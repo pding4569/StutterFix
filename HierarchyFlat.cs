@@ -36,6 +36,24 @@ namespace StutterFix
             Main.Entry.Logger.Log("[camskip] " + arg);
         }
 
+        // 빛·반사 프로브·그림자·모션 벡터·가림 판정을 끈 비용 비교. 쓰는 곳이 없어 그림은 같아야 한다.
+        internal static void RendererFlags()
+        {
+            int n = 0;
+            foreach (var r in Object.FindObjectsByType<Renderer>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+            {
+                r.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+                r.receiveShadows = false;
+                r.lightProbeUsage = UnityEngine.Rendering.LightProbeUsage.Off;
+                r.reflectionProbeUsage = UnityEngine.Rendering.ReflectionProbeUsage.Off;
+                r.motionVectorGenerationMode = MotionVectorGenerationMode.ForceNoMotion;
+                r.allowOcclusionWhenDynamic = false;
+                n++;
+            }
+            foreach (var c in Camera.allCameras) { c.useOcclusionCulling = false; c.eventMask = 0; }
+            Main.Entry.Logger.Log("[rflags] 렌더러 " + n);
+        }
+
         // 키보드 입력은 Unity Input 을 쓰고 Rewired 는 조이스틱에만 쓴다. 곡 중 Rewired 갱신을 끈 비용 비교.
         internal static void RewiredOff()
         {
