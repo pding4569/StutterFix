@@ -36,6 +36,9 @@ namespace StutterFix
 
         public static bool Load(UnityModManager.ModEntry modEntry)
         {
+#if AUTOTEST
+            MonoOptProbe.Apply(modEntry.Path, modEntry.Logger);
+#endif
             Entry = modEntry;
             // 이 모드는 윈도우 전용이다(user32/kernel32/D3D11 직접 호출 수백 곳). 리눅스·맥의 원래(네이티브) 유니티에서는 EntryPointNotFoundException 으로 불러오기가 죽으므로
             // 아무것도 설치하지 않고 이유만 알려 준다. (Wine/Proton 에서는 Application.platform 이 WindowsPlayer 라 그대로 동작)
