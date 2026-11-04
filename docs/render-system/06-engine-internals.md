@@ -51,6 +51,18 @@ Unity는 루트와 그 아래 전체를 계층 하나로 묶어 저장한다([hi
 - 편집기의 `transform.parent` 사용, 다른 모드.
 - 계층이 수만 개로 늘 때 작업 분배 비용이 오히려 커질 수 있다.
 
+## SpriteMask 렌더 노드 재할당 (엔진 비효율)
+
+`SpriteMaskJobs::SpriteMaskPrepareRendererNodes<0>`(0x1148030)는 마스크마다 메인 스레드에서 렌더 노드를 넣는다. 크기가 모자라면 `resize_buffer_nocheck`(0x3262c0)를 **딱 필요한 크기로** 부르고, 노드 하나는 0x1B0(432)바이트다. 노드를 넣을 때마다 배열 전체를 복사하므로 복사량이 **마스크 수의 제곱**에 비례한다. Exit의 `memcpy_repmovs` 6.5%가 이 경로다(881표본 중 869).
+
+시험: 자동 시험 `maskgrow`(`EnginePatch.cs`)가 엔진 코드 6바이트를 바꿔 두 배씩 늘린다. 앞뒤 바이트를 대조하고 다르면 건드리지 않는다. 이 엔진 버전의 파일에서 바이트 일치를 확인했다. 효과는 미측정이다.
+
+**제품으로 넣을 때 걸리는 것:** 엔진 코드를 실행 중에 바꾸는 방식이라 게임 업데이트 때마다 대조가 실패해 꺼진다(그래서 안전하지만 다시 맞춰야 한다). 다른 방법으로는 영향받는 스프라이트가 안 보일 때 마스크를 끄는 것이 있다(픽셀 조건 확인 필요). 마스크를 쓰는 맵은 457개 중 104개다.
+
+## 항상 그려지는 전체 화면 판
+
+`Flash`, `FlashPlusBackground`, `FlashPlusForeground`, `FlashEndscreen`은 카메라에 붙은 전체 화면 메시다. 게임은 `material.color = Color.clear`로 초기화하고 렌더러를 끄지 않는다(`scrFlash.Start`, `scnGame:2217`). DD census에서 네 개 모두 그리기 후보로 나왔다. 투명할 때 끄는 시험은 `flashskip`(`FlashSkip.cs`). `Sprites/Default`는 미리 곱한 알파라 알파 0이면 화면이 안 바뀌어야 한다(픽셀 비교 필요). 실제 GPU 절감은 미측정이다.
+
 ## 셰이더 비용 (D3D11 바이트코드)
 
 `tools/rendersys/scan_shaders.py`가 픽셀 셰이더 명령어와 텍스처 샘플을 센다. 표는 `data/shader-stats.tsv`. 명령어 수는 분기·루프 횟수를 반영하지 않으며 실제 GPU 시간이 아니다.

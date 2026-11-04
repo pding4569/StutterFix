@@ -33,4 +33,5 @@
 - 계층 나누기(`flatten`), `Dormancy` 거르기, 보통 맵 12개.
 - 런타임 전수 조사(`rtcensus`), 렌더 스레드·작업 스레드·메인 네이티브 표본.
 - 빈 배경 카메라 끄기(`camskip`).
+- 투명 플래시 판 끄기(`flashskip`), 마스크 노드 배열 엔진 패치(`maskgrow`).
 - RenderDoc 캡처(`rd-run.py`, 처음 쓰는 경로라 실패할 수 있다).
