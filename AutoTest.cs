@@ -928,6 +928,7 @@ namespace StutterFix
                 case "flatten": HierarchyFlat.Command(arg); return true;
                 case "camskip": HierarchyFlat.SkipCameras(arg); return true;
                 case "maskgrow": EnginePatch.MaskGrow(); return true;
+                case "holdskip": HoldFix.Command(arg); return true;
                 case "rewiredoff": HierarchyFlat.RewiredOff(); return true;
                 case "mousedrop": HierarchyFlat.DropMouseEvents(); return true;
                 case "flashskip": if (arg == "report") FlashSkip.Report(); else FlashSkip.Enable(); return true;
