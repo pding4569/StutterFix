@@ -48,7 +48,7 @@ scnGame.Update (프레임 조건) → LoadAndPlayLevel
 | 타일 그리기 GPU | HELLO·7777·Windflower 작음, DD는 판 간 차이 큼 | 레이어가 분리되어 비교적 쉬움 | 낮은 우선순위 |
 | 필터 | 7777 1.68ms, Windflower `Blur_Movie` 0.96ms | 픽셀 동일이 어려움 | GPU 병목 맵에서 후보 |
 | 판정 글자·UI 캔버스 | 약 0.25~0.3ms | UI는 그대로 둠 | 개별 최적화 |
-| 공 히트박스 물리 | 미측정 | 히트박스 없으면 건너뛸 수 있어 보임 | **새 후보** |
+| 공 히트박스 물리 | `Physics2D`가 프로파일 상위 500에 없음, `scrPlanet:Update` 전체 0.2~0.7% | | 후보 아님 |
 | 소리 | `UpdateAudio` 0.11ms, FFT 1.3%(`LowNoFft`) | | 일부 처리됨 |
 | 렌더 스레드 | 미측정 | | RenderDoc·프로파일 필요 |
 
@@ -63,6 +63,5 @@ scnGame.Update (프레임 조건) → LoadAndPlayLevel
 
 - 실제 스크립트 실행 순서, 활성 객체 수, 렌더 스레드 비용.
 - 곡 중 다른 모드 패치 전체 목록.
-- `Physics2D.OverlapCircleAll`의 실제 비용.
 - 필터·클리어·화면 복사의 실제 순서(RenderDoc).
 - `ErrorMeterTick` 변경 뒤 `HitMeterFade` 동작.

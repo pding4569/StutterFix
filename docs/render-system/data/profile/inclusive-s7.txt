@@ -1,0 +1,500 @@
+ 40.0%  [?]
+ 32.3%  [mono-2.0-bdwgc.dll+0x286C0E]
+ 26.7%  (wrapper runtime-invoke) object:runtime_invoke_void__this__
+ 20.3%  [ntdll.dll+0x9E0F4]
+  4.6%  (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition:scrFloor.Update_Patch1
+  4.3%  [Unity] ExecutePlayerLoop
+  4.2%  (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition:scrDecorationManager.LateUpdate_Patch7
+  4.1%  StutterFix.TightLate:List
+  3.5%  (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition:DG.Tweening.Core.DOTweenComponent.Update_Patch6
+  3.3%  StutterFix.TightLate:Process
+  2.7%  FloorMeshRenderer:set_color
+  2.6%  (wrapper runtime-invoke) object:runtime_invoke_void
+  2.5%  UnityEngine.Material:SetColorImpl
+  2.4%  (wrapper delegate-invoke) <Module>:invoke_void
+  2.4%  UnityEngine.Material:SetColor
+  2.1%  UnityEngine.Canvas:SendWillRenderCanvases
+  2.1%  StutterFix.MoveApply:LogicMaybe
+  2.1%  scrDecoration:LogicUpdate
+  1.9%  [Unity] Material::SetColor
+  1.7%  StutterFix.DecoAnim:UpdatePrefix
+  1.7%  DG.Tweening.Core.TweenManager:Update
+  1.7%  UnityEngine.UI.CanvasUpdateRegistry:PerformUpdate
+  1.6%  (wrapper runtime-invoke) <Module>:runtime_invoke_void__this___object_object
+  1.6%  (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition:scrDecoration.UpdatePosition_Patch0
+  1.6%  Rewired.InputManager_Base:DoUpdate
+  1.5%  TMPro.TextMeshProUGUI:Rebuild
+  1.5%  (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition:scrConductor.Update_Patch2
+  1.5%  TMPro.TextMeshProUGUI:OnPreRenderCanvas
+  1.5%  Rewired.InputManager_Base:Update
+  1.4%  scrController:UpdateInput
+  1.4%  [Unity] FMOD::DSPFFT::process
+  1.4%  DG.Tweening.Tween:DoGoto
+  1.4%  StutterFix.DecoAnim:Step
+  1.3%  (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition:scrFloor.LateUpdate_Patch1
+  1.3%  [Unity] memcpy_repmovs
+  1.2%  UnityEngine.Material:SetFloat
+  1.2%  Rewired.ReInput:akQfnDbPZywVjhOOFyyXxeKyxzCb
+  1.2%  YzAwSQuwclVncgAOlFEYukVTLseR:HJLvPqWZjXiyepqQTSvDgxaDdDsV
+  1.1%  [mono-2.0-bdwgc.dll+0x4D6426]
+  1.1%  [Unity] MonoBehaviour::IsStateMachineBehaviour
+  1.1%  TMPro.TextMeshProUGUI:GenerateTextMesh
+  1.1%  StutterFix.DecoAnim:OnUpdate
+  1.0%  (wrapper write-barrier) object:wbarrier_conc
+  0.9%  UnityModManagerNet.UnityModManager/UI:Update
+  0.9%  DG.Tweening.Core.TweenerCore`3<UnityEngine.Color, UnityEngine.Color, DG.Tweening.Plugins.Options.ColorOptions>:ApplyTween
+  0.9%  UnityEngine.Object:IsNativeObjectAlive
+  0.9%  UnityEngine.Object:op_Equality
+  0.9%  UnityEngine.Material:SetFloatImpl
+  0.9%  [Unity] ShaderPropertySheet::FindPropertyIndex
+  0.9%  [Unity] TransformChangeDispatch::ScanAndHandleChangesJob
+  0.9%  StutterFix.TightLate:Apply
+  0.9%  [Unity] handle_ring_t::try_dequeue
+  0.8%  [ntdll.dll+0x9E394]
+  0.8%  [Unity] IsInstanceValid
+  0.8%  scrController:ProcessKeyInputs
+  0.8%  YzAwSQuwclVncgAOlFEYukVTLseR:lToMmgRevxCNgBHvRRGijjpCCzzBA
+  0.8%  StutterFix.PerfOverlay:LateUpdate
+  0.8%  [Unity] memcpy
+  0.8%  [Unity] BaseBehaviourManager::CommonUpdate<BehaviourManager>
+  0.8%  DG.Tweening.Plugins.ColorPlugin:EvaluateAndApply
+  0.7%  [Unity] core::base_hash_set<core::pair<EntityId const ,Object * __ptr64,0>,core::hash_pair<Int32HashFunctionKnuth,EntityId>,core::equal_pair<std::equal_to<EntityId>,EntityId> >::lookup<EntityId,core::equal_pair<std::equal_to<EntityId>,EntityId> >
+  0.7%  (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition:scrPlayer.Simulated_PlayerControl_Update_Patch2
+  0.7%  [Unity] Material::CanAcquireSharedMaterialDataFromJob
+  0.7%  (wrapper delegate-invoke) System.Action`2<scrDecoration, single>:invoke_void_T1_T2
+  0.7%  Rewired.Controller:GpaChWeRvGpTpwaWaKKnXiUzzjJw
+  0.7%  Rewired.Keyboard:iZxhUyKMEcnJcjbqvDYWuefjcftc
+  0.7%  StutterFix.HitMeterFade/<>c__DisplayClass34_0:<Fade>b__3
+  0.7%  [Unity] FMOD::DSPFFT::getSpectrum
+  0.6%  (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition:scrDecoration.SetPosition_Patch1
+  0.6%  Quartz.Features.Combo.ComboOverlay/Updater:Update
+  0.6%  UnityEngine.EventSystems.EventSystem:Update
+  0.6%  Rewired.Controller/Button:fZdSDERuINzTLcqxtjuasCFfaLSi
+  0.6%  StutterFix.AllocFix:MakeOrReuse
+  0.6%  [Unity] MonoBehaviour::CallUpdateMethod
+  0.6%  Rewired.Controller/Button/qbaCgHEXaBFNJoIfVFRIjwlQKPxg/ACADkbEivoqpRBWqxrfDtUXTvvl:AlJBJxVIBWBBWdknEWyLTNkkTXHu
+  0.5%  [Unity] Material::SetFloat
+  0.5%  scrParallax:SetTrans
+  0.5%  RDInputType_Keyboard:MainIgnoreActive
+  0.5%  [Unity] DoForwardShaderRenderLoop
+  0.5%  [Unity] FMOD::ChannelGroupI::setVolumeInternal
+  0.5%  StutterFix.Dormancy:List
+  0.5%  (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition:PlanetRenderer.LateUpdate_Patch2
+  0.5%  StutterFix.AllocFix:NeedNew
+  0.5%  StutterFix.Dormancy:Prepare
+  0.5%  Quartz.Core.QuartzRuntime:Tick
+  0.5%  Quartz.Core.MainCore:Tick
+  0.5%  Quartz.LoaderUmm:OnUpdate
+  0.5%  TMPro.TMP_UpdateManager:DoRebuilds
+  0.5%  StutterFix.PerfOverlay:DrawIcon
+  0.5%  scrDecoration:SetPivotX
+  0.5%  Quartz.Core.RuntimeTicks:Tick
+  0.5%  StutterFix.MoveApply:SetLocal
+  0.4%  [mono-2.0-bdwgc.dll+0x1C3514]
+  0.4%  UnityEngine.EventSystems.StandaloneInputModule:Process
+  0.4%  StutterFix.InvisibleSkip:LazyPrefix
+  0.4%  UnityEngine.CanvasRenderer:SetAlpha
+  0.4%  [Unity] BaseBehaviourManager::CommonUpdate<LateBehaviourManager>
+  0.4%  UnityEngine.Component:get_transform
+  0.4%  UnityEngine.Shader:PropertyToID
+  0.4%  UnityEngine.Transform:set_position
+  0.4%  UnityEngine.Component:get_gameObject
+  0.4%  UnityEngine.EventSystems.StandaloneInputModule:ProcessMouseEvent
+  0.4%  TMPro.TextMeshProUGUI:InternalUpdate
+  0.4%  scrPlanet:Update
+  0.4%  scrPlayer:<Simulated_PlayerControl_Update>g__WhileFloorNotChange|69_0
+  0.4%  [Unity] GameObject::IsActive
+  0.4%  (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition:scrDecorationManager.Update_Patch3
+  0.4%  Rewired.ReInput:cLbMCjXJQovNzVjTjAmricPlgxQf
+  0.4%  UnityEngine.GUIStyle:GetDimensions
+  0.4%  (wrapper runtime-invoke) <Module>:runtime_invoke_void_object_Color_object_Rect_intptr&
+  0.4%  pOIbpCyMmejjqDOhHBvxEEjBzwJuA:nPGOoXyRFIAOczUJCphUoRYGjpbo
+  0.4%  (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition:scrVfxPlus.Update_Patch3
+  0.4%  UnityEngine.GUIStyle:GetPreferredSize
+  0.4%  (wrapper runtime-invoke) <Module>:runtime_invoke_void_int
+  0.4%  StutterFix.Main:OnUpdate
+  0.4%  (wrapper delegate-invoke) System.Action`2<UnityModManagerNet.UnityModManager/ModEntry, single>:invoke_void_T1_T2
+  0.4%  TMPro.TMP_Text:ParseInputText
+  0.4%  (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition:scrVisualDecoration.UpdateShader_Patch1
+  0.3%  UnityEngine.Object:op_Inequality
+  0.3%  UnityEngine.EventSystems.PointerInputModule:GetMousePointerEventData
+  0.3%  RDInputType_Keyboard:CountSpecialInput
+  0.3%  [Unity] UI::RectTransform::UpdateAnchorPositionIfTransformChanged
+  0.3%  TMPro.TextMeshProUGUI:SetArraySizes
+  0.3%  StutterFix.Dormancy:WakePost
+  0.3%  [Unity] core::base_hash_map<char const * __ptr64,int,ShaderLab::ConstCharPtrHashFunctor,ShaderLab::ConstCharPtrEqualTo>::find
+  0.3%  YzAwSQuwclVncgAOlFEYukVTLseR:HYfuTGSEtwSwZMDgxkqqWtsUqHYE
+  0.3%  System.Collections.Generic.List`1<T_REF>:set_Item
+  0.3%  [Unity] BaseRenderer::FlattenSharedMaterialData<1>
+  0.3%  [Unity] MonoBehaviour::HandleNotifications
+  0.3%  (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition:scrVisualDecoration.EnableMeshRenderer_Patch1
+  0.3%  [Unity] ShaderVariantAnalytics::ShaderRuntimeInfoEvent::RawEventData::SumUpVariantsUnused
+  0.3%  UnityEngine.IMGUITextHandle:GetTextHandle
+  0.3%  System.Collections.Generic.Dictionary`2<TKey_REF, TValue_REF>:TryGetValue
+  0.3%  (wrapper stelemref) object:virt_stelemref_class
+  0.3%  scrDecoration:SetRotation
+  0.3%  [Unity] FMOD::SystemI::updateChannels
+  0.3%  [Unity] TransformChangeDispatch::ClearJob
+  0.3%  (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition:scrParticleDecoration.Update_Patch3
+  0.3%  [Unity] TransformChangeDispatch::GetAndClearTransformsJob
+  0.3%  Quartz.Features.FeatureService/TickAdapter:Tick
+  0.3%  UnityEngine.UI.Text:OnEnable
+  0.3%  (wrapper managed-to-native) object:__icall_wrapper_mono_gc_wbarrier_generic_nostore_internal
+  0.3%  [Unity] InputAxis::Update
+  0.3%  StutterFix.Main:OnUpdateBody
+  0.3%  Rewired.ReInput:rIVPjADXcciTtawkqDWPIdHpzAQw
+  0.3%  [Unity] ThreadsafeLinearAllocator<0>::Allocate
+  0.3%  [mono-2.0-bdwgc.dll+0x838C8]
+  0.3%  UnityEngine.GUIUtility:BeginGUI
+  0.3%  TMPro.TMP_Text:SaveWordWrappingState
+  0.3%  scrShowIfDebug:Update
+  0.3%  [Unity] Material::GetWritableSharedMaterialData
+  0.3%  scrDecoration:CheckHitboxHit
+  0.3%  PlanetSprite:LateUpdate
+  0.3%  [Unity] PrepareValueParameters<FullParameterPreparer>
+  0.3%  System.Collections.Generic.Dictionary`2<TKey_REF, TValue_REF>:FindEntry
+  0.3%  (wrapper runtime-invoke) <Module>:runtime_invoke_void_int_int_int
+  0.3%  [mono-2.0-bdwgc.dll+0x2866F0]
+  0.3%  Quartz.Features.Panels.PanelsOverlay/Updater:Update
+  0.3%  (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition:RDString.Get_Patch2
+  0.3%  [Unity] UI::Canvas::BatchRequiresClipping
+  0.3%  UnityEngine.Object:CompareBaseObjects
+  0.3%  [Unity] Component_Get_Custom_PropTransform
+  0.3%  scrController:Update
+  0.3%  scrPlayer:OttoHoldHit
+  0.3%  UnityEngine.EventSystems.EventSystem:RaycastAll
+  0.3%  [Unity] ShaderPropertySheet::SetVector
+  0.3%  UnityEngine.Transform:set_rotation
+  0.3%  Quartz.Features.KeyViewer.KeyViewerOverlay/Updater:Update
+  0.3%  Quartz.Features.VisualTweaks.VisualTweaks/PlanetRendererLateUpdatePatch:Postfix
+  0.3%  string:StartsWith
+  0.3%  UnityEngine.Canvas:SendPreWillRenderCanvases
+  0.3%  UnityEngine.CanvasRenderer:GetColor
+  0.3%  Quartz.Features.FeatureService:Tick
+  0.3%  UnityEngine.UI.MaskableGraphic:OnEnable
+  0.2%  Rewired.ThreadSafeUnityInput:Update
+  0.2%  [Unity] CanvasRenderer_CUSTOM_GetColor
+  0.2%  UnityEngine.Material:SetVector
+  0.2%  [mono-2.0-bdwgc.dll+0x8A2D9]
+  0.2%  [Unity] remove_free_block
+  0.2%  UnityEngine.Mathf:Cos
+  0.2%  scrRing:Update
+  0.2%  scrPlayer:Hit
+  0.2%  [Unity] Camera::GetImplicitWorldToCameraMatrix
+  0.2%  [ntdll.dll+0x9DCC4]
+  0.2%  UnityEngine.Transform:get_lossyScale
+  0.2%  StutterFix.TightLate:Eligible
+  0.2%  CameraFilterPack_AAA_SuperComputer:OnRenderImage
+  0.2%  Quartz.Features.VisualTweaks.VisualTweaks:ApplyBallCoreParticlesTweak
+  0.2%  [Unity] InvertMatrix4x4_Full
+  0.2%  StutterFix.PerfOverlay:Update
+  0.2%  Rewired.ThreadSafeUnityInput/Mouse:Update
+  0.2%  [Unity] ShaderLab::shaderprops::GetFloat
+  0.2%  [Unity] Component_Get_Custom_PropGameObject
+  0.2%  Quartz.UI.Utility.TMPTextShadow:Apply
+  0.2%  [Unity] memset
+  0.2%  Quartz.Features.Panels.PanelsOverlay/Updater:UpdatePanel
+  0.2%  [Unity] ImageFilters::BlitCommon
+  0.2%  scrDecoration:get_camScaleMultiplier
+  0.2%  [Unity] PPtr<AudioRandomContainer const >::operator AudioRandomContainer const * __ptr64
+  0.2%  Quartz.Features.PlanetColors.PlanetColors/PlanetRendererLateUpdatePatch:Postfix
+  0.2%  [Unity] BuildRenderObjectData
+  0.2%  scrDecoration:SetPositionX
+  0.2%  UnityEngine.UI.CanvasScaler:Canvas_preWillRenderCanvases
+  0.2%  UnityEngine.UI.Graphic:OnEnable
+  0.2%  (wrapper delegate-invoke) <Module>:invoke_void_scrDecoration_single_Vector2
+  0.2%  [Unity] SetGlobalT
+  0.2%  StutterFix.DecoAnim:Apply
+  0.2%  System.Globalization.CompareInfo:IsPrefix
+  0.2%  StutterFix.TileCull:Step
+  0.2%  [Unity] DynamicHeapAllocator::Deallocate
+  0.2%  [Unity] PrepareMeshRenderNodes<1>
+  0.2%  (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition:RDInput.GetState_Patch1
+  0.2%  UnityEngine.Transform:get_localPosition
+  0.2%  [Unity] FMOD::ChannelSoftware::updateDirectMix
+  0.2%  DG.Tweening.Core.TweenerCore`3<single, single, DG.Tweening.Plugins.Options.FloatOptions>:ApplyTween
+  0.2%  UnityEngine.SendMouseEvents:DoSendMouseEvents
+  0.2%  System.Collections.Generic.HashSet`1<T_REF>:Contains
+  0.2%  [Unity] Material::UpdateHashesOnPropertyChange
+  0.2%  RDInput:get_cancelPress
+  0.2%  Rewired.Player:GetButtonDown
+  0.2%  [Unity] tlsf_memalign
+  0.2%  [Unity] IntersectAABBPlaneBoundsOptimized
+  0.2%  scrPlayer:ValidInputWasReleased
+  0.2%  (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition:scrHUDText.Update_Patch1
+  0.2%  System.Globalization.CompareInfo:StartsWith
+  0.2%  TMPro.TMP_Text:GetPreferredValues
+  0.2%  Quartz.Features.PlanetColors.PlanetColors:ApplyPlanetRing
+  0.2%  scrPortalParticles:LateUpdate
+  0.2%  [Unity] AllocateAndPrepareSpriteRenderingData
+  0.2%  [Unity] DepthPass::PrepareSubset
+  0.2%  [Unity] GfxDeviceClient::SetShadersMainThread
+  0.2%  [mono-2.0-bdwgc.dll+0x4D6419]
+  0.2%  RDInputType:Get
+  0.2%  YzAwSQuwclVncgAOlFEYukVTLseR:wScPSdNjqCoPsOlEnlkXZOQxHJAb
+  0.2%  Quartz.Features.Combo.ComboOverlay:ApplyValueMaterial
+  0.2%  [Unity] UI::CanvasRenderer::SyncDirtyElements
+  0.2%  [Unity] CalculateGlobalPosition
+  0.2%  StutterFix.PerfOverlay:MeasureFrame
+  0.2%  UnityEngine.GUILayoutUtility:Begin
+  0.2%  [Unity] MemoryManager::Allocate
+  0.2%  UnityEngine.UI.CanvasScaler:Handle
+  0.2%  [Unity] ujob_wait_for
+  0.2%  UnityEngine.CanvasRenderer:SetColor
+  0.2%  StutterFix.UiDraw:End
+  0.2%  UnityEngine.Internal.InputUnsafeUtility:GetButton
+  0.2%  UnityEngine.Input:GetButton
+  0.2%  [Unity] Transform::GetLocalPosition
+  0.2%  Quartz.Features.VisualTweaks.VisualTweaks:ApplyPlanetParticleTweak
+  0.2%  Quartz.Features.KeyViewer.KeyViewerOverlay:UpdateDmNote
+  0.2%  DG.Tweening.Plugins.FloatPlugin:EvaluateAndApply
+  0.2%  [Unity] AudioSource::Update
+  0.2%  UnityEngine.UI.LayoutRebuilder:MarkLayoutForRebuild
+  0.2%  ADOFAI.LevelEvent:Get<T_REF>
+  0.2%  ADOFAI.LevelEvent:get_Item
+  0.2%  Rewired.ButtonStateRecorder:JstYytumrmmNbvPtKMjoVhNsJoHv
+  0.2%  [mono-2.0-bdwgc.dll+0x8A299]
+  0.2%  [Unity] AudioSource::CachePositional
+  0.2%  RDInputType_Joystick:Cancel
+  0.2%  [Unity] baselib::UnityClassic::detail::chunked_allocator<ThreadsafeLinearAllocator<0>::LocalLowLevelAllocatorProxy,5,1024,8>::allocate
+  0.2%  Mono.Globalization.Unicode.SimpleCollator:IsPrefix
+  0.2%  [Unity] AudioSource::CacheFrameParameters
+  0.2%  [Unity] Scripting::ScriptingWrapperFor
+  0.2%  (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition:RDString.GetWithCheck_Patch2
+  0.2%  [Unity] CullDynamicObjectsJob
+  0.2%  [Unity] PrepareSpriteRenderNodes<1>
+  0.2%  [Unity] GameObject::SendMessageAny
+  0.2%  (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition:scrPortalParticles.Refresh_Patch0
+  0.2%  RDInputType_Joystick:GetActionState
+  0.2%  WJvymtHaFSquBpZZYAVoSEkXdnIO:UKtSUqtlCpXXwKsatlFxzXLJRubd
+  0.1%  System.Collections.Generic.List`1<T_REF>:get_Item
+  0.1%  UnityEngine.Object:GetInstanceID
+  0.1%  [Unity] convert_to_utf8
+  0.1%  StutterFix.PerfOverlay:OnGUI
+  0.1%  [Unity] tlsf_free
+  0.1%  (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition:scrPlanet.SwitchChosen_Patch0
+  0.1%  RDInput:GetMainHeldKeys
+  0.1%  UnityEngine.IMGUITextHandle:ConvertGUIStyleToGenerationSettings
+  0.1%  TMPro.TMP_Text:set_fontSize
+  0.1%  RDInputType_Keyboard:CheckKeyState
+  0.1%  [Unity] Transform::GetPosition
+  0.1%  scrDecoration:SetScale
+  0.1%  UnityEngine.UI.CanvasScaler:HandleScaleWithScreenSize
+  0.1%  System.Collections.Generic.HashSet`1<T_REF>:Add
+  0.1%  [Unity] GpuProgramParameters::PrepareValues
+  0.1%  [Unity] InputManager::GetButton
+  0.1%  (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition:RDInput.GetStateKeys_Patch1
+  0.1%  Quartz.UI.Utility.TMPTextShadow:ApplyUnderlay
+  0.1%  StutterFix.ZeroTween:Eval
+  0.1%  Rewired.Mouse:jlmkQObSlfurirtjmxVazzYihsVe
+  0.1%  Quartz.Compat.Game.GameApi:SetRingColor
+  0.1%  UnityEngine.UI.GraphicRaycaster:Raycast
+  0.1%  CameraFilterPack_TV_Old_Movie_2:OnRenderImage
+  0.1%  scrPlanet:Update_RefreshAngles
+  0.1%  System.Collections.Generic.HashSet`1<T_REF>:AddIfNotPresent
+  0.1%  ADOFAI.LevelData:get_camZoom
+  0.1%  [win32u.dll+0x1584]
+  0.1%  StutterFix.AutoTest:Tick
+  0.1%  [Unity] UI::Canvas::UpdateCanvasRectTransform
+  0.1%  (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition:RDInput.GetMain_Patch1
+  0.1%  System.Buffer:Memcpy
+  0.1%  UnityEngine.Transform:get_position
+  0.1%  System.Collections.Generic.ObjectEqualityComparer`1<T_REF>:Equals
+  0.1%  [Unity] lane_guts
+  0.1%  CameraFilterPack_TV_Chromatical2:OnRenderImage
+  0.1%  [Unity] ShaderLab::Program::GetMatchingSubProgram
+  0.1%  [Unity] AtomicStack::Pop
+  0.1%  [Unity] baselib::UnityClassic::ReentrantLock::Acquire
+  0.1%  [Unity] ImageFilters::Blit
+  0.1%  [Unity] ReadWriteSpinLock::ReadLock
+  0.1%  Cysharp.Threading.Tasks.Internal.PlayerLoopRunner:Run
+  0.1%  [Unity] core::vector<unsigned char const ,core::allocator<unsigned char const ,0> >::~vector<unsigned char const ,core::allocator<unsigned char const ,0> >
+  0.1%  UnityEngine.UI.CanvasUpdateRegistry:RegisterCanvasElementForGraphicRebuild
+  0.1%  UnityEngine.Renderer:GetMaterial
+  0.1%  UnityEngine.Renderer:get_material
+  0.1%  string:memcpy
+  0.1%  Mono.Globalization.Unicode.SimpleCollator:CompareInternal
+  0.1%  [Unity] lane_wake_buddies
+  0.1%  [Unity] SpriteRenderer::PrepareRenderingDataIfNeeded
+  0.1%  [Unity] Renderer::GetMaterial
+  0.1%  Steamworks.Dispatch:Frame
+  0.1%  DG.Tweening.Core.Easing.EaseManager:Evaluate
+  0.1%  [Unity] ShaderLab::shaderprops::GetInt
+  0.1%  System.Collections.Generic.Dictionary`2<UnityEngine.SpriteRenderer, int>:TryGetValue
+  0.1%  [Unity] SetLocalR
+  0.1%  UnityEngine.UI.Graphic:SetAllDirty
+  0.1%  UnityEngine.UI.Collections.IndexedSet`1<T_REF>:AddUnique
+  0.1%  Rewired.Utils.Classes.Data.ADictionary`2<TKey_REF, TValue_REF>:TryGetValue
+  0.1%  UnityEngine.Color32:op_Implicit
+  0.1%  (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition:scrParticleDecoration.SetScale_Patch1
+  0.1%  Rewired.ControllerWithAxes:YuVanyyGHSOXbvihXpgoqfMcICtG
+  0.1%  [Unity] UI::Canvas::UpdateBatches
+  0.1%  Steamworks.SteamClient:RunCallbacks
+  0.1%  ADOFAI.SteamIntegration.SteamController:Update
+  0.1%  UnityEngine.Transform:set_localPosition
+  0.1%  (wrapper delegate-invoke) <Module>:invoke_single_Ease_EaseFunction_single_single_single_single
+  0.1%  [Unity] SharedObject<GfxDeviceAsyncCommand::Arg,1,SharedObjectFactory<GfxDeviceAsyncCommand::Arg> >::Release
+  0.1%  UnityEngine.GUIUtility:ResetGlobalState
+  0.1%  [mono-2.0-bdwgc.dll+0x8A382]
+  0.1%  [mono-2.0-bdwgc.dll+0x37FFE2]
+  0.1%  [Unity] FMOD::SoundI::getCodecChannels
+  0.1%  [mono-2.0-bdwgc.dll+0x8A374]
+  0.1%  [Unity] BaseRenderer::FlattenBasicData
+  0.1%  [Unity] SharedMaterialData::SharedMaterialData
+  0.1%  [Unity] CalculateGlobalRS
+  0.1%  StutterFix.UiDraw:Next
+  0.1%  [Unity] ShaderPropertySheet::AddNewPropertyUninitialized
+  0.1%  StutterFix.GcControl:Tick
+  0.1%  scrController:get_instance
+  0.1%  [Unity] core::base_hash_set<UI::CanvasRenderer * __ptr64,core::hash<UI::CanvasRenderer * __ptr64>,std::equal_to<UI::CanvasRenderer * __ptr64> >::insert<UI::CanvasRenderer * __ptr64 & __ptr64>
+  0.1%  StutterFix.TweenFix:Before
+  0.1%  Rewired.Player/ControllerHelper/MapHelper:GetMaps<T_REF>
+  0.1%  CameraFilterPack_TV_PlanetMars:OnRenderImage
+  0.1%  UnityEngine.GUIUtility:EndGUI
+  0.1%  Cysharp.Threading.Tasks.Internal.PlayerLoopRunner:RunCore
+  0.1%  System.Collections.Generic.List`1/Enumerator<T_REF>:MoveNext
+  0.1%  UnityEngine.UI.CanvasUpdateRegistry:InternalRegisterCanvasElementForGraphicRebuild
+  0.1%  DG.Tweening.DOTween:Sequence
+  0.1%  (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition:ffxPlusBase.StartEffect_Patch2
+  0.1%  StutterFix.PerfOverlay:GlBar
+  0.1%  UnityEngine.Transform:set_localScale
+  0.1%  TMPro.TMP_Text:CalculatePreferredValues
+  0.1%  [ntdll.dll+0x9DEA4]
+  0.1%  StutterFix.ParticleFix:UpdatePrefix
+  0.1%  [ntdll.dll+0x9FE74]
+  0.1%  [Unity] MonoBehaviour::CallMethodIfAvailable
+  0.1%  CameraFilterPack_Noise_TV_3:OnRenderImage
+  0.1%  [Unity] ScriptingInvocation::ScriptingInvocation
+  0.1%  CrazyMinnow.AmplitudeWebGL.Amplitude:LateUpdate
+  0.1%  (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition:RDString.Setup_Patch1
+  0.1%  Rewired.InputManager_Base:FixedUpdate
+  0.1%  [Unity] Box2D::b2DynamicTree::Query<Box2D::b2WorldQueryWrapper>
+  0.1%  UnityEngine.GUI:set_skin
+  0.1%  DG.Tweening.Core.TweenManager:GetSequence
+  0.1%  StutterFix.FloorAnim:UpdatePrefix
+  0.1%  StutterFix.UiBars:Add
+  0.1%  CameraFilterPack_Blur_Radial:OnRenderImage
+  0.1%  UnityEngine.Object:Equals
+  0.1%  [ntdll.dll+0x9D784]
+  0.1%  [Unity] GameObject::GetCullSceneMask
+  0.1%  UnityEngine.GUILayoutGroup:.ctor
+  0.1%  [Unity] GetGfxDevice
+  0.1%  scrPlanet:LateUpdate
+  0.1%  AsyncInputUtils:AdjustAngle
+  0.1%  scrPlayer:CheckPostHoldFail
+  0.1%  [Unity] RenderTarget::MakeRenderTargetSetup
+  0.1%  [Unity] lane_try_steal
+  0.1%  Quartz.UI.UICore:HandleUpdate
+  0.1%  TMPro.TMP_Text:GetPreferredWidth
+  0.1%  [Unity] CalculateGlobalPositionAndRotation
+  0.1%  [Unity] UI::Canvas::DrawRawMesh
+  0.1%  [Unity] ujob_find_dependency_chain
+  0.1%  [Unity] keywords::LocalKeywordState::operator==
+  0.1%  [Unity] MemoryManager::TryDeallocateWithLabel
+  0.1%  Cysharp.Threading.Tasks.Internal.ContinuationQueue:Run
+  0.1%  [Unity] SetGlobalR
+  0.1%  TMPro.TextMeshProUGUI:SetLayoutDirty
+  0.1%  [Unity] ujob_execute_job
+  0.1%  UnityEngine.Object:op_Implicit
+  0.1%  (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition:scrCamera.Update_Patch1
+  0.1%  [Unity] block_locate_free
+  0.1%  [Unity] TransformChangeDispatch::QueueTransformChangeIfHasChanged
+  0.1%  CameraFilterPack_FX_Glitch3:OnRenderImage
+  0.1%  [Unity] CalculateGlobalMatrix
+  0.1%  CameraFilterPack_Noise_TV_2:OnRenderImage
+  0.1%  [Unity] PrepareSceneNodesJobCombine
+  0.1%  UnityEngine.Behaviour:set_enabled
+  0.1%  [Unity] RendererScene::SceneAfterCullingOutputReady
+  0.1%  TMPro.TextMeshProUGUI:OnRectTransformDimensionsChange
+  0.1%  OttoButtonController:Update
+  0.1%  [Unity] DynamicHeapAllocator::Allocate
+  0.1%  UnityEngine.Input:GetKeyDown
+  0.1%  UnityEngine.UnitySynchronizationContext:ExecuteTasks
+  0.1%  [Unity] SetLocalT
+  0.1%  [Unity] AudioManager::Update
+  0.1%  StutterFix.TweenFix:Begin
+  0.1%  [Unity] InputManager::GetAxisRaw
+  0.1%  ADOBase:get_controller
+  0.1%  [Unity] keywords::LocalKeywordState::LocalKeywordState
+  0.1%  [mono-2.0-bdwgc.dll+0x286360]
+  0.1%  StutterFix.DecoBake:CollapseMarkDirty
+  0.1%  Quartz.Core.Service.UIService:Tick
+  0.1%  StutterFix.RecolorDefer:AfterStep
+  0.1%  [Unity] ThreadsafeLinearAllocator<0>::Deallocate
+  0.1%  System.Activator:CreateInstance
+  0.1%  [Unity] Behaviour::GetEnabled
+  0.1%  [Unity] ScriptingInvocation::Invoke
+  0.1%  UnityEngine.UI.GraphicRegistry:GetRaycastableGraphicsForCanvas
+  0.1%  UnityEngine.UI.Graphic:Rebuild
+  0.1%  [Unity] Transform::GetWorldScaleLossy
+  0.1%  [Unity] InverseTransformPosition
+  0.1%  System.Runtime.CompilerServices.ConditionalWeakTable`2<TKey_REF, TValue_REF>:TryGetValue
+  0.1%  StutterFix.PerfOverlay:HandleMouse
+  0.1%  scrPlanet:AsyncRefreshAngles
+  0.1%  Quartz.Features.SongTitle.SongTitleOverlay/Updater:Update
+  0.1%  [Unity] FMOD::DSPConnectionI::rampTo
+  0.1%  [Unity] sinf
+  0.1%  [Unity] RenderTargetMap::Query
+  0.1%  (wrapper managed-to-native) UnityEngine.Input:GetKeyDownInt
+  0.1%  [Unity] UI::Canvas::RenderOverlays
+  0.1%  ADOBase:get_sceneName
+  0.1%  UnityEngine.Mathf:Clamp01
+  0.1%  [Unity] FMOD::ChannelRealManual3D::set2DFreqVolumePanFor3D
+  0.1%  JALib.Core.JALocalization:RDStringSetup
+  0.1%  CameraFilterPack_Atmosphere_Rain_Pro:OnRenderImage
+  0.1%  StutterFix.TileCull:SetEnabled
+  0.1%  UnityEngine.UI.Collections.IndexedSet`1<T_REF>:Add
+  0.1%  DG.Tweening.ShortcutExtensions/<>c__DisplayClass22_0:<DOFloat>b__1
+  0.1%  System.Collections.Generic.Dictionary`2<UnityEngine.SpriteRenderer, int>:FindEntry
+  0.1%  GCS:get_isDev
+  0.1%  Persistence:get_forceVisualSettings
+  0.1%  DG.Tweening.Tween:OnTweenCallback
+  0.1%  System.RuntimeType:CreateInstanceSlow
+  0.1%  System.RuntimeType:CreateInstanceDefaultCtor
+  0.1%  (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition:scrHitErrorMeter.AddHit_Patch0
+  0.1%  scrController:UpdateHitErrorMeter
+  0.1%  [Unity] FMOD::ChannelSoftware::updateReverbMix
+  0.1%  [Unity] core::base_hash_map<UI::Canvas * __ptr64,core::hash_set<UI::CanvasRenderer * __ptr64,core::hash<UI::CanvasRenderer * __ptr64>,std::equal_to<UI::CanvasRenderer * __ptr64> >,core::hash<UI::Canvas * __ptr64>,std::equal_to<UI::Canvas * __ptr64> >::get_value<UI::Canvas * __ptr64 & __ptr64>
+  0.1%  UnityEngine.UI.Graphic:DoMeshGeneration
+  0.1%  UnityEngine.UI.Graphic:UpdateGeometry
+  0.1%  UnityEngine.Pool.CollectionPool`2<TCollection_REF, TItem_REF>:Release
+  0.1%  [Unity] TransformChangeDispatch::PrepareScheduling
+  0.1%  Quartz.Features.KeyViewer.KeyViewerOverlay:PollUncoveredKeys
+  0.1%  [mono-2.0-bdwgc.dll+0x89646]
+  0.1%  UnityEngine.UI.MaskableGraphic:OnDisable
+  0.1%  UnityEngine.UI.Text:OnDisable
+  0.1%  AsyncInputUtils:GetAngle
+  0.1%  [Unity] ParticleSystem::SyncJobs
+  0.1%  [Unity] RenderNodeQueue::Reset
+  0.1%  (wrapper stelemref) object:virt_stelemref_class_small_idepth
+  0.1%  Quartz.UI.Utility.TMPTextShadow:GetOrCreateRoot
+  0.1%  UnityEngine.Mathf:Pow
+  0.1%  [Unity] Collider2D::CalculateColliderTransformation
+  0.1%  AsyncInputManager:Update
+  0.1%  CameraFilterPack_Color_Invert:OnRenderImage
+  0.1%  Cysharp.Threading.Tasks.Internal.ContinuationQueue:RunCore
+  0.1%  Quartz.Features.Combo.ComboOverlay:ApplyCaptionMaterial
+  0.1%  [Unity] BuildSingleStreamChannelInfo
+  0.1%  scrFlash:Update
+  0.1%  UnityEngine.Camera:get_pixelRect
+  0.1%  System.Collections.Generic.HashSet`1<int>:Add
+  0.1%  UnityEngine.GUI:DoSetSkin
+  0.1%  scrDecoration:SetPivotY
+  0.1%  UnityEngine.GameObject:get_activeSelf
+  0.1%  [ntdll.dll+0x2FAB3]
+  0.1%  [Unity] UI::CalculateNestedAlpha
+  0.1%  Rewired.Utils.Classes.Data.ADictionary`2<TKey_REF, TValue_REF>:IndexOfKey
+  0.1%  [Unity] ShaderPropertySheet::SetFloat
+  0.1%  DG.Tweening.Sequence:.ctor
+  0.1%  [Unity] FMOD::Codec::defaultGetWaveFormat
+  0.1%  TMPro.TextMeshProUGUI:UpdateMeshPadding
+  0.1%  UnityEngine.Graphics:Blit
+  0.1%  System.Runtime.CompilerServices.ConditionalWeakTable`2<TKey_REF, TValue_REF>:GetOrCreateValue
+  0.1%  [Unity] AtomicStack::Push
+  0.1%  [Unity] Overlap2DQueryBase::ReportFixture
+  0.1%  [Unity] ReadWriteLock::ReadLock
+  0.1%  [Unity] CullDynamicSceneCombineJob
+  0.1%  [Unity] Transform::SetPosition
+  0.1%  (wrapper castclass) object:__castclass_with_cache
+  0.1%  StutterFix.UiInputBlock:Clear
+  0.1%  UnityEngine.Transform:get_parent
