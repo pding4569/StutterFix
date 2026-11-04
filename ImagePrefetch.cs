@@ -587,9 +587,6 @@ namespace StutterFix
                 }
                 startTicks = Stopwatch.GetTimestamp();
                 putMs = fallbackMs = 0; fallbackNotes = 0; lateCompress = 0; compressWaitMs = 0;
-#if DEV || AUTOTEST
-                ColdOpenProbe.Begin();
-#endif
                 gcAtStart = GC.CollectionCount(0);
                 // 로딩 동안 GC를 꺼 둔다. 지난번 로딩 중 GC가 13번 돌았다. 곡 중 GC 멈춤이 이미 끈 상태면 건드리지 않는다.
                 if (!GcControl.Paused && UnityEngine.Scripting.GarbageCollector.GCMode == UnityEngine.Scripting.GarbageCollector.Mode.Enabled)
@@ -798,8 +795,8 @@ namespace StutterFix
                 }
             }
         }
-        internal static int lateCompress;      // 압축 결과를 얻지 못한 이미지 수
-        internal static double compressWaitMs; // 진행 중인 압축을 게임이 기다린 시간
+        internal static int lateCompress;      // 압축이 절반도 안 됐을 때 게임이 가져간 이미지 수 (그 이미지는 원래대로 유니티가 압축)
+        internal static double compressWaitMs; // 절반 넘게 된 압축을 게임이 기다린 시간
 
         // gate 안에서: 압축 거리에서 빠진(게임이 가져갔거나 건너뜀) 이미지는 마지막 줄 묶음이 끝났을 때 결과·픽셀을 푼다
         private static void ReleaseIfDone(Item c)
@@ -846,32 +843,15 @@ namespace StutterFix
                 {
                     if (byPath.TryGetValue(path, out it))
                     {
-                        bool waitForDecode = TexCompress.Planned;
-#if DEV || AUTOTEST
-                        waitForDecode &= !ColdOpenProbe.Legacy;
-#endif
-                        // 압축 대기로 해독이 뒤처질 수 있다. 소비 지점보다 앞의 안 쓰는
-                        // 작업을 해제하고 현재 이미지를 다음 해독으로 올려 메모리 한도 교착을 피한다.
-                        if (it.State == 0 && waitForDecode)
-                        {
-                            DropSkipped(it.Index);
-                            next = it.Index;
-                            Monitor.PulseAll(gate);
-                            while (running && (it.State == 0 || it.State == 1)) { Monitor.Wait(gate, 20); WindowGhost.Tick(); }
-                        }
+                        // 아직 시작 안 한 것은 기다리지 않는다(순서가 어긋났다는 뜻). 푸는 중이면 끝날 때까지 기다린다.
                         if (it.State == 0) { it.State = 3; notReady++; it = null; why = "순서 어긋남"; }
                         else
                         {
                             while (it.State == 1 && running) { Monitor.Wait(gate, 100); WindowGhost.Tick(); }
-                            // 저사양 옵션은 준비된 결과만 Apply에서 대체한다. 포기하면 Unity가
-                            // 자동 압축하는 것이 아니라 원본 RGBA가 남는다. 같은 결과를 끝까지 기다린다.
+                            // 압축이 절반 넘게 됐으면 모든 작업 스레드가 이것부터 마저 하도록 하고 기다린다. 절반도 안 됐으면 그만두고 원래대로(유니티 압축).
                             if (it.State == 2 && it.Blocks != IntPtr.Zero && !it.BlocksReady && !it.Abandoned)
                             {
-                                bool waitForBlocks = true;
-#if DEV || AUTOTEST
-                                waitForBlocks = !ColdOpenProbe.Legacy || it.DoneRows * 2 >= it.Rows;
-#endif
-                                if (waitForBlocks)
+                                if (it.DoneRows * 2 >= it.Rows)
                                 {
                                     long w0 = Stopwatch.GetTimestamp();
                                     it.Urgent = true; Monitor.PulseAll(gate);
@@ -989,9 +969,6 @@ namespace StutterFix
                 }
                 if (it.Factor < 1f) shrunk[tex] = it.Factor;   // 스프라이트를 만들 때 크기 기준을 맞춘다
                 used++;
-#if DEV || AUTOTEST
-                ColdOpenProbe.Record(tex, it.Abandoned);
-#endif
                 putMs += (Stopwatch.GetTimestamp() - t0) * 1000.0 / Stopwatch.Frequency;
                 return true;
             }
