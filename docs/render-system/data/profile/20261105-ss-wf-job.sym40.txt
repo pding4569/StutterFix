@@ -1,0 +1,83 @@
+﻿== 리프 (표본 11933)
+ 88.4%  [ntdll.dll+0xA0FD4]
+  1.0%  [ntdll.dll+0x64D56]
+  0.6%  [Unity] TransformChangeDispatch::ScanAndHandleChangesJob
+  0.6%  [Unity] Material::CanAcquireSharedMaterialDataFromJob
+  0.5%  [Unity] TransformChangeDispatch::ClearJob
+  0.5%  [Unity] PrepareValueParameters<FullParameterPreparer>
+  0.4%  [Unity] ShaderPropertySheet::FindPropertyIndex
+  0.4%  [Unity] TransformChangeDispatch::GetAndClearTransformsJob
+  0.3%  [Unity] handle_ring_t::try_dequeue
+  0.3%  [Unity] BaseRenderer::FlattenSharedMaterialData<1>
+  0.3%  [Unity] lane_guts
+  0.2%  [Unity] AllocateAndPrepareSpriteRenderingData
+  0.2%  [Unity] SpriteRenderer::PrepareRenderingDataIfNeeded
+  0.2%  [Unity] ForwardRenderLoopJob
+  0.2%  [Unity] ShaderLab::shaderprops::GetFloat
+  0.2%  [Unity] PrepareSpriteRenderNodes<1>
+  0.2%  [Unity] GfxDeviceClient::SetShaderPropertiesShared
+  0.2%  [Unity] ShaderPropertySheet::AddNewPropertyUninitialized
+  0.2%  [Unity] DrawSpriteRawFromNodeQueue
+  0.1%  [Unity] ReadWriteSpinLock::ReadLock
+  0.1%  [Unity] ParticleGeomWrite
+  0.1%  [Unity] SharedObject<GfxDeviceAsyncCommand::Arg,1,SharedObjectFactory<GfxDeviceAsyncCommand::Arg> >::Release
+  0.1%  [Unity] SpriteRendererTransformChangedJob
+  0.1%  [Unity] core::base_hash_set<core::pair<EntityId const ,Object * __ptr64,0>,core::hash_pair<Int32HashFunctionKnuth,EntityId>,core::equal_pair<std::equal_to<EntityId>,EntityId> >::lookup<EntityId,core::equal_pair<std::equal_to<EntityId>,EntityId> >
+  0.1%  [Unity] ForwardShaderRenderLoop::RenderObjectSorter<0>::operator
+  0.1%  [Unity] ShaderLab::Program::GetMatchingSubProgram
+  0.1%  [Unity] memcpy
+  0.1%  [Unity] BatchRenderer::ApplyShaderPass
+  0.1%  [Unity] MemoryManager::TryDeallocateWithLabel
+  0.1%  [Unity] qsort_internal::InsertionSort<ForwardRenderPassData * __ptr64,ForwardShaderRenderLoop::RenderObjectSorter<0> >
+  0.1%  [Unity] GfxDeviceClient::SetShadersMainThread
+  0.1%  [Unity] TransformChangeDispatch::ScanAndClearAndHandleChangesJob
+  0.1%  [Unity] ShaderLab::ShaderState::FindSubProgramsToUse
+  0.1%  [Unity] IntersectAABBPlaneBoundsOptimized
+  0.1%  [Unity] PrepareSceneNodesJob
+  0.1%  [Unity] keywords::LocalKeywordState::Union
+  0.1%  [Unity] GpuProgramParameters::PrepareValues
+  0.1%  [Unity] MemoryManager::Allocate
+  0.1%  [Unity] TransformVerticesInnerLoop<0,0,1>
+  0.1%  [Unity] ShaderLab::shaderprops::GetInt
+== 스택 어디든(깊이 12 한계) (표본 11933)
+100.0%  [Unity] worker_thread_routine
+100.0%  [Unity] Thread::RunThreadWrapper
+100.0%  [KERNEL32.DLL+0x17374]
+100.0%  [ntdll.dll+0x4CC91]
+100.0%  [Unity] lane_guts
+ 89.4%  [KERNELBASE.dll+0x6EE2F]
+ 89.4%  [ntdll.dll+0x64933]
+ 89.4%  [ntdll.dll+0x64C22]
+ 88.4%  [ntdll.dll+0xA0FD4]
+ 88.4%  [ntdll.dll+0x64D6D]
+  9.9%  [Unity] ujob_execute_job
+  4.6%  [Unity] ExecuteAsyncSetup
+  4.3%  [Unity] ForwardRenderLoopJob
+  2.6%  [Unity] BatchRenderer::ApplyShaderPass
+  2.4%  [Unity] ApplyMaterialPass
+  2.2%  [Unity] ShaderLab::Pass::ApplyPass
+  2.2%  [Unity] ShaderLab::ShaderState::ApplyShaderState
+  2.0%  [Unity] ExecuteRenderQueue
+  1.7%  [Unity] PrepareSpriteRenderNodes<1>
+  1.5%  [Unity] GfxDeviceClient::SetShadersMainThread
+  1.4%  [Unity] BatchRenderer::RenderBatch
+  1.4%  [Unity] GpuProgramParameters::PrepareValues
+  1.3%  [Unity] DrawSpriteRawFromNodeQueue
+  1.0%  [Unity] PrepareValueParameters<FullParameterPreparer>
+  1.0%  [ntdll.dll+0x64D56]
+  0.8%  [Unity] TransformChangeDispatch::ScanAndHandleChangesJob
+  0.8%  [Unity] BaseRenderer::CanFlattenSharedMaterialData<1>
+  0.6%  [Unity] Material::CanAcquireSharedMaterialDataFromJob
+  0.6%  [Unity] ShaderLab::ShaderState::FindSubProgramsToUse
+  0.5%  [Unity] ShaderLab::Program::GetMatchingSubProgram
+  0.5%  [Unity] TransformChangeDispatch::ClearJob
+  0.4%  [Unity] lane_try_steal
+  0.4%  [Unity] ParticleSystemGeometryJob::RenderJob
+  0.4%  [Unity] ShaderPropertySheet::FindPropertyIndex
+  0.4%  [Unity] ParticleSystemGeometryJob::RenderJobCommon
+  0.4%  [Unity] TransformChangeDispatch::GetAndClearTransformsJob
+  0.3%  [Unity] handle_ring_t::try_dequeue
+  0.3%  [Unity] ShaderLab::shaderprops::GetFloat
+  0.3%  [Unity] ShaderPropertySheet::AddNewPropertyUninitialized
+  0.3%  [Unity] BaseRenderer::FlattenSharedMaterialData<1>
+== 리프가 UnityPlayer 일 때 가장 가까운 관리 함수 (표본 11933)

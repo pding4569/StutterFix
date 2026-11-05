@@ -1,0 +1,123 @@
+﻿== 리프 (표본 11947)
+ 16.9%  [ntdll.dll+0x9E0F4]
+  1.7%  [Unity] TransformChangeDispatch::ScanAndHandleChangesJob
+  1.4%  [mono-2.0-bdwgc.dll+0x4D6426]
+  1.4%  [?]
+  1.3%  [Unity] MonoBehaviour::IsStateMachineBehaviour
+  1.1%  [Unity] memcpy_repmovs
+  1.1%  UnityEngine.Object:IsNativeObjectAlive
+  1.1%  [Unity] Material::SetFloat
+  1.0%  [Unity] TransformChangeDispatch::ClearJob
+  1.0%  [Unity] memcpy
+  1.0%  [Unity] Material::SetColor
+  0.9%  (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition:scrFloor.LateUpdate_Patch1
+  0.9%  [Unity] core::base_hash_set<core::pair<EntityId const ,Object * __ptr64,0>,core::hash_pair<Int32HashFunctionKnuth,EntityId>,core::equal_pair<std::equal_to<EntityId>,EntityId> >::lookup<EntityId,core::equal_pair<std::equal_to<EntityId>,EntityId> >
+  0.8%  [Unity] handle_ring_t::try_dequeue
+  0.8%  [Unity] BaseBehaviourManager::CommonUpdate<BehaviourManager>
+  0.8%  [Unity] Material::CanAcquireSharedMaterialDataFromJob
+  0.7%  [Unity] IsInstanceValid
+  0.7%  [ntdll.dll+0x9E394]
+  0.6%  [Unity] ShaderPropertySheet::FindPropertyIndex
+  0.6%  [Unity] DoForwardShaderRenderLoop
+  0.5%  [Unity] MonoBehaviour::CallUpdateMethod
+  0.5%  StutterFix.TightLate:Eligible
+  0.5%  [Unity] TransformChangeDispatch::GetAndClearTransformsJob
+  0.5%  [Unity] GameObject::IsActive
+  0.5%  (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition:scrFloor.Update_Patch1
+  0.5%  [Unity] Component_Get_Custom_PropTransform
+  0.4%  [Unity] FMOD::ChannelGroupI::setVolumeInternal
+  0.4%  TMPro.TextMeshProUGUI:GenerateTextMesh
+  0.4%  StutterFix.TightLate:Apply
+  0.4%  [Unity] CalculateGlobalPosition
+  0.4%  [Unity] BuildRenderObjectData
+  0.4%  [Unity] UI::RectTransform::UpdateAnchorPositionIfTransformChanged
+  0.4%  [Unity] Transform::GetLocalPosition
+  0.4%  StutterFix.AllocFix:NeedNew
+  0.4%  [Unity] BaseRenderer::FlattenSharedMaterialData<1>
+  0.4%  [Unity] CalculateGlobalMatrix
+  0.3%  [Unity] MonoBehaviour::HandleNotifications
+  0.3%  StutterFix.FloorAnim:OpaOnly
+  0.3%  [Unity] SetGlobalT
+  0.3%  [Unity] BaseBehaviourManager::CommonUpdate<LateBehaviourManager>
+== 스택 어디든(깊이 12 한계) (표본 11947)
+ 99.5%  [Unity] ExecutePlayerLoop
+ 99.2%  [Unity] PerformMainLoop
+ 98.8%  [Unity] MainMessageLoop
+ 98.6%  [Unity] UnityMainImpl
+ 98.0%  [Unity] UnityMain
+ 97.6%  [A Dance of Fire and Ice.exe+0x11F6]
+ 96.6%  [KERNEL32.DLL+0x17374]
+ 95.7%  [ntdll.dll+0x4CC91]
+ 82.1%  [Unity] PlayerLoop
+ 50.5%  [mono-2.0-bdwgc.dll+0x1C8A70]
+ 50.5%  [mono-2.0-bdwgc.dll+0x1C8984]
+ 48.9%  [mono-2.0-bdwgc.dll+0x286C0E]
+ 42.6%  [Unity] MonoBehaviour::CallUpdateMethod
+ 42.1%  [Unity] ScriptingInvocation::Invoke
+ 40.7%  [Unity] MonoBehaviour::CallMethodIfAvailable
+ 40.1%  (wrapper runtime-invoke) object:runtime_invoke_void__this__
+ 28.4%  [Unity] BaseBehaviourManager::CommonUpdate<BehaviourManager>
+ 18.2%  [Unity] PlayerRender
+ 17.2%  [Unity] ExecuteTimeUpdate
+ 17.0%  [Unity] `InitPlayerLoopCallbacks'::`2'::TimeUpdateWaitForLastPresentationAndUpdateTimeRegistrator::Forward
+ 17.0%  [Unity] GfxDeviceD3D11::WaitForLastPresentationAndGetTimestamp
+ 16.9%  [KERNELBASE.dll+0x50D00]
+ 16.9%  [ntdll.dll+0x9E0F4]
+ 15.2%  [Unity] BaseBehaviourManager::CommonUpdate<LateBehaviourManager>
+ 14.3%  [Unity] RenderManager::RenderOffscreenCameras
+ 12.1%  [Unity] Camera::CustomRender
+  9.3%  [Unity] ujob_wait_for
+  7.6%  [Unity] ujob_execute_job
+  6.6%  (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition:scrDecorationManager.LateUpdate_Patch7
+  6.3%  StutterFix.TightLate:List
+  5.9%  StutterFix.TightLate:Process
+  5.6%  [Unity] UI::CanvasManager::WillRenderCanvases
+  5.3%  (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition:DG.Tweening.Core.DOTweenComponent.Update_Patch6
+  5.2%  [Unity] CullResults::GetOrCreateSharedRendererScene
+  5.1%  [Unity] ExtractSceneRenderNodeQueue
+  4.2%  (wrapper runtime-invoke) object:runtime_invoke_void
+  4.1%  StutterFix.MoveApply:LogicMaybe
+  4.0%  scrDecoration:LogicUpdate
+  3.9%  (wrapper delegate-invoke) <Module>:invoke_void
+  3.8%  (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition:scrFloor.Update_Patch1
+== 리프가 UnityPlayer 일 때 가장 가까운 관리 함수 (표본 11947)
+  2.8%  (wrapper managed-to-native) UnityEngine.Material:SetColorImpl_Injected
+  1.7%  (wrapper managed-to-native) UnityEngine.CameraRaycastHelper:RaycastTry2D_Injected
+  1.6%  (wrapper managed-to-native) UnityEngine.Material:SetFloatImpl_Injected
+  1.0%  (wrapper managed-to-native) UnityEngine.Graphics:Internal_BlitMaterial5_Injected
+  0.7%  (wrapper managed-to-native) UnityEngine.Mesh:SetArrayForChannelImpl_Injected
+  0.6%  (wrapper managed-to-native) UnityEngine.Transform:set_position_Injected
+  0.6%  (wrapper managed-to-native) UnityEngine.ParticleSystem/ShapeModule:set_scale_Injected
+  0.5%  (wrapper managed-to-native) UnityEngine.Transform:set_rotation_Injected
+  0.5%  (wrapper managed-to-native) UnityEngine.Component:get_transform_Injected
+  0.4%  (wrapper managed-to-native) UnityEngine.Transform:get_position_Injected
+  0.4%  (wrapper managed-to-native) UnityEngine.Shader:PropertyToID_Injected
+  0.4%  (wrapper managed-to-native) UnityEngine.Component:get_gameObject_Injected
+  0.4%  (wrapper managed-to-native) UnityEngine.AudioListener:set_volume
+  0.4%  (wrapper managed-to-native) UnityEngine.Transform:get_localPosition_Injected
+  0.3%  (wrapper managed-to-native) UnityEngine.Physics2D:OverlapCircleAll_Internal_Injected
+  0.3%  (wrapper managed-to-native) UnityEngine.Renderer:set_enabled_Injected
+  0.3%  (wrapper managed-to-native) UnityEngine.Quaternion:Internal_FromEulerRad_Injected
+  0.2%  (wrapper managed-to-native) UnityEngine.Transform:set_localPosition_Injected
+  0.2%  (wrapper managed-to-native) UnityEngine.Renderer:GetMaterial_Injected
+  0.2%  (wrapper managed-to-native) UnityEngine.Camera:ScreenToWorldPoint_Injected
+  0.2%  (wrapper managed-to-native) UnityEngine.Transform:get_lossyScale_Injected
+  0.2%  (wrapper managed-to-native) UnityEngine.Mesh:ClearImpl_Injected
+  0.2%  (wrapper managed-to-native) UnityEngine.CanvasRenderer:GetColor_Injected
+  0.2%  (wrapper managed-to-native) UnityEngine.RectTransform:set_sizeDelta_Injected
+  0.2%  (wrapper managed-to-native) UnityEngine.ParticleSystem/EmissionModule:set_enabled
+  0.2%  (wrapper managed-to-native) UnityEngine.Transform:set_localScale_Injected
+  0.2%  (wrapper managed-to-native) UnityEngine.CanvasRenderer:SetColor_Injected
+  0.1%  (wrapper managed-to-native) UnityEngine.Quaternion:Internal_ToEulerRad_Injected
+  0.1%  (wrapper managed-to-native) UnityEngine.Material:GetShaderKeywords_Injected
+  0.1%  (wrapper managed-to-native) UnityEngine.AudioListener:GetSpectrumDataHelper_Injected
+  0.1%  (wrapper managed-to-native) UnityEngine.AudioSource:get_isPlaying_Injected
+  0.1%  (wrapper managed-to-native) UnityEngine.Material:SetTextureImpl_Injected
+  0.1%  (wrapper managed-to-native) UnityEngine.Behaviour:set_enabled_Injected
+  0.1%  (wrapper managed-to-native) UnityEngine.Behaviour:get_isActiveAndEnabled_Injected
+  0.1%  (wrapper managed-to-native) UnityEngine.GameObject:SetActive_Injected
+  0.1%  (wrapper managed-to-native) UnityEngine.Internal.InputUnsafeUtility:GetButton_Injected
+  0.1%  (wrapper managed-to-native) UnityEngine.GUIStyle:Internal_CalcSize_Injected
+  0.1%  (wrapper managed-to-native) UnityEngine.GameObject:GetComponentsInternal_Injected
+  0.1%  (wrapper managed-to-native) UnityEngine.CameraRaycastHelper:RaycastTry_Injected
+  0.1%  (wrapper managed-to-native) UnityEngine.Internal.InputUnsafeUtility:GetAxisRaw_Injected

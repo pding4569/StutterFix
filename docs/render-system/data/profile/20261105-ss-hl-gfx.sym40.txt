@@ -1,0 +1,83 @@
+﻿== 리프 (표본 11922)
+ 69.1%  [ntdll.dll+0xA0FD4]
+  6.8%  [Unity] ThreadedStreamBuffer::HandleOutOfBufferToReadFrom
+  2.0%  [Unity] GfxDeviceWorker::RunCommand
+  1.3%  [Unity] ShaderPropertySheet::FindPropertyIndex
+  1.0%  [Unity] GpuProgram::ApplyValueParameters<D3D11GpuProgramApplier>
+  0.7%  [ntdll.dll+0x64D56]
+  0.7%  [Unity] PrepareTextureParameters<OverridingParameterPreparer>
+  0.7%  [Unity] D3D11CommonShader::ApplyGpuProgram
+  0.6%  [Unity] PrepareValueParameters<OverridingParameterPreparer>
+  0.6%  [ntdll.dll+0x9D624]
+  0.4%  [nvwgf2umx.dll+0x598A3E]
+  0.4%  [Unity] GfxDeviceD3D11Base::DrawBuffers
+  0.4%  [Unity] GfxDeviceD3D11Base::SetShaderPropertiesCopied
+  0.3%  [Unity] TexturesD3D11Base::SetTexture
+  0.3%  [Unity] GpuProgramParameters::PrepareOverridingValues
+  0.3%  [Unity] SharedObject<GfxDeviceAsyncCommand::Arg,1,SharedObjectFactory<GfxDeviceAsyncCommand::Arg> >::Release
+  0.3%  [Unity] memcpy
+  0.3%  [ntdll.dll+0x9FB74]
+  0.3%  [Unity] BuiltinMatrixParamCacheD3D11::CacheCBIndices
+  0.3%  [Unity] GfxDeviceD3D11Base::UnbindTexture
+  0.3%  [Unity] ConstantBuffersD3D11Base::BindCB
+  0.3%  [nvwgf2umx.dll+0x2B8B88]
+  0.3%  [Unity] ConstantBuffersD3D11::UpdateAndSubmitBuffers
+  0.3%  [Unity] GfxDeviceD3D11Base::DrawBufferRanges
+  0.3%  [Unity] ConstantBuffersD3D11Base::ResetBinds
+  0.2%  [ntdll.dll+0x9E394]
+  0.2%  [nvwgf2umx.dll+0x2691D7]
+  0.2%  [Unity] VertexDeclarationD3D11::GetInputLayout
+  0.2%  [Unity] ShaderPropertySheet::SerializeFromExternal
+  0.2%  [Unity] memset
+  0.2%  [Unity] __chkstk
+  0.2%  [Unity] ConstantBufferD3D11::SetConstant<Vector4f>
+  0.2%  [Unity] DynamicVBO::DrawChunk
+  0.2%  [d3d11.dll+0x1289B5]
+  0.2%  [nvwgf2umx.dll+0x268E5E]
+  0.2%  [d3d11.dll+0x128BFE]
+  0.1%  [Unity] GfxDeviceD3D11Base::SetTextures
+  0.1%  [Unity] D3D11GpuProgramApplier::ApplyVector
+  0.1%  [Unity] PushEndParamsMark
+  0.1%  [Unity] GfxDeviceD3D11Base::BeforeDrawCall
+== 스택 어디든(깊이 12 한계) (표본 11922)
+100.0%  [Unity] GfxDeviceWorker::RunExt
+100.0%  [Unity] GfxDeviceWorker::RunGfxDeviceWorker
+100.0%  [Unity] Thread::RunThreadWrapper
+100.0%  [KERNEL32.DLL+0x17374]
+100.0%  [ntdll.dll+0x4CC91]
+100.0%  [Unity] GfxDeviceWorker::RunCommand
+ 75.9%  [Unity] ThreadedStreamBuffer::HandleOutOfBufferToReadFrom
+ 69.9%  [Unity] baselib::UnityClassic::CappedSemaphore::Acquire
+ 69.9%  [ntdll.dll+0x64933]
+ 69.9%  [KERNELBASE.dll+0x6EE2F]
+ 69.8%  [ntdll.dll+0x64C22]
+ 69.1%  [ntdll.dll+0xA0FD4]
+ 69.1%  [ntdll.dll+0x64D6D]
+  5.6%  [Unity] ThreadedBlockAllocatingBuffer::HandleOutOfBufferToReadFrom
+  5.0%  [Unity] GfxDeviceD3D11Base::SetShaderPropertiesCopied
+  4.0%  [Unity] GfxDeviceD3D11Base::DrawBuffers
+  3.8%  [Unity] D3D11CommonShader::ApplyGpuProgram
+  3.4%  [Unity] GpuProgramParameters::PrepareOverridingValues
+  3.3%  [Unity] GfxDeviceD3D11::PresentFrame
+  3.2%  [Unity] GfxDeviceD3D11Base::SetShadersThreadable
+  2.0%  [Unity] GfxDeviceD3D11Base::BeforeDrawCall
+  1.9%  [gameoverlayrenderer64.dll+0x9B81F]
+  1.8%  [dxgi.dll+0x1990]
+  1.8%  [dxgi.dll+0x15F5B]
+  1.5%  [dxgi.dll+0x17137]
+  1.5%  [d3d11.dll+0x12C398]
+  1.5%  [dxgi.dll+0x22CA]
+  1.5%  [dxgi.dll+0x2679]
+  1.4%  [Unity] GfxDeviceD3D11Base::SetTextures
+  1.4%  [d3d11.dll+0x13C36]
+  1.4%  [Unity] GpuProgram::ApplyValueParameters<D3D11GpuProgramApplier>
+  1.4%  [Unity] PrepareValueParameters<OverridingParameterPreparer>
+  1.4%  [Unity] DynamicVBO::DrawChunk
+  1.3%  [Unity] ShaderPropertySheet::FindPropertyIndex
+  1.3%  [Unity] TexturesD3D11Base::SetTexture
+  1.3%  [Unity] ConstantBuffersD3D11::UpdateAndSubmitBuffers
+  1.2%  [d3d11.dll+0x14EA1]
+  1.2%  [nvwgf2umx.dll+0x2A74A9]
+  1.1%  [Unity] BufferD3D11::BeginWrite
+  1.0%  [nvwgf2umx.dll+0x599300]
+== 리프가 UnityPlayer 일 때 가장 가까운 관리 함수 (표본 11922)
