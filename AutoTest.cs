@@ -929,6 +929,7 @@ namespace StutterFix
                 case "pace": Main.Entry.Logger.Log("[pace] 프레임 " + DisplayPace.Frames + " 그림 " + DisplayPace.Draws); return true;
 #if AUTOTEST
                 case "pacecheck": DisplayPace.Check(arg == "start"); return true;
+                case "waitutc": return DateTime.UtcNow.Ticks >= long.Parse(arg);
 #endif
                 case "rtcensus": RuntimeCensus.Run(arg); return true;
                 case "rdcapture": RuntimeCensus.Capture(); return true;
