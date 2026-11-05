@@ -662,6 +662,7 @@ namespace StutterFix
 #if DEV || AUTOTEST
             if (FrameCompare.Paused) return;
 #endif
+            if (DisplayPace.Light) return;
 #if DEV || AUTOTEST || GPUDECO
             GpuCpuUpdateFrame=Time.frameCount;
             if (GpuDecoPlayer.Available) DecoBake.AdvanceClock();
@@ -687,6 +688,7 @@ namespace StutterFix
             GroupFrameStart();
             long t0 = System.Diagnostics.Stopwatch.GetTimestamp();
             float dt = (DOTween.useSmoothDeltaTime ? Time.smoothDeltaTime : Time.deltaTime) * DOTween.timeScale;
+            dt = DisplayPace.TakeDt(dt);
             float td = dt * 1f;   // 애니메이션마다의 timeScale 은 1
             Frames++;
             DecoEngine.BeginFrame();

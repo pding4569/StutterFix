@@ -1248,6 +1248,18 @@ namespace StutterFix
                     T("더하기(Linear Dodge) 블렌드 장식을 화면 복사 없이 그립니다. 모양은 같고, 블렌드 장식이 많은 맵에서 프레임이 크게 오릅니다.",
                       "Draws additive (Linear Dodge) blend decorations without copying the screen. Looks identical; big FPS gain on maps with many blend decorations."),
                     T("무거운 맵", "Heavy maps"));
+                ch |= Option("jitinline", ref c.JitInline, T("코드 더 빠르게 컴파일", "Faster compiled code"),
+                    T("Mono 가 함수를 컴파일할 때 더 많이 합칩니다. 모든 맵에서 프레임이 조금 오릅니다.", "Lets Mono inline more when compiling. Small FPS gain on all maps."),
+                    T("무거운 맵", "Heavy maps"));
+                ch |= Option("holdskip", ref c.HoldSkip, T("일 없는 홀드 건너뛰기", "Skip idle holds"),
+                    T("값이 그대로인 홀드 타일은 다시 쓰지 않습니다. 모양은 같습니다.", "Holds whose values did not change are not rewritten. Looks identical."),
+                    T("무거운 맵", "Heavy maps"));
+                ch |= Option("displaypace", ref c.DisplayPace, T("화면에 나갈 프레임만 그리기", "Draw only displayed frames"),
+                    T("주사율만큼만 그리고 그 사이 프레임은 입력·판정만 돌립니다. FPS 숫자가 크게 오릅니다. 다시 켜야 적용됩니다.", "Draws at the refresh rate and runs only input and judgement between. FPS rises a lot. Needs a game restart."),
+                    T("무거운 맵", "Heavy maps"));
+                ch |= Option("maskgrow", ref c.EngineMaskGrow, T("마스크 엔진 패치", "Mask engine patch"),
+                    T("마스크가 많은 맵에서 엔진의 배열 복사를 줄입니다. 엔진 코드를 실행 중에 바꾸며, 버전이 다르면 스스로 꺼집니다.", "Reduces engine array copies on mask-heavy maps. Patches engine code at runtime; turns itself off on other engine versions."),
+                    T("무거운 맵", "Heavy maps"));
                 EndGroup();
             }
             else if (sub == 3)

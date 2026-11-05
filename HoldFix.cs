@@ -1,11 +1,10 @@
-#if DEV || AUTOTEST
 using System.Collections.Generic;
 using HarmonyLib;
 using UnityEngine;
 
 namespace StutterFix
 {
-    // 시험 전용: scrHoldRenderer.Update 는 입력이 그대로여도 매 프레임 재질 값을 이름으로 다시 쓴다.
+    // scrHoldRenderer.Update 는 입력이 그대로여도 매 프레임 재질 값을 이름으로 다시 쓴다.
     // 그 함수가 읽는 값을 먼저 비교해 지난번과 모두 같으면 건너뛴다. 끝 표시(showHoldTiming)와 hit·unfilling 중에는 건드리지 않는다.
     // 다른 곳이 UpdateColor 를 직접 부르면 기록을 무효로 한다. verify 는 건너뛸 자리에서 원본을 돌려 재질 값이 안 바뀌는지 본다.
     internal static class HoldFix
@@ -26,24 +25,30 @@ namespace StutterFix
         private static readonly AccessTools.FieldRef<scrHoldRenderer, float> alpRef = AccessTools.FieldRefAccess<scrHoldRenderer, float>("extendAlp");
         private static readonly Dictionary<scrHoldRenderer, Rec> recs = new Dictionary<scrHoldRenderer, Rec>();
         private static readonly string[] FloatNames = { "_StartTileSize", "_EndTileSize", "_StartWidth", "_EndWidth", "_Completion", "_StartAlpha", "_EndAlpha" };
-        private static Harmony harmony;
         private static bool verify, inside;
         private static readonly float[] before = new float[FloatNames.Length];
         private static Vector4 beforeStart, beforeEnd;
         private static Color beforeFill;
         internal static long Calls, Skips, Checked, Mismatch;
 
+        internal static bool Enabled;
+
+        internal static void Install(Harmony h)
+        {
+            h.Patch(AccessTools.Method(typeof(scrHoldRenderer), "Update"),
+                prefix: new HarmonyMethod(typeof(HoldFix), nameof(UpdatePrefix)), postfix: new HarmonyMethod(typeof(HoldFix), nameof(UpdatePostfix)));
+            h.Patch(AccessTools.Method(typeof(scrHoldRenderer), "UpdateColor", new[] { typeof(Color), typeof(float) }),
+                postfix: new HarmonyMethod(typeof(HoldFix), nameof(ColorPostfix)));
+            h.Patch(AccessTools.Method(typeof(scrLevelMaker), "DrawHolds"), postfix: new HarmonyMethod(typeof(HoldFix), nameof(ClearPostfix)));
+        }
+
+        public static void ClearPostfix() { recs.Clear(); }
+
+        // 시험용: 건너뛸 자리에서 원본을 돌려 재질 값이 안 바뀌는지 본다
         internal static void Command(string arg)
         {
             if (arg == "report") { Main.Entry.Logger.Log("[holdskip] 호출 " + Calls + " 건너뜀 " + Skips + " 대조 " + Checked + " 다름 " + Mismatch + " 홀드 " + recs.Count); return; }
             verify = arg == "verify";
-            if (harmony != null) return;
-            harmony = new Harmony("StutterFix.HoldFix.test");
-            harmony.Patch(AccessTools.Method(typeof(scrHoldRenderer), "Update"),
-                prefix: new HarmonyMethod(typeof(HoldFix), nameof(UpdatePrefix)), postfix: new HarmonyMethod(typeof(HoldFix), nameof(UpdatePostfix)));
-            harmony.Patch(AccessTools.Method(typeof(scrHoldRenderer), "UpdateColor", new[] { typeof(Color), typeof(float) }),
-                postfix: new HarmonyMethod(typeof(HoldFix), nameof(ColorPostfix)));
-            Main.Entry.Logger.Log("[holdskip] 켬 " + arg);
         }
 
         // 게임의 Update 앞부분과 같은 규칙으로 이번 프레임 값을 구해 기록과 비교한다.
@@ -84,6 +89,7 @@ namespace StutterFix
         public static bool UpdatePrefix(scrHoldRenderer __instance, out int __state)
         {
             __state = 0;   // 0: 건드리지 않음, 1: 끝난 뒤 기록, 2: 대조
+            if (!Enabled) return true;
             Calls++;
             var h = __instance;
             if (h.startFloor == null || h.startFloor.showHoldTiming || h.hit || h.unfilling || h.m_meshRenderer == null) return true;
@@ -128,4 +134,3 @@ namespace StutterFix
         }
     }
 }
-#endif

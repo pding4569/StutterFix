@@ -750,6 +750,7 @@ namespace StutterFix
 #if DEV || AUTOTEST
             if (FrameCompare.Paused) return;
 #endif
+            if (DisplayPace.Light) return;
 #if DEV || AUTOTEST
             if (TileSim.Capturing) TileSim.BeginFrame(recs, false);
 #endif
@@ -764,6 +765,7 @@ namespace StutterFix
             }
             long t0 = System.Diagnostics.Stopwatch.GetTimestamp();
             float dt = (DOTween.useSmoothDeltaTime ? Time.smoothDeltaTime : Time.deltaTime) * DOTween.timeScale;
+            dt = DisplayPace.TakeDt(dt);
             float td = dt * 1f;
             Frames++;
             AddElapsed();

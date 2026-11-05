@@ -925,15 +925,8 @@ namespace StutterFix
                 case "gpucensus": GpuCensus.Run(); return true;
                 case "gpuhide": GpuHide.Command(arg); return true;
                 case "hidegroup": { var q = arg.Split(' '); Log("[hidegroup] " + q[0] + " " + GpuHide.Toggle(q[0], q.Length > 1 && q[1] == "on")); return true; }
-                case "flatten": HierarchyFlat.Command(arg); return true;
-                case "camskip": HierarchyFlat.SkipCameras(arg); return true;
-                case "maskgrow": EnginePatch.MaskGrow(); return true;
-                case "rflags": HierarchyFlat.RendererFlags(); return true;
-                case "tilempb": TileMpb.Enable(); return true;
                 case "holdskip": HoldFix.Command(arg); return true;
-                case "rewiredoff": HierarchyFlat.RewiredOff(); return true;
-                case "mousedrop": HierarchyFlat.DropMouseEvents(); return true;
-                case "flashskip": if (arg == "report") FlashSkip.Report(); else FlashSkip.Enable(); return true;
+                case "pace": Main.Entry.Logger.Log("[pace] 프레임 " + DisplayPace.Frames + " 그림 " + DisplayPace.Draws); return true;
                 case "rtcensus": RuntimeCensus.Run(arg); return true;
                 case "rdcapture": RuntimeCensus.Capture(); return true;
                 case "dormfilter": Dormancy.FilterEveryFrame = arg == "every"; return true;

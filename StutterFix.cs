@@ -36,9 +36,6 @@ namespace StutterFix
 
         public static bool Load(UnityModManager.ModEntry modEntry)
         {
-#if AUTOTEST
-            MonoOptProbe.Apply(modEntry.Path, modEntry.Logger);
-#endif
             Entry = modEntry;
             // 이 모드는 윈도우 전용이다(user32/kernel32/D3D11 직접 호출 수백 곳). 리눅스·맥의 원래(네이티브) 유니티에서는 EntryPointNotFoundException 으로 불러오기가 죽으므로
             // 아무것도 설치하지 않고 이유만 알려 준다. (Wine/Proton 에서는 Application.platform 이 WindowsPlayer 라 그대로 동작)
@@ -249,6 +246,8 @@ UiProf.Install(harmony);
                 DecoDiag.Install(harmony);
 #endif
                 FastBlend.Install(harmony);
+                HoldFix.Install(harmony);
+                if (Config.DisplayPace) DisplayPace.Install(harmony);
                 InvisibleSkip.Install(harmony);
                 TweenFix.Install(harmony);
                 SceneReset.Install(harmony);
@@ -565,6 +564,8 @@ ParticleTextWatch.Install(harmony);
             Try(TightSpriteProbe.Stop);
 #endif
             Try(() => SystemMonitor.Keep = false);
+            Try(DisplayPace.Uninstall);
+            Try(() => EnginePatch.MaskGrow(false));
             Try(FastBlend.Uninstall);      // 바꿔 끼운 블렌드 장식 재질을 원래대로
 #if DEV || AUTOTEST
             Try(HiddenDecoSynergy.Reset);
@@ -966,6 +967,10 @@ BlendProbe.Tick();
             ImagePrefetch.Enabled = E("ImagePrefetch", Config.ImagePrefetch);
             ShaderWarm.Enabled = E("ShaderWarm", Config.ShaderWarm);
             FastBlend.Enabled = E("FastBlend", Config.FastBlend);
+            JitOpt.Apply(Config.JitInline);
+            HoldFix.Enabled = Config.HoldSkip;
+            DisplayPace.Enabled = Config.DisplayPace;
+            EnginePatch.MaskGrow(Config.EngineMaskGrow);
             InvisibleSkip.Enabled = E("SkipInvisible", Config.SkipInvisible);
             ThumbCam.Enabled = InvisibleSkip.Enabled; ThumbCam.Apply();
             TileCull.Enabled = InvisibleSkip.Enabled;
@@ -1191,6 +1196,10 @@ BlendProbe.Tick();
         public bool SkipSameText = true;
         public bool ImagePrefetch = true;
         public bool ShaderWarm = true;
+        public bool JitInline = true;       // JIT 공격적 인라인: 곡 전체 +2~5.6%
+        public bool HoldSkip = true;        // 입력이 같으면 홀드 갱신 건너뛰기: Exit +4.7%, 값 대조 235만 번 다름 0
+        public bool DisplayPace = false;    // 화면에 나갈 프레임만 그리기: 곡 전체 2~2.5배 (재시작 후 적용)
+        public bool EngineMaskGrow = false; // 엔진 코드 6바이트 패치: 마스크 많은 맵 Exit +11.8%
         public bool FastBlend = true;       // 더하기 블렌드 장식을 화면 복사 없이 그리기
         public bool SkipInvisible = true;   // 투명도 0 인 이미지 장식은 그리지 않기
         public bool LazyHidden = true;     // 투명한 장식은 위치·회전·크기를 보일 때 반영 (SkipInvisible 필요)
