@@ -247,7 +247,11 @@ UiProf.Install(harmony);
 #endif
                 FastBlend.Install(harmony);
                 HoldFix.Install(harmony);
+#if AUTOTEST
+                DisplayPace.Install(harmony);
+#else
                 if (Config.DisplayPace) DisplayPace.Install(harmony);
+#endif
                 InvisibleSkip.Install(harmony);
                 TweenFix.Install(harmony);
                 SceneReset.Install(harmony);

@@ -927,6 +927,9 @@ namespace StutterFix
                 case "hidegroup": { var q = arg.Split(' '); Log("[hidegroup] " + q[0] + " " + GpuHide.Toggle(q[0], q.Length > 1 && q[1] == "on")); return true; }
                 case "holdskip": HoldFix.Command(arg); return true;
                 case "pace": Main.Entry.Logger.Log("[pace] 프레임 " + DisplayPace.Frames + " 그림 " + DisplayPace.Draws); return true;
+#if AUTOTEST
+                case "pacecheck": DisplayPace.Check(arg == "start"); return true;
+#endif
                 case "rtcensus": RuntimeCensus.Run(arg); return true;
                 case "rdcapture": RuntimeCensus.Capture(); return true;
                 case "dormfilter": Dormancy.FilterEveryFrame = arg == "every"; return true;

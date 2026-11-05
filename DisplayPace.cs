@@ -22,6 +22,18 @@ namespace StutterFix
         private static bool installed, playing, logicAllowed;
         private static long period, next;
         private static float pendingDt;
+#if AUTOTEST
+        private static bool checking, armCheck;
+        private static double inputDt, appliedDt, maxError;
+        private static long checkFrames, checkUpdates;
+        internal static void Check(bool start)
+        {
+            if (start) { inputDt = appliedDt = maxError = 0; checkFrames = checkUpdates = 0; }
+            checking = false; armCheck = start;
+            Main.Entry.Logger.Log(string.Format("[pacecheck] {0} frames={1} updates={2} input={3:F9} applied={4:F9} pending={5:F9} maxError={6:E3}",
+                start ? "begin" : "end", checkFrames, checkUpdates, inputDt, appliedDt, pendingDt, maxError));
+        }
+#endif
         private static readonly AccessTools.FieldRef<scrVfxPlus, int> vfxIndex = AccessTools.FieldRefAccess<scrVfxPlus, int>("currentVfxIndex");
         private static readonly AccessTools.FieldRef<scrDecorationManager, List<scrDecoration>> allDecos = AccessTools.FieldRefAccess<scrDecorationManager, List<scrDecoration>>("allDecorations");
 
@@ -97,6 +109,10 @@ namespace StutterFix
 
         private static void OnFrame()
         {
+#if AUTOTEST
+            if (armCheck) { armCheck = false; checking = true; inputDt = pendingDt; }
+            if (checking) { inputDt += Time.deltaTime; checkFrames++; }
+#endif
             if (!ShouldRun()) { if (playing) Stop(); return; }
             if (!playing) Begin();
             long now = Stopwatch.GetTimestamp();
@@ -130,6 +146,13 @@ namespace StutterFix
         public static void ManagerPrefix(int updateType, ref float deltaTime)
         {
             if (updateType == 0) deltaTime += pendingDt * DG.Tweening.DOTween.timeScale;   // UpdateType.Normal
+#if AUTOTEST
+            if (checking && updateType == 0 && DG.Tweening.DOTween.timeScale == 1f)
+            {
+                appliedDt += deltaTime; checkUpdates++;
+                maxError = Math.Max(maxError, Math.Abs(inputDt - appliedDt));
+            }
+#endif
         }
     }
 }
