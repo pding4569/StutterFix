@@ -25,13 +25,15 @@ namespace StutterFix
 #if AUTOTEST
         private static bool checking, armCheck;
         private static double inputDt, appliedDt, maxError;
+        private static double clockStart, elapsed, maxClockError;
         private static long checkFrames, checkUpdates;
         internal static void Check(bool start)
         {
-            if (start) { inputDt = appliedDt = maxError = 0; checkFrames = checkUpdates = 0; }
+            if (start) { inputDt = appliedDt = maxError = elapsed = maxClockError = 0; checkFrames = checkUpdates = 0; }
             checking = false; armCheck = start;
             Main.Entry.Logger.Log(string.Format("[pacecheck] {0} frames={1} updates={2} input={3:F9} applied={4:F9} pending={5:F9} maxError={6:E3}",
-                start ? "begin" : "end", checkFrames, checkUpdates, inputDt, appliedDt, pendingDt, maxError));
+                start ? "begin" : "end", checkFrames, checkUpdates, inputDt, appliedDt, pendingDt, maxError)
+                + string.Format(" elapsed={0:F9} maxClockError={1:E3}", elapsed, maxClockError));
         }
 #endif
         private static readonly AccessTools.FieldRef<scrVfxPlus, int> vfxIndex = AccessTools.FieldRefAccess<scrVfxPlus, int>("currentVfxIndex");
@@ -110,7 +112,11 @@ namespace StutterFix
         private static void OnFrame()
         {
 #if AUTOTEST
-            if (armCheck) { armCheck = false; checking = true; inputDt = pendingDt; }
+            if (armCheck)
+            {
+                armCheck = false; checking = true; inputDt = pendingDt;
+                clockStart = Time.timeAsDouble - Time.deltaTime - pendingDt;
+            }
             if (checking) { inputDt += Time.deltaTime; checkFrames++; }
 #endif
             if (!ShouldRun()) { if (playing) Stop(); return; }
@@ -151,6 +157,8 @@ namespace StutterFix
             {
                 appliedDt += deltaTime; checkUpdates++;
                 maxError = Math.Max(maxError, Math.Abs(inputDt - appliedDt));
+                elapsed = Time.timeAsDouble - clockStart;
+                maxClockError = Math.Max(maxClockError, Math.Abs(elapsed - appliedDt));
             }
 #endif
         }
