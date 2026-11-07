@@ -158,6 +158,7 @@ namespace StutterFix
                 return;
             }
             DisableTurbo();
+            bool exactOnly = cmd == "safe";   // UI 마스크 잘라내기 건너뛰기와 거의 투명한 플래시 판 숨기기를 뺀다(결과가 정확히 같다고 확인되지 않음)
             turboActive = true;
             mouseSkippedFrames = 0;
             flashCulledFrames = 0;
@@ -203,7 +204,7 @@ namespace StutterFix
                 rflagsCount++;
 
                 string rn = r.name ?? "";
-                if (rn == "Flash" || rn == "FlashPlusBackground" || rn == "FlashPlusForeground" || rn == "FlashEndscreen")
+                if (!exactOnly && (rn == "Flash" || rn == "FlashPlusBackground" || rn == "FlashPlusForeground" || rn == "FlashEndscreen"))
                 {
                     var mat = r.sharedMaterial;
                     if (mat != null && mat.HasProperty("_Color"))
@@ -228,7 +229,7 @@ namespace StutterFix
                 turboHarmony.Patch(esUpdate, prefix: new HarmonyMethod(typeof(EnginePatch), nameof(EventSystemUpdatePrefix)));
 
             var cullMethod = AccessTools.Method(typeof(ClipperRegistry), "Cull");
-            if (cullMethod != null)
+            if (cullMethod != null && !exactOnly)
                 turboHarmony.Patch(cullMethod, prefix: new HarmonyMethod(typeof(EnginePatch), nameof(ClipperCullPrefix)));
 
             Main.Entry.Logger.Log($"[turbo] 켜짐 mode=clean_lossless_v14 idleCamsDisabled={disabledIdleCams.Count} depthCleared={depthCleared} rflags={rflagsCount} flashQuads={flashRenderers.Count}");
