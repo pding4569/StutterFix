@@ -71,11 +71,12 @@ namespace StutterFix
         }
         public static bool Prefix(object __instance, RenderTexture __0, RenderTexture __1)
         {
-            if (!Enabled || __0 == null || !Candidates.TryGetValue(__instance.GetType(), out var c) || !c.Neutral(__instance)) return true;
+            if (!Enabled || __0 == null || __0.format != RenderTextureFormat.ARGB32 || !Candidates.TryGetValue(__instance.GetType(), out var c) || c.Approved.Count == 0 || !c.Neutral(__instance)) return true;
 #if DEV || AUTOTEST
             if (FilterIdentityProbe.Running) return true;
 #endif
             if (__1 != null && (__1.format != __0.format || __1.sRGB != __0.sRGB || __1.width != __0.width || __1.height != __0.height)) return true;
+            if (!c.Approved.Contains(Key(__0))) return true;
             Graphics.Blit(__0, __1);
             return false;
         }
