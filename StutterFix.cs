@@ -53,6 +53,12 @@ namespace StutterFix
                 // 2026-10-20: 히트음 예약 묶기와 화면 밖 파티클 멈추기를 기본 켬으로 (예전 설정 파일에는 false 가 적혀 있어 한 번만 덮어쓴다. 설정창에서 끄면 그대로 유지)
                 Config.HitSoundBatch = true; Config.LowPauseParticles = true; Config.DefaultsGen = 1;
                 try { Config.Save(modEntry); } catch { }
+            }
+            if (Config.DefaultsGen < 2)
+            {
+                // 2026-11-08: 화면 출력 대기 없애기를 기본 켬으로 (3440 효과 켬 ABBA: 앞서 준비 프레임 4 단독 +12~16%, 화면 대기 건너뛰기 단독 +14%, 서로 겹침)
+                Config.MaxQueuedFrames = 4; Config.EngineWaitSkip = true; Config.DefaultsGen = 2;
+                try { Config.Save(modEntry); } catch { }
             }
             Resilience.Init();   // 비정상 종료 감지 (안전 모드면 이번 실행 동안 일부 기능을 끔)
 
@@ -1211,7 +1217,7 @@ BlendProbe.Tick();
         public bool PlayTurbo = false;        // 곡 중에만: 일시정지 공 카메라 끄기, 입력 없을 때 UI 이벤트·마우스 처리 건너뛰기, 장식 LateUpdate 같은 값 건너뛰기 등(turbo lite)
         public bool DisplayPace = false;    // 화면에 나갈 프레임만 그리기: 곡 전체 2~2.5배 (재시작 후 적용)
         public bool EngineMaskGrow = false; // 엔진 코드 6바이트 패치: 마스크 많은 맵 Exit +11.8%
-        public bool EngineWaitSkip = false; // 엔진 코드 패치: 지난 화면 출력을 기다리지 않음. 곡 시계 단계라 기본 끔
+        public bool EngineWaitSkip = true; // 엔진 코드 패치: 지난 화면 출력을 기다리지 않음. 2026-11-08 기본 켬(DefaultsGen 2), 화면 지연 미측정
         public bool FastBlend = true;       // 더하기 블렌드 장식을 화면 복사 없이 그리기
         public bool SkipInvisible = true;   // 투명도 0 인 이미지 장식은 그리지 않기
         public bool LazyHidden = true;     // 투명한 장식은 위치·회전·크기를 보일 때 반영 (SkipInvisible 필요)
@@ -1238,7 +1244,7 @@ BlendProbe.Tick();
         public bool MeshWarm = true;        // 색 바꾸기가 곡 중에 만들 타일 메시를 재생 준비 때 미리 만들기
         public bool SoundWarm = true;
         public bool HitSoundBatch = true;   // 2026-10-20: 기본 켬 (Arche 전곡 +6.6%, 막히면 자동으로 원래 방식). 저사양 페이지에 있다
-        public int DefaultsGen = 0;         // 기본값을 바꿔 한 번 덮어쓴 세대 (1 = 히트음 묶기·화면 밖 파티클 멈추기 켬)
+        public int DefaultsGen = 0;         // 기본값을 바꿔 한 번 덮어쓴 세대 (1 = 히트음 묶기·화면 밖 파티클 멈추기 켬, 2 = 앞서 준비 프레임 4·화면 대기 건너뛰기 켬)
         public bool JitWarm = true;         // 모드·게임 효과 함수를 켤 때 미리 컴파일 (곡 초반 첫 효과의 JIT)       // 곡 중에 처음 쓰는 효과음(박자 소리 등)을 재생 준비 때 미리 불러오기
         // 저사양 (화면·동작이 아주 조금 달라질 수 있어 기본 꺼짐)
         public bool LowPriority = false;    // 게임 우선순위 높음
@@ -1302,7 +1308,7 @@ BlendProbe.Tick();
         public int GpuDeco = 0;             // GPU 장식 처리: 기본 꺼짐
         public int GpuDecoImages = 1;       // GPU 장식 처리 사용 시 이미지 소유: 기본 켬
         public int ExpFullscreen = 0;       // (실험, 설정 창 그래픽) 1 = 전체 화면일 때 독점 전체 화면 (화면 지연 절반, FPS 약 -10%, 찢어짐)
-        public int MaxQueuedFrames = 0;     // (실험) 앞서 준비하는 프레임 수, 0 = 게임 값 그대로
+        public int MaxQueuedFrames = 4;     // (실험) 앞서 준비하는 프레임 수, 0 = 게임 값 그대로
         public int LowSplit = 0;            // 효과 몰림 나누기 세기: 0 기본(10ms, 400칸), 1 잘게(5ms, 200칸), 2 아주 잘게(3ms, 120칸)
         public string ReopenLevel = "";     // 재시작 버튼으로 껐을 때 다시 켠 뒤 에디터로 열 맵 (한 번 쓰고 비움)
         public string LastEditorLevel = ""; // 에디터에서 마지막으로 연 맵 (메인 메뉴에서도 "마지막 맵으로 재시작" 하려고)
