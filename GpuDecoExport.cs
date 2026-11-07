@@ -281,7 +281,7 @@ namespace StutterFix
 #if DEV || AUTOTEST
         static GpuDecoRenderMetrics g2RenderMetrics;
 #endif
-        static bool gpuZeroAlpha=false; // explicit research candidate, default off
+        static bool gpuZeroAlpha=true; // on-demand active-only alpha gating
         static bool gpuCopyMaskBypass; // paused validation only; reset on dispose
         static int gpuLiveCurrentSlice = -1, gpuLiveLastDispatchFrame = -1, gpuLiveLastSourceStepFrame = -1;
         static bool gpuLivePortalObserved;
@@ -922,6 +922,7 @@ namespace StutterFix
                 int sliceCount = gpuScope.Starts.Length, windowCandidates = 0;
 #if AUTOTEST || GPUDECO
                 PrepareGpuImageAdmission();
+                PrecomputeAllTrimBounds();
 #endif
                 for (int index = 0; index < baselineObjects.Length; index++)
                 {
@@ -958,6 +959,7 @@ namespace StutterFix
                     if (sp.vertices.Length != 4 || sp.uv.Length != 4 || sp.triangles.Length != 6) continue;
                     Vector2[] cornerSrc = sp.vertices, uvSrc = sp.uv;
 #if AUTOTEST || GPUDECO
+                    TryTrimRawQuad(sp.texture, ref cornerSrc, ref uvSrc);
 #endif
                     PcAdd(ref gpuPcC,pcT);pcT=PcT();
                     var geometry = LiveDecoGeometry.Capture(d.pivotTrans, d.childTransform, r.transform, cornerSrc, r.flipX, r.flipY);
@@ -1044,6 +1046,7 @@ namespace StutterFix
                 if(gpuCollapsePrepare && DrawCollapsePolicy.PartialMaskAdmit)
                 {
                     DemotePerItemPrepareRows(masterRows,protoItems,null);
+                    DemoteTieExcludedRows(masterRows);
                     DemoteDirectTextureOverflowRows(masterRows,null);
                 }
                 var collapseRows=gpuCollapsePrepare?new List<GpuLiveRow>(masterRows):null;

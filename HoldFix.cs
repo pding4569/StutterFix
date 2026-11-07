@@ -67,8 +67,11 @@ namespace StutterFix
                 r.HeadRT = head.floorRenderer.transform; r.TailRT = tail.floorRenderer.transform;
                 same = false;
             }
-            var sp = r.StartT.position; var hp = r.HeadT.position; var tp = r.TailT.position;
-            float hw = r.HeadRT.localScale.x, tw = r.TailRT.localScale.x;
+            var sp = r.StartT.position;
+            var hp = ReferenceEquals(r.HeadT, r.StartT) ? sp : r.HeadT.position;
+            var tp = ReferenceEquals(r.TailT, r.StartT) ? sp : (ReferenceEquals(r.TailT, r.HeadT) ? hp : r.TailT.position);
+            float hw = r.HeadRT.localScale.x;
+            float tw = ReferenceEquals(r.TailRT, r.HeadRT) ? hw : r.TailRT.localScale.x;
             float ts = scrController.instance.tileSize;
             float endO = tail.freeroam ? tail.freeroamFloors[0].opacity : tail.opacity;
             same = same && sp == r.StartP && hp == r.HeadP && tp == r.TailP && hw == r.HeadW && tw == r.TailW

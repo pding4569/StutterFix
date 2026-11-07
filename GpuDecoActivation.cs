@@ -40,10 +40,10 @@ namespace StutterFix
                 NativeAdoptSpec adoption=null;
                 if(DrawCollapsePolicy.AdoptNativeTweens && d && d.eventTweens!=null)
                     TryReadNativeChannels(d,m,out adoption);
-                if(adoption==null && d && d.eventTweens!=null)foreach(var pair in d.eventTweens)
+                if(d && d.eventTweens!=null)foreach(var pair in d.eventTweens)
                 {
                     var t=pair.Value;var r=t?.id as DecoAnim.Rec;
-                    if(t!=null && t.active && (r==null || !r.Running)
+                    if(t!=null && t.active && (r==null || !r.Running) && (adoption==null || !NativeBundleContains(adoption,pair.Key,t))
                         || r!=null && r.Running && (!ReferenceEquals(r.D,d) || r.Key!=(int)pair.Key || r.Dur<=0 || !GpuDecoGpu.LiveSupported((int)r.E)))
                     {
                         fallback=true;

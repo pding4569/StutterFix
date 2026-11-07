@@ -565,8 +565,8 @@ namespace StutterFix
             if (!reuse)
             {
                 gpuPreparedHash = PlayerSetupHash();
-                gpuCollapseIncludedPrepared = gpuCollapseIncluded != null ? (bool[])gpuCollapseIncluded.Clone() : null;
-                SaveCollapseBaseState();
+                gpuCollapseIncludedPrepared = gpuCollapseIncludedSaved != null ? (bool[])gpuCollapseIncludedSaved.Clone() : (gpuCollapseIncluded != null ? (bool[])gpuCollapseIncluded.Clone() : null);
+                if (gpuCollapseIncludedSaved == null) SaveCollapseBaseState();
                 gpuFallbackExcludedItems.Clear(); gpuFallbackBarrierRows.Clear();
             }
             gpuReusedRound = reuse;
@@ -685,8 +685,9 @@ namespace StutterFix
                     try { ValidateDrawCollapse(); ActMark("전수검증(계획 재사용)"); }
                     catch (Exception e)
                     {
-                        // 중간 시작 상태가 준비 때 계획과 어긋남: 예전처럼 다시 계획한다.
+                        // 중간 시작 상태가 준비 때 계획과 어긋남: 순수 기준 상태를 복원하고 다시 계획한다.
                         Main.Entry.Logger.Log("[GPU 장식] 중간 시작: 준비 때 계획이 맞지 않아 다시 계획함 (" + e.GetType().Name + ")");
+                        RestoreCollapseBaseState();
                         foreach (var sl in gpuLiveSlices) foreach (var rr in sl.Renderers) if (rr && rr.enabled) rr.enabled = false;
                         RebuildDrawCollapse();ActMark("계획(재구성)");
                         ValidateDrawCollapse();ActMark("전수검증");

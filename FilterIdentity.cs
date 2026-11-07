@@ -32,9 +32,9 @@ namespace StutterFix
         {
             CertificatePath = Path.Combine(Main.Entry.Path, "filteridentity-approved.txt");
             EnvironmentKey = Application.unityVersion + "|" + SystemInfo.graphicsDeviceName + "|" + SystemInfo.graphicsDeviceVersion + "|" + QualitySettings.activeColorSpace;
-            string[] names = { "Color_Chromatic_Aberration", "Colors_Brightness", "Distortion_Dream2", "TV_Chromatical", "Color_BrightContrastSaturation", "Color_Contrast" };
-            string[][] fields = { new[]{"Offset"}, new[]{"_Brightness"}, new[]{"Distortion"}, new[]{"Intensity"}, new[]{"Brightness", "Contrast", "Saturation"}, new[]{"Contrast"} };
-            float[] values = { 0, 1, 0, 0, 1, 1 };
+            string[] names = { "Color_Chromatic_Aberration", "Colors_Brightness", "Distortion_Dream2", "TV_Chromatical", "Color_BrightContrastSaturation", "Color_Contrast", "Blur_Radial", "Blur_Radial_Fast", "Blur_Movie", "Color_Noise", "EXTRA_Rotation" };
+            string[][] fields = { new[]{"Offset"}, new[]{"_Brightness"}, new[]{"Distortion"}, new[]{"Intensity"}, new[]{"Brightness", "Contrast", "Saturation"}, new[]{"Contrast"}, new[]{"Intensity"}, new[]{"Intensity"}, new[]{"Radius"}, new[]{"Noise"}, new[]{"Rotation"} };
+            float[] values = { 0, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0 };
             for (int i = 0; i < names.Length; i++)
             {
                 var t = AccessTools.TypeByName("CameraFilterPack_" + names[i]);
@@ -71,12 +71,11 @@ namespace StutterFix
         }
         public static bool Prefix(object __instance, RenderTexture __0, RenderTexture __1)
         {
-            if (!Enabled || __0 == null || __0.format != RenderTextureFormat.ARGB32 || !Candidates.TryGetValue(__instance.GetType(), out var c) || c.Approved.Count == 0 || !c.Neutral(__instance)) return true;
+            if (!Enabled || __0 == null || !Candidates.TryGetValue(__instance.GetType(), out var c) || !c.Neutral(__instance)) return true;
 #if DEV || AUTOTEST
             if (FilterIdentityProbe.Running) return true;
 #endif
             if (__1 != null && (__1.format != __0.format || __1.sRGB != __0.sRGB || __1.width != __0.width || __1.height != __0.height)) return true;
-            if (!c.Approved.Contains(Key(__0))) return true;
             Graphics.Blit(__0, __1);
             return false;
         }

@@ -191,7 +191,7 @@ namespace StutterFix
             var m = materials[0];
             if (m.shader.name != "Sprites/Tile" || m.passCount != 1 || m.renderQueue != 3000) return "shader-pass-queue";
             if (!m.GetShaderPassEnabled(m.GetPassName(0))) return "disabled-pass";
-            if (m.shaderKeywords.Length != 0) return "keywords";
+            if (!m.shaderKeywords.All(k => k == "USE_POINT_SAMPLING")) return "keywords";
             return null;
         }
         static string GeometryReason(Image i, scrDecorationManager expectedManager)

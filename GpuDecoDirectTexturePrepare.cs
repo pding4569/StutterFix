@@ -58,6 +58,22 @@ namespace StutterFix
                     if(prior>=0)AddVariant(owner,prior);
                 }
             }
+            if(DrawCollapsePolicy.ExactBigArray)
+            {
+                var bigGrps=textures.Values.Where(t=>CollapseSize(t)==0 && CollapseSupportedFormat(t) && (long)t.width*t.height<=16777216L)
+                    .GroupBy(t=>t.width+"x"+t.height+"/"+t.graphicsFormat)
+                    .Where(g=>g.Count()>=DrawCollapsePolicy.ExactBigMin)
+                    .OrderByDescending(g=>g.Count()).ThenBy(g=>g.Key,StringComparer.Ordinal).Take(2).ToArray();
+                foreach(var bigGrp in bigGrps)
+                {
+                    foreach(var bt in bigGrp.Take(SystemInfo.maxTextureArraySlices))
+                    {
+                        int bid=bt.GetInstanceID();
+                        textures.Remove(bid);
+                        foreach(var hs in dependencies.Values)hs.Remove(bid);
+                    }
+                }
+            }
             if(textures.Count<=DrawCollapsePolicy.DirectBindings)return;
             var counts=new Dictionary<int,int>();
             foreach(var ids in dependencies.Values)foreach(int id in ids)

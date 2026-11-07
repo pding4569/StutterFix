@@ -171,6 +171,7 @@ namespace StutterFix
             }
             float now = Time.realtimeSinceStartup;
             MainFrame = Time.frameCount;
+            EnginePatch.LatencySampleFrame();
             if (!started) { started = true; stepStart = now;
 #if AUTOTEST
                 missionStepTicks = System.Diagnostics.Stopwatch.GetTimestamp();
@@ -926,6 +927,10 @@ namespace StutterFix
                 case "gpuhide": GpuHide.Command(arg); return true;
                 case "hidegroup": { var q = arg.Split(' '); Log("[hidegroup] " + q[0] + " " + GpuHide.Toggle(q[0], q.Length > 1 && q[1] == "on")); return true; }
                 case "holdskip": HoldFix.Command(arg); return true;
+                case "waitskip": EnginePatch.WaitSkip(arg != "off"); return true;
+                case "maskgrow": EnginePatch.MaskGrow(arg != "off"); return true;
+                case "latprobe": EnginePatch.LatencyCommand(arg); return true;
+                case "turbo": EnginePatch.TurboCommand(arg); return true;
                 case "pace": Main.Entry.Logger.Log("[pace] 프레임 " + DisplayPace.Frames + " 그림 " + DisplayPace.Draws); return true;
 #if AUTOTEST
                 case "pacecheck": DisplayPace.Check(arg == "start"); return true;

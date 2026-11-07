@@ -10,7 +10,71 @@ namespace StutterFix
     internal static partial class DecoBake
     {
         static readonly Dictionary<int,Vector4> gpuTrimBounds=new Dictionary<int,Vector4>();
+        static readonly HashSet<int> gpuTrimProbed=new HashSet<int>();
         static int gpuTrimTrimmed,gpuTrimKept;
+        internal static void PrecomputeAllTrimBounds()
+        {
+            if(!DrawCollapsePolicy.TightLargeQuads||baselineObjects==null||!gpuLiveShader||!gpuLiveShader.HasKernel("AlphaBounds"))return;
+            var allTex=new Dictionary<int,Texture2D>();
+            for(int i=0;i<baselineObjects.Length;i++)
+            {
+                var vd=baselineObjects[i] as scrVisualDecoration;
+                var t=vd?.spriteRenderer?.sprite?.texture;
+                if(t && Math.Max(t.width,t.height)>=512 && t.mipmapCount==1)
+                {
+                    int id=t.GetInstanceID();
+                    if(gpuTrimProbed.Add(id))allTex[id]=t;
+                }
+            }
+            if(allTex.Count==0)return;
+            int prevMin=DrawCollapsePolicy.TightMinSide;
+            DrawCollapsePolicy.TightMinSide=512;
+            try{ComputeTrimBounds(gpuLiveShader,allTex);}finally{DrawCollapsePolicy.TightMinSide=prevMin;}
+        }
+        internal static void TryTrimRawQuad(Texture2D texture,ref Vector2[] corners,ref Vector2[] uv)
+        {
+            if(!DrawCollapsePolicy.TightLargeQuads||!texture||corners==null||uv==null||corners.Length!=4||uv.Length!=4)return;
+            int id=texture.GetInstanceID();
+            if(!gpuTrimBounds.TryGetValue(id,out var b))
+            {
+                if(!gpuTrimProbed.Add(id)||Math.Max(texture.width,texture.height)<512||texture.mipmapCount!=1||!gpuLiveShader||!gpuLiveShader.HasKernel("AlphaBounds"))return;
+                var one=new Dictionary<int,Texture2D>{{id,texture}};
+                int prevMin=DrawCollapsePolicy.TightMinSide;
+                DrawCollapsePolicy.TightMinSide=512;
+                try{ComputeTrimBounds(gpuLiveShader,one);}finally{DrawCollapsePolicy.TightMinSide=prevMin;}
+                if(!gpuTrimBounds.TryGetValue(id,out b))return;
+            }
+            float uA=Mathf.Min(Mathf.Min(uv[0].x,uv[1].x),Mathf.Min(uv[2].x,uv[3].x)),uB=Mathf.Max(Mathf.Max(uv[0].x,uv[1].x),Mathf.Max(uv[2].x,uv[3].x));
+            float vA=Mathf.Min(Mathf.Min(uv[0].y,uv[1].y),Mathf.Min(uv[2].y,uv[3].y)),vB=Mathf.Max(Mathf.Max(uv[0].y,uv[1].y),Mathf.Max(uv[2].y,uv[3].y));
+            float du=uB-uA,dv=vB-vA;
+            if(du<=1e-5f||dv<=1e-5f||uA<0||vA<0||uB>1||vB>1)return;
+            int cornerMask=0;
+            for(int k=0;k<4;k++)
+            {
+                float sk0=(uv[k].x-uA)/du,tk0=(uv[k].y-vA)/dv;
+                if((sk0>1e-4f&&sk0<1f-1e-4f)||(tk0>1e-4f&&tk0<1f-1e-4f))return;
+                cornerMask|=1<<((sk0>.5f?1:0)|(tk0>.5f?2:0));
+            }
+            if(cornerMask!=15)return;
+            float u0=Mathf.Max(uA,b.x),u1=Mathf.Min(uB,b.z),v0=Mathf.Max(vA,b.y),v1=Mathf.Min(vB,b.w);
+            if(u0>=u1||v0>=v1||(u1-u0)*(v1-v0)>=DrawCollapsePolicy.TightMaxAreaRatio*du*dv)return;
+            var pv=new Vector2[4];var puv=new Vector2[4];
+            for(int k=0;k<4;k++)
+            {
+                float sk=(uv[k].x-uA)/du,tk=(uv[k].y-vA)/dv;
+                float nu=Mathf.Lerp(u0,u1,sk),nv=Mathf.Lerp(v0,v1,tk);
+                float sn=(nu-uA)/du,tn=(nv-vA)/dv;
+                Vector2 acc=Vector2.zero;
+                for(int j=0;j<4;j++)
+                {
+                    float sj=(uv[j].x-uA)/du,tj=(uv[j].y-vA)/dv;
+                    float w=(1f-Mathf.Abs(sn-sj))*(1f-Mathf.Abs(tn-tj));
+                    acc+=corners[j]*w;
+                }
+                pv[k]=acc;puv[k]=new Vector2(nu,nv);
+            }
+            corners=pv;uv=puv;gpuTrimTrimmed++;
+        }
         static long gpuTrimPixelsSaved;
 
         static void PrepareGpuTrimBounds(Dictionary<int,Texture2D> textures)

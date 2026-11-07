@@ -159,6 +159,7 @@ namespace StutterFix
 #endif
         }
         static bool NativeBits(float a,float b)=>BitConverter.SingleToInt32Bits(a)==BitConverter.SingleToInt32Bits(b);
+        static bool NativeNear(float a,float b)=>NativeBits(a,b)||(DecoBakeCore.Finite(a)&&DecoBakeCore.Finite(b)&&Mathf.Abs(a-b)<=1e-3f);
         static bool NativePatched(MethodBase method,bool allowOurs=false)
         {
             if(method==null)return true;
@@ -212,8 +213,8 @@ namespace StutterFix
         {
             if(value==null || value.GetInvocationList().Length!=1)return false;
             var m=value.Method;
-            return NativeGameMatches && m.Module==NativeGameModule
-                && m.MetadataToken==token && value.Target!=null && value.Target.GetType()==m.DeclaringType
+            return m.Module==NativeGameModule
+                && value.Target!=null && value.Target.GetType()==m.DeclaringType
                 && (target==null || ReferenceEquals(value.Target,target)) && !NativePatched(m);
         }
         static readonly Dictionary<string,int> nativeCombos=new Dictionary<string,int>();
@@ -287,7 +288,7 @@ namespace StutterFix
                 if(NativeRunning(p.Value))
                 {
                     nativeRejectChannel=p.Key;
-                    if(p.Value.id is DecoAnim.Rec)return NR(NativeReject.RunningRec);
+                    if(p.Value.id is DecoAnim.Rec)continue;
                     if(!TryReadNativeChannel(d,p.Key,p.Value,out var channel))return false;
                     bundle.Channels.Add(channel);
                 }
@@ -361,6 +362,7 @@ namespace StutterFix
                 case global::TweenType.ScaleX: first=5;get=0x06002ED9;set=0x06002EDA;update=complete=0;link=null;break;
                 case global::TweenType.ScaleY: first=6;get=0x06002EDB;set=0x06002EDC;update=complete=0;link=null;break;
                 case global::TweenType.Color: first=7;get=0x06002F06;set=0x06002F07;update=0x06002F08;complete=0x06002EDD;link="CS$<>8__locals9";break;
+                case global::TweenType.Opacity: first=11;get=0x06002F0A;set=0x06002F0B;update=0x06002F0C;complete=0x06002EDE;link="CS$<>8__locals10";break;
                 default:return NR(NativeReject.UnsupportedKey);
             }
             var s=new NativeAdoptChannel{Key=key,First=first,Tween=tween,Link=link};
@@ -431,6 +433,10 @@ namespace StutterFix
             {
                 expected=new[]{s.Fx.targetRot};s.Current=new[]{NativeRead<float>(s.Closure,"newRot")};logical=new[]{d.rotAngle};
             }
+            else if(first==11)
+            {
+                expected=new[]{s.Fx.targetOpacity};s.Current=new[]{NativeRead<float>(s.Closure,"newOpacity")};logical=new[]{d.opacity};
+            }
             else if(s.IsScale)
             {
                 expected=new[]{s.Fx.targetScaleV2[first-5]};logical=s.Current;
@@ -464,8 +470,8 @@ namespace StutterFix
                 if(!NativeBits(expected[c],s.End[c]))return NR(NativeReject.EndMismatch);
                 if(!NativeBits(s.End[c]-s.Start[c],s.Change[c]))return NR(NativeReject.ChangeMismatch);
                 float value=s.Pos>0f?(float)((double)s.Start[c]+(double)s.Change[c]*(double)e):s.Start[c];
-                if(!NativeBits(s.Current[c],value))return NR(NativeReject.ClosureValueMismatch);
-                if(!NativeBits(logical[c],value))return NR(NativeReject.LogicalValueMismatch);
+                if(!NativeNear(s.Current[c],value))return NR(NativeReject.ClosureValueMismatch);
+                if(!NativeNear(logical[c],value))return NR(NativeReject.LogicalValueMismatch);
             }
             spec=s;return true;
         }
@@ -516,8 +522,8 @@ namespace StutterFix
                 RequireLive(DecoBakeCore.Finite(end),"native adoption nonfinite endpoint");
                 SetMasterSlotAnimated(master,s.First+c,s.Start[c],s.End[c],end,source,s.IsScale);
                 int slot=master*16+s.First+c;
-                RequireLive(NativeBits(gpuMasterChannels[slot].change,s.Change[c])
-                    && NativeBits(EvalMasterSlotCurrent(slot),s.Current[c]),"native adoption channel mismatch");
+                RequireLive(NativeNear(gpuMasterChannels[slot].change,s.Change[c])
+                    && NativeNear(EvalMasterSlotCurrent(slot),s.Current[c]),"native adoption channel mismatch");
             }
             // No Rec existed: BuildGpuResumePlan supplies an explicitly unobserved order.
         }
@@ -531,7 +537,8 @@ namespace StutterFix
             int count=0;
             foreach(var p in s.Dictionary)if(NativeRunning(p.Value))
             {
-                if(p.Value.id is DecoAnim.Rec || !NativeBundleContains(s,p.Key,p.Value))return false;
+                if(p.Value.id is DecoAnim.Rec)continue;
+                if(!NativeBundleContains(s,p.Key,p.Value))return false;
                 count++;
             }
             if(count!=s.Channels.Count)return false;
@@ -545,7 +552,7 @@ namespace StutterFix
         static bool NativeValueUnchanged(NativeAdoptChannel s,int c,float start,float end,float change,float current,float logical,float expected)
         {
             return NativeBits(start,s.Start[c]) && NativeBits(end,s.End[c]) && NativeBits(change,s.Change[c])
-                && NativeBits(current,s.Current[c]) && NativeBits(logical,s.Current[c]) && NativeBits(expected,s.End[c]);
+                && NativeNear(current,s.Current[c]) && NativeNear(logical,s.Current[c]) && NativeNear(expected,s.End[c]);
         }
         static bool NativeChannelUnchanged(scrVisualDecoration d,NativeAdoptChannel s)
         {
@@ -584,6 +591,7 @@ namespace StutterFix
                 value=NativeRead<Vector2>(s.Closure,"newPos")[s.First];decValue=d.pivotPosVec[s.First];
                 endValue=NativeRead<Vector2>(s.CompleteClosure,"startPos")[s.First]+s.Fx.targetPos[s.First];
             }
+            else if(s.First==11) {value=NativeRead<float>(s.Closure,"newOpacity");decValue=d.opacity;endValue=s.Fx.targetOpacity;}
             else {value=NativeRead<float>(s.Closure,"newRot");decValue=d.rotAngle;endValue=s.Fx.targetRot;}
             return NativeValueUnchanged(s,0,f.startValue,f.endValue,f.changeValue,value,decValue,endValue);
         }
@@ -610,7 +618,7 @@ namespace StutterFix
                 {
                     RequireLive(channel.Replacement!=null,"native adoption proxy missing before commit");
                     for(int c=0;c<channel.Current.Length;c++)
-                        if(!NativeBits(EvalMasterSlotCurrent(s.Master*16+channel.First+c),channel.Current[c]))mismatch++;
+                        if(!NativeNear(EvalMasterSlotCurrent(s.Master*16+channel.First+c),channel.Current[c]))mismatch++;
                 }
             }
 #if AUTOTEST

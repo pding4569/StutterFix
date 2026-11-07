@@ -31,6 +31,7 @@ namespace StutterFix
             internal int LastFrame = -100;   // 마지막으로 빠른 길에서 처리한 Unity 프레임 (건너뛴 프레임이 있으면 직전 값을 믿지 않는다)
             internal Vector3 LastPos, LastScale;
             internal Quaternion LastRot;
+            internal int LastAngBits;
         }
         internal static bool SkipSame = false;   // DEV/AUTOTEST에서만 tightskip-on 파일로 켬
         internal static bool EulerMemo = true;   // 모드 폴더 eulermemo-off 파일로 끔 (같은 각도의 Quaternion.Euler 결과 재사용, 순수 함수라 비트 동일)
@@ -401,10 +402,11 @@ namespace StutterFix
             if (EulerMemo)
             {
                 float ang = d.startRot + angle; int ab = BitConverter.SingleToInt32Bits(ang); eulerCalls++;
-                if (eulerValid && ab == eulerBits) { nr = eulerQ; eulerHits++; }
-                else { nr = Quaternion.Euler(0f, 0f, ang); eulerQ = nr; eulerBits = ab; eulerValid = true; }
+                if (e.Has && ab == e.LastAngBits) { nr = e.LastRot; eulerHits++; }
+                else if (eulerValid && ab == eulerBits) { nr = eulerQ; e.LastAngBits = ab; eulerHits++; }
+                else { nr = Quaternion.Euler(0f, 0f, ang); eulerQ = nr; eulerBits = ab; eulerValid = true; e.LastAngBits = ab; }
             }
-            else nr = Quaternion.Euler(0f, 0f, d.startRot + angle);
+            else { float ang = d.startRot + angle; e.LastAngBits = BitConverter.SingleToInt32Bits(ang); nr = Quaternion.Euler(0f, 0f, ang); }
             Vector2 scale = scaling * camScale * (Vector2)Vector3.one;
             var ns = new Vector3(scale.x, scale.y, 1f);
             if (e.Engine != null && DecoEngine.ShouldVerify(e.Engine))

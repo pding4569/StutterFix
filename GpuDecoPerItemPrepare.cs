@@ -19,7 +19,7 @@ namespace StutterFix
             var t=sprite.sprite.texture;
             if(!t || t.GetInstanceID()!=item.TextureId)return "texture-changed";
             if(t.mipmapCount!=1)return "mipmap";
-            if(t.wrapModeU!=TextureWrapMode.Clamp || t.wrapModeV!=TextureWrapMode.Clamp)return "wrap";
+            if((t.wrapModeU!=TextureWrapMode.Clamp || t.wrapModeV!=TextureWrapMode.Clamp) && !GpuImageCollapseUvInUnitRange(item.UV))return "wrap";
             return null;
         }
         // 원본 인덱스/프로토타입은 유지한다. 아래 기존 소유 배열/슬라이스 생성만

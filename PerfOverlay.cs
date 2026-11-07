@@ -953,9 +953,12 @@ namespace StutterFix
             if (C.CmGpu) { compact.Add(sGpuShort); compactLoad.Add(gpuBar); }
             if (C.CmVram) { compact.Add(sVramShort); compactLoad.Add(vramWarn ? 1f : vramBar); }
             if (C.CmRam) { compact.Add(sRamShort); compactLoad.Add(ramBar); }
-            // 미니의 칸 넓이: 글자에 맞춘다 (고정 74 였을 때 'VRAM 4.2G' 같은 긴 값이 옆 칸에 붙어 넘쳤다)
-            compactW.Clear();
-            for (int i = 0; i < compact.Count; i++) compactW.Add(sLine != null ? Mathf.Max(56f, Mathf.Ceil(sLine.CalcSize(new GUIContent(compact[i])).x) + 22f) : 74f);
+            // 미니(lastMode == 2)일 때만 칸 넓이(CalcSize)를 계산한다 (기본 아이콘 모드 Mode=1에서는 쓰이지 않는 폰트 측정 6회 생략)
+            if (lastMode == 2)
+            {
+                compactW.Clear();
+                for (int i = 0; i < compact.Count; i++) compactW.Add(sLine != null ? Mathf.Max(56f, Mathf.Ceil(sLine.CalcSize(new GUIContent(compact[i])).x) + 22f) : 74f);
+            }
         }
         private readonly List<float> compactW = new List<float>(6);
         private bool showReal;
@@ -1136,6 +1139,7 @@ namespace StutterFix
         private void OnGUI()
         {
             if (show <= 0f || C == null || Mode == 0 || !built) return;
+            if ((!Cursor.visible || Hitch.Playing) && !dragging) { UiInputBlock.Clear(this); return; }
             long a = Edition.Dev ? Stopwatch.GetTimestamp() : 0;
             var oldM = GUI.matrix;
             GUI.matrix = Matrix4x4.TRS(new Vector3(slide * scale, 0, 0), Quaternion.identity, new Vector3(scale, scale, 1));

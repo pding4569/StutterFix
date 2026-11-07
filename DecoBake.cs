@@ -385,12 +385,12 @@ namespace StutterFix
             var ordered = new HashSet<ffxPlusBase>();
             var events = new List<DecoBakeCore.Event>();
             g1EventGuards.Clear();
-            var canHide = new HashSet<scrDecoration>();
+            var curVisible = new Dictionary<scrDecoration, bool>();
+            foreach(var kv in g1Initial) curVisible[kv.Key] = kv.Value.Visible;
             var imageWrites = new HashSet<scrDecoration>();
             foreach(var f in schedule.OfType<ffxMoveDecorationsPlus>())
-                if((f.visibleUsed && !f.visible) || f.imageFilenameUsed)
-                    foreach(var d in TimedTargets(f))
-                    {if(f.visibleUsed && !f.visible)canHide.Add(d);if(f.imageFilenameUsed)imageWrites.Add(d);}
+                if(f.imageFilenameUsed)
+                    foreach(var d in TimedTargets(f)) imageWrites.Add(d);
 #if AUTOTEST || GPUDECO
             var visualFlags = new List<int>();
             var imageSelectors = new List<string>();
@@ -435,7 +435,9 @@ namespace StutterFix
                     {
                         if (!ids.TryGetValue(d, out int id)) throw new InvalidOperationException("대상/초기값 불일치");
                         targets.Add(id); if (++refs > MaxTargetRefs) throw new InvalidOperationException("대상 참조 상한");
-                        AddG1ValueReasons(f,d,decs[id],g1Initial.TryGetValue(d,out var g1) && g1.Visible && !canHide.Contains(d),imageWrites.Contains(d));
+                        bool visNow = curVisible.TryGetValue(d, out bool cv) && cv;
+                        if (f.visibleUsed) { visNow = f.visible; curVisible[d] = f.visible; }
+                        AddG1ValueReasons(f,d,decs[id],visNow,imageWrites.Contains(d));
                         if (slice.Elapsed.TotalMilliseconds >= 4) { yield return null; slice.Restart(); }
                     }
                     e.Targets = targets.ToArray(); events.Add(e);
