@@ -158,7 +158,7 @@ namespace StutterFix
                 return;
             }
             DisableTurbo();
-            bool exactOnly = cmd == "safe" || cmd == "safe2"; bool keepDepth = cmd == "safe2";   // UI 마스크 잘라내기 건너뛰기와 거의 투명한 플래시 판 숨기기를 뺀다(결과가 정확히 같다고 확인되지 않음)
+            bool exactOnly = cmd == "safe" || cmd == "safe2" || cmd == "lite"; bool keepDepth = cmd == "safe2" || cmd == "lite"; bool scanRenderers = cmd != "lite";   // lite: 곡 시작 끊김을 피하려고 모든 렌더러 훑기를 하지 않는다   // UI 마스크 잘라내기 건너뛰기와 거의 투명한 플래시 판 숨기기를 뺀다(결과가 정확히 같다고 확인되지 않음)
             turboActive = true;
             mouseSkippedFrames = 0;
             flashCulledFrames = 0;
@@ -192,7 +192,7 @@ namespace StutterFix
             }
 
             int rflagsCount = 0;
-            foreach (var r in Resources.FindObjectsOfTypeAll<Renderer>())
+            if (scanRenderers) foreach (var r in Resources.FindObjectsOfTypeAll<Renderer>())
             {
                 if (!r || !r.gameObject.scene.IsValid()) continue;
                 r.shadowCastingMode = ShadowCastingMode.Off;
