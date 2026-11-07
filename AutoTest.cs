@@ -931,6 +931,7 @@ namespace StutterFix
                 case "maskgrow": EnginePatch.MaskGrow(arg != "off"); return true;
                 case "latprobe": EnginePatch.LatencyCommand(arg); return true;
                 case "turbo": EnginePatch.TurboCommand(arg); return true;
+                case "tilempb": TileMpb.Enable(); return true;
                 case "pace": Main.Entry.Logger.Log("[pace] 프레임 " + DisplayPace.Frames + " 그림 " + DisplayPace.Draws); return true;
 #if AUTOTEST
                 case "pacecheck": DisplayPace.Check(arg == "start"); return true;
