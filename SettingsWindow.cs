@@ -1260,6 +1260,9 @@ namespace StutterFix
                 ch |= Option("maskgrow", ref c.EngineMaskGrow, T("마스크 엔진 패치", "Mask engine patch"),
                     T("마스크가 많은 맵에서 엔진의 배열 복사를 줄입니다. 엔진 코드를 실행 중에 바꾸며, 버전이 다르면 스스로 꺼집니다.", "Reduces engine array copies on mask-heavy maps. Patches engine code at runtime; turns itself off on other engine versions."),
                     T("무거운 맵", "Heavy maps"));
+                ch |= Option("waitskip", ref c.EngineWaitSkip, T("화면 대기 건너뛰기", "Skip present wait"),
+                    T("엔진이 지난 화면이 나갈 때까지 기다리는 시간을 없앱니다. 엔진 코드를 실행 중에 바꾸며, 버전이 다르면 스스로 꺼집니다.", "Removes the engine wait for the previous frame. Patches engine code at runtime; turns itself off on other versions."),
+                    T("무거운 맵", "Heavy maps"));
                 EndGroup();
             }
             else if (sub == 3)
