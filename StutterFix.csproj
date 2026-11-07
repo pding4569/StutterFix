@@ -42,7 +42,6 @@
     <Compile Include="JitOpt.cs" />
     <Compile Include="HoldFix.cs" />
     <Compile Include="HitboxQuery.cs" />
-    <Compile Include="FloorColorSkip.cs" />
     <Compile Include="TileMpb.cs" />
     <Compile Include="DisplayPace.cs" />
     <Compile Include="GpuDecoResearchDisabled.cs" />
