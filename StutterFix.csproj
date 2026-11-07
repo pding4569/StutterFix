@@ -41,6 +41,7 @@
     <Compile Include="EnginePatch.cs" />
     <Compile Include="JitOpt.cs" />
     <Compile Include="HoldFix.cs" />
+    <Compile Include="HitboxQuery.cs" />
     <Compile Include="DisplayPace.cs" />
     <Compile Include="GpuDecoResearchDisabled.cs" />
     <Compile Include="GpuDecoPerItemPrepare.cs" />
@@ -338,6 +339,10 @@
   <ItemGroup>
     <Reference Include="UnityEngine">
       <HintPath>$(GameManaged)\UnityEngine.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.Physics2DModule">
+      <HintPath>$(GameManaged)\UnityEngine.Physics2DModule.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine.CoreModule">
