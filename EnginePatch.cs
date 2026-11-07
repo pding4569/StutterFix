@@ -158,7 +158,7 @@ namespace StutterFix
                 return;
             }
             DisableTurbo();
-            bool exactOnly = cmd == "safe";   // UI 마스크 잘라내기 건너뛰기와 거의 투명한 플래시 판 숨기기를 뺀다(결과가 정확히 같다고 확인되지 않음)
+            bool exactOnly = cmd == "safe" || cmd == "safe2"; bool keepDepth = cmd == "safe2";   // UI 마스크 잘라내기 건너뛰기와 거의 투명한 플래시 판 숨기기를 뺀다(결과가 정확히 같다고 확인되지 않음)
             turboActive = true;
             mouseSkippedFrames = 0;
             flashCulledFrames = 0;
@@ -182,7 +182,7 @@ namespace StutterFix
                     c.enabled = false;
                     disabledIdleCams.Add(c);
                 }
-                if (c.depthTextureMode != DepthTextureMode.None || c.useOcclusionCulling)
+                if (!keepDepth && (c.depthTextureMode != DepthTextureMode.None || c.useOcclusionCulling))
                 {
                     savedCamModes.Add((c, c.depthTextureMode, c.useOcclusionCulling));
                     c.depthTextureMode = DepthTextureMode.None;
