@@ -411,7 +411,7 @@ namespace StutterFix
                     ScaleUnitsX = source.ScaleUnitsX, ScaleUnitsY = source.ScaleUnitsY };
                 foreach (var reason in source.Reasons) row.Reasons.Add(reason);
                 if (foreignWriter) row.Reasons.Add("외부 모드 장식 setter 패치");
-                if (d.parallax != null && d.parallax.clampToScreen) row.Reasons.Add("시차 화면 고정");
+                if (d.parallax != null && d.parallax.clampToScreen && !DrawCollapsePolicy.ScreenFixed) row.Reasons.Add("시차 화면 고정");
                 if (d.hitboxEvents.Count != 0 || d.hasConditionalChange) row.Reasons.Add("히트박스/조건 연결");
                 if (d is scrVisualDecoration v && v.spriteRenderer != null && v.spriteRenderer.maskInteraction != SpriteMaskInteraction.None) row.Reasons.Add("마스크 대상");
                 decs[i] = row;

@@ -946,6 +946,8 @@ namespace StutterFix
                 case "stencilprobe": Log("[stencilprobe] " + StencilProbe.Run(arg.Trim())); return true;
                 case "lodprobe": Log("[lodprobe] " + LodProbe.Run(arg.Trim())); return true;
                 case "nodirect": Log("[nodirect] " + LodProbe.NoDirect(arg.Trim() != "off")); return true;
+                case "screenfixed": DrawCollapsePolicy.ScreenFixed = arg.Trim() != "off"; Log("[screenfixed] " + DrawCollapsePolicy.ScreenFixed); return true;
+                case "oversized": DrawCollapsePolicy.AllowOversized = arg.Trim() != "off"; Log("[oversized] " + DrawCollapsePolicy.AllowOversized); return true;
                 case "globaldirect": DrawCollapsePolicy.GlobalDirect = arg.Trim() != "off"; Log("[globaldirect] " + DrawCollapsePolicy.GlobalDirect); return true;
                 case "fewdirect": DrawCollapsePolicy.FewDirect = arg.Trim() != "off"; Log("[fewdirect] " + DrawCollapsePolicy.FewDirect); return true;
                 case "renderlod":

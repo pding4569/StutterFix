@@ -16,7 +16,11 @@ namespace StutterFix
         internal const int DirectBindings=48;
         internal const int FewDirectBindings=8; // DIRECT_FEW: 구간이 쓰는 직접 텍스처가 이 수 이하면 작은 변형
         internal static bool FewDirect=true; // 측정: fewdirect on|off
-        internal static bool GlobalDirect=false; // 측정: globaldirect on|off (직접 텍스처를 전역으로)
+        internal static bool GlobalDirect=false; // 측정: globaldirect on|off (직접 텍스처를 전역으로)
+        // 화면 밖까지 뻗은 초대형 사각형(월드 25 넘음)도 맡는다. 예전 거부 이유는 대각선 경계의 래스터 반올림 차이(최대 5/255, 눈으로 같음)였다. 측정: oversized on|off
+        internal static bool AllowOversized=true;
+        // 화면 고정(Camera·CameraAspect 배치, clampToScreen) 장식을 맡는다. 측정: screenfixed on|off
+        internal static bool ScreenFixed { get => DecoBakeCore.ScreenFixedSupported; set => DecoBakeCore.ScreenFixedSupported = value; }
         internal const int TextureBindings=ArrayBindings+DirectBindings;
         internal const int OwnedChecksPerFrame=4;
         // Orthographic camera translation changes every distance by this same

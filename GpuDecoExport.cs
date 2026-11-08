@@ -939,7 +939,7 @@ namespace StutterFix
                     if (mask == 0) continue;
                     windowCandidates++;
                     var d = baselineObjects[index] as scrVisualDecoration;
-                    if (!d || d.parallax.clampToScreen)
+                    if (!d || (d.parallax.clampToScreen && !DrawCollapsePolicy.ScreenFixed))
                     {
                         rejectCounts.TryGetValue("clamp-or-null", out int rc0); rejectCounts["clamp-or-null"] = rc0 + 1;
                         continue;
@@ -971,7 +971,8 @@ namespace StutterFix
                     {
                         Index = index, Id = d.GetInstanceID(), MaterialId = r.sharedMaterial.GetInstanceID(), TextureId = sp.texture.GetInstanceID(),
                         Layer = r.sortingLayerID, Order = r.sortingOrder, Placement = d.placementType.ToString(),
-                        Flags = (d.lockScale ? 1 : 0) | (d.lockRotation ? 2 : 0) | (d.parallax.dontAlterX ? 4 : 0) | (d.parallax.dontAlterY ? 8 : 0) | (r.flipX ? 16 : 0) | (r.flipY ? 32 : 0),
+                        Flags = (d.lockScale ? 1 : 0) | (d.lockRotation ? 2 : 0) | (d.parallax.dontAlterX ? 4 : 0) | (d.parallax.dontAlterY ? 8 : 0) | (r.flipX ? 16 : 0) | (r.flipY ? 32 : 0)
+                            | (DrawCollapsePolicy.ScreenFixed && d.parallax.clampToScreen ? 128 : 0) | (DrawCollapsePolicy.ScreenFixed && d.placementType == DecPlacementType.CameraAspect ? 256 : 0),
                         Constants = new[] { ts.x, ts.y, d.textureScaleMultiplier.x, d.textureScaleMultiplier.y, d.startRot, d.croppedPivotOffset.x, d.croppedPivotOffset.y, d.pivotTrans.position.z },
                         Initial = (float[])table.Decorations[index].Initial.Clone(),
                         Triangles = sp.triangles.Select(x => (int)x).ToArray()
@@ -1389,6 +1390,9 @@ namespace StutterFix
             float camScale = orthoSize * .2f / gpuLiveZoomFactor;
             var position=ct.position;
             var camera=new Vector4(position.x, position.y, ct.eulerAngles.z, camScale);
+            // 화면 고정(Camera·CameraAspect) 장식: orthographicSize, pixelRect 가로/세로, 화면 높이/너비
+            {var pr=camy.camobj.pixelRect;var ortho=new Vector4(orthoSize,pr.height>0?pr.width/pr.height:1f,Screen.width>0?(float)Screen.height/Screen.width:1f,0);
+             foreach(var sl in gpuLiveSlices)sl.Gpu?.SetCameraOrtho(ortho);}
 #if AUTOTEST
             long cm1=Stopwatch.GetTimestamp();
 #endif
@@ -3003,8 +3007,8 @@ namespace StutterFix
                 var d = baselineObjects[index] as scrVisualDecoration;
                 if (!d || !awakeSet.Contains(d)) continue;
                 string why = table.Decorations[index].Reasons.Count != 0 ? "bake-unsupported" : LiveDecoRenderer.ExportReason(d, cam, manager);
-                if (why == null && d.parallax.clampToScreen) why = "clamp-screen";
-                if (why == null && !GpuDecoCoverage.Auxiliary(data.Awake) && d.spriteRenderer != null)
+                if (why == null && d.parallax.clampToScreen && !DrawCollapsePolicy.ScreenFixed) why = "clamp-screen";
+                if (why == null && !DrawCollapsePolicy.AllowOversized && !GpuDecoCoverage.Auxiliary(data.Awake) && d.spriteRenderer != null)
                 {
                     var bSize = d.spriteRenderer.bounds.size;
                     if (bSize.x > 25f || bSize.y > 25f) why = "oversized-world-quad";
@@ -3023,6 +3027,7 @@ namespace StutterFix
                     Index = index, Id = d.GetInstanceID(), MaterialId = r.sharedMaterial.GetInstanceID(), TextureId = r.sprite.texture.GetInstanceID(),
                     Layer = r.sortingLayerID, Order = r.sortingOrder, Placement = d.placementType.ToString(),
                     Flags = (d.lockScale ? 1 : 0) | (d.lockRotation ? 2 : 0) | (d.parallax.dontAlterX ? 4 : 0) | (d.parallax.dontAlterY ? 8 : 0) | (r.flipX ? 16 : 0) | (r.flipY ? 32 : 0)
+                        | (DrawCollapsePolicy.ScreenFixed && d.parallax.clampToScreen ? 128 : 0) | (DrawCollapsePolicy.ScreenFixed && d.placementType == DecPlacementType.CameraAspect ? 256 : 0)
                 };
                 var ts = d.scaleMultiplier * d.textureScaleMultiplier;
                 item.Constants = new[] { ts.x, ts.y, d.textureScaleMultiplier.x, d.textureScaleMultiplier.y, d.startRot, d.croppedPivotOffset.x, d.croppedPivotOffset.y, d.pivotTrans.position.z };

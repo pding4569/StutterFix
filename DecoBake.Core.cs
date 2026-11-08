@@ -9,6 +9,7 @@ namespace StutterFix
     // Pure snapshot -> immutable tracks. No Unity objects, setters or frame accumulator.
     internal static class DecoBakeCore
     {
+        internal static bool ScreenFixedSupported = true;   // 화면 고정 장식을 GPU 가 맡는다(DrawCollapsePolicy.ScreenFixed 와 같이 바뀜)
         internal const int Channels = 16;
         internal const int ScaleX = 5, ScaleY = 6;
         // Stateful clock adapter only; Table.Eval remains a stateless function.
@@ -310,9 +311,10 @@ namespace StutterFix
         internal static bool Finite(double x) { return !double.IsNaN(x) && !double.IsInfinity(x); }
         internal static string PlacementReason(string placement, bool stickToFloor)
         {
-            if (placement == "Camera" || placement == "CameraAspect") return "Camera-동적 화면 투영";
+            // 화면 고정(Camera·CameraAspect)은 GPU 가 프레임마다 카메라 값으로 계산한다(GpuDeco.compute ParallaxWorld). 끄면 예전처럼 거부.
+            if ((placement == "Camera" || placement == "CameraAspect") && !ScreenFixedSupported) return "Camera-동적 화면 투영";
             if (placement == "Tile" && stickToFloor) return "Tile-동적 바닥 추종";
-            return placement == "Global" || placement == "Tile" ? null : "초기 배치 미지원";
+            return placement == "Global" || placement == "Tile" || (ScreenFixedSupported && (placement == "Camera" || placement == "CameraAspect")) ? null : "초기 배치 미지원";
         }
         internal static string MovementReason(string placement, bool used)
         {

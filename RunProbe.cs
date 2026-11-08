@@ -16,6 +16,7 @@ namespace StutterFix
             if (!cam) return "본 카메라 없음";
             var fwd = cam.transform.forward; var cp = cam.transform.position;
             var rows = new List<(int lv, int ord, int q, float dist, bool big, string tex)>();
+            var other = new Dictionary<string, (int n, float cov)>();
             foreach (var r in Object.FindObjectsByType<Renderer>(FindObjectsInactive.Exclude, FindObjectsSortMode.None))
             {
                 if (!r.enabled || r.forceRenderingOff || !r.isVisible || (cam.cullingMask & (1 << r.gameObject.layer)) == 0) continue;
@@ -28,6 +29,17 @@ namespace StutterFix
                     float mag = Mathf.Min(Mathf.Abs(a1.x - a0.x) / tr.width, Mathf.Abs(a1.y - a0.y) / tr.height);
                     big = mag >= minMag; tex = sr.sprite.texture.name;
                 }
+                else
+                {
+                    // 후보가 아닌 렌더러 중 화면을 크게 덮는 것(셰이더·섞기별): 지원을 넓힐 가치가 있는지 본다
+                    var bb = r.bounds; Vector3 c0 = cam.WorldToViewportPoint(bb.min), c1 = cam.WorldToViewportPoint(bb.max);
+                    float cov = Mathf.Clamp01(Mathf.Abs(c1.x - c0.x)) * Mathf.Clamp01(Mathf.Abs(c1.y - c0.y));
+                    if (cov > 0.25f)
+                    {
+                        string k = r.GetType().Name + ":" + (m.shader ? m.shader.name : "?") + (m.HasProperty("_SrcBlend") ? "/" + m.GetFloat("_SrcBlend") + "," + m.GetFloat("_DstBlend") : "");
+                        other.TryGetValue(k, out var o); other[k] = (o.n + 1, o.cov + cov);
+                    }
+                }
                 float dist = Vector3.Dot(r.bounds.center - cp, fwd);
                 rows.Add((SortingLayer.GetLayerValueFromID(r.sortingLayerID), r.sortingOrder, m.renderQueue, dist, big, tex));
             }
@@ -38,6 +50,8 @@ namespace StutterFix
             if (cur > 0) runs.Add(cur);
             runs.Sort(); runs.Reverse();
             int saved = runs.Sum(k => k - 1);
+            string others = string.Join("; ", other.OrderByDescending(kv => kv.Value.cov).Take(8).Select(kv => kv.Key + " " + kv.Value.n + "개 " + kv.Value.cov.ToString("F1", CultureInfo.InvariantCulture) + "장"));
+            Main.Entry.Logger.Log("[runprobe] 후보 밖 큰 렌더러(화면 1/4 넘게 덮음): " + others);
             return string.Format(CultureInfo.InvariantCulture, "투명 렌더러 {0}, 확대 {1}배 이상 {2}개, 연속 묶음 {3}개 (길이 상위: {4}), 합치면 줄어드는 전체 화면 층 {5}",
                 t.Count, minMag, bigCount, runs.Count, string.Join(",", runs.Take(20)), saved);
         }

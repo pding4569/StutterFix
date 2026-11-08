@@ -241,6 +241,8 @@ namespace StutterFix
         }
         // 제품이 켜는 값: 독립 평가에서도 알파 0 항목을 건너뛴다(랩·시험 경로는 0 그대로).
         internal static int AlphaEarlyOut;
+        static readonly int pCameraOrtho=UnityEngine.Shader.PropertyToID("_CameraOrtho");
+        internal void SetCameraOrtho(Vector4 v){if(shader)shader.SetVector(pCameraOrtho,v);}
         internal void SetLiveUniforms(Vector4 camera, double time)
         {
             shader.SetInt("_UseAnchors", 1);

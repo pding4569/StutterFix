@@ -39,6 +39,26 @@ uint _AlphaEarlyOut; // 제품: 1 이면 독립 평가에서도 알파 곱이 0 
 uint _Count;
 float _TimeHi, _TimeLo, _Pitch, _TweenScale;
 float4 _Camera; // XY, rotation degrees, lock-scale multiplier
+float4 _CameraOrtho; // orthographicSize, pixelRect 가로/세로, 화면 높이/너비, 0 (화면 고정 장식용)
+// scrParallax.SetTrans 의 위치. clampToScreen(flags 128, Camera·CameraAspect 배치)이면
+// ScreenToWorldPoint(pixelRect.xy + pixelRect.wh * screenRelativePos) 를 직교 카메라 식으로 계산한다(pixelRect 시작점은 상쇄된다).
+// screenRelativePos = (pivotPosVec + pivotOffsetVec) / 20 + 0.5, CameraAspect(flags 256)는 x 에 화면 높이/너비를 먼저 곱한다.
+float2 ParallaxWorld(float2 position, float2 pivotOffset, float2 parallax, uint flags)
+{
+    if((flags&128u)!=0)
+    {
+        precise float2 v=position+pivotOffset;
+        if((flags&256u)!=0) v.x*=_CameraOrtho.z;
+        precise float2 srp=v/20.0+0.5;
+        precise float2 cam=float2((2.0*srp.x-1.0)*_CameraOrtho.x*_CameraOrtho.y,(2.0*srp.y-1.0)*_CameraOrtho.x);
+        float r=radians(_Camera.z); float sr,cr; sincos(r,sr,cr);
+        return _Camera.xy+float2(cr*cam.x-sr*cam.y,sr*cam.x+cr*cam.y);
+    }
+    precise float2 world=(_Camera.xy-position)*parallax+position;
+    if((flags&4)!=0) world.x=position.x;
+    if((flags&8)!=0) world.y=position.y;
+    return world;
+}
 StructuredBuffer<float4> _Probe;
 StructuredBuffer<uint> _ProbeIds;
 RWStructuredBuffer<float> _ProbeOut;
@@ -247,9 +267,7 @@ void WriteVerticesAt(uint i, float v[16], uint outputItem, bool collapse)
     precise float2 position=float2(v[0],v[1]);
     // Match the separate float operations of scrParallax.SetTrans. Fusing the
     // multiply/add loses the game's rounding at large cancelling coordinates.
-    precise float2 world=(_Camera.xy-position)*float2(v[12],v[13])+position;
-    if((flags&4)!=0) world.x=position.x;
-    if((flags&8)!=0) world.y=position.y;
+    precise float2 world=ParallaxWorld(position,float2(v[2],v[3]),float2(v[12],v[13]),flags);
     world+=float2(v[14],v[15])*camScale/c.zw;
     precise float2 offset=(float2(v[2],v[3])+crop.xy)/trueScale;
     precise float3 translated=_Static[b+4].xyz+_Static[b+5].xyz*offset.x+_Static[b+6].xyz*offset.y;
@@ -276,9 +294,7 @@ void WriteVerticesAt(uint i, float v[16], uint outputItem, bool collapse)
         q2=(p0*f2.x+p1*f2.y)+p2*f2.z;
         precise float2 exactOffset=float2(CpuQuotient(v[2]+crop.x,trueScale.x),CpuQuotient(v[3]+crop.y,trueScale.y));
         precise float3 origin=_ImageShape[ib+3].xyz+_Static[b+4].xyz+_Static[b+5].xyz*exactOffset.x+_Static[b+6].xyz*exactOffset.y;
-        precise float3 exactWorld=float3((_Camera.xy-position)*float2(v[12],v[13])+position,crop.z);
-        if((flags&4u)!=0)exactWorld.x=position.x;
-        if((flags&8u)!=0)exactWorld.y=position.y;
+        precise float3 exactWorld=float3(ParallaxWorld(position,float2(v[2],v[3]),float2(v[12],v[13]),flags),crop.z);
         exactWorld.x+=CpuQuotient(v[14]*camScale.x,c.z);
         exactWorld.y+=CpuQuotient(v[15]*camScale.y,c.w);
         q3=((p0*origin.x+p1*origin.y)+p2*origin.z)+exactWorld;
