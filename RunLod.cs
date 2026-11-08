@@ -44,7 +44,7 @@ namespace StutterFix
             k = x.Shader.CompareTo(y.Shader); if (k != 0) return k;
             return x.Mat.CompareTo(y.Mat);
         };
-        sealed class Item { public Renderer R; public Cand C; public int Q, Lv, Ord; public float Dist; public int Shader, Mat; public float X0, Y0, X1, Y1; }
+        sealed class Item { public Renderer R; public Cand C; public int Q, Lv, Ord; public float Dist; public int Shader, Mat; public float X0, Y0, X1, Y1, Mag; }
         internal static float MinSave = 1.0f;   // 묶음으로 아끼는 화면 층 수가 이보다 커야 묶는다
         internal static int MaxCands = 8000;     // 후보가 이보다 많은 맵은 끈다(매 프레임 비용)
         static bool mapOff, active, anyMoved;
@@ -90,7 +90,7 @@ namespace StutterFix
         {
             if (Main.Config == null || !Main.Config.RunLod) return;
             // 같은 맵을 다시 하면 모은 결과를 그대로 쓴다(재생 준비에서 이미 모았거나 지난 판에 모은 것)
-            try { if (!On) Command("4"); active = false; savedEma = 0; anyMoved = false; }
+            try { if (!On) Command("on"); active = false; savedEma = 0; anyMoved = false; }
             catch (Exception e) { Main.Entry.Logger.Log("[묶음 LOD] 켜기 실패: " + e.Message); }
         }
         // 설정으로 켠 경우만 곡 끝(일시정지 포함)에 멈춘다. 측정 명령으로 켠 경우는 그대로 둔다(같은 프레임 비교용).
@@ -366,7 +366,7 @@ namespace StutterFix
                 var sz = b.size;
                 float mag = Mathf.Min(sz.x * ppw / cd.TexW, sz.y * ppw / cd.TexH);
                 int sl = r.sortingLayerID; if (sl != cd.SlId || cd.SlVal == int.MinValue) { cd.SlId = sl; cd.SlVal = SortingLayer.GetLayerValueFromID(sl); }
-                var it = cd.It; it.R = r; it.C = mag >= MinMag ? cd : null; it.Q = cd.Q; it.Lv = cd.SlVal; it.Ord = r.sortingOrder;
+                var it = cd.It; it.R = r; it.C = mag >= MinMag ? cd : null; it.Mag = mag; it.Q = cd.Q; it.Lv = cd.SlVal; it.Ord = r.sortingOrder;
                 it.Dist = Vector3.Dot(b.center - cp, fwd); it.Shader = cd.Shader; it.Mat = cd.Mat;
                 if (it.C != null) ViewRect(b, it);
                 else Restore(cd);
@@ -410,10 +410,12 @@ namespace StutterFix
             if (run >= MinRun)
             {
                 // 아끼는 층 수 = 장식들 화면 넓이 합 - 저해상도 몫(1/16) - 합치기 사각형 넓이
-                float sum = 0, x0 = 1, y0 = 1, x1 = 0, y1 = 0;
-                for (int k = end - run; k < end; k++) { var it = items[k]; sum += (it.X1 - it.X0) * (it.Y1 - it.Y0); x0 = Mathf.Min(x0, it.X0); y0 = Mathf.Min(y0, it.Y0); x1 = Mathf.Max(x1, it.X1); y1 = Mathf.Max(y1, it.Y1); }
+                float sum = 0, x0 = 1, y0 = 1, x1 = 0, y1 = 0, minMag = float.MaxValue;
+                for (int k = end - run; k < end; k++) { var it = items[k]; sum += (it.X1 - it.X0) * (it.Y1 - it.Y0); x0 = Mathf.Min(x0, it.X0); y0 = Mathf.Min(y0, it.Y0); x1 = Mathf.Max(x1, it.X1); y1 = Mathf.Max(y1, it.Y1); minMag = Mathf.Min(minMag, it.Mag); }
                 float union = Mathf.Max(0, x1 - x0) * Mathf.Max(0, y1 - y0);
-                float save = sum * (15f / 16f) - union;
+                // 해상도: 묶음에서 가장 덜 확대된 장식 기준(4배 이상 1/4, 아니면 1/2)
+                runDiv = minMag >= 4f ? 4 : 2;
+                float save = sum * (1f - 1f / (runDiv * runDiv)) - union;
                 go = save > MinSave;
                 if (go) savedNow += save;
                 if (go) { rx0 = x0; ry0 = y0; rx1 = x1; ry1 = y1; }
@@ -422,12 +424,12 @@ namespace StutterFix
             else for (int k = end - run; k < end; k++) Restore(items[k].C);
         }
 
-        static float rx0, ry0, rx1, ry1;
+        static float rx0, ry0, rx1, ry1; static int runDiv = 4;
         static bool SameKey(Item a, Item b) => a.Q == b.Q && a.Lv == b.Lv && a.Ord == b.Ord && a.Dist == b.Dist;
 
         static void Emit(int start, int count, int idx, int w, int h)
         {
-            int div = 4;
+            int div = runDiv;
             int lw = Math.Max(1, w / div), lh = Math.Max(1, h / div);
             while (rts.Count <= idx) rts.Add(null);
             var rt = rts[idx];
