@@ -1,0 +1,1 @@
+[gpudeco-lab] editor=6000.3.10f1 device=NVIDIA GeForce RTX 4060 Ti api=Direct3D11

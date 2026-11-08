@@ -1,5 +1,6 @@
-#if AUTOTEST
 using System;
+using ADOFAI;
+using HarmonyLib;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -7,15 +8,6 @@ using UnityEngine.Rendering;
 
 namespace StutterFix
 {
-    internal static partial class DecoBake
-    {
-        internal static Shader RunLodShader()
-        {
-            if (gpuLiveBundle == null) gpuLiveBundle = LoadPlayerGpuBundle();
-            return gpuLiveBundle ? gpuLiveBundle.LoadAsset<Shader>("Assets/Shaders/RunLodComposite.shader") : null;
-        }
-    }
-
     // 묶음 LOD(원래 렌더러): 그리기 순서에서 연속으로 붙은 "크게 확대된 이미지 장식"들을 저해상도 그림 하나에 순서대로 모아 그리고
     // (본 카메라의 투명 그리기 직전 CommandBuffer), 묶음 첫 장식의 정렬 자리에서 화면 사각형 하나로 합친다.
     // 확대된 그림은 원래 저주파라 눈으로는 같다. 화면 전체 층 수가 묶음 수로 준다.
@@ -41,6 +33,7 @@ namespace StutterFix
             void OnBecameInvisible() { Vis = false; }
         }
         static BarrierTag[] barrierTag = new BarrierTag[0];
+        static int tagsThisFrame; internal static int TagsPerFrame = 300;
         sealed class Cand { public bool Vis, Listed; public VisTag Tag; public SpriteRenderer R; public int Layer; public bool Moved; public Item It = new Item(); public float TexW, TexH; public Material M; public int Shader, Mat; }
         static readonly Comparison<Item> order = (x, y) =>
         {
@@ -73,6 +66,59 @@ namespace StutterFix
         static readonly List<RenderTexture> rts = new List<RenderTexture>();
         static Mesh quad;
 
+        // 합치기 셰이더는 모드에 넣은 작은 번들(StutterFix.runlod)에서 한 번만 읽는다.
+        static AssetBundle bundle;
+        static Shader LoadShader()
+        {
+            if (shader) return shader;
+            if (!bundle)
+            {
+                using (var s = typeof(RunLod).Assembly.GetManifestResourceStream("StutterFix.runlod"))
+                {
+                    if (s == null) return null;
+                    var bytes = new byte[s.Length]; int o = 0; while (o < bytes.Length) { int n = s.Read(bytes, o, bytes.Length - o); if (n <= 0) break; o += n; }
+                    bundle = AssetBundle.LoadFromMemory(bytes);
+                }
+            }
+            shader = bundle ? bundle.LoadAsset<Shader>("Assets/Shaders/RunLodComposite.shader") : null;
+            return shader;
+        }
+
+        // 곡 시작/끝(Hitch)에서 부른다. 설정 RunLod 가 켜져 있을 때만.
+        internal static void SongStarted()
+        {
+            if (Main.Config == null || !Main.Config.RunLod) return;
+            // 같은 맵을 다시 하면 모은 결과를 그대로 쓴다(재생 준비에서 이미 모았거나 지난 판에 모은 것)
+            try { if (!On) Command("4"); active = false; savedEma = 0; anyMoved = false; }
+            catch (Exception e) { Main.Entry.Logger.Log("[묶음 LOD] 켜기 실패: " + e.Message); }
+        }
+        internal static void SongEnded() { if (On) { try { Pause(); } catch { } } }
+
+        // 재생 시작 때 장식 다시 설정(ResetDecorations) 뒤에 한 번에 모은다. 게임 화면의 같은 맵 재시도는 비용 0.
+        internal static void Install(Harmony h)
+        {
+            // 장식이 모두 만들어진 뒤인 장식 다시 설정(재생 시작·다시 하기) 뒤에 모은다
+            var rd = AccessTools.Method(typeof(scrDecorationManager), "ResetDecorations");
+            if (rd == null) { Main.Entry.Logger.Log("[묶음 LOD] 장식 다시 설정 함수를 못 찾음: 곡 시작 때 나눠 모음"); return; }
+            h.Patch(rd, postfix: new HarmonyMethod(typeof(RunLod), nameof(PrepPostfix)) { priority = Priority.Last });
+        }
+        public static void PrepPostfix()
+        {
+            if (Main.Config == null || !Main.Config.RunLod) return;
+            // 게임 화면(목록에서 연 맵)은 같은 맵 재시도에 모은 결과를 그대로 쓴다. 편집기는 장식이 바뀌었을 수 있어 매번 다시 모은다.
+            bool editor = false; try { editor = scnEditor.instance != null; } catch { }
+            if (gstate == 2 && !editor) return;
+            try
+            {
+                if (gstate != 0) ForgetLevel();
+                GatherBegin();
+                int guard = 0;
+                while (gstate == 1 && guard++ < 100000) GatherStep();
+            }
+            catch (Exception e) { Main.Entry.Logger.Log("[묶음 LOD] 준비 중 모으기 실패: " + e.Message); ForgetLevel(); }
+        }
+        internal static void Unload() { try { Off(); } catch { } if (bundle) { bundle.Unload(true); bundle = null; } shader = null; }
+
         internal static string Command(string arg)
         {
             var a = arg.Trim().Split(' ');
@@ -81,7 +127,7 @@ namespace StutterFix
             if (a.Length > 0 && float.TryParse(a[0], System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out var m) && m > 0) MinMag = m;
             if (!On)
             {
-                shader = DecoBake.RunLodShader();
+                shader = LoadShader();
                 if (!shader || !shader.isSupported) return "합치기 셰이더 없음";
                 On = true; Camera.onPreCull += PreCull;
             }
@@ -93,16 +139,34 @@ namespace StutterFix
 
         static double Ms(long ticks) => Frames > 0 ? ticks * 1000.0 / System.Diagnostics.Stopwatch.Frequency / Frames : 0;
 
-        internal static void Off()
+        // 멈춤: 그리기만 원래대로 돌리고 모은 결과(후보·장벽·알림)는 같은 맵 재시도를 위해 둔다.
+        internal static void Pause()
         {
             if (On) Camera.onPreCull -= PreCull;
             On = false;
             if (cam && cb != null) cam.RemoveCommandBuffer(CameraEvent.BeforeForwardAlpha, cb);
             cb?.Release(); cb = null; cam = null;
-            foreach (var c in cands) { Restore(c); if (c.Tag) UnityEngine.Object.Destroy(c.Tag); }
-            foreach (var tg in barrierTag) if (tg) UnityEngine.Object.Destroy(tg);
+            foreach (var c in cands) Restore(c);
+            anyMoved = false;
+            foreach (var g in comps) if (g && g.activeSelf) g.SetActive(false);
+        }
+
+        // 맵이 바뀌면 모은 결과를 버린다.
+        // 알림 컴포넌트는 지우지 않고 떼어만 둔다: Destroy 는 프레임 끝에 일어나서, 바로 다시 모을 때 GetComponent 가
+        // 지워질 예정인 것을 돌려주면 알림이 끊긴다. 다시 모을 때 그대로 다시 쓴다. 모드를 내릴 때(Off)만 지운다.
+        internal static void ForgetLevel()
+        {
+            foreach (var c in cands) { Restore(c); if (c.Tag) c.Tag.C = null; }
             barrierTag = new BarrierTag[0]; barrierKey = new long[0]; barrierByKey = new Renderer[0];
-            cands.Clear(); barriers.Clear(); visible.Clear(); gatheredFrame = -9999;
+            cands.Clear(); barriers.Clear(); visible.Clear(); gatheredFrame = -9999; gstate = 0; gAll = null; mapOff = false;
+        }
+
+        internal static void Off()
+        {
+            Pause();
+            foreach (var c in cands) if (c.Tag) UnityEngine.Object.Destroy(c.Tag);
+            foreach (var tg in barrierTag) if (tg) UnityEngine.Object.Destroy(tg);
+            ForgetLevel();
             foreach (var g in comps) if (g) UnityEngine.Object.Destroy(g);
             foreach (var m in compMats) if (m) UnityEngine.Object.Destroy(m);
             foreach (var r in rts) if (r) { r.Release(); UnityEngine.Object.Destroy(r); }
@@ -111,55 +175,79 @@ namespace StutterFix
 
         static void Restore(Cand c) { if (c.Moved && c.R) c.R.gameObject.layer = c.Layer; c.Moved = false; }
 
-        static void Gather()
+        // 모으기는 여러 프레임에 나눈다(곡 시작 멈춤 방지): 0 시작 전, 1 분류 중, 2 끝.
+        static int gstate; static Renderer[] gAll; static int gPos; static long gTicks, gFind;
+        static readonly List<long> gKeys = new List<long>(); static readonly List<Renderer> gRens = new List<Renderer>();
+        static readonly Dictionary<int, bool> shaderOk = new Dictionary<int, bool>();
+        internal static int GatherChunk = 1500;
+        static readonly AccessTools.FieldRef<scrDecorationManager, List<scrDecoration>> allDecos =
+            AccessTools.FieldRefAccess<scrDecorationManager, List<scrDecoration>>("allDecorations");
+
+        static void GatherBegin()
         {
+            long t0 = System.Diagnostics.Stopwatch.GetTimestamp();
             foreach (var c in cands) { Restore(c); if (c.Tag) c.Tag.C = null; }
-            cands.Clear(); barriers.Clear(); visible.Clear();
-            foreach (var r in UnityEngine.Object.FindObjectsByType<Renderer>(FindObjectsInactive.Include, FindObjectsSortMode.None))
-            {
-                if (!r) continue;
-                bool cand = false;
-                if (r is SpriteRenderer sr && sr.drawMode == SpriteDrawMode.Simple && sr.maskInteraction == SpriteMaskInteraction.None
-                    && r.sharedMaterials.Length == 1 && r.sharedMaterial && r.sharedMaterial.shader
-                    && (r.sharedMaterial.shader.name == "Sprites/Tile" || r.sharedMaterial.shader.name == "Sprites/Default")
-                    && r.GetComponentInParent<scrVisualDecoration>() && !r.GetComponent<Collider2D>() && !r.GetComponentInParent<SortingGroup>())
-                {
-                    var m = r.sharedMaterial;
-                    // 미리 곱한 알파 덮기(One, OneMinusSrcAlpha)만
-                    bool okBlend = !m.HasProperty("_SrcBlend") || (m.GetFloat("_SrcBlend") == 1f && m.GetFloat("_DstBlend") == 10f);
-                    cand = okBlend;
-                }
-                if (cand)
-                {
-                    var cd = new Cand { R = (SpriteRenderer)r, Layer = r.gameObject.layer };
-                    var tag = r.GetComponent<VisTag>() ?? r.gameObject.AddComponent<VisTag>(); tag.C = cd; cd.Tag = tag;
-                    if (r.isVisible) { cd.Vis = true; cd.Listed = true; visible.Add(cd); }
-                    cands.Add(cd);
-                }
-                else barriers.Add(r);
-            }
-            // 장벽은 정렬 키(큐·층·순서) 순으로 정리해 두고, 후보 둘 사이 키 범위의 장벽만 매 프레임 본다.
-            var keyed = new List<(long k, Renderer r)>();
-            foreach (var r in barriers)
-            {
-                var m = r.sharedMaterial; if (!m || m.renderQueue <= 2500) continue;
-                keyed.Add((Key(m.renderQueue, SortingLayer.GetLayerValueFromID(r.sortingLayerID), r.sortingOrder), r));
-            }
-            keyed.Sort((a, b) => a.k.CompareTo(b.k));
-            // 후보 키 범위 안의 장벽에만 보임 알림을 붙인다(그 밖은 후보 사이에 끼지 않는다)
-            long lo = long.MaxValue, hi = long.MinValue;
-            foreach (var cd in cands) { var m = cd.R.sharedMaterial; long k = Key(m.renderQueue, SortingLayer.GetLayerValueFromID(cd.R.sortingLayerID), cd.R.sortingOrder); if (k < lo) lo = k; if (k > hi) hi = k; }
-            keyed.RemoveAll(x => x.k < lo || x.k > hi);
-            barrierKey = keyed.Select(x => x.k).ToArray(); barrierByKey = keyed.Select(x => x.r).ToArray();
-            barrierTag = new BarrierTag[barrierByKey.Length];
-            for (int i = 0; i < barrierByKey.Length; i++)
-            {
-                var r = barrierByKey[i];
-                var tg = r.GetComponent<BarrierTag>() ?? r.gameObject.AddComponent<BarrierTag>(); tg.Vis = r.isVisible; barrierTag[i] = tg;
-            }
-            Main.Entry.Logger.Log("[runlod] 모음: 후보 " + cands.Count + ", 후보 키 범위 안 장벽 " + barrierByKey.Length + " (전체 " + barriers.Count + ")");
-            gatheredFrame = Time.frameCount;
+            cands.Clear(); barriers.Clear(); visible.Clear(); gKeys.Clear(); gRens.Clear(); gTicks = 0;
+            barrierKey = new long[0]; barrierByKey = new Renderer[0]; barrierTag = new BarrierTag[0];
+            // 장식이 아주 많은 맵은 렌더러를 훑지도 않고 끈다
+            int decoCount = 0;
+            try { var dm = scrDecorationManager.instance; if (dm != null) decoCount = allDecos(dm)?.Count ?? 0; } catch { }
+            mapOff = decoCount > MaxCands;
+            if (mapOff) { gstate = 2; gatheredFrame = Time.frameCount; Main.Entry.Logger.Log("[묶음 LOD] 이 맵은 끔: 장식 " + decoCount + " > " + MaxCands); return; }
+            gAll = UnityEngine.Object.FindObjectsByType<Renderer>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+            gPos = 0; gstate = 1;
+            gFind = System.Diagnostics.Stopwatch.GetTimestamp() - t0; gTicks += gFind;
         }
+
+        static void GatherStep()
+        {
+            long t0 = System.Diagnostics.Stopwatch.GetTimestamp();
+            int end = Math.Min(gAll.Length, gPos + GatherChunk);
+            for (; gPos < end; gPos++)
+            {
+                var r = gAll[gPos];
+                if (!r) continue;
+                var m = r.sharedMaterial;
+                bool cand = false;
+                if (m && r is SpriteRenderer sr && sr.drawMode == SpriteDrawMode.Simple && sr.maskInteraction == SpriteMaskInteraction.None)
+                {
+                    var sh = m.shader; int sid = sh ? sh.GetInstanceID() : 0;
+                    if (!shaderOk.TryGetValue(sid, out bool ok)) { ok = sh && (sh.name == "Sprites/Tile" || sh.name == "Sprites/Default"); shaderOk[sid] = ok; }
+                    // 미리 곱한 알파 덮기(One, OneMinusSrcAlpha)만
+                    if (ok && (!m.HasProperty("_SrcBlend") || (m.GetFloat("_SrcBlend") == 1f && m.GetFloat("_DstBlend") == 10f))
+                        && r.GetComponentInParent<scrVisualDecoration>() && !r.GetComponent<Collider2D>() && !r.GetComponentInParent<SortingGroup>())
+                    {
+                        cand = true;
+                        var cd = new Cand { R = sr, Layer = r.gameObject.layer };
+                        var tag = r.GetComponent<VisTag>() ?? r.gameObject.AddComponent<VisTag>(); tag.C = cd; cd.Tag = tag;
+                        if (r.isVisible) { cd.Vis = true; cd.Listed = true; visible.Add(cd); }
+                        cands.Add(cd);
+                    }
+                }
+                if (!cand && m && m.renderQueue > 2500)
+                {
+                    barriers.Add(r);
+                    gKeys.Add(Key(m.renderQueue, SortingLayer.GetLayerValueFromID(r.sortingLayerID), r.sortingOrder)); gRens.Add(r);
+                }
+            }
+            if (gPos >= gAll.Length)
+            {
+                // 장벽은 정렬 키 순으로(후보 키 범위 안만). 보임 알림은 처음 훑을 때 조금씩 붙인다.
+                long lo = long.MaxValue, hi = long.MinValue;
+                foreach (var cd in cands) { var mm = cd.R.sharedMaterial; if (!mm) continue; long k = Key(mm.renderQueue, SortingLayer.GetLayerValueFromID(cd.R.sortingLayerID), cd.R.sortingOrder); if (k < lo) lo = k; if (k > hi) hi = k; }
+                var ks = new List<long>(); var rs = new List<Renderer>();
+                for (int i = 0; i < gKeys.Count; i++) if (gKeys[i] >= lo && gKeys[i] <= hi) { ks.Add(gKeys[i]); rs.Add(gRens[i]); }
+                barrierKey = ks.ToArray(); barrierByKey = rs.ToArray(); Array.Sort(barrierKey, barrierByKey);
+                barrierTag = new BarrierTag[barrierByKey.Length];
+                gKeys.Clear(); gRens.Clear(); gAll = null; gstate = 2; gatheredFrame = Time.frameCount;
+                gTicks += System.Diagnostics.Stopwatch.GetTimestamp() - t0;
+                Main.Entry.Logger.Log("[묶음 LOD] 모음 끝: 합계 " + GMs(0, gTicks) + "ms (찾기 " + GMs(0, gFind) + ", 나머지는 프레임당 " + GatherChunk + "개씩), 후보 " + cands.Count + ", 후보 키 범위 안 장벽 " + barrierByKey.Length + " (전체 " + barriers.Count + ")");
+                return;
+            }
+            gTicks += System.Diagnostics.Stopwatch.GetTimestamp() - t0;
+        }
+
+        static string GMs(long a, long b) => ((b - a) * 1000.0 / System.Diagnostics.Stopwatch.Frequency).ToString("F1");
 
         static long Key(int q, int lv, int ord) => ((long)(q & 0xFFFF) << 48) | ((long)((lv + 32768) & 0xFFFF) << 32) | (uint)(ord + int.MinValue) ;
 
@@ -170,9 +258,17 @@ namespace StutterFix
         {
             for (int i = LowerBound(a); i < barrierKey.Length && barrierKey[i] <= b; i++)
             {
-                var tg = barrierTag[i]; BarrierChecks++;
-                // 보임 알림 플래그(관리 메모리 읽기). 지워진 장벽은 알림이 끊기므로 숨은 것으로 본다.
-                if (tg is object && tg.Vis) { if (!tg) { barrierTag[i] = null; continue; } return true; }
+                var r = barrierByKey[i]; if (r is null) continue; BarrierChecks++;
+                var tg = barrierTag[i];
+                bool vis;
+                if (tg is object) vis = tg.Vis;   // 보임 알림(관리 메모리 읽기)
+                else
+                {
+                    try { vis = r.isVisible; } catch { barrierByKey[i] = null; continue; }
+                    // 처음 훑은 장벽에는 보임 알림을 붙인다(프레임당 개수 제한)
+                    if (tagsThisFrame < TagsPerFrame) { tagsThisFrame++; try { tg = r.GetComponent<BarrierTag>() ?? r.gameObject.AddComponent<BarrierTag>(); tg.Vis = vis; barrierTag[i] = tg; } catch { } }
+                }
+                if (vis && r.enabled && !r.forceRenderingOff && (camMask & (1 << r.gameObject.layer)) != 0) return true;
             }
             return false;
         }
@@ -200,7 +296,7 @@ namespace StutterFix
             if (!On || !c || c.name != "Camera") return;
             long t0 = System.Diagnostics.Stopwatch.GetTimestamp();
             try { PreCullBody(c); }
-            catch (Exception e) { gatheredFrame = -9999; if (++errors <= 3) Main.Entry.Logger.Log("[runlod] 오류, 다시 모음: " + e.GetType().Name + " " + e.Message); }
+            catch (Exception e) { ForgetLevel(); if (++errors <= 3) Main.Entry.Logger.Log("[runlod] 오류, 다시 모음: " + e.GetType().Name + " " + e.Message); }
             finally { tTotal += System.Diagnostics.Stopwatch.GetTimestamp() - t0; }
         }
         static int errors;
@@ -215,7 +311,8 @@ namespace StutterFix
                 cam.AddCommandBuffer(CameraEvent.BeforeForwardAlpha, cb);
                 gatheredFrame = -9999;
             }
-            if (gatheredFrame < 0) { Gather(); mapOff = cands.Count > MaxCands; if (mapOff) { Main.Entry.Logger.Log("[runlod] 이 맵은 끔: 후보 " + cands.Count + " > " + MaxCands); foreach (var cd in cands) { Restore(cd); if (cd.Tag) UnityEngine.Object.Destroy(cd.Tag); } foreach (var tg in barrierTag) if (tg) UnityEngine.Object.Destroy(tg); cands.Clear(); visible.Clear(); barrierTag = new BarrierTag[0]; barrierKey = new long[0]; barrierByKey = new Renderer[0]; } }
+            if (gstate == 0) GatherBegin();
+            if (gstate == 1) { GatherStep(); cb.Clear(); return; }
             if (mapOff) { cb.Clear(); for (int k = 0; k < comps.Count; k++) if (comps[k] && comps[k].activeSelf) comps[k].SetActive(false); return; }
             // GPU 를 기다리는 시간(메인 스레드의 present 대기). 쉬는 동안의 값만 켜기 판단에 쓴다(켜져 있으면 LOD 가 대기를 없앤다).
             FrameTimingManager.CaptureFrameTimings();
@@ -227,7 +324,7 @@ namespace StutterFix
                 return;
             }
             savedNow = 0;
-            Frames++;
+            Frames++; tagsThisFrame = 0;
             cb.Clear();
             var target = cam.targetTexture;
             int w = target ? target.width : Screen.width, h = target ? target.height : Screen.height;
@@ -365,4 +462,3 @@ namespace StutterFix
         }
     }
 }
-#endif

@@ -1,0 +1,21 @@
+ManifestFileVersion: 0
+UnityVersion: 6000.3.10f1
+CRC: 4047860384
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: 37712fe219f88d061f2aa73f2bb63f89
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: 235cbca85ccdf28f10f6ab4fde453a14
+  IncrementalBuildHash:
+    serializedVersion: 2
+    Hash: 745f9549f2535430041e26dc9a60b1bd
+HashAppended: 0
+ClassTypes:
+- Class: 48
+  Script: {instanceID: 0}
+SerializeReferenceClassIdentifiers: []
+Assets:
+- Assets/Shaders/RunLodComposite.shader
+Dependencies: []

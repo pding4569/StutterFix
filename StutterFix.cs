@@ -284,6 +284,7 @@ UiProf.Install(harmony);
                 Try(() => TypeCache.Install(harmony));   // 고급 필터 형식 찾기 기억 (TypeCache.cs)
                 Try(() => MeshWarm.Install(harmony));   // 색 바꾸기가 곡 중에 만들 타일 메시 미리 만들기 (MeshWarm.cs)
                 Try(() => SoundWarm.Install(harmony));   // 곡 중에 처음 쓰는 효과음 미리 불러오기 (SoundWarm.cs)
+                Try(() => RunLod.Install(harmony));   // 묶음 LOD: 재생 준비 때 한 번 모으기 (RunLod.cs)
                 Try(HitSoundBatch.Install);
                 if (Edition.Dev || MeasureBuild || AutoTestBuild) {
 #if DEV || AUTOTEST
@@ -495,7 +496,8 @@ ParticleTextWatch.Install(harmony);
             installed = false;
             Try(BeatFix.Shutdown);
             EndDisplayTransition();
-            Try(GpuDecoPlayer.Shutdown);
+            Try(GpuDecoPlayer.Shutdown);
+            Try(RunLod.Unload);
 #if AUTOTEST
             Try(LightProbe.Uninstall);
 #endif
@@ -1215,6 +1217,7 @@ BlendProbe.Tick();
         public bool HoldSkip = true;        // 입력이 같으면 홀드 갱신 건너뛰기: Exit +4.7%, 값 대조 235만 번 다름 0
         public bool HitboxQuerySkip = false; // 히트박스 장식이 없을 때 공의 히트박스 물리 질의 건너뛰기(결과 같음)
         public bool PlayTurbo = false;        // 곡 중에만: 일시정지 공 카메라 끄기, 입력 없을 때 UI 이벤트·마우스 처리 건너뛰기, 장식 LateUpdate 같은 값 건너뛰기 등(turbo lite)
+        public bool RunLod = false;           // 곡 중에만: 그리기 순서에서 연속된 크게 확대된 이미지 장식을 1/4 해상도로 모아 그려 한 번에 합치기(GPU 병목일 때만 켜짐, 눈으로는 같음)
         public bool DisplayPace = false;    // 화면에 나갈 프레임만 그리기: 곡 전체 2~2.5배 (재시작 후 적용)
         public bool EngineMaskGrow = false; // 엔진 코드 6바이트 패치: 마스크 많은 맵 Exit +11.8%
         public bool EngineWaitSkip = true; // 엔진 코드 패치: 지난 화면 출력을 기다리지 않음. 2026-11-08 기본 켬(DefaultsGen 2), 화면 지연 미측정

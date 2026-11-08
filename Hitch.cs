@@ -254,6 +254,7 @@ BlendProbe.Report();
 #endif
 }
             LowEnd.SongStarted(); PhysicsPause.SongStarted(); LowEnd.LogRenderOnce(); Compat.Refresh(); Resilience.Phase("플레이 중");
+            RunLod.SongStarted();
             if (Main.Config != null && Main.Config.PlayTurbo) { try { EnginePatch.TurboCommand("lite"); } catch (System.Exception e) { Main.Entry.Logger.Log("[turbo] 실패: " + e.Message); } }
         }
 
@@ -273,6 +274,7 @@ BlendProbe.Report();
                 Resilience.Phase("메뉴·편집");
                 PhysicsPause.SongEnded();
                 if (Main.Config != null && Main.Config.PlayTurbo) EnginePatch.DisableTurbo();
+                RunLod.SongEnded();
                 PerfOverlay.AbortStartPhase();
                 InvisibleSkip.ApplyAllLazy();   // 곡이 끝나면 미뤄 둔 투명 장식 위치를 모두 반영한다 (편집기로 돌아갈 때 대비)
                 // 곡이 끝난 뒤(결과 화면 등) 재생 상태가 프레임마다 켜졌다 꺼졌다 해서 이 줄이 수백 번 찍혔다.

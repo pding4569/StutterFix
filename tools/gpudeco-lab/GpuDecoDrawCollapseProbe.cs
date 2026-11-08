@@ -11,6 +11,18 @@ using StutterFix;
 public static partial class GpuDecoLab
 {
     // Dedicated build/output: never overwrites the previous baseline bundle.
+    // 묶음 LOD 합치기 셰이더만 담은 작은 번들(GpuDeco 번들 수명과 떼어 둔다)
+    public static void RunLodBundle()=>Run(()=>
+    {
+        string output=Path.Combine(Evidence,"runlod/bundle");Directory.CreateDirectory(output);
+        PlayerSettings.SetUseDefaultGraphicsAPIs(BuildTarget.StandaloneWindows64,false);
+        PlayerSettings.SetGraphicsAPIs(BuildTarget.StandaloneWindows64,new[]{GraphicsDeviceType.Direct3D11});
+        var manifest=BuildPipeline.BuildAssetBundles(output,new[]{new AssetBundleBuild{assetBundleName="stutterfix_runlod",assetNames=new[]{"Assets/Shaders/RunLodComposite.shader"}}},
+            BuildAssetBundleOptions.ChunkBasedCompression|BuildAssetBundleOptions.ForceRebuildAssetBundle,BuildTarget.StandaloneWindows64);
+        Require(manifest,"runlod bundle build failed");
+        var b=AssetBundle.LoadFromFile(Path.Combine(output,"stutterfix_runlod"));Require(b,"runlod bundle reload failed");
+        try{Require(b.LoadAsset<Shader>("Assets/Shaders/RunLodComposite.shader"),"runlod shader missing");Debug.Log("RUNLOD_BUNDLE=PASS");}finally{b.Unload(true);}
+    },"runlod-bundle");
     public static void CollapseBundle()=>Run(()=>
     {
         string output=Path.Combine(Evidence,"drawcollapse5/bundle");Directory.CreateDirectory(output);

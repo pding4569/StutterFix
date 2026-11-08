@@ -55,6 +55,7 @@
     <Compile Include="GpuDecoPlayerPolicy.cs" />
     <Compile Include="GpuDecoRecordStore.cs" />
     <EmbeddedResource Include="tools/gpudeco-lab/evidence/drawcollapse5/bundle/stutterfix_gpudeco" LogicalName="StutterFix.gpudeco" />
+    <EmbeddedResource Include="tools/gpudeco-lab/evidence/runlod/bundle/stutterfix_runlod" LogicalName="StutterFix.runlod" />
     <Compile Include="GpuDecoScene.cs" />
     <Compile Include="HitchHistogram.cs" />
     <Compile Include="HitchHeatmap.cs" />

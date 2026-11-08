@@ -1263,6 +1263,9 @@ namespace StutterFix
                 ch |= Option("waitskip", ref c.EngineWaitSkip, T("화면 대기 건너뛰기", "Skip present wait"),
                     T("엔진이 지난 화면이 나갈 때까지 기다리는 시간을 없앱니다. 엔진 코드를 실행 중에 바꾸며, 버전이 다르면 스스로 꺼집니다.", "Removes the engine wait for the previous frame. Patches engine code at runtime; turns itself off on other versions."),
                     T("무거운 맵", "Heavy maps"));
+                ch |= Option("runlod", ref c.RunLod, T("확대 장식 묶어 그리기", "Batch magnified decorations"),
+                    T("크게 확대된 그림 장식이 연달아 그려지면 1/4 해상도로 모아 그린 뒤 한 번에 합칩니다. GPU가 모자랄 때만 켜지고, 눈으로는 같습니다.", "Draws runs of heavily magnified image decorations at quarter resolution and blends them once. Only active when the GPU is the limit; looks the same."),
+                    T("무거운 맵", "Heavy maps"));
                 EndGroup();
             }
             else if (sub == 3)
