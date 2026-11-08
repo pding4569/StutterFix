@@ -185,7 +185,7 @@ namespace StutterFix
             if (!r.sprite || !r.sprite.texture) return "missing-sprite-texture";
             if (r.sprite.associatedAlphaSplitTexture) return "split-alpha";
             if (r.drawMode != SpriteDrawMode.Simple) return "sliced-or-tiled";
-            if (d.repeatX != 1 || d.repeatY != 1) return "repeat";
+            if ((d.repeatX != 1 || d.repeatY != 1) && !DrawCollapsePolicy.Repeat) return "repeat";
             if (d.blendModeEffect && d.blendModeEffect.enabled) return "blend-effect";
             if (materials.Length != 1 || !materials[0] || !materials[0].shader) return "material-slots";
             var m = materials[0];
@@ -200,7 +200,7 @@ namespace StutterFix
             if (!d || !r || d.GetType() != typeof(scrVisualDecoration)) return "subclass";
             if (d.hitbox != 0 || d.isMask() || r.maskInteraction != SpriteMaskInteraction.None) return "hitbox-mask";
             if (d.followPlanet || d.stickToFloor || d.syncFloorDepth) return "parent-follow";
-            if (d.repeatX != 1 || d.repeatY != 1 || r.drawMode != SpriteDrawMode.Simple) return "repeat-tile";
+            if (((d.repeatX != 1 || d.repeatY != 1) && !DrawCollapsePolicy.Repeat) || r.drawMode != SpriteDrawMode.Simple) return "repeat-tile";
             if (MeshOn(d) || (d.meshRenderer && d.meshRenderer.enabled && d.meshRenderer.gameObject.activeInHierarchy)) return "mesh-mode";
             if ((int)Blend(d) != 0 || (d.blendModeEffect && d.blendModeEffect.enabled)) return "blend";
             if (!p || !Inited(p) || !IsDecoration(p) || !ReferenceEquals(p.decoration, d)

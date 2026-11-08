@@ -58,6 +58,9 @@ namespace StutterFix
                     case "globalverts":DrawCollapsePolicy.GlobalVerts=on;break;
                     case "skiporder":DrawCollapsePolicy.SkipOrderSweep=on;break;
                     case "skipcompute":DrawCollapsePolicy.SkipPausedCompute=on;break;
+                    case "nocompute":DrawCollapsePolicy.SkipComputeForTest=on;break;
+                    case "splitorder":DrawCollapsePolicy.SplitByOrder=on;break;
+                    case "hideproxies":DrawCollapsePolicy.HideProxies=on;break;   // 측정: 구간 그리기만 끔(계산은 그대로)
                     default:throw new ArgumentException("policy tight|keepafter|clip|skiporder|skipcompute|globalverts on|off");
                 }
                 GpuLog("DRAWCOLLAPSE_POLICY tight="+DrawCollapsePolicy.TightLargeQuads+" keepafter="+DrawCollapsePolicy.KeepAfterBarrier);return true;

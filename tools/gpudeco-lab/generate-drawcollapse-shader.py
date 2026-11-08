@@ -15,7 +15,7 @@ declarations += '\n#if defined(DIRECT_FEW)\n' + '\n'.join(f'            Texture2
 declarations += '\n#elif !defined(NO_DIRECT_TEXTURES)\n' + '\n'.join(f'            Texture2D _Big{i};' for i in range(direct)) + '\n#endif'
 def leaf(i):
     texture = f'_SfDecoTex{i}' if i < arrays else f'_Big{i-arrays}'
-    coord = 'float3(uv,v.info.y)' if i < arrays else 'v.uv'
+    coord = 'float3(uv,v.info.y)' if i < arrays else 'uvIn'
     return (f'if(usePoint) c={texture}.SampleLevel(sampler_point_clamp,{coord},0); '
             f'else c={texture}.SampleLevel(sampler_linear_clamp,{coord},0);')
 def tree(lo, hi, indent):
@@ -59,15 +59,18 @@ PROPERTIES
             #pragma vertex vert
             #pragma fragment frag
             #pragma multi_compile_local _ NO_DIRECT_TEXTURES DIRECT_FEW
+            #pragma multi_compile_local _ SF_SIMPLE
             #include "UnityCG.cginc"
 DECLARATIONS
             SamplerState sampler_point_clamp;
             SamplerState sampler_linear_clamp;
             ByteAddressBuffer _CollapseVerts;
             float _LodMode;
+            float _SfDebugFlat;
             float4 _LodTarget;
             Texture2D _LodTex;
             struct appdata { float3 vertex:POSITION; };
+#ifndef SF_SIMPLE
             struct v2f { float4 vertex:SV_POSITION; float4 color:COLOR; float2 uv:TEXCOORD0; nointerpolation float2 info:TEXCOORD1; nointerpolation float4 region:TEXCOORD2; };
             v2f vert(appdata v)
             {
@@ -88,14 +91,33 @@ DECLARATIONS
             float4 frag(v2f v):SV_Target
             {
                 if(_LodMode>0.5)return _LodTex.SampleLevel(sampler_linear_clamp,v.vertex.xy*_LodTarget.zw,0);
-                bool usePoint=v.info.x>=128;int binding=(int)v.info.x%128;
+                // 측정 전용 전역 값: 1 이면 텍스처 없이 색만(픽셀 셰이더 비용 가르기)
+                if(_SfDebugFlat>0.5){float4 f=v.color;f.rgb*=f.a;return f*0.25;}
+                // info.x = 바인딩 + 점 샘플링 128 + 반복 256. 반복이면 UV 를 frac 으로 감싼다(게임의 Repeat 랩, 이음매 반 텍셀만 다름).
+                bool usePoint=fmod(v.info.x,256.0)>=128;bool repeatUv=v.info.x>=256;int binding=(int)v.info.x%128;
+                float2 uvIn=repeatUv?frac(v.uv):v.uv;
                 // 모든 텍스처가 밉 1단이라 SampleLevel(0) 은 SampleGrad 와 같다(미분·그래디언트 필요 없음).
                 // Clamp to the copied rectangle's texel centres so padded BC blocks never bleed.
-                float2 uv=clamp(v.uv*v.region.xy,v.region.zw,v.region.xy-v.region.zw);
+                float2 uv=clamp(uvIn*v.region.xy,v.region.zw,v.region.xy-v.region.zw);
                 float4 c=0;
 BRANCHES
                 c*=v.color;c.rgb*=c.a;return c;
             }
+#else
+            // 측정 전용 SF_SIMPLE: 넘기는 값을 원래 스프라이트 수준(위치·색·UV)으로 줄인 판. 그림은 틀림(배열 하나만 샘플).
+            struct v2f { float4 vertex:SV_POSITION; float4 color:COLOR; float2 uv:TEXCOORD0; };
+            v2f vert(appdata v)
+            {
+                uint a=(uint)(v.vertex.x+0.5)*60u;
+                float3 p=asfloat(_CollapseVerts.Load3(a));
+                float4 uvi=asfloat(_CollapseVerts.Load4(a+28));
+                v2f o;o.vertex=UnityObjectToClipPos(float4(p,1));o.color=asfloat(_CollapseVerts.Load4(a+12));o.uv=uvi.xy;return o;
+            }
+            float4 frag(v2f v):SV_Target
+            {
+                float4 q=_SfDecoTex0.SampleLevel(sampler_linear_clamp,float3(frac(v.uv),0),0)*v.color;q.rgb*=q.a;return q;
+            }
+#endif
             ENDHLSL
         }
     }

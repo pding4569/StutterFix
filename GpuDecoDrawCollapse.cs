@@ -25,7 +25,7 @@ namespace StutterFix
                 &&gpuImageCollapseAddresses.TryGetValue(texture.GetInstanceID(),out _),"image_texture_not_registered_in_collapse");
             RequireGpuImageCollapseSampling(item,texture);
             var address=gpuImageCollapseAddresses[texture.GetInstanceID()];
-            gpuImageCollapseTextureUpload[0]=new Vector4(address.x+(material.IsKeywordEnabled("USE_POINT_SAMPLING")?128:0),address.y,0,0);
+            gpuImageCollapseTextureUpload[0]=CollapseInfo0(address,material,gpuLiveSlices.Count>0 && (uint)item<(uint)gpuLiveSlices[0].Data.Items.Length?gpuLiveSlices[0].Data.Items[item]:null);
             gpuImageCollapseTextureUpload[1]=new Vector4(address.z,address.w,address.z/texture.width*.5f,address.w/texture.height*.5f);
             gpuCollapseTexture.SetData(gpuImageCollapseTextureUpload,0,item*2,2);
             // The independent MPB is still maintained by the caller, so turning

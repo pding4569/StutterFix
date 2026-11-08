@@ -347,7 +347,9 @@ void WriteVerticesAt(uint i, float v[16], uint outputItem, bool collapse)
         {
             _Vertices.Store3(address,asuint(worldPoint));
             _Vertices.Store4(address+12,asuint(drawColor));
-            _Vertices.Store4(address+28,asuint(float4(_UV[i*4+k],info0.xy)));
+            // 반복 장식: UV 에 반복 배율을 곱한다(info0.zw, 반복이 아니면 0). 픽셀 셰이더가 frac 으로 감싼다.
+            float2 uvk=_UV[i*4+k]; if(info0.z>0) uvk*=info0.zw;
+            _Vertices.Store4(address+28,asuint(float4(uvk,info0.xy)));
             _Vertices.Store4(address+44,asuint(info1));
         }
         else

@@ -975,7 +975,8 @@ namespace StutterFix
                             | (DrawCollapsePolicy.ScreenFixed && d.parallax.clampToScreen ? 128 : 0) | (DrawCollapsePolicy.ScreenFixed && d.placementType == DecPlacementType.CameraAspect ? 256 : 0),
                         Constants = new[] { ts.x, ts.y, d.textureScaleMultiplier.x, d.textureScaleMultiplier.y, d.startRot, d.croppedPivotOffset.x, d.croppedPivotOffset.y, d.pivotTrans.position.z },
                         Initial = (float[])table.Decorations[index].Initial.Clone(),
-                        Triangles = sp.triangles.Select(x => (int)x).ToArray()
+                        Triangles = sp.triangles.Select(x => (int)x).ToArray(),
+                        RepeatX = d.repeatX, RepeatY = d.repeatY
                     };
                     // Live G2 never binary-searches Tracks on GPU; pass empty Tracks to save VRAM and guarantee 0 fallback searches.
                     for (int ch = 0; ch < 16; ch++) item.Tracks[ch] = Array.Empty<DecoBakeCore.Segment>();
@@ -3030,7 +3031,7 @@ namespace StutterFix
                         | (DrawCollapsePolicy.ScreenFixed && d.parallax.clampToScreen ? 128 : 0) | (DrawCollapsePolicy.ScreenFixed && d.placementType == DecPlacementType.CameraAspect ? 256 : 0)
                 };
                 var ts = d.scaleMultiplier * d.textureScaleMultiplier;
-                item.Constants = new[] { ts.x, ts.y, d.textureScaleMultiplier.x, d.textureScaleMultiplier.y, d.startRot, d.croppedPivotOffset.x, d.croppedPivotOffset.y, d.pivotTrans.position.z };
+                item.Constants = new[] { ts.x, ts.y, d.textureScaleMultiplier.x, d.textureScaleMultiplier.y, d.startRot, d.croppedPivotOffset.x, d.croppedPivotOffset.y, d.pivotTrans.position.z }; item.RepeatX = d.repeatX; item.RepeatY = d.repeatY;
                 if (ts.x == 0 || ts.y == 0 || d.textureScaleMultiplier.x == 0 || d.textureScaleMultiplier.y == 0) throw new InvalidOperationException("export: zero static scale");
                 var c = d.color; var p = d.parallax.multiplier;
                 item.Actual = new[] { d.pivotPosVec.x, d.pivotPosVec.y, d.pivotOffsetVec.x, d.pivotOffsetVec.y, d.rotAngle, d.scaleVec.x, d.scaleVec.y,

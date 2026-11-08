@@ -19,6 +19,8 @@ namespace StutterFix
         internal static bool GlobalDirect=false; // 측정: globaldirect on|off (직접 텍스처를 전역으로)
         // 화면 밖까지 뻗은 초대형 사각형(월드 25 넘음)도 맡는다. 예전 거부 이유는 대각선 경계의 래스터 반올림 차이(최대 5/255, 눈으로 같음)였다. 측정: oversized on|off
         internal static bool AllowOversized=true;
+        // 반복(tile) 장식을 맡는다(묶음 그리기만). 측정: repeat on|off
+        internal static bool Repeat=true;
         // 화면 고정(Camera·CameraAspect 배치, clampToScreen) 장식을 맡는다. 측정: screenfixed on|off
         internal static bool ScreenFixed { get => DecoBakeCore.ScreenFixedSupported; set => DecoBakeCore.ScreenFixedSupported = value; }
         internal const int TextureBindings=ArrayBindings+DirectBindings;
@@ -79,7 +81,8 @@ namespace StutterFix
         }
         // Renderer stores the source item index for owned rows. Never regroup
         // A/B/A textures or move a quad across even a currently hidden barrier.
-        internal const bool SplitByOrder=true;
+        // 정렬 순서가 바뀔 때마다 구간을 끊을지. 계획에는 지금 꺼진 장벽도 들어가므로(나중에 켜져도 그 자리는 이미 끊김) 끄면 장벽 없는 순서 사이를 합친다. 측정: gpudeco drawcollapse policy splitorder on|off
+        internal static bool SplitByOrder=true;
         // 구간 디스패치를 미리 기록한 명령 버퍼 한 번 실행으로 한다(끄면 구간마다 즉시 디스패치).
         internal const bool RecordedDispatch=true;
         // 제품 경로: 버퍼는 한 번만 묶고 프레임마다 값 몇 개+디스패치만(명령 버퍼 실행 대체). 끄면 기록된 명령 버퍼.
@@ -105,6 +108,7 @@ namespace StutterFix
         internal static bool SkipOrderSweep=true;
         // 진단 전용: 일시정지 프레임에서 컴퓨트 디스패치를 건너뛰어 컴퓨트의 GPU 몫을 잰다(첫 프레임 정점이 남아 화면은 같다).
         internal static bool SkipPausedCompute=false;
+        internal static bool SkipComputeForTest=false; // 측정: gpudeco drawcollapse policy nocompute on
         // 곡 시작 키를 누르기 전(Start 상태, 정지된 화면)에 GPU 장식을 켠다: 켜는 약 150ms 가 카운트다운이 아니라 멈춰 있는 화면에서 일어난다.
         internal static bool PreStartActivate=true;
         // 죽음·완주 순간(FailAction/Fail2Action/OnLandOnPortal)에는 GPU 장식을 되돌리지 않고 다음 전환 때 되돌린다.

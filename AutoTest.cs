@@ -947,6 +947,10 @@ namespace StutterFix
                 case "lodprobe": Log("[lodprobe] " + LodProbe.Run(arg.Trim())); return true;
                 case "nodirect": Log("[nodirect] " + LodProbe.NoDirect(arg.Trim() != "off")); return true;
                 case "screenfixed": DrawCollapsePolicy.ScreenFixed = arg.Trim() != "off"; Log("[screenfixed] " + DrawCollapsePolicy.ScreenFixed); return true;
+                case "repeat": DrawCollapsePolicy.Repeat = arg.Trim() != "off"; Log("[repeat] " + DrawCollapsePolicy.Repeat); return true;
+                case "sfflat": Shader.SetGlobalFloat("_SfDebugFlat", arg.Trim() == "off" ? 0f : 1f); Log("[sfflat] " + arg.Trim()); return true;
+                case "sfsimple": Log("[sfsimple] " + LodProbe.Simple(arg.Trim() != "off")); return true;
+                case "coverage": Log("[coverage] " + DecoBake.CoverageProbe()); return true;
                 case "oversized": DrawCollapsePolicy.AllowOversized = arg.Trim() != "off"; Log("[oversized] " + DrawCollapsePolicy.AllowOversized); return true;
                 case "globaldirect": DrawCollapsePolicy.GlobalDirect = arg.Trim() != "off"; Log("[globaldirect] " + DrawCollapsePolicy.GlobalDirect); return true;
                 case "fewdirect": DrawCollapsePolicy.FewDirect = arg.Trim() != "off"; Log("[fewdirect] " + DrawCollapsePolicy.FewDirect); return true;

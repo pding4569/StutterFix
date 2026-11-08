@@ -88,6 +88,20 @@ namespace StutterFix
             return "강제 켬 " + n + " / 원래 켜짐 " + already;
         }
 
+        // 측정 전용: GpuDeco 구간 재질에 SF_SIMPLE(배열 하나만 샘플) 켜기
+        static readonly List<Material> simpleOn = new List<Material>();
+        internal static string Simple(bool on)
+        {
+            if (!on) { foreach (var m in simpleOn) if (m) m.DisableKeyword("SF_SIMPLE"); int k = simpleOn.Count; simpleOn.Clear(); return "되돌림 " + k; }
+            int n = 0;
+            foreach (var r in Resources.FindObjectsOfTypeAll<MeshRenderer>())
+            {
+                if (!r || r.name != "GpuDeco collapse span") continue;
+                foreach (var m in r.sharedMaterials) if (m && !m.IsKeywordEnabled("SF_SIMPLE")) { m.EnableKeyword("SF_SIMPLE"); simpleOn.Add(m); n++; }
+            }
+            return "SF_SIMPLE 켬 " + n;
+        }
+
         static string Off()
         {
             int n = moved.Count;

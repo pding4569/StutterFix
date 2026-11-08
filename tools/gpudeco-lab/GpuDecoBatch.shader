@@ -25,6 +25,7 @@ Shader "StutterFix/GpuDecoBatch"
             #pragma vertex vert
             #pragma fragment frag
             #pragma multi_compile_local _ NO_DIRECT_TEXTURES DIRECT_FEW
+            #pragma multi_compile_local _ SF_SIMPLE
             #include "UnityCG.cginc"
             Texture2DArray _SfDecoTex0;
             Texture2DArray _SfDecoTex1;
@@ -94,9 +95,11 @@ Shader "StutterFix/GpuDecoBatch"
             SamplerState sampler_linear_clamp;
             ByteAddressBuffer _CollapseVerts;
             float _LodMode;
+            float _SfDebugFlat;
             float4 _LodTarget;
             Texture2D _LodTex;
             struct appdata { float3 vertex:POSITION; };
+#ifndef SF_SIMPLE
             struct v2f { float4 vertex:SV_POSITION; float4 color:COLOR; float2 uv:TEXCOORD0; nointerpolation float2 info:TEXCOORD1; nointerpolation float4 region:TEXCOORD2; };
             v2f vert(appdata v)
             {
@@ -117,10 +120,14 @@ Shader "StutterFix/GpuDecoBatch"
             float4 frag(v2f v):SV_Target
             {
                 if(_LodMode>0.5)return _LodTex.SampleLevel(sampler_linear_clamp,v.vertex.xy*_LodTarget.zw,0);
-                bool usePoint=v.info.x>=128;int binding=(int)v.info.x%128;
+                // 측정 전용 전역 값: 1 이면 텍스처 없이 색만(픽셀 셰이더 비용 가르기)
+                if(_SfDebugFlat>0.5){float4 f=v.color;f.rgb*=f.a;return f*0.25;}
+                // info.x = 바인딩 + 점 샘플링 128 + 반복 256. 반복이면 UV 를 frac 으로 감싼다(게임의 Repeat 랩, 이음매 반 텍셀만 다름).
+                bool usePoint=fmod(v.info.x,256.0)>=128;bool repeatUv=v.info.x>=256;int binding=(int)v.info.x%128;
+                float2 uvIn=repeatUv?frac(v.uv):v.uv;
                 // 모든 텍스처가 밉 1단이라 SampleLevel(0) 은 SampleGrad 와 같다(미분·그래디언트 필요 없음).
                 // Clamp to the copied rectangle's texel centres so padded BC blocks never bleed.
-                float2 uv=clamp(v.uv*v.region.xy,v.region.zw,v.region.xy-v.region.zw);
+                float2 uv=clamp(uvIn*v.region.xy,v.region.zw,v.region.xy-v.region.zw);
                 float4 c=0;
 #ifdef NO_DIRECT_TEXTURES
                 [branch] if(binding<=1) {
@@ -155,32 +162,32 @@ Shader "StutterFix/GpuDecoBatch"
                             [branch] if(binding<=3) {
                                 { if(usePoint) c=_SfDecoTex3.SampleLevel(sampler_point_clamp,float3(uv,v.info.y),0); else c=_SfDecoTex3.SampleLevel(sampler_linear_clamp,float3(uv,v.info.y),0); }
                             } else {
-                                { if(usePoint) c=_Big0.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big0.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                                { if(usePoint) c=_Big0.SampleLevel(sampler_point_clamp,uvIn,0); else c=_Big0.SampleLevel(sampler_linear_clamp,uvIn,0); }
                             }
                         } else {
-                            { if(usePoint) c=_Big1.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big1.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                            { if(usePoint) c=_Big1.SampleLevel(sampler_point_clamp,uvIn,0); else c=_Big1.SampleLevel(sampler_linear_clamp,uvIn,0); }
                         }
                     }
                 } else {
                     [branch] if(binding<=8) {
                         [branch] if(binding<=7) {
                             [branch] if(binding<=6) {
-                                { if(usePoint) c=_Big2.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big2.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                                { if(usePoint) c=_Big2.SampleLevel(sampler_point_clamp,uvIn,0); else c=_Big2.SampleLevel(sampler_linear_clamp,uvIn,0); }
                             } else {
-                                { if(usePoint) c=_Big3.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big3.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                                { if(usePoint) c=_Big3.SampleLevel(sampler_point_clamp,uvIn,0); else c=_Big3.SampleLevel(sampler_linear_clamp,uvIn,0); }
                             }
                         } else {
-                            { if(usePoint) c=_Big4.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big4.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                            { if(usePoint) c=_Big4.SampleLevel(sampler_point_clamp,uvIn,0); else c=_Big4.SampleLevel(sampler_linear_clamp,uvIn,0); }
                         }
                     } else {
                         [branch] if(binding<=10) {
                             [branch] if(binding<=9) {
-                                { if(usePoint) c=_Big5.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big5.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                                { if(usePoint) c=_Big5.SampleLevel(sampler_point_clamp,uvIn,0); else c=_Big5.SampleLevel(sampler_linear_clamp,uvIn,0); }
                             } else {
-                                { if(usePoint) c=_Big6.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big6.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                                { if(usePoint) c=_Big6.SampleLevel(sampler_point_clamp,uvIn,0); else c=_Big6.SampleLevel(sampler_linear_clamp,uvIn,0); }
                             }
                         } else {
-                            { if(usePoint) c=_Big7.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big7.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                            { if(usePoint) c=_Big7.SampleLevel(sampler_point_clamp,uvIn,0); else c=_Big7.SampleLevel(sampler_linear_clamp,uvIn,0); }
                         }
                     }
                 }
@@ -205,34 +212,34 @@ Shader "StutterFix/GpuDecoBatch"
                             } else {
                                 [branch] if(binding<=5) {
                                     [branch] if(binding<=4) {
-                                        { if(usePoint) c=_Big0.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big0.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                                        { if(usePoint) c=_Big0.SampleLevel(sampler_point_clamp,uvIn,0); else c=_Big0.SampleLevel(sampler_linear_clamp,uvIn,0); }
                                     } else {
-                                        { if(usePoint) c=_Big1.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big1.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                                        { if(usePoint) c=_Big1.SampleLevel(sampler_point_clamp,uvIn,0); else c=_Big1.SampleLevel(sampler_linear_clamp,uvIn,0); }
                                     }
                                 } else {
-                                    { if(usePoint) c=_Big2.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big2.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                                    { if(usePoint) c=_Big2.SampleLevel(sampler_point_clamp,uvIn,0); else c=_Big2.SampleLevel(sampler_linear_clamp,uvIn,0); }
                                 }
                             }
                         } else {
                             [branch] if(binding<=9) {
                                 [branch] if(binding<=8) {
                                     [branch] if(binding<=7) {
-                                        { if(usePoint) c=_Big3.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big3.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                                        { if(usePoint) c=_Big3.SampleLevel(sampler_point_clamp,uvIn,0); else c=_Big3.SampleLevel(sampler_linear_clamp,uvIn,0); }
                                     } else {
-                                        { if(usePoint) c=_Big4.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big4.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                                        { if(usePoint) c=_Big4.SampleLevel(sampler_point_clamp,uvIn,0); else c=_Big4.SampleLevel(sampler_linear_clamp,uvIn,0); }
                                     }
                                 } else {
-                                    { if(usePoint) c=_Big5.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big5.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                                    { if(usePoint) c=_Big5.SampleLevel(sampler_point_clamp,uvIn,0); else c=_Big5.SampleLevel(sampler_linear_clamp,uvIn,0); }
                                 }
                             } else {
                                 [branch] if(binding<=11) {
                                     [branch] if(binding<=10) {
-                                        { if(usePoint) c=_Big6.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big6.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                                        { if(usePoint) c=_Big6.SampleLevel(sampler_point_clamp,uvIn,0); else c=_Big6.SampleLevel(sampler_linear_clamp,uvIn,0); }
                                     } else {
-                                        { if(usePoint) c=_Big7.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big7.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                                        { if(usePoint) c=_Big7.SampleLevel(sampler_point_clamp,uvIn,0); else c=_Big7.SampleLevel(sampler_linear_clamp,uvIn,0); }
                                     }
                                 } else {
-                                    { if(usePoint) c=_Big8.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big8.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                                    { if(usePoint) c=_Big8.SampleLevel(sampler_point_clamp,uvIn,0); else c=_Big8.SampleLevel(sampler_linear_clamp,uvIn,0); }
                                 }
                             }
                         }
@@ -241,48 +248,48 @@ Shader "StutterFix/GpuDecoBatch"
                             [branch] if(binding<=16) {
                                 [branch] if(binding<=14) {
                                     [branch] if(binding<=13) {
-                                        { if(usePoint) c=_Big9.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big9.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                                        { if(usePoint) c=_Big9.SampleLevel(sampler_point_clamp,uvIn,0); else c=_Big9.SampleLevel(sampler_linear_clamp,uvIn,0); }
                                     } else {
-                                        { if(usePoint) c=_Big10.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big10.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                                        { if(usePoint) c=_Big10.SampleLevel(sampler_point_clamp,uvIn,0); else c=_Big10.SampleLevel(sampler_linear_clamp,uvIn,0); }
                                     }
                                 } else {
                                     [branch] if(binding<=15) {
-                                        { if(usePoint) c=_Big11.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big11.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                                        { if(usePoint) c=_Big11.SampleLevel(sampler_point_clamp,uvIn,0); else c=_Big11.SampleLevel(sampler_linear_clamp,uvIn,0); }
                                     } else {
-                                        { if(usePoint) c=_Big12.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big12.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                                        { if(usePoint) c=_Big12.SampleLevel(sampler_point_clamp,uvIn,0); else c=_Big12.SampleLevel(sampler_linear_clamp,uvIn,0); }
                                     }
                                 }
                             } else {
                                 [branch] if(binding<=18) {
                                     [branch] if(binding<=17) {
-                                        { if(usePoint) c=_Big13.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big13.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                                        { if(usePoint) c=_Big13.SampleLevel(sampler_point_clamp,uvIn,0); else c=_Big13.SampleLevel(sampler_linear_clamp,uvIn,0); }
                                     } else {
-                                        { if(usePoint) c=_Big14.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big14.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                                        { if(usePoint) c=_Big14.SampleLevel(sampler_point_clamp,uvIn,0); else c=_Big14.SampleLevel(sampler_linear_clamp,uvIn,0); }
                                     }
                                 } else {
-                                    { if(usePoint) c=_Big15.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big15.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                                    { if(usePoint) c=_Big15.SampleLevel(sampler_point_clamp,uvIn,0); else c=_Big15.SampleLevel(sampler_linear_clamp,uvIn,0); }
                                 }
                             }
                         } else {
                             [branch] if(binding<=22) {
                                 [branch] if(binding<=21) {
                                     [branch] if(binding<=20) {
-                                        { if(usePoint) c=_Big16.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big16.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                                        { if(usePoint) c=_Big16.SampleLevel(sampler_point_clamp,uvIn,0); else c=_Big16.SampleLevel(sampler_linear_clamp,uvIn,0); }
                                     } else {
-                                        { if(usePoint) c=_Big17.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big17.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                                        { if(usePoint) c=_Big17.SampleLevel(sampler_point_clamp,uvIn,0); else c=_Big17.SampleLevel(sampler_linear_clamp,uvIn,0); }
                                     }
                                 } else {
-                                    { if(usePoint) c=_Big18.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big18.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                                    { if(usePoint) c=_Big18.SampleLevel(sampler_point_clamp,uvIn,0); else c=_Big18.SampleLevel(sampler_linear_clamp,uvIn,0); }
                                 }
                             } else {
                                 [branch] if(binding<=24) {
                                     [branch] if(binding<=23) {
-                                        { if(usePoint) c=_Big19.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big19.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                                        { if(usePoint) c=_Big19.SampleLevel(sampler_point_clamp,uvIn,0); else c=_Big19.SampleLevel(sampler_linear_clamp,uvIn,0); }
                                     } else {
-                                        { if(usePoint) c=_Big20.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big20.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                                        { if(usePoint) c=_Big20.SampleLevel(sampler_point_clamp,uvIn,0); else c=_Big20.SampleLevel(sampler_linear_clamp,uvIn,0); }
                                     }
                                 } else {
-                                    { if(usePoint) c=_Big21.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big21.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                                    { if(usePoint) c=_Big21.SampleLevel(sampler_point_clamp,uvIn,0); else c=_Big21.SampleLevel(sampler_linear_clamp,uvIn,0); }
                                 }
                             }
                         }
@@ -293,48 +300,48 @@ Shader "StutterFix/GpuDecoBatch"
                             [branch] if(binding<=29) {
                                 [branch] if(binding<=27) {
                                     [branch] if(binding<=26) {
-                                        { if(usePoint) c=_Big22.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big22.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                                        { if(usePoint) c=_Big22.SampleLevel(sampler_point_clamp,uvIn,0); else c=_Big22.SampleLevel(sampler_linear_clamp,uvIn,0); }
                                     } else {
-                                        { if(usePoint) c=_Big23.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big23.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                                        { if(usePoint) c=_Big23.SampleLevel(sampler_point_clamp,uvIn,0); else c=_Big23.SampleLevel(sampler_linear_clamp,uvIn,0); }
                                     }
                                 } else {
                                     [branch] if(binding<=28) {
-                                        { if(usePoint) c=_Big24.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big24.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                                        { if(usePoint) c=_Big24.SampleLevel(sampler_point_clamp,uvIn,0); else c=_Big24.SampleLevel(sampler_linear_clamp,uvIn,0); }
                                     } else {
-                                        { if(usePoint) c=_Big25.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big25.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                                        { if(usePoint) c=_Big25.SampleLevel(sampler_point_clamp,uvIn,0); else c=_Big25.SampleLevel(sampler_linear_clamp,uvIn,0); }
                                     }
                                 }
                             } else {
                                 [branch] if(binding<=31) {
                                     [branch] if(binding<=30) {
-                                        { if(usePoint) c=_Big26.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big26.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                                        { if(usePoint) c=_Big26.SampleLevel(sampler_point_clamp,uvIn,0); else c=_Big26.SampleLevel(sampler_linear_clamp,uvIn,0); }
                                     } else {
-                                        { if(usePoint) c=_Big27.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big27.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                                        { if(usePoint) c=_Big27.SampleLevel(sampler_point_clamp,uvIn,0); else c=_Big27.SampleLevel(sampler_linear_clamp,uvIn,0); }
                                     }
                                 } else {
-                                    { if(usePoint) c=_Big28.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big28.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                                    { if(usePoint) c=_Big28.SampleLevel(sampler_point_clamp,uvIn,0); else c=_Big28.SampleLevel(sampler_linear_clamp,uvIn,0); }
                                 }
                             }
                         } else {
                             [branch] if(binding<=35) {
                                 [branch] if(binding<=34) {
                                     [branch] if(binding<=33) {
-                                        { if(usePoint) c=_Big29.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big29.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                                        { if(usePoint) c=_Big29.SampleLevel(sampler_point_clamp,uvIn,0); else c=_Big29.SampleLevel(sampler_linear_clamp,uvIn,0); }
                                     } else {
-                                        { if(usePoint) c=_Big30.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big30.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                                        { if(usePoint) c=_Big30.SampleLevel(sampler_point_clamp,uvIn,0); else c=_Big30.SampleLevel(sampler_linear_clamp,uvIn,0); }
                                     }
                                 } else {
-                                    { if(usePoint) c=_Big31.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big31.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                                    { if(usePoint) c=_Big31.SampleLevel(sampler_point_clamp,uvIn,0); else c=_Big31.SampleLevel(sampler_linear_clamp,uvIn,0); }
                                 }
                             } else {
                                 [branch] if(binding<=37) {
                                     [branch] if(binding<=36) {
-                                        { if(usePoint) c=_Big32.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big32.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                                        { if(usePoint) c=_Big32.SampleLevel(sampler_point_clamp,uvIn,0); else c=_Big32.SampleLevel(sampler_linear_clamp,uvIn,0); }
                                     } else {
-                                        { if(usePoint) c=_Big33.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big33.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                                        { if(usePoint) c=_Big33.SampleLevel(sampler_point_clamp,uvIn,0); else c=_Big33.SampleLevel(sampler_linear_clamp,uvIn,0); }
                                     }
                                 } else {
-                                    { if(usePoint) c=_Big34.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big34.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                                    { if(usePoint) c=_Big34.SampleLevel(sampler_point_clamp,uvIn,0); else c=_Big34.SampleLevel(sampler_linear_clamp,uvIn,0); }
                                 }
                             }
                         }
@@ -343,48 +350,48 @@ Shader "StutterFix/GpuDecoBatch"
                             [branch] if(binding<=42) {
                                 [branch] if(binding<=40) {
                                     [branch] if(binding<=39) {
-                                        { if(usePoint) c=_Big35.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big35.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                                        { if(usePoint) c=_Big35.SampleLevel(sampler_point_clamp,uvIn,0); else c=_Big35.SampleLevel(sampler_linear_clamp,uvIn,0); }
                                     } else {
-                                        { if(usePoint) c=_Big36.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big36.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                                        { if(usePoint) c=_Big36.SampleLevel(sampler_point_clamp,uvIn,0); else c=_Big36.SampleLevel(sampler_linear_clamp,uvIn,0); }
                                     }
                                 } else {
                                     [branch] if(binding<=41) {
-                                        { if(usePoint) c=_Big37.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big37.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                                        { if(usePoint) c=_Big37.SampleLevel(sampler_point_clamp,uvIn,0); else c=_Big37.SampleLevel(sampler_linear_clamp,uvIn,0); }
                                     } else {
-                                        { if(usePoint) c=_Big38.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big38.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                                        { if(usePoint) c=_Big38.SampleLevel(sampler_point_clamp,uvIn,0); else c=_Big38.SampleLevel(sampler_linear_clamp,uvIn,0); }
                                     }
                                 }
                             } else {
                                 [branch] if(binding<=44) {
                                     [branch] if(binding<=43) {
-                                        { if(usePoint) c=_Big39.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big39.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                                        { if(usePoint) c=_Big39.SampleLevel(sampler_point_clamp,uvIn,0); else c=_Big39.SampleLevel(sampler_linear_clamp,uvIn,0); }
                                     } else {
-                                        { if(usePoint) c=_Big40.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big40.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                                        { if(usePoint) c=_Big40.SampleLevel(sampler_point_clamp,uvIn,0); else c=_Big40.SampleLevel(sampler_linear_clamp,uvIn,0); }
                                     }
                                 } else {
-                                    { if(usePoint) c=_Big41.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big41.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                                    { if(usePoint) c=_Big41.SampleLevel(sampler_point_clamp,uvIn,0); else c=_Big41.SampleLevel(sampler_linear_clamp,uvIn,0); }
                                 }
                             }
                         } else {
                             [branch] if(binding<=48) {
                                 [branch] if(binding<=47) {
                                     [branch] if(binding<=46) {
-                                        { if(usePoint) c=_Big42.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big42.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                                        { if(usePoint) c=_Big42.SampleLevel(sampler_point_clamp,uvIn,0); else c=_Big42.SampleLevel(sampler_linear_clamp,uvIn,0); }
                                     } else {
-                                        { if(usePoint) c=_Big43.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big43.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                                        { if(usePoint) c=_Big43.SampleLevel(sampler_point_clamp,uvIn,0); else c=_Big43.SampleLevel(sampler_linear_clamp,uvIn,0); }
                                     }
                                 } else {
-                                    { if(usePoint) c=_Big44.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big44.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                                    { if(usePoint) c=_Big44.SampleLevel(sampler_point_clamp,uvIn,0); else c=_Big44.SampleLevel(sampler_linear_clamp,uvIn,0); }
                                 }
                             } else {
                                 [branch] if(binding<=50) {
                                     [branch] if(binding<=49) {
-                                        { if(usePoint) c=_Big45.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big45.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                                        { if(usePoint) c=_Big45.SampleLevel(sampler_point_clamp,uvIn,0); else c=_Big45.SampleLevel(sampler_linear_clamp,uvIn,0); }
                                     } else {
-                                        { if(usePoint) c=_Big46.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big46.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                                        { if(usePoint) c=_Big46.SampleLevel(sampler_point_clamp,uvIn,0); else c=_Big46.SampleLevel(sampler_linear_clamp,uvIn,0); }
                                     }
                                 } else {
-                                    { if(usePoint) c=_Big47.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big47.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                                    { if(usePoint) c=_Big47.SampleLevel(sampler_point_clamp,uvIn,0); else c=_Big47.SampleLevel(sampler_linear_clamp,uvIn,0); }
                                 }
                             }
                         }
@@ -393,6 +400,21 @@ Shader "StutterFix/GpuDecoBatch"
 #endif
                 c*=v.color;c.rgb*=c.a;return c;
             }
+#else
+            // 측정 전용 SF_SIMPLE: 넘기는 값을 원래 스프라이트 수준(위치·색·UV)으로 줄인 판. 그림은 틀림(배열 하나만 샘플).
+            struct v2f { float4 vertex:SV_POSITION; float4 color:COLOR; float2 uv:TEXCOORD0; };
+            v2f vert(appdata v)
+            {
+                uint a=(uint)(v.vertex.x+0.5)*60u;
+                float3 p=asfloat(_CollapseVerts.Load3(a));
+                float4 uvi=asfloat(_CollapseVerts.Load4(a+28));
+                v2f o;o.vertex=UnityObjectToClipPos(float4(p,1));o.color=asfloat(_CollapseVerts.Load4(a+12));o.uv=uvi.xy;return o;
+            }
+            float4 frag(v2f v):SV_Target
+            {
+                float4 q=_SfDecoTex0.SampleLevel(sampler_linear_clamp,float3(frac(v.uv),0),0)*v.color;q.rgb*=q.a;return q;
+            }
+#endif
             ENDHLSL
         }
     }

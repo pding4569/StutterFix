@@ -356,7 +356,7 @@ namespace StutterFix
                     if(!allInArray)gpuCollapseArrayOnly[i]=false;
                 }
 #endif
-                info[i*2]=new Vector4(address.x+(gpuCollapseOwnedRows[i].M.IsKeywordEnabled("USE_POINT_SAMPLING")?128:0),address.y,0,0);
+                info[i*2]=CollapseInfo0(address,gpuCollapseOwnedRows[i].M,source.Data.Items[i]);
                 info[i*2+1]=new Vector4(address.z,address.w,address.z/t.width*.5f,address.w/t.height*.5f);
             }
             gpuCollapseTexture=new ComputeBuffer(info.Length,16);gpuCollapseTexture.SetData(info);
@@ -1132,6 +1132,12 @@ namespace StutterFix
             GpuLog("DRAWCOLLAPSE_NODIRECT spans="+noDirectSpans+" of "+gpuCollapseSpans.Count);
             if(GpuDecoPlayer.Product)Main.Entry.Logger.Log("[GPU 장식] 그리기 구간 "+gpuCollapseSpans.Count+"개 중 배열 텍스처만 쓰는 구간 "+noDirectSpans+"개, 직접 텍스처 적은 구간 "+fewSpans+"개");
         }
+        // 텍스처 정보 앞쪽: x = 바인딩 + 점 샘플링 128 + 반복 256, y = 배열 층, zw = 반복 배율(반복이 아니면 0)
+        internal static Vector4 CollapseInfo0(Vector4 address,Material m,GpuDecoData.Item it)
+        {
+            bool rep=DrawCollapsePolicy.Repeat && it!=null && (it.RepeatX!=1f || it.RepeatY!=1f);
+            return new Vector4(address.x+(m && m.IsKeywordEnabled("USE_POINT_SAMPLING")?128:0)+(rep?256:0),address.y,rep?it.RepeatX:0,rep?it.RepeatY:0);
+        }
         static bool DcSameBucket(SceneRenderOrder.Key a,SceneRenderOrder.Key b)=>a.Layer==b.Layer && a.Order==b.Order && a.Queue==b.Queue && a.Distance==b.Distance;
         static void RebuildDrawCollapse()
         {
@@ -1395,6 +1401,7 @@ namespace StutterFix
         }
         static void DispatchDrawCollapse(double time,Vector4 camera,float orthoSize)
         {
+            if(DrawCollapsePolicy.SkipComputeForTest && gpuCollapseSpans.Count>0 && gpuCollapseSpans[0].Renderer.enabled && (Time.frameCount&63)!=0)return; // 측정 전용: 계산 건너뛰기(위치 멈춤)
             if(DrawCollapsePolicy.SkipPausedCompute && GpuPlaybackState.Paused && gpuCollapseSpans.Count>0 && gpuCollapseSpans[0].Renderer.enabled)return;
             var source=gpuLiveSlices[0];
             if(DrawCollapsePolicy.GlobalVerts && DrawCollapsePolicy.DirectDispatch)
