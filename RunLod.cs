@@ -34,7 +34,7 @@ namespace StutterFix
         }
         static BarrierTag[] barrierTag = new BarrierTag[0];
         static int tagsThisFrame; internal static int TagsPerFrame = 300;
-        sealed class Cand { public bool Vis, Listed; public VisTag Tag; public SpriteRenderer R; public int Layer; public bool Moved; public Item It = new Item(); public float TexW, TexH; public Material M; public int Shader, Mat; }
+        sealed class Cand { public bool Vis, Listed; public VisTag Tag; public SpriteRenderer R; public int Layer; public bool Moved; public Item It = new Item(); public float TexW, TexH; public Material M; public int Shader, Mat, Q, SlId, SlVal = int.MinValue; }
         static readonly Comparison<Item> order = (x, y) =>
         {
             int k = x.Q.CompareTo(y.Q); if (k != 0) return k;
@@ -48,6 +48,7 @@ namespace StutterFix
         internal static float MinSave = 1.0f;   // 묶음으로 아끼는 화면 층 수가 이보다 커야 묶는다
         internal static int MaxCands = 8000;     // 후보가 이보다 많은 맵은 끈다(매 프레임 비용)
         static bool mapOff, active, anyMoved;
+        internal static bool Force;   // 측정: 쉬는 모드 없이 늘 켬(화질 비교용)
         internal static float ActiveSave = 3f, MinGpuWait = 0.3f;
         static readonly FrameTiming[] ft = new FrameTiming[1]; static float waitEma = 1f; internal static int ProbeEvery = 30;
         static float savedNow, savedEma; internal static int ModeSwitches, ActiveOffFrames;
@@ -92,7 +93,8 @@ namespace StutterFix
             try { if (!On) Command("4"); active = false; savedEma = 0; anyMoved = false; }
             catch (Exception e) { Main.Entry.Logger.Log("[묶음 LOD] 켜기 실패: " + e.Message); }
         }
-        internal static void SongEnded() { if (On) { try { Pause(); } catch { } } }
+        // 설정으로 켠 경우만 곡 끝(일시정지 포함)에 멈춘다. 측정 명령으로 켠 경우는 그대로 둔다(같은 프레임 비교용).
+        internal static void SongEnded() { if (On && Main.Config != null && Main.Config.RunLod) { try { Pause(); } catch { } } }
 
         // 재생 시작 때 장식 다시 설정(ResetDecorations) 뒤에 한 번에 모은다. 게임 화면의 같은 맵 재시도는 비용 0.
         internal static void Install(Harmony h)
@@ -124,6 +126,9 @@ namespace StutterFix
             var a = arg.Trim().Split(' ');
             if (a[0] == "off") { Off(); return "꺼짐"; }
             if (a[0] == "state") return State();
+            if (a[0] == "pause") { Pause(); return "멈춤(모은 결과 유지)"; }
+            if (a[0] == "resume") { if (!On && shader) { On = true; Camera.onPreCull += PreCull; } return State(); }
+            if (a[0] == "force") { Force = a.Length < 2 || a[1] != "off"; return "force=" + Force; }
             if (a.Length > 0 && float.TryParse(a[0], System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out var m) && m > 0) MinMag = m;
             if (!On)
             {
@@ -273,10 +278,12 @@ namespace StutterFix
             return false;
         }
 
+        static Matrix4x4 vp;
+        static Vector3 VPt(Vector3 w) { var n = vp.MultiplyPoint(w); return new Vector3(n.x * 0.5f + 0.5f, n.y * 0.5f + 0.5f, 0); }
         static void ViewRect(Bounds b, Item it)
         {
-            Vector3 a = cam.WorldToViewportPoint(b.min), c = cam.WorldToViewportPoint(b.max);
-            Vector3 d = cam.WorldToViewportPoint(new Vector3(b.min.x, b.max.y, b.center.z)), e = cam.WorldToViewportPoint(new Vector3(b.max.x, b.min.y, b.center.z));
+            Vector3 a = VPt(b.min), c = VPt(b.max);
+            Vector3 d = VPt(new Vector3(b.min.x, b.max.y, b.center.z)), e = VPt(new Vector3(b.max.x, b.min.y, b.center.z));
             it.X0 = Mathf.Clamp01(Mathf.Min(Mathf.Min(a.x, c.x), Mathf.Min(d.x, e.x))); it.X1 = Mathf.Clamp01(Mathf.Max(Mathf.Max(a.x, c.x), Mathf.Max(d.x, e.x)));
             it.Y0 = Mathf.Clamp01(Mathf.Min(Mathf.Min(a.y, c.y), Mathf.Min(d.y, e.y))); it.Y1 = Mathf.Clamp01(Mathf.Max(Mathf.Max(a.y, c.y), Mathf.Max(d.y, e.y)));
         }
@@ -284,8 +291,8 @@ namespace StutterFix
         static bool OnScreen(Bounds b, out float magDummy)
         {
             magDummy = 0;
-            Vector3 a = cam.WorldToViewportPoint(b.min), c = cam.WorldToViewportPoint(b.max);
-            Vector3 d = cam.WorldToViewportPoint(new Vector3(b.min.x, b.max.y, b.center.z)), e = cam.WorldToViewportPoint(new Vector3(b.max.x, b.min.y, b.center.z));
+            Vector3 a = VPt(b.min), c = VPt(b.max);
+            Vector3 d = VPt(new Vector3(b.min.x, b.max.y, b.center.z)), e = VPt(new Vector3(b.max.x, b.min.y, b.center.z));
             float x0 = Mathf.Min(Mathf.Min(a.x, c.x), Mathf.Min(d.x, e.x)), x1 = Mathf.Max(Mathf.Max(a.x, c.x), Mathf.Max(d.x, e.x));
             float y0 = Mathf.Min(Mathf.Min(a.y, c.y), Mathf.Min(d.y, e.y)), y1 = Mathf.Max(Mathf.Max(a.y, c.y), Mathf.Max(d.y, e.y));
             return x1 >= 0 && y1 >= 0 && x0 <= 1 && y0 <= 1;
@@ -318,6 +325,7 @@ namespace StutterFix
             FrameTimingManager.CaptureFrameTimings();
             if (!active && FrameTimingManager.GetLatestTimings(1, ft) == 1) waitEma += ((float)ft[0].cpuMainThreadPresentWaitTime - waitEma) * 0.05f;
             // 쉬는 모드: 최근 이득(아낀 화면 층 수의 이동 평균)이 작으면 30프레임에 한 번만 살펴본다.
+            if (Force) active = true;
             if (!active && Time.frameCount % ProbeEvery != 0)
             {
                 if (anyMoved) { foreach (var cd in visible) Restore(cd); anyMoved = false; cb.Clear(); for (int k = 0; k < comps.Count; k++) if (comps[k] && comps[k].activeSelf) comps[k].SetActive(false); }
@@ -334,6 +342,7 @@ namespace StutterFix
             // 후보: 지난 프레임에 옮겼더라도 원래 층 기준으로 본다
             // 화면 1 월드 단위의 픽셀 수(직교 카메라)
             float ppw = h / (2f * cam.orthographicSize);
+            vp = cam.projectionMatrix * cam.worldToCameraMatrix;
             long s0 = System.Diagnostics.Stopwatch.GetTimestamp();
             // 보이는 후보(보임 알림으로 유지)와 옮겨 둔 묶음 장식만 본다
             for (int vi = visible.Count - 1; vi >= 0; vi--)
@@ -341,15 +350,23 @@ namespace StutterFix
                 var cd = visible[vi];
                 if (!cd.Vis && !cd.Moved) { cd.Listed = false; visible[vi] = visible[visible.Count - 1]; visible.RemoveAt(visible.Count - 1); continue; }
                 var r = cd.R;
-                if (!r) { cd.Listed = false; visible[vi] = visible[visible.Count - 1]; visible.RemoveAt(visible.Count - 1); continue; }
-                if (!r.enabled || r.forceRenderingOff || !r.gameObject.activeInHierarchy || (camMask & (1 << cd.Layer)) == 0) { Restore(cd); continue; }
-                var b = r.bounds;
+                if (r is null) { cd.Listed = false; visible[vi] = visible[visible.Count - 1]; visible.RemoveAt(visible.Count - 1); continue; }
+                // 지난 프레임에 그려진(보임 알림) 후보는 켜짐·활성이 확실하다. 옮겨 둔 묶음 장식만 직접 확인한다.
+                if (cd.Moved && (!r.enabled || r.forceRenderingOff || !r.gameObject.activeInHierarchy)) { Restore(cd); continue; }
+                if ((camMask & (1 << cd.Layer)) == 0) { Restore(cd); continue; }
+                Bounds b;
+                try { b = r.bounds; } catch { cd.R = null; cd.Moved = false; cd.Listed = false; visible[vi] = visible[visible.Count - 1]; visible.RemoveAt(visible.Count - 1); continue; }   // 지워진 장식
                 if (cd.Moved && !OnScreen(b, out _)) { Restore(cd); continue; }
-                var m = r.sharedMaterial;
-                if (!ReferenceEquals(m, cd.M)) { if (!m || !r.sprite) { Restore(cd); continue; } cd.M = m; cd.Shader = m.shader.GetInstanceID(); cd.Mat = m.GetInstanceID(); var tr = r.sprite.textureRect; cd.TexW = Mathf.Max(1f, tr.width); cd.TexH = Mathf.Max(1f, tr.height); }
+                // 재질·텍스처 크기는 캐시하고 32프레임마다(후보마다 엇갈려) 다시 본다
+                if (cd.M is null || ((Frames + vi) & 31) == 0)
+                {
+                    var m0 = r.sharedMaterial;
+                    if (!ReferenceEquals(m0, cd.M)) { if (!m0 || !r.sprite) { Restore(cd); continue; } cd.M = m0; cd.Shader = m0.shader.GetInstanceID(); cd.Mat = m0.GetInstanceID(); cd.Q = m0.renderQueue; var tr = r.sprite.textureRect; cd.TexW = Mathf.Max(1f, tr.width); cd.TexH = Mathf.Max(1f, tr.height); }
+                }
                 var sz = b.size;
                 float mag = Mathf.Min(sz.x * ppw / cd.TexW, sz.y * ppw / cd.TexH);
-                var it = cd.It; it.R = r; it.C = mag >= MinMag && r.color.a > 0 ? cd : null; it.Q = m.renderQueue; it.Lv = SortingLayer.GetLayerValueFromID(r.sortingLayerID); it.Ord = r.sortingOrder;
+                int sl = r.sortingLayerID; if (sl != cd.SlId || cd.SlVal == int.MinValue) { cd.SlId = sl; cd.SlVal = SortingLayer.GetLayerValueFromID(sl); }
+                var it = cd.It; it.R = r; it.C = mag >= MinMag ? cd : null; it.Q = cd.Q; it.Lv = cd.SlVal; it.Ord = r.sortingOrder;
                 it.Dist = Vector3.Dot(b.center - cp, fwd); it.Shader = cd.Shader; it.Mat = cd.Mat;
                 if (it.C != null) ViewRect(b, it);
                 else Restore(cd);
@@ -379,7 +396,7 @@ namespace StutterFix
             tRuns += System.Diagnostics.Stopwatch.GetTimestamp() - s2;
             // 켜진 동안은 매 프레임, 쉬는 동안은 살펴본 프레임만으로 평균을 갱신한다
             savedEma += (savedNow - savedEma) * (active ? 1f / 60f : 0.25f);
-            bool was = active; active = (active ? savedEma >= ActiveSave * 0.6f : savedEma >= ActiveSave && waitEma >= MinGpuWait);
+            bool was = active; active = Force || (active ? savedEma >= ActiveSave * 0.6f : savedEma >= ActiveSave && waitEma >= MinGpuWait);
             if (was != active) { ModeSwitches++; }
             if (!active) ActiveOffFrames++;
             anyMoved = compIdx > 0;
