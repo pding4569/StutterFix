@@ -186,9 +186,17 @@ namespace StutterFix
             if (r.sprite.associatedAlphaSplitTexture) return "split-alpha";
             if (r.drawMode != SpriteDrawMode.Simple) return "sliced-or-tiled";
             if ((d.repeatX != 1 || d.repeatY != 1) && !DrawCollapsePolicy.Repeat) return "repeat";
-            if (d.blendModeEffect && d.blendModeEffect.enabled) return "blend-effect";
+            bool blendOk = DrawCollapsePolicy.BlendModes && GpuDecoBlend.Id(d) > 0;
+            if (d.blendModeEffect && d.blendModeEffect.enabled && !blendOk) return "blend-effect";
             if (materials.Length != 1 || !materials[0] || !materials[0].shader) return "material-slots";
             var m = materials[0];
+            if (blendOk && m.shader.name == GpuDecoBlend.GrabShader)
+            {
+                // 혼합 모드 재질: 화면 복사 + 한 패스. 키워드는 모드·점 샘플링·픽셀 스냅만.
+                if (m.renderQueue != 3000) return "shader-pass-queue";
+                if (!m.shaderKeywords.All(k => k.StartsWith("BLENDMODES_MODE_") || k == "FORCE_POINT_SAMPLING")) return "keywords";
+                return null;
+            }
             if (m.shader.name != "Sprites/Tile" || m.passCount != 1 || m.renderQueue != 3000) return "shader-pass-queue";
             if (!m.GetShaderPassEnabled(m.GetPassName(0))) return "disabled-pass";
             if (!m.shaderKeywords.All(k => k == "USE_POINT_SAMPLING")) return "keywords";

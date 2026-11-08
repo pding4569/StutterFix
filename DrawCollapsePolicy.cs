@@ -21,6 +21,10 @@ namespace StutterFix
         internal static bool AllowOversized=true;
         // 반복(tile) 장식을 맡는다(묶음 그리기만). 측정: repeat on|off
         internal static bool Repeat=true;
+        // 혼합 모드 장식(Blend Modes 에셋, UnifiedGrab)을 맡는다. 측정: blendmodes on|off
+        internal static bool BlendModes=true;
+        // 계획 직전에 채운다: 화면 복사(GrabPass)를 쓰는 소유 항목. 일반 항목 다음에 오면 구간을 끊어 복사 시점을 원래와 같게 한다.
+        internal static bool[] GrabItems;
         // 화면 고정(Camera·CameraAspect 배치, clampToScreen) 장식을 맡는다. 측정: screenfixed on|off
         internal static bool ScreenFixed { get => DecoBakeCore.ScreenFixedSupported; set => DecoBakeCore.ScreenFixedSupported = value; }
         internal const int TextureBindings=ArrayBindings+DirectBindings;
@@ -143,18 +147,21 @@ namespace StutterFix
                 if(rows[i].Key.SameMaterialTie(rows[i-1].Key) && (rows[i].Owned || rows[i-1].Owned))
                     throw new InvalidOperationException("drawcollapse ambiguous material tie layer="+rows[i].Key.Layer+" order="+rows[i].Key.Order+" queue="+rows[i].Key.Queue+" dist="+rows[i].Key.Distance.ToString("R")+" mat="+rows[i].Key.Material+" owned="+rows[i].Owned+"/"+rows[i-1].Owned+" dist0="+rows[i-1].Key.Distance.ToString("R"));
             var spans=new List<int[]>();var items=new List<int>();
-            bool haveBucket=false;int bl=0,bo=0,bq=0;
+            bool haveBucket=false;int bl=0,bo=0,bq=0;bool lastGrab=false;
             foreach(var row in rows)
             {
                 if(row.Owned)
                 {
                     // 정렬 순서(층,순서,큐)가 바뀔 때마다 구간을 끊는다: 다른 순서의 장벽이 곡 도중 활성화돼도 구간 한가운데로 들어올 수 없다.
                     if(SplitByOrder && haveBucket && items.Count>0 && (row.Key.Layer!=bl || row.Key.Order!=bo || row.Key.Queue!=bq)){spans.Add(items.ToArray());items.Clear();}
+                    bool grab=GrabItems!=null && (uint)row.Renderer<(uint)GrabItems.Length && GrabItems[row.Renderer];
+                    if(grab && !lastGrab && items.Count>0){spans.Add(items.ToArray());items.Clear();}
+                    lastGrab=grab;
                     bl=row.Key.Layer;bo=row.Key.Order;bq=row.Key.Queue;haveBucket=true;
                     items.Add(row.Renderer);continue;
                 }
                 if(items.Count>0){spans.Add(items.ToArray());items.Clear();}
-                haveBucket=false;
+                haveBucket=false;lastGrab=false;
             }
             if(items.Count>0)spans.Add(items.ToArray());
             return spans;

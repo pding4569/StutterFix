@@ -13,7 +13,7 @@ namespace StutterFix
     {
         static bool gpuCollapsePrepare,gpuCollapseOn;
         static string gpuCollapseFault,gpuCollapsePendingFallback;
-        static Shader gpuCollapseShader;
+        static Shader gpuCollapseShader,gpuCollapseBlendShader;
         const string CollapseNoDirectKeyword="NO_DIRECT_TEXTURES";
         // True only for a prepared array address that cannot change to a direct slot.
         static bool[] gpuCollapseArrayOnly;
@@ -163,6 +163,8 @@ namespace StutterFix
             RequireLive(DrawCollapsePolicy.PartialMaskAdmit || UnityEngine.Object.FindObjectsByType<SpriteMask>(FindObjectsInactive.Include,FindObjectsSortMode.None)
                 .All(m=>!m.enabled || !m.gameObject.activeInHierarchy),"drawcollapse unsupported active SpriteMask");
             gpuCollapseShader=gpuLiveBundle.LoadAsset<Shader>("Assets/Shaders/GpuDecoBatch.shader");
+            gpuCollapseBlendShader=gpuLiveBundle.LoadAsset<Shader>("Assets/Shaders/GpuDecoBatchBlend.shader");
+            if(gpuCollapseBlendShader && !gpuCollapseBlendShader.isSupported)gpuCollapseBlendShader=null;
             RequireLive(gpuCollapseShader && gpuCollapseShader.isSupported,"drawcollapse bundle missing/unsupported GpuDecoBatch.shader");
             var source=gpuLiveSlices[0];
             gpuCollapseCameraPosition=gpuLiveCamera.transform.position;gpuCollapseCameraForward=gpuLiveCamera.transform.forward;
@@ -978,7 +980,10 @@ namespace StutterFix
             gpuCollapseKeyCamPos=gpuCollapseCameraPosition;gpuCollapseKeyFwd=gpuCollapseCameraForward;gpuCollapseKeysValid=DrawCollapsePolicy.KeyCache;
             gpuCollapseDirtyIds.Clear();
             long dcT2=Stopwatch.GetTimestamp();
+            // 혼합 모드 항목(화면 복사를 쓰는 항목) 표: 일반 항목 다음에 오면 구간을 끊는다
+            {var src0=gpuLiveSlices[0].Data.Items;var gi=new bool[src0.Length];for(int q=0;q<src0.Length;q++)gi[q]=DrawCollapsePolicy.BlendModes && src0[q].BlendMode>0;DrawCollapsePolicy.GrabItems=gi;}
             var plan=DrawCollapsePolicy.Plan(rows);
+            DrawCollapsePolicy.GrabItems=null;
             dcPlanMs=DcMs(dcT2);dcMeshMs=0;long dcT3=Stopwatch.GetTimestamp();
             RequireLive(plan.Count>0 && plan.Count<=DrawCollapsePolicy.MaxSpans,"drawcollapse conservative prepared spans="+plan.Count+" exceeds renderer budget");
             dcMatMs=dcMeshBuildMs=dcBufMs=dcGoMs=0;
@@ -1016,10 +1021,12 @@ namespace StutterFix
                     foreach(int it in items){var ds=(uint)it<(uint)gpuCollapseDirectSet.Length?gpuCollapseDirectSet[it]:null;if(ds==null){u=null;break;}foreach(int d in ds)u.Add(d);if(u.Count>DrawCollapsePolicy.FewDirectBindings)break;}
                     if(u!=null && u.Count<=DrawCollapsePolicy.FewDirectBindings)few=u.ToList();
                 }
-                string matKey=first.M.renderQueue+"/"+blend[0]+"/"+blend[1]+"/"+blend[2]+"/"+noDirect+(few!=null?"/f"+string.Join(",",few):"");
+                // 혼합 모드 항목이 있는 구간은 화면 복사(GrabPass)를 쓰는 셰이더로 그린다
+                bool grabSpan=gpuCollapseBlendShader && items.Any(it=>source.Data.Items[it].BlendMode>0);
+                string matKey=first.M.renderQueue+"/"+blend[0]+"/"+blend[1]+"/"+blend[2]+"/"+noDirect+(few!=null?"/f"+string.Join(",",few):"")+(grabSpan?"/grab":"");
                 if(!gpuCollapseSharedMats.TryGetValue(matKey,out var shared) || !shared)
                 {
-                    shared=new Material(gpuCollapseShader){name="GpuDeco collapse shared",renderQueue=first.M.renderQueue};
+                    shared=new Material(grabSpan?gpuCollapseBlendShader:gpuCollapseShader){name="GpuDeco collapse shared",renderQueue=first.M.renderQueue};
                     shared.SetFloat("_SrcBlend",blend[0]);shared.SetFloat("_DstBlend",blend[1]);shared.SetFloat("_BlendOp",blend[2]);
                     if(noDirect)shared.EnableKeyword(CollapseNoDirectKeyword);
                     if(few!=null)shared.EnableKeyword(CollapseFewKeyword);
@@ -1129,7 +1136,9 @@ namespace StutterFix
         internal static Vector4 CollapseInfo0(Vector4 address,Material m,GpuDecoData.Item it)
         {
             bool rep=DrawCollapsePolicy.Repeat && it!=null && (it.RepeatX!=1f || it.RepeatY!=1f);
-            return new Vector4(address.x+(m && m.IsKeywordEnabled("USE_POINT_SAMPLING")?128:0)+(rep?256:0),address.y,rep?it.RepeatX:0,rep?it.RepeatY:0);
+            bool point=m && (m.IsKeywordEnabled("USE_POINT_SAMPLING") || m.IsKeywordEnabled("FORCE_POINT_SAMPLING"));
+            int blend=it!=null && DrawCollapsePolicy.BlendModes ? it.BlendMode : 0;
+            return new Vector4(address.x+(point?128:0)+(rep?256:0)+blend*512,address.y,rep?it.RepeatX:0,rep?it.RepeatY:0);
         }
         // 구간 재질의 텍스처 묶기: 배열(_SfDecoTex*), 직접 텍스처(_Big*), DIRECT_FEW 의 _DirectMap. Properties 에 없으므로 재질마다 직접 넣는다.
         static void BindCollapseTextures(Material m,bool noDirect,List<int> few)

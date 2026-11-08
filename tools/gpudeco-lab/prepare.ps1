@@ -32,3 +32,4 @@ Write-Output "Prepared independent lab: $projectRoot"
 Copy-Item -LiteralPath (Join-Path $labRoot 'GpuDecoImageMatrixProbe.cs') -Destination (Join-Path $projectRoot 'Assets/Editor/GpuDecoImageMatrixProbe.cs')
 Copy-Item -LiteralPath (Join-Path $labRoot 'GpuDecoLod.compute') -Destination (Join-Path $projectRoot 'Assets/Shaders/GpuDecoLod.compute')
 Copy-Item -LiteralPath (Join-Path $labRoot 'RunLodComposite.shader') -Destination (Join-Path $projectRoot 'Assets/Shaders/RunLodComposite.shader')
+Copy-Item -LiteralPath (Join-Path $labRoot 'GpuDecoBatchBlend.shader') -Destination (Join-Path $projectRoot 'Assets/Shaders/GpuDecoBatchBlend.shader')

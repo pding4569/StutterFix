@@ -951,6 +951,7 @@ namespace StutterFix
                 case "sfflat": Shader.SetGlobalFloat("_SfDebugFlat", arg.Trim() == "off" ? 0f : 1f); Log("[sfflat] " + arg.Trim()); return true;
                 case "sfsimple": Log("[sfsimple] " + LodProbe.Simple(arg.Trim() != "off")); return true;
                 case "coverage": Log("[coverage] " + DecoBake.CoverageProbe()); return true;
+                case "blendmodes": DrawCollapsePolicy.BlendModes = arg.Trim() != "off"; Log("[blendmodes] " + DrawCollapsePolicy.BlendModes); return true;
                 case "oversized": DrawCollapsePolicy.AllowOversized = arg.Trim() != "off"; Log("[oversized] " + DrawCollapsePolicy.AllowOversized); return true;
                 case "globaldirect": DrawCollapsePolicy.GlobalDirect = arg.Trim() != "off"; Log("[globaldirect] " + DrawCollapsePolicy.GlobalDirect); return true;
                 case "fewdirect": DrawCollapsePolicy.FewDirect = arg.Trim() != "off"; Log("[fewdirect] " + DrawCollapsePolicy.FewDirect); return true;

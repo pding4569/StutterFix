@@ -71,7 +71,11 @@ DECLARATIONS
             Texture2D _LodTex;
             struct appdata { float3 vertex:POSITION; };
 #ifndef SF_SIMPLE
-            struct v2f { float4 vertex:SV_POSITION; float4 color:COLOR; float2 uv:TEXCOORD0; nointerpolation float2 info:TEXCOORD1; nointerpolation float4 region:TEXCOORD2; };
+            struct v2f { float4 vertex:SV_POSITION; float4 color:COLOR; float2 uv:TEXCOORD0; nointerpolation float2 info:TEXCOORD1; nointerpolation float4 region:TEXCOORD2;
+#ifdef SF_BLEND
+                float4 grabPos:TEXCOORD3;
+#endif
+            };
             v2f vert(appdata v)
             {
                 // 정점 번호(x)로 전역 버퍼에서 위치·색·UV·텍스처 정보를 읽는다(60바이트: 위치 12, 색 16, uv+info 16, region 16).
@@ -84,9 +88,17 @@ DECLARATIONS
                 {
                     uint cid=(uint)(v.vertex.x+0.5);
                     o.vertex=float4((cid==1||cid==2)?1:-1,cid>=2?1:-1,UNITY_NEAR_CLIP_VALUE,1);
-                    o.color=1;o.uv=0;o.info=0;o.region=0;return o;
+                    o.color=1;o.uv=0;o.info=0;o.region=0;
+#ifdef SF_BLEND
+                    o.grabPos=0;
+#endif
+                    return o;
                 }
-                o.vertex=UnityObjectToClipPos(float4(p,1));o.color=asfloat(_CollapseVerts.Load4(a+12));o.uv=uvi.xy;o.info=uvi.zw;o.region=asfloat(_CollapseVerts.Load4(a+44));return o;
+                o.vertex=UnityObjectToClipPos(float4(p,1));o.color=asfloat(_CollapseVerts.Load4(a+12));o.uv=uvi.xy;o.info=uvi.zw;o.region=asfloat(_CollapseVerts.Load4(a+44));
+#ifdef SF_BLEND
+                o.grabPos=ComputeGrabScreenPos(o.vertex);
+#endif
+                return o;
             }
             float4 frag(v2f v):SV_Target
             {
@@ -94,13 +106,38 @@ DECLARATIONS
                 // 측정 전용 전역 값: 1 이면 텍스처 없이 색만(픽셀 셰이더 비용 가르기)
                 if(_SfDebugFlat>0.5){float4 f=v.color;f.rgb*=f.a;return f*0.25;}
                 // info.x = 바인딩 + 점 샘플링 128 + 반복 256. 반복이면 UV 를 frac 으로 감싼다(게임의 Repeat 랩, 이음매 반 텍셀만 다름).
-                bool usePoint=fmod(v.info.x,256.0)>=128;bool repeatUv=v.info.x>=256;int binding=(int)v.info.x%128;
+                bool usePoint=fmod(v.info.x,256.0)>=128;bool repeatUv=fmod(v.info.x,512.0)>=256;int binding=(int)v.info.x%128;
                 float2 uvIn=repeatUv?frac(v.uv):v.uv;
                 // 모든 텍스처가 밉 1단이라 SampleLevel(0) 은 SampleGrad 와 같다(미분·그래디언트 필요 없음).
                 // Clamp to the copied rectangle's texel centres so padded BC blocks never bleed.
                 float2 uv=clamp(uvIn*v.region.xy,v.region.zw,v.region.xy-v.region.zw);
                 float4 c=0;
 BRANCHES
+#ifdef SF_BLEND
+                // 혼합 모드(Blend Modes 에셋의 SpritesDefault/UnifiedGrab 과 같은 식). 화면 복사본은 같은 이름의 GrabPass 를 공유한다.
+                // 모드 번호 = info.x / 512 (그 에셋의 키워드 순서): 1 Darken 2 Multiply 4 LinearBurn 6 Lighten 7 Screen 9 LinearDodge
+                // 11 Overlay 12 SoftLight 18 Difference 19 Exclusion 20 Subtract 21 Divide. 출력은 (결과*알파, 알파)로 원래와 같다.
+                int bm=(int)(v.info.x/512.0);
+                if(bm>0)
+                {
+                    c*=v.color;
+                    float3 b=_BLENDMODES_UnifiedGrabTexture.SampleLevel(sampler_linear_clamp,v.grabPos.xy/v.grabPos.w,0).rgb;
+                    float3 sc=c.rgb, r=sc;
+                    if(bm==1) r=min(b,sc);
+                    else if(bm==2) r=b*sc;
+                    else if(bm==4) r=b+sc-1.0;
+                    else if(bm==6) r=max(b,sc);
+                    else if(bm==7) r=1.0-(1.0-b)*(1.0-sc);
+                    else if(bm==9) r=b+sc;
+                    else if(bm==11) r=(b>0.5)?(1.0-2.0*(1.0-b)*(1.0-sc)):(2.0*b*sc);
+                    else if(bm==12) r=(b*(1.0-b))*sc+(1.0-(1.0-b)*(1.0-sc))*b;
+                    else if(bm==18) r=abs(b-sc);
+                    else if(bm==19) r=b+sc-2.0*b*sc;
+                    else if(bm==20) r=b-sc;
+                    else if(bm==21) r=saturate(b/sc);
+                    return float4(r*c.a,c.a);
+                }
+#endif
                 c*=v.color;c.rgb*=c.a;return c;
             }
 #else
@@ -123,4 +160,12 @@ BRANCHES
     }
 }
 '''
-Path(__file__).with_name('GpuDecoBatch.shader').write_text(shader.replace('TEXTURE_COUNT', str(arrays + direct)).replace('ARRAY_COUNT', str(arrays)).replace('PROPERTIES', properties).replace('DECLARATIONS', declarations).replace('BRANCHES', '\n'.join(branches)), encoding='utf-8')
+final_text = (shader.replace('TEXTURE_COUNT', str(arrays + direct)).replace('ARRAY_COUNT', str(arrays)).replace('PROPERTIES', properties).replace('DECLARATIONS', declarations).replace('BRANCHES', '\n'.join(branches)))
+Path(__file__).with_name('GpuDecoBatch.shader').write_text(final_text, encoding='utf-8')
+# 혼합 모드 판: 같은 이름의 GrabPass(_BLENDMODES_UnifiedGrabTexture)로 원래 Blend Modes 셰이더들과 화면 복사본을 공유한다.
+blend_text = final_text.replace('Shader "StutterFix/GpuDecoBatch"', 'Shader "StutterFix/GpuDecoBatchBlend"')
+blend_text = blend_text.replace('        Pass\n        {', '        GrabPass { "_BLENDMODES_UnifiedGrabTexture" }\n        Pass\n        {', 1)
+blend_text = blend_text.replace('            HLSLPROGRAM\n', '            HLSLPROGRAM\n            #define SF_BLEND 1\n', 1)
+blend_text = blend_text.replace('            ByteAddressBuffer _CollapseVerts;', '            ByteAddressBuffer _CollapseVerts;\n            Texture2D _BLENDMODES_UnifiedGrabTexture;', 1)
+assert 'GrabPass' in blend_text and 'SF_BLEND 1' in blend_text and 'Texture2D _BLENDMODES_UnifiedGrabTexture' in blend_text
+Path(__file__).with_name('GpuDecoBatchBlend.shader').write_text(blend_text, encoding='utf-8')

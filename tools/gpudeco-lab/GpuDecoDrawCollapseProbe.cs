@@ -29,7 +29,7 @@ public static partial class GpuDecoLab
         PlayerSettings.SetUseDefaultGraphicsAPIs(BuildTarget.StandaloneWindows64,false);
         PlayerSettings.SetGraphicsAPIs(BuildTarget.StandaloneWindows64,new[]{GraphicsDeviceType.Direct3D11});
         var manifest=BuildPipeline.BuildAssetBundles(output,new[]{new AssetBundleBuild{
-            assetBundleName="stutterfix_gpudeco",assetNames=new[]{"Assets/Shaders/GpuDeco.compute","Assets/Shaders/GpuDecoBatch.shader","Assets/Shaders/GpuTileComposite.shader","Assets/Shaders/GpuDecoLod.compute","Assets/Shaders/RunLodComposite.shader"}}},
+            assetBundleName="stutterfix_gpudeco",assetNames=new[]{"Assets/Shaders/GpuDeco.compute","Assets/Shaders/GpuDecoBatch.shader","Assets/Shaders/GpuDecoBatchBlend.shader","Assets/Shaders/GpuTileComposite.shader","Assets/Shaders/GpuDecoLod.compute","Assets/Shaders/RunLodComposite.shader"}}},
             BuildAssetBundleOptions.ChunkBasedCompression|BuildAssetBundleOptions.ForceRebuildAssetBundle,BuildTarget.StandaloneWindows64);
         Require(manifest,"drawcollapse bundle build failed");
         var bundle=AssetBundle.LoadFromFile(Path.Combine(output,"stutterfix_gpudeco"));Require(bundle,"drawcollapse bundle reload failed");
