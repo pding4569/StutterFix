@@ -51,7 +51,13 @@ namespace StutterFix
             k = x.Shader.CompareTo(y.Shader); if (k != 0) return k;
             return x.Mat.CompareTo(y.Mat);
         };
-        sealed class Item { public Renderer R; public Cand C; public int Q, Lv, Ord; public float Dist; public int Shader, Mat; }
+        sealed class Item { public Renderer R; public Cand C; public int Q, Lv, Ord; public float Dist; public int Shader, Mat; public float X0, Y0, X1, Y1; }
+        internal static float MinSave = 1.0f;   // 묶음으로 아끼는 화면 층 수가 이보다 커야 묶는다
+        internal static int MaxCands = 8000;     // 후보가 이보다 많은 맵은 끈다(매 프레임 비용)
+        static bool mapOff, active, anyMoved;
+        internal static float ActiveSave = 3f, MinGpuWait = 0.3f;
+        static readonly FrameTiming[] ft = new FrameTiming[1]; static float waitEma = 1f; internal static int ProbeEvery = 30;
+        static float savedNow, savedEma; internal static int ModeSwitches, ActiveOffFrames;
 
         static Camera cam;
         static CommandBuffer cb;
@@ -83,7 +89,7 @@ namespace StutterFix
         }
 
         static string State() => "on=" + On + " minMag=" + MinMag + " frames=" + Frames + " runs=" + RunsDrawn + " members=" + MembersDrawn
-            + " 후보 " + cands.Count + " 장벽 " + barriers.Count + " 장벽검사/프레임 " + (Frames > 0 ? (BarrierChecks / (float)Frames).ToString("F0") : "-") + string.Format(" ms/프레임 전체 {0:F3} 후보 {1:F3} 정렬 {2:F3} 묶음 {3:F3}", Ms(tTotal), Ms(tCand), Ms(tSort), Ms(tRuns)) + " 묶음당 평균 " + (RunsDrawn > 0 ? (MembersDrawn / (float)RunsDrawn).ToString("F1") : "-");
+            + " 후보 " + cands.Count + " 장벽 " + barriers.Count + " 장벽검사/프레임 " + (Frames > 0 ? (BarrierChecks / (float)Frames).ToString("F0") : "-") + string.Format(" ms/프레임 전체 {0:F3} 후보 {1:F3} 정렬 {2:F3} 묶음 {3:F3}", Ms(tTotal), Ms(tCand), Ms(tSort), Ms(tRuns)) + " 이득평균 " + savedEma.ToString("F2") + " GPU대기 " + waitEma.ToString("F2") + " 켜짐 " + active + " 전환 " + ModeSwitches + " 쉰프레임 " + ActiveOffFrames + " 묶음당 평균 " + (RunsDrawn > 0 ? (MembersDrawn / (float)RunsDrawn).ToString("F1") : "-");
 
         static double Ms(long ticks) => Frames > 0 ? ticks * 1000.0 / System.Diagnostics.Stopwatch.Frequency / Frames : 0;
 
@@ -171,6 +177,14 @@ namespace StutterFix
             return false;
         }
 
+        static void ViewRect(Bounds b, Item it)
+        {
+            Vector3 a = cam.WorldToViewportPoint(b.min), c = cam.WorldToViewportPoint(b.max);
+            Vector3 d = cam.WorldToViewportPoint(new Vector3(b.min.x, b.max.y, b.center.z)), e = cam.WorldToViewportPoint(new Vector3(b.max.x, b.min.y, b.center.z));
+            it.X0 = Mathf.Clamp01(Mathf.Min(Mathf.Min(a.x, c.x), Mathf.Min(d.x, e.x))); it.X1 = Mathf.Clamp01(Mathf.Max(Mathf.Max(a.x, c.x), Mathf.Max(d.x, e.x)));
+            it.Y0 = Mathf.Clamp01(Mathf.Min(Mathf.Min(a.y, c.y), Mathf.Min(d.y, e.y))); it.Y1 = Mathf.Clamp01(Mathf.Max(Mathf.Max(a.y, c.y), Mathf.Max(d.y, e.y)));
+        }
+
         static bool OnScreen(Bounds b, out float magDummy)
         {
             magDummy = 0;
@@ -201,7 +215,18 @@ namespace StutterFix
                 cam.AddCommandBuffer(CameraEvent.BeforeForwardAlpha, cb);
                 gatheredFrame = -9999;
             }
-            if (gatheredFrame < 0) Gather();
+            if (gatheredFrame < 0) { Gather(); mapOff = cands.Count > MaxCands; if (mapOff) { Main.Entry.Logger.Log("[runlod] 이 맵은 끔: 후보 " + cands.Count + " > " + MaxCands); foreach (var cd in cands) { Restore(cd); if (cd.Tag) UnityEngine.Object.Destroy(cd.Tag); } foreach (var tg in barrierTag) if (tg) UnityEngine.Object.Destroy(tg); cands.Clear(); visible.Clear(); barrierTag = new BarrierTag[0]; barrierKey = new long[0]; barrierByKey = new Renderer[0]; } }
+            if (mapOff) { cb.Clear(); for (int k = 0; k < comps.Count; k++) if (comps[k] && comps[k].activeSelf) comps[k].SetActive(false); return; }
+            // GPU 를 기다리는 시간(메인 스레드의 present 대기). 쉬는 동안의 값만 켜기 판단에 쓴다(켜져 있으면 LOD 가 대기를 없앤다).
+            FrameTimingManager.CaptureFrameTimings();
+            if (!active && FrameTimingManager.GetLatestTimings(1, ft) == 1) waitEma += ((float)ft[0].cpuMainThreadPresentWaitTime - waitEma) * 0.05f;
+            // 쉬는 모드: 최근 이득(아낀 화면 층 수의 이동 평균)이 작으면 30프레임에 한 번만 살펴본다.
+            if (!active && Time.frameCount % ProbeEvery != 0)
+            {
+                if (anyMoved) { foreach (var cd in visible) Restore(cd); anyMoved = false; cb.Clear(); for (int k = 0; k < comps.Count; k++) if (comps[k] && comps[k].activeSelf) comps[k].SetActive(false); }
+                return;
+            }
+            savedNow = 0;
             Frames++;
             cb.Clear();
             var target = cam.targetTexture;
@@ -229,7 +254,8 @@ namespace StutterFix
                 float mag = Mathf.Min(sz.x * ppw / cd.TexW, sz.y * ppw / cd.TexH);
                 var it = cd.It; it.R = r; it.C = mag >= MinMag && r.color.a > 0 ? cd : null; it.Q = m.renderQueue; it.Lv = SortingLayer.GetLayerValueFromID(r.sortingLayerID); it.Ord = r.sortingOrder;
                 it.Dist = Vector3.Dot(b.center - cp, fwd); it.Shader = cd.Shader; it.Mat = cd.Mat;
-                if (it.C == null) Restore(cd);
+                if (it.C != null) ViewRect(b, it);
+                else Restore(cd);
                 items.Add(it);
             }
             // 유니티 투명 정렬: 큐, 정렬층, 순서, 먼 것부터, 셰이더 ID, 재질 ID
@@ -254,16 +280,35 @@ namespace StutterFix
                 Flush(i, run, ref compIdx, w, h); run = 0;
             }
             tRuns += System.Diagnostics.Stopwatch.GetTimestamp() - s2;
+            // 켜진 동안은 매 프레임, 쉬는 동안은 살펴본 프레임만으로 평균을 갱신한다
+            savedEma += (savedNow - savedEma) * (active ? 1f / 60f : 0.25f);
+            bool was = active; active = (active ? savedEma >= ActiveSave * 0.6f : savedEma >= ActiveSave && waitEma >= MinGpuWait);
+            if (was != active) { ModeSwitches++; }
+            if (!active) ActiveOffFrames++;
+            anyMoved = compIdx > 0;
             for (int k = compIdx; k < comps.Count; k++) if (comps[k] && comps[k].activeSelf) comps[k].SetActive(false);
             if (compIdx > 0) cb.SetRenderTarget(BuiltinRenderTextureType.CameraTarget);
         }
 
         static void Flush(int end, int run, ref int compIdx, int w, int h)
         {
-            if (run >= MinRun) Emit(end - run, run, compIdx++, w, h);
+            bool go = false;
+            if (run >= MinRun)
+            {
+                // 아끼는 층 수 = 장식들 화면 넓이 합 - 저해상도 몫(1/16) - 합치기 사각형 넓이
+                float sum = 0, x0 = 1, y0 = 1, x1 = 0, y1 = 0;
+                for (int k = end - run; k < end; k++) { var it = items[k]; sum += (it.X1 - it.X0) * (it.Y1 - it.Y0); x0 = Mathf.Min(x0, it.X0); y0 = Mathf.Min(y0, it.Y0); x1 = Mathf.Max(x1, it.X1); y1 = Mathf.Max(y1, it.Y1); }
+                float union = Mathf.Max(0, x1 - x0) * Mathf.Max(0, y1 - y0);
+                float save = sum * (15f / 16f) - union;
+                go = save > MinSave;
+                if (go) savedNow += save;
+                if (go) { rx0 = x0; ry0 = y0; rx1 = x1; ry1 = y1; }
+            }
+            if (go) Emit(end - run, run, compIdx++, w, h);
             else for (int k = end - run; k < end; k++) Restore(items[k].C);
         }
 
+        static float rx0, ry0, rx1, ry1;
         static bool SameKey(Item a, Item b) => a.Q == b.Q && a.Lv == b.Lv && a.Ord == b.Ord && a.Dist == b.Dist;
 
         static void Emit(int start, int count, int idx, int w, int h)
@@ -308,6 +353,13 @@ namespace StutterFix
             var rend = go.GetComponent<MeshRenderer>();
             rend.sortingLayerID = first.R.sortingLayerID; rend.sortingOrder = first.R.sortingOrder;
             var cmat = compMats[idx]; cmat.renderQueue = first.Q; cmat.mainTexture = rt; cmat.SetVector("_LodTarget", new Vector4(w, h, 1f / w, 1f / h));
+            // 합치기 사각형은 묶음이 덮는 화면 범위만(저해상도 4픽셀 여유). 그림(RT)에 그릴 때 유니티는 투영의 위아래를 뒤집는다.
+            float mx = 4f * div / w, my = 4f * div / h;
+            float cx0 = Mathf.Clamp01(rx0 - mx) * 2 - 1, cx1 = Mathf.Clamp01(rx1 + mx) * 2 - 1;
+            float vy0 = Mathf.Clamp01(ry0 - my) * 2 - 1, vy1 = Mathf.Clamp01(ry1 + my) * 2 - 1;
+            bool flip = cam.targetTexture != null;
+            float cy0 = flip ? -vy1 : vy0, cy1 = flip ? -vy0 : vy1;
+            cmat.SetVector("_Rect", new Vector4(cx0, cy0, cx1, cy1));
             var mesh = go.GetComponent<MeshFilter>().sharedMesh;
             mesh.bounds = new Bounds(go.transform.InverseTransformPoint(first.R.bounds.center), new Vector3(1e6f, 1e6f, 0));
         }
