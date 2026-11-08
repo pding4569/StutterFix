@@ -59,6 +59,7 @@ namespace StutterFix
             internal SceneRenderOrder.Key First,Last;
             internal Vector3 CenterNow;   // 정렬 중심(정적 보정 포함)
             internal int DynState;        // 0 그대로, 1 거리 보정으로 뒤에 그리기, 2 독립 렌더러
+            internal bool NoDirect; internal List<int> Few;   // 재질 텍스처 묶음 정보(복사한 재질에 다시 묶을 때)
             public void Dispose()
             {
                 if(Renderer){Renderer.enabled=false;UnityEngine.Object.Destroy(Renderer.gameObject);}
@@ -986,7 +987,7 @@ namespace StutterFix
             bool supportsNoDirect=gpuCollapseShader.keywordSpace.FindKeyword(CollapseNoDirectKeyword).isValid;
             int baseRun=0,noDirectSpans=0,fewSpans=0;
             bool supportsFew=gpuCollapseShader.keywordSpace.FindKeyword(CollapseFewKeyword).isValid;
-            for(int a=0;a<DrawCollapsePolicy.ArrayBindings && gpuCollapseArrays.Count>0;a++)Shader.SetGlobalTexture("_SfDecoTex"+a,gpuCollapseArrays[Math.Min(a,gpuCollapseArrays.Count-1)]);
+
             if(DrawCollapsePolicy.GlobalDirect)for(int a=0;a<DrawCollapsePolicy.DirectBindings && gpuCollapseDirect.Count>0;a++)Shader.SetGlobalTexture("_Big"+a,gpuCollapseDirect[Math.Min(a,gpuCollapseDirect.Count-1)]);
             foreach(var items in plan)
             {
@@ -1021,20 +1022,11 @@ namespace StutterFix
                     shared=new Material(gpuCollapseShader){name="GpuDeco collapse shared",renderQueue=first.M.renderQueue};
                     shared.SetFloat("_SrcBlend",blend[0]);shared.SetFloat("_DstBlend",blend[1]);shared.SetFloat("_BlendOp",blend[2]);
                     if(noDirect)shared.EnableKeyword(CollapseNoDirectKeyword);
-                    if(few!=null)
-                    {
-                        shared.EnableKeyword(CollapseFewKeyword);
-                        var map=new float[DrawCollapsePolicy.DirectBindings];
-                        for(int k=0;k<few.Count;k++){map[few[k]]=k;shared.SetTexture("_Big"+k,gpuCollapseDirect[few[k]]);}
-                        if(gpuCollapseDirect.Count>0)for(int k=few.Count;k<DrawCollapsePolicy.FewDirectBindings;k++)shared.SetTexture("_Big"+k,gpuCollapseDirect[few.Count>0?few[0]:0]);
-                        shared.SetFloatArray("_DirectMap",map);
-                    }
-
-                    // GlobalDirect: 직접 텍스처는 전역으로 한 번만 묶는다(구간마다 다시 묶지 않는다). 재질에는 값을 두지 않는다.
-                    if(!noDirect && few==null && !DrawCollapsePolicy.GlobalDirect)for(int a=0;a<DrawCollapsePolicy.DirectBindings && gpuCollapseDirect.Count>0;a++)shared.SetTexture("_Big"+a,gpuCollapseDirect[Math.Min(a,gpuCollapseDirect.Count-1)]);
+                    if(few!=null)shared.EnableKeyword(CollapseFewKeyword);
+                    BindCollapseTextures(shared,noDirect,few);
                     gpuCollapseSharedMats[matKey]=shared;
                 }
-                s.Material=shared;s.SharedMat=true;
+                s.Material=shared;s.SharedMat=true;s.NoDirect=noDirect;s.Few=few;
                 if(noDirect)noDirectSpans++;
                 if(few!=null)fewSpans++;
                 dcMatMs+=DcMs(dcL0);long dcL1=Stopwatch.GetTimestamp();
@@ -1118,7 +1110,8 @@ namespace StutterFix
                         RequireLive(m.IsKeywordEnabled(CollapseNoDirectKeyword)==sp.Material.IsKeywordEnabled(CollapseNoDirectKeyword)
                             && m.IsKeywordEnabled(CollapseFewKeyword)==sp.Material.IsKeywordEnabled(CollapseFewKeyword),
                             "drawcollapse ordered material lost texture variant");
-                        if(m.IsKeywordEnabled(CollapseFewKeyword)){var fm=sp.Material.GetFloatArray("_DirectMap");if(fm!=null)m.SetFloatArray("_DirectMap",fm);}
+                        // 재질 복사는 Properties 에 없는 텍스처·배열 값을 옮기지 않는다(Exit 에서 동점 구간 장식이 투명해짐). 다시 묶는다.
+                        BindCollapseTextures(m,sp.NoDirect,sp.Few);
                         sp.Material=m;sp.SharedMat=false;sp.Renderer.sharedMaterial=m;
                     }
                 }
@@ -1137,6 +1130,21 @@ namespace StutterFix
         {
             bool rep=DrawCollapsePolicy.Repeat && it!=null && (it.RepeatX!=1f || it.RepeatY!=1f);
             return new Vector4(address.x+(m && m.IsKeywordEnabled("USE_POINT_SAMPLING")?128:0)+(rep?256:0),address.y,rep?it.RepeatX:0,rep?it.RepeatY:0);
+        }
+        // 구간 재질의 텍스처 묶기: 배열(_SfDecoTex*), 직접 텍스처(_Big*), DIRECT_FEW 의 _DirectMap. Properties 에 없으므로 재질마다 직접 넣는다.
+        static void BindCollapseTextures(Material m,bool noDirect,List<int> few)
+        {
+            for(int a=0;a<DrawCollapsePolicy.ArrayBindings && gpuCollapseArrays.Count>0;a++)m.SetTexture("_SfDecoTex"+a,gpuCollapseArrays[Math.Min(a,gpuCollapseArrays.Count-1)]);
+            if(noDirect)return;
+            if(few!=null)
+            {
+                var map=new float[DrawCollapsePolicy.DirectBindings];
+                for(int k=0;k<few.Count;k++){map[few[k]]=k;m.SetTexture("_Big"+k,gpuCollapseDirect[few[k]]);}
+                if(gpuCollapseDirect.Count>0)for(int k=few.Count;k<DrawCollapsePolicy.FewDirectBindings;k++)m.SetTexture("_Big"+k,gpuCollapseDirect[few.Count>0?few[0]:0]);
+                m.SetFloatArray("_DirectMap",map);
+                return;
+            }
+            if(!DrawCollapsePolicy.GlobalDirect)for(int a=0;a<DrawCollapsePolicy.DirectBindings && gpuCollapseDirect.Count>0;a++)m.SetTexture("_Big"+a,gpuCollapseDirect[Math.Min(a,gpuCollapseDirect.Count-1)]);
         }
         static bool DcSameBucket(SceneRenderOrder.Key a,SceneRenderOrder.Key b)=>a.Layer==b.Layer && a.Order==b.Order && a.Queue==b.Queue && a.Distance==b.Distance;
         static void RebuildDrawCollapse()
