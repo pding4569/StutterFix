@@ -934,6 +934,9 @@ namespace StutterFix
 #if AUTOTEST
                 case "texdensity": TexDensity.Run(arg); return true;
                 case "stencilprobe": Log("[stencilprobe] " + StencilProbe.Run(arg.Trim())); return true;
+                case "lodprobe": Log("[lodprobe] " + LodProbe.Run(arg.Trim())); return true;
+                case "tightshape": Log("[tightshape] " + (arg.Trim() == "off" ? TightSprite.Restore() : TightSprite.Apply())); return true;
+                case "clipprobe": Log("[clipprobe] " + StencilProbe.Clip(arg.Trim())); return true;
 #endif
                 case "pace": Main.Entry.Logger.Log("[pace] 프레임 " + DisplayPace.Frames + " 그림 " + DisplayPace.Draws); return true;
 #if AUTOTEST

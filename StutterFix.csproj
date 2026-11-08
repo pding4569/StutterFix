@@ -43,6 +43,8 @@
     <Compile Include="HoldFix.cs" />
     <Compile Include="HitboxQuery.cs" />
     <Compile Include="TexDensity.cs" />
+    <Compile Include="LodProbe.cs" />
+    <Compile Include="TightSprite.cs" />
     <Compile Include="StencilProbe.cs" />
     <Compile Include="DisplayPace.cs" />
     <Compile Include="GpuDecoResearchDisabled.cs" />
@@ -248,6 +250,7 @@
     <Compile Include="Resilience.cs" />
     <EmbeddedResource Include="fsr/stutterfix_fsr" LogicalName="StutterFix.fsr" />
     <EmbeddedResource Include="effects/stutterfix_stencilfill" LogicalName="StutterFix.stencilfill" Condition="'$(AutoTestBuild)' == '1'" />
+    <EmbeddedResource Include="effects/stutterfix_clipexp" LogicalName="StutterFix.clipexp" Condition="'$(AutoTestBuild)' == '1'" />
     <Compile Include="RenderVerify.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="WarmChars.cs" />
     <Compile Include="Profiler.cs" />
