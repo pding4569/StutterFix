@@ -1,5 +1,5 @@
 [gpudeco-lab] editor=6000.3.10f1 device=NVIDIA GeForce RTX 4060 Ti api=Direct3D11
 GPUDECO_G1=ERROR stage=lab reason=System.InvalidOperationException: direct draw color
   at GpuDecoLab.CollapseDirectProbe (UnityEngine.ComputeShader shader) [0x00267] in E:\StutterFixWork\wt-v14prod\tools\gpudeco-lab\project\Assets\Editor\GpuDecoDrawCollapseProbe.cs:62 
-  at GpuDecoLab+<>c.<CollapseBundle>b__11_0 () [0x00107] in E:\StutterFixWork\wt-v14prod\tools\gpudeco-lab\project\Assets\Editor\GpuDecoDrawCollapseProbe.cs:29 
+  at GpuDecoLab+<>c.<CollapseBundle>b__11_0 () [0x0010f] in E:\StutterFixWork\wt-v14prod\tools\gpudeco-lab\project\Assets\Editor\GpuDecoDrawCollapseProbe.cs:29 
   at GpuDecoLab.Run (System.Action action, System.String name) [0x000a2] in E:\StutterFixWork\wt-v14prod\tools\gpudeco-lab\project\Assets\Editor\GpuDecoLab.cs:39 

@@ -925,6 +925,16 @@ namespace StutterFix
                 case "fxoff": ArcheGpuResearch.Select(arg); return true;
                 case "gpucensus": GpuCensus.Run(); return true;
                 case "gpuhide": GpuHide.Command(arg); return true;
+                case "runlod": Log("[runlod] " + RunLod.Command(arg)); return true;
+                case "runprobe": Log("[runprobe] " + RunProbe.Run(float.TryParse(arg.Trim(), System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out var rpm) ? rpm : 4f)); return true;
+                case "hidetex":
+                    {
+                        // 측정 전용: 이름에 arg 가 들어간 텍스처를 쓰는 SpriteRenderer 를 그리지 않게 한다(새로 생기는 것 포함, 매 호출 다시 적용).
+                        var key = arg.Trim(); int n = 0;
+                        foreach (var sr in UnityEngine.Object.FindObjectsByType<SpriteRenderer>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+                            if (sr.sprite && sr.sprite.texture && sr.sprite.texture.name.IndexOf(key, StringComparison.OrdinalIgnoreCase) >= 0) { sr.forceRenderingOff = true; n++; }
+                        Log("[hidetex] " + key + " " + n); return true;
+                    }
                 case "hidegroup": { var q = arg.Split(' '); Log("[hidegroup] " + q[0] + " " + GpuHide.Toggle(q[0], q.Length > 1 && q[1] == "on")); return true; }
                 case "holdskip": HoldFix.Command(arg); return true;
                 case "waitskip": EnginePatch.WaitSkip(arg != "off"); return true;
