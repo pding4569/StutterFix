@@ -945,7 +945,9 @@ namespace StutterFix
                         else { DecoBake.RenderLod.Enabled = true; if (float.TryParse(ra, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out var rq) && rq > 0) DecoBake.RenderLod.Quality = rq; }
                         Log("[renderlod] " + DecoBake.LodState()); return true;
                     }
-                case "tightshape": Log("[tightshape] " + (arg.Trim() == "off" ? TightSprite.Restore() : TightSprite.Apply())); return true;
+                case "tightshape":
+                    if (int.TryParse(arg.Trim(), out var tg) && tg >= 4) { TightSprite.Grid = tg; TightSprite.ForgetLevel(); }
+                    Log("[tightshape] grid=" + TightSprite.Grid + " " + (arg.Trim() == "off" ? TightSprite.Restore() : TightSprite.Apply())); return true;
                 case "clipprobe": Log("[clipprobe] " + StencilProbe.Clip(arg.Trim())); return true;
 #endif
                 case "pace": Main.Entry.Logger.Log("[pace] 프레임 " + DisplayPace.Frames + " 그림 " + DisplayPace.Draws); return true;
