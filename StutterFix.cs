@@ -59,7 +59,9 @@ namespace StutterFix
                 // 2026-11-08: 화면 출력 대기 없애기를 기본 켬으로 (3440 효과 켬 ABBA: 앞서 준비 프레임 4 단독 +12~16%, 화면 대기 건너뛰기 단독 +14%, 서로 겹침)
                 Config.MaxQueuedFrames = 4; Config.EngineWaitSkip = true; Config.DefaultsGen = 2;
                 try { Config.Save(modEntry); } catch { }
-            }
+            }
+            // 3세대: 확대 장식 묶어 그리기(묶음 LOD) 켬. HELLO +12.7%, 7777 +4.4%, 다른 맵 중립(GPU 병목일 때만 켜짐). 사용자 승인 11-08.
+            if (Config.DefaultsGen < 3) { Config.RunLod = true; Config.DefaultsGen = 3; try { Config.Save(modEntry); } catch { } }
             Resilience.Init();   // 비정상 종료 감지 (안전 모드면 이번 실행 동안 일부 기능을 끔)
 
             modEntry.OnGUI = OnGUI;
@@ -1217,7 +1219,7 @@ BlendProbe.Tick();
         public bool HoldSkip = true;        // 입력이 같으면 홀드 갱신 건너뛰기: Exit +4.7%, 값 대조 235만 번 다름 0
         public bool HitboxQuerySkip = false; // 히트박스 장식이 없을 때 공의 히트박스 물리 질의 건너뛰기(결과 같음)
         public bool PlayTurbo = false;        // 곡 중에만: 일시정지 공 카메라 끄기, 입력 없을 때 UI 이벤트·마우스 처리 건너뛰기, 장식 LateUpdate 같은 값 건너뛰기 등(turbo lite)
-        public bool RunLod = false;           // 곡 중에만: 그리기 순서에서 연속된 크게 확대된 이미지 장식을 1/4 해상도로 모아 그려 한 번에 합치기(GPU 병목일 때만 켜짐, 눈으로는 같음)
+        public bool RunLod = true;            // 곡 중에만: 그리기 순서에서 연속된 크게 확대된 이미지 장식을 1/4 해상도로 모아 그려 한 번에 합치기(GPU 병목일 때만 켜짐, 눈으로는 같음)
         public bool DisplayPace = false;    // 화면에 나갈 프레임만 그리기: 곡 전체 2~2.5배 (재시작 후 적용)
         public bool EngineMaskGrow = false; // 엔진 코드 6바이트 패치: 마스크 많은 맵 Exit +11.8%
         public bool EngineWaitSkip = true; // 엔진 코드 패치: 지난 화면 출력을 기다리지 않음. 2026-11-08 기본 켬(DefaultsGen 2), 화면 지연 미측정
@@ -1247,7 +1249,7 @@ BlendProbe.Tick();
         public bool MeshWarm = true;        // 색 바꾸기가 곡 중에 만들 타일 메시를 재생 준비 때 미리 만들기
         public bool SoundWarm = true;
         public bool HitSoundBatch = true;   // 2026-10-20: 기본 켬 (Arche 전곡 +6.6%, 막히면 자동으로 원래 방식). 저사양 페이지에 있다
-        public int DefaultsGen = 0;         // 기본값을 바꿔 한 번 덮어쓴 세대 (1 = 히트음 묶기·화면 밖 파티클 멈추기 켬, 2 = 앞서 준비 프레임 4·화면 대기 건너뛰기 켬)
+        public int DefaultsGen = 0;         // 기본값을 바꿔 한 번 덮어쓴 세대 (1 = 히트음 묶기·화면 밖 파티클 멈추기 켬, 2 = 앞서 준비 프레임 4·화면 대기 건너뛰기 켬, 3 = 확대 장식 묶어 그리기 켬)
         public bool JitWarm = true;         // 모드·게임 효과 함수를 켤 때 미리 컴파일 (곡 초반 첫 효과의 JIT)       // 곡 중에 처음 쓰는 효과음(박자 소리 등)을 재생 준비 때 미리 불러오기
         // 저사양 (화면·동작이 아주 조금 달라질 수 있어 기본 꺼짐)
         public bool LowPriority = false;    // 게임 우선순위 높음
