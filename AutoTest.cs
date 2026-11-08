@@ -936,6 +936,7 @@ namespace StutterFix
                 case "stencilprobe": Log("[stencilprobe] " + StencilProbe.Run(arg.Trim())); return true;
                 case "lodprobe": Log("[lodprobe] " + LodProbe.Run(arg.Trim())); return true;
                 case "nodirect": Log("[nodirect] " + LodProbe.NoDirect(arg.Trim() != "off")); return true;
+                case "globaldirect": DrawCollapsePolicy.GlobalDirect = arg.Trim() != "off"; Log("[globaldirect] " + DrawCollapsePolicy.GlobalDirect); return true;
                 case "fewdirect": DrawCollapsePolicy.FewDirect = arg.Trim() != "off"; Log("[fewdirect] " + DrawCollapsePolicy.FewDirect); return true;
                 case "renderlod":
                     {
@@ -946,7 +947,8 @@ namespace StutterFix
                         Log("[renderlod] " + DecoBake.LodState()); return true;
                     }
                 case "tightshape":
-                    if (int.TryParse(arg.Trim(), out var tg) && tg >= 4) { TightSprite.Grid = tg; TightSprite.ForgetLevel(); }
+                    { var ta = arg.Trim(); TightSprite.UnityTight = ta.StartsWith("unity"); if (TightSprite.UnityTight) ta = ta.Substring(5).Trim();
+                      if (int.TryParse(ta, out var tg) && tg >= 4) { TightSprite.Grid = tg; TightSprite.ForgetLevel(); } }
                     Log("[tightshape] grid=" + TightSprite.Grid + " " + (arg.Trim() == "off" ? TightSprite.Restore() : TightSprite.Apply())); return true;
                 case "clipprobe": Log("[clipprobe] " + StencilProbe.Clip(arg.Trim())); return true;
 #endif

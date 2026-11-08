@@ -6,14 +6,15 @@ policy = (Path(__file__).resolve().parents[2] / 'DrawCollapsePolicy.cs').read_te
 arrays = int(re.search(r'const int ArrayBindings=(\d+);', policy).group(1))
 direct = int(re.search(r'const int DirectBindings=(\d+);', policy).group(1))
 assert arrays + direct <= 64, 'Unity shader texture parameter limit exceeded'
-properties = '\n'.join(f'        _Tex{i} ("DXT tier {i}", 2DArray) = "" {{}}' for i in range(arrays))
-properties += '\n' + '\n'.join(f'        _Big{i} ("Borrowed texture {i}", 2D) = "white" {{}}' for i in range(direct))
-declarations = '\n'.join(f'            Texture2DArray _Tex{i};' for i in range(arrays))
+# 배열 텍스처는 모든 구간이 같은 것을 쓰므로 전역(_SfDecoTex*)으로 한 번만 묶고 Properties 에 두지 않는다(재질 속성이 적을수록 그리기 호출마다 드는 CPU 가 준다).
+properties = ''
+# 직접 텍스처는 Properties 에 두지 않는다: 재질이 값을 갖지 않으면 전역 텍스처(Shader.SetGlobalTexture)를 쓴다.
+declarations = '\n'.join(f'            Texture2DArray _SfDecoTex{i};' for i in range(arrays))
 few = int(re.search(r'const int FewDirectBindings=(\d+);', policy).group(1))
 declarations += '\n#if defined(DIRECT_FEW)\n' + '\n'.join(f'            Texture2D _Big{i};' for i in range(few)) + f'\n            float _DirectMap[{direct}];'
 declarations += '\n#elif !defined(NO_DIRECT_TEXTURES)\n' + '\n'.join(f'            Texture2D _Big{i};' for i in range(direct)) + '\n#endif'
 def leaf(i):
-    texture = f'_Tex{i}' if i < arrays else f'_Big{i-arrays}'
+    texture = f'_SfDecoTex{i}' if i < arrays else f'_Big{i-arrays}'
     coord = 'float3(uv,v.info.y)' if i < arrays else 'v.uv'
     return (f'if(usePoint) c={texture}.SampleLevel(sampler_point_clamp,{coord},0); '
             f'else c={texture}.SampleLevel(sampler_linear_clamp,{coord},0);')
@@ -40,8 +41,6 @@ PROPERTIES
         _SrcBlend ("Source blend", Float) = 1
         _DstBlend ("Destination blend", Float) = 10
         _BlendOp ("Blend operation", Float) = 0
-        _LodMode ("LOD composite", Float) = 0
-        _LodTex ("LOD texture", 2D) = "black" {}
     }
     SubShader
     {

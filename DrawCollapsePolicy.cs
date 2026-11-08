@@ -16,6 +16,7 @@ namespace StutterFix
         internal const int DirectBindings=48;
         internal const int FewDirectBindings=8; // DIRECT_FEW: 구간이 쓰는 직접 텍스처가 이 수 이하면 작은 변형
         internal static bool FewDirect=true; // 측정: fewdirect on|off
+        internal static bool GlobalDirect=false; // 측정: globaldirect on|off (직접 텍스처를 전역으로)
         internal const int TextureBindings=ArrayBindings+DirectBindings;
         internal const int OwnedChecksPerFrame=4;
         // Orthographic camera translation changes every distance by this same

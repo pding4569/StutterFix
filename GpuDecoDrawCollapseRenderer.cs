@@ -986,6 +986,8 @@ namespace StutterFix
             bool supportsNoDirect=gpuCollapseShader.keywordSpace.FindKeyword(CollapseNoDirectKeyword).isValid;
             int baseRun=0,noDirectSpans=0,fewSpans=0;
             bool supportsFew=gpuCollapseShader.keywordSpace.FindKeyword(CollapseFewKeyword).isValid;
+            for(int a=0;a<DrawCollapsePolicy.ArrayBindings && gpuCollapseArrays.Count>0;a++)Shader.SetGlobalTexture("_SfDecoTex"+a,gpuCollapseArrays[Math.Min(a,gpuCollapseArrays.Count-1)]);
+            if(DrawCollapsePolicy.GlobalDirect)for(int a=0;a<DrawCollapsePolicy.DirectBindings && gpuCollapseDirect.Count>0;a++)Shader.SetGlobalTexture("_Big"+a,gpuCollapseDirect[Math.Min(a,gpuCollapseDirect.Count-1)]);
             foreach(var items in plan)
             {
                 long dcL0=Stopwatch.GetTimestamp();
@@ -1027,8 +1029,9 @@ namespace StutterFix
                         if(gpuCollapseDirect.Count>0)for(int k=few.Count;k<DrawCollapsePolicy.FewDirectBindings;k++)shared.SetTexture("_Big"+k,gpuCollapseDirect[few.Count>0?few[0]:0]);
                         shared.SetFloatArray("_DirectMap",map);
                     }
-                    for(int a=0;a<DrawCollapsePolicy.ArrayBindings && gpuCollapseArrays.Count>0;a++)shared.SetTexture("_Tex"+a,gpuCollapseArrays[Math.Min(a,gpuCollapseArrays.Count-1)]);
-                    if(!noDirect && few==null)for(int a=0;a<DrawCollapsePolicy.DirectBindings && gpuCollapseDirect.Count>0;a++)shared.SetTexture("_Big"+a,gpuCollapseDirect[Math.Min(a,gpuCollapseDirect.Count-1)]);
+
+                    // GlobalDirect: 직접 텍스처는 전역으로 한 번만 묶는다(구간마다 다시 묶지 않는다). 재질에는 값을 두지 않는다.
+                    if(!noDirect && few==null && !DrawCollapsePolicy.GlobalDirect)for(int a=0;a<DrawCollapsePolicy.DirectBindings && gpuCollapseDirect.Count>0;a++)shared.SetTexture("_Big"+a,gpuCollapseDirect[Math.Min(a,gpuCollapseDirect.Count-1)]);
                     gpuCollapseSharedMats[matKey]=shared;
                 }
                 s.Material=shared;s.SharedMat=true;

@@ -10,6 +10,7 @@ namespace StutterFix
     {
         internal static int Grid = 128;
         internal static float MaxCoverage = 0.5f;
+        internal static bool UnityTight; // tightshape unity <크기>: 유니티 Tight 외곽선(구멍 포함, 정점 적음)을 줄인 점유 그림에서 만든다
         internal const string TargetShader = "Sprites/Tile";
         sealed class Orig { public Vector2[] V; public ushort[] T; public float Cover; }
         static readonly Dictionary<Sprite, Orig> changed = new Dictionary<Sprite, Orig>();
@@ -90,7 +91,8 @@ namespace StutterFix
                 if (m.GetFloat("RepeatX") != 1f || m.GetFloat("RepeatY") != 1f || sr.drawMode != SpriteDrawMode.Simple || sp.packed) { other++; continue; }
                 var occ = Occupancy(sp, out float cov);
                 if (cov > MaxCoverage) { wide++; continue; }
-                if (!Build(sp, occ, out var v, out var t)) { other++; continue; }
+                Vector2[] v; ushort[] t;
+                if (UnityTight ? !BuildUnity(sp, occ, out v, out t) : !Build(sp, occ, out v, out t)) { other++; continue; }
                 // 원래 도형(로컬 단위)을 사각형 공간 픽셀로 바꿔 보관
                 var lv = sp.vertices; var ov = new Vector2[lv.Length]; float ppu = sp.pixelsPerUnit; var piv = sp.pivot;
                 for (int i = 0; i < lv.Length; i++) ov[i] = new Vector2(lv[i].x * ppu + piv.x, lv[i].y * ppu + piv.y);
@@ -101,6 +103,31 @@ namespace StutterFix
             string covs = "";
             foreach (var kv in covCache) covs += " " + kv.Key.name + "=" + (kv.Value * 100).ToString("F0") + "%";
             return "도형 바꾼 스프라이트 " + applied + " / 덮개 넓음 " + wide + " / 조건 밖 " + other + " |" + covs;
+        }
+
+        // 점유 칸(한 칸 넓힘)을 작은 그림으로 만들어 유니티의 Tight 도형 생성기에 맡긴다. 정점 좌표는 원래 사각형 텍셀 공간으로 늘린다.
+        static bool BuildUnity(Sprite sp, bool[,] occ, out Vector2[] v, out ushort[] t)
+        {
+            v = null; t = null;
+            var small = new Texture2D(Grid, Grid, TextureFormat.RGBA32, false, true);
+            var px = new Color32[Grid * Grid];
+            for (int gy = 0; gy < Grid; gy++) for (int gx = 0; gx < Grid; gx++) px[gy * Grid + gx] = occ[gx, gy] ? new Color32(255, 255, 255, 255) : new Color32(0, 0, 0, 0);
+            small.SetPixels32(px); small.Apply(false, false);
+            Sprite tmp = null;
+            try
+            {
+                tmp = Sprite.Create(small, new Rect(0, 0, Grid, Grid), Vector2.zero, 1f, 0, SpriteMeshType.Tight);
+                var lv = tmp.vertices; var lt = tmp.triangles;
+                if (lv.Length < 3 || lt.Length < 3 || lv.Length > 65535) return false;
+                var r = sp.rect; float sx = r.width / Grid, sy = r.height / Grid;
+                v = new Vector2[lv.Length];
+                // 작은 스프라이트는 pivot 0, ppu 1 이라 정점 = 작은 그림 픽셀 좌표
+                for (int i = 0; i < lv.Length; i++) v[i] = new Vector2(Mathf.Clamp(lv[i].x * sx, 0, r.width), Mathf.Clamp(lv[i].y * sy, 0, r.height));
+                t = lt;
+                return true;
+            }
+            catch { return false; }
+            finally { if (tmp) Object.Destroy(tmp); Object.Destroy(small); }
         }
 
         internal static string Restore()

@@ -3,63 +3,10 @@ Shader "StutterFix/GpuDecoBatch"
 {
     Properties
     {
-        _Tex0 ("DXT tier 0", 2DArray) = "" {}
-        _Tex1 ("DXT tier 1", 2DArray) = "" {}
-        _Tex2 ("DXT tier 2", 2DArray) = "" {}
-        _Tex3 ("DXT tier 3", 2DArray) = "" {}
-        _Big0 ("Borrowed texture 0", 2D) = "white" {}
-        _Big1 ("Borrowed texture 1", 2D) = "white" {}
-        _Big2 ("Borrowed texture 2", 2D) = "white" {}
-        _Big3 ("Borrowed texture 3", 2D) = "white" {}
-        _Big4 ("Borrowed texture 4", 2D) = "white" {}
-        _Big5 ("Borrowed texture 5", 2D) = "white" {}
-        _Big6 ("Borrowed texture 6", 2D) = "white" {}
-        _Big7 ("Borrowed texture 7", 2D) = "white" {}
-        _Big8 ("Borrowed texture 8", 2D) = "white" {}
-        _Big9 ("Borrowed texture 9", 2D) = "white" {}
-        _Big10 ("Borrowed texture 10", 2D) = "white" {}
-        _Big11 ("Borrowed texture 11", 2D) = "white" {}
-        _Big12 ("Borrowed texture 12", 2D) = "white" {}
-        _Big13 ("Borrowed texture 13", 2D) = "white" {}
-        _Big14 ("Borrowed texture 14", 2D) = "white" {}
-        _Big15 ("Borrowed texture 15", 2D) = "white" {}
-        _Big16 ("Borrowed texture 16", 2D) = "white" {}
-        _Big17 ("Borrowed texture 17", 2D) = "white" {}
-        _Big18 ("Borrowed texture 18", 2D) = "white" {}
-        _Big19 ("Borrowed texture 19", 2D) = "white" {}
-        _Big20 ("Borrowed texture 20", 2D) = "white" {}
-        _Big21 ("Borrowed texture 21", 2D) = "white" {}
-        _Big22 ("Borrowed texture 22", 2D) = "white" {}
-        _Big23 ("Borrowed texture 23", 2D) = "white" {}
-        _Big24 ("Borrowed texture 24", 2D) = "white" {}
-        _Big25 ("Borrowed texture 25", 2D) = "white" {}
-        _Big26 ("Borrowed texture 26", 2D) = "white" {}
-        _Big27 ("Borrowed texture 27", 2D) = "white" {}
-        _Big28 ("Borrowed texture 28", 2D) = "white" {}
-        _Big29 ("Borrowed texture 29", 2D) = "white" {}
-        _Big30 ("Borrowed texture 30", 2D) = "white" {}
-        _Big31 ("Borrowed texture 31", 2D) = "white" {}
-        _Big32 ("Borrowed texture 32", 2D) = "white" {}
-        _Big33 ("Borrowed texture 33", 2D) = "white" {}
-        _Big34 ("Borrowed texture 34", 2D) = "white" {}
-        _Big35 ("Borrowed texture 35", 2D) = "white" {}
-        _Big36 ("Borrowed texture 36", 2D) = "white" {}
-        _Big37 ("Borrowed texture 37", 2D) = "white" {}
-        _Big38 ("Borrowed texture 38", 2D) = "white" {}
-        _Big39 ("Borrowed texture 39", 2D) = "white" {}
-        _Big40 ("Borrowed texture 40", 2D) = "white" {}
-        _Big41 ("Borrowed texture 41", 2D) = "white" {}
-        _Big42 ("Borrowed texture 42", 2D) = "white" {}
-        _Big43 ("Borrowed texture 43", 2D) = "white" {}
-        _Big44 ("Borrowed texture 44", 2D) = "white" {}
-        _Big45 ("Borrowed texture 45", 2D) = "white" {}
-        _Big46 ("Borrowed texture 46", 2D) = "white" {}
-        _Big47 ("Borrowed texture 47", 2D) = "white" {}
+
         _SrcBlend ("Source blend", Float) = 1
         _DstBlend ("Destination blend", Float) = 10
         _BlendOp ("Blend operation", Float) = 0
-        _LodMode ("LOD composite", Float) = 0
-        _LodTex ("LOD texture", 2D) = "black" {}
     }
     SubShader
     {
@@ -79,10 +26,10 @@ Shader "StutterFix/GpuDecoBatch"
             #pragma fragment frag
             #pragma multi_compile_local _ NO_DIRECT_TEXTURES DIRECT_FEW
             #include "UnityCG.cginc"
-            Texture2DArray _Tex0;
-            Texture2DArray _Tex1;
-            Texture2DArray _Tex2;
-            Texture2DArray _Tex3;
+            Texture2DArray _SfDecoTex0;
+            Texture2DArray _SfDecoTex1;
+            Texture2DArray _SfDecoTex2;
+            Texture2DArray _SfDecoTex3;
 #if defined(DIRECT_FEW)
             Texture2D _Big0;
             Texture2D _Big1;
@@ -178,15 +125,15 @@ Shader "StutterFix/GpuDecoBatch"
 #ifdef NO_DIRECT_TEXTURES
                 [branch] if(binding<=1) {
                     [branch] if(binding<=0) {
-                        { if(usePoint) c=_Tex0.SampleLevel(sampler_point_clamp,float3(uv,v.info.y),0); else c=_Tex0.SampleLevel(sampler_linear_clamp,float3(uv,v.info.y),0); }
+                        { if(usePoint) c=_SfDecoTex0.SampleLevel(sampler_point_clamp,float3(uv,v.info.y),0); else c=_SfDecoTex0.SampleLevel(sampler_linear_clamp,float3(uv,v.info.y),0); }
                     } else {
-                        { if(usePoint) c=_Tex1.SampleLevel(sampler_point_clamp,float3(uv,v.info.y),0); else c=_Tex1.SampleLevel(sampler_linear_clamp,float3(uv,v.info.y),0); }
+                        { if(usePoint) c=_SfDecoTex1.SampleLevel(sampler_point_clamp,float3(uv,v.info.y),0); else c=_SfDecoTex1.SampleLevel(sampler_linear_clamp,float3(uv,v.info.y),0); }
                     }
                 } else {
                     [branch] if(binding<=2) {
-                        { if(usePoint) c=_Tex2.SampleLevel(sampler_point_clamp,float3(uv,v.info.y),0); else c=_Tex2.SampleLevel(sampler_linear_clamp,float3(uv,v.info.y),0); }
+                        { if(usePoint) c=_SfDecoTex2.SampleLevel(sampler_point_clamp,float3(uv,v.info.y),0); else c=_SfDecoTex2.SampleLevel(sampler_linear_clamp,float3(uv,v.info.y),0); }
                     } else {
-                        { if(usePoint) c=_Tex3.SampleLevel(sampler_point_clamp,float3(uv,v.info.y),0); else c=_Tex3.SampleLevel(sampler_linear_clamp,float3(uv,v.info.y),0); }
+                        { if(usePoint) c=_SfDecoTex3.SampleLevel(sampler_point_clamp,float3(uv,v.info.y),0); else c=_SfDecoTex3.SampleLevel(sampler_linear_clamp,float3(uv,v.info.y),0); }
                     }
                 }
 #elif defined(DIRECT_FEW)
@@ -196,17 +143,17 @@ Shader "StutterFix/GpuDecoBatch"
                     [branch] if(binding<=2) {
                         [branch] if(binding<=1) {
                             [branch] if(binding<=0) {
-                                { if(usePoint) c=_Tex0.SampleLevel(sampler_point_clamp,float3(uv,v.info.y),0); else c=_Tex0.SampleLevel(sampler_linear_clamp,float3(uv,v.info.y),0); }
+                                { if(usePoint) c=_SfDecoTex0.SampleLevel(sampler_point_clamp,float3(uv,v.info.y),0); else c=_SfDecoTex0.SampleLevel(sampler_linear_clamp,float3(uv,v.info.y),0); }
                             } else {
-                                { if(usePoint) c=_Tex1.SampleLevel(sampler_point_clamp,float3(uv,v.info.y),0); else c=_Tex1.SampleLevel(sampler_linear_clamp,float3(uv,v.info.y),0); }
+                                { if(usePoint) c=_SfDecoTex1.SampleLevel(sampler_point_clamp,float3(uv,v.info.y),0); else c=_SfDecoTex1.SampleLevel(sampler_linear_clamp,float3(uv,v.info.y),0); }
                             }
                         } else {
-                            { if(usePoint) c=_Tex2.SampleLevel(sampler_point_clamp,float3(uv,v.info.y),0); else c=_Tex2.SampleLevel(sampler_linear_clamp,float3(uv,v.info.y),0); }
+                            { if(usePoint) c=_SfDecoTex2.SampleLevel(sampler_point_clamp,float3(uv,v.info.y),0); else c=_SfDecoTex2.SampleLevel(sampler_linear_clamp,float3(uv,v.info.y),0); }
                         }
                     } else {
                         [branch] if(binding<=4) {
                             [branch] if(binding<=3) {
-                                { if(usePoint) c=_Tex3.SampleLevel(sampler_point_clamp,float3(uv,v.info.y),0); else c=_Tex3.SampleLevel(sampler_linear_clamp,float3(uv,v.info.y),0); }
+                                { if(usePoint) c=_SfDecoTex3.SampleLevel(sampler_point_clamp,float3(uv,v.info.y),0); else c=_SfDecoTex3.SampleLevel(sampler_linear_clamp,float3(uv,v.info.y),0); }
                             } else {
                                 { if(usePoint) c=_Big0.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big0.SampleLevel(sampler_linear_clamp,v.uv,0); }
                             }
@@ -244,15 +191,15 @@ Shader "StutterFix/GpuDecoBatch"
                             [branch] if(binding<=3) {
                                 [branch] if(binding<=1) {
                                     [branch] if(binding<=0) {
-                                        { if(usePoint) c=_Tex0.SampleLevel(sampler_point_clamp,float3(uv,v.info.y),0); else c=_Tex0.SampleLevel(sampler_linear_clamp,float3(uv,v.info.y),0); }
+                                        { if(usePoint) c=_SfDecoTex0.SampleLevel(sampler_point_clamp,float3(uv,v.info.y),0); else c=_SfDecoTex0.SampleLevel(sampler_linear_clamp,float3(uv,v.info.y),0); }
                                     } else {
-                                        { if(usePoint) c=_Tex1.SampleLevel(sampler_point_clamp,float3(uv,v.info.y),0); else c=_Tex1.SampleLevel(sampler_linear_clamp,float3(uv,v.info.y),0); }
+                                        { if(usePoint) c=_SfDecoTex1.SampleLevel(sampler_point_clamp,float3(uv,v.info.y),0); else c=_SfDecoTex1.SampleLevel(sampler_linear_clamp,float3(uv,v.info.y),0); }
                                     }
                                 } else {
                                     [branch] if(binding<=2) {
-                                        { if(usePoint) c=_Tex2.SampleLevel(sampler_point_clamp,float3(uv,v.info.y),0); else c=_Tex2.SampleLevel(sampler_linear_clamp,float3(uv,v.info.y),0); }
+                                        { if(usePoint) c=_SfDecoTex2.SampleLevel(sampler_point_clamp,float3(uv,v.info.y),0); else c=_SfDecoTex2.SampleLevel(sampler_linear_clamp,float3(uv,v.info.y),0); }
                                     } else {
-                                        { if(usePoint) c=_Tex3.SampleLevel(sampler_point_clamp,float3(uv,v.info.y),0); else c=_Tex3.SampleLevel(sampler_linear_clamp,float3(uv,v.info.y),0); }
+                                        { if(usePoint) c=_SfDecoTex3.SampleLevel(sampler_point_clamp,float3(uv,v.info.y),0); else c=_SfDecoTex3.SampleLevel(sampler_linear_clamp,float3(uv,v.info.y),0); }
                                     }
                                 }
                             } else {
