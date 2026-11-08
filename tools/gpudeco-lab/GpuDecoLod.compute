@@ -1,0 +1,41 @@
+// ADOFAI 렌더러 B: 구간마다 화면 확대 배율(화면 픽셀 / 텍스처 텍셀)의 최솟값을 구한다. 안 보이는 항목(정점 0)과 화면 밖 항목은 뺀다.
+#pragma kernel SpanLodClear
+#pragma kernel SpanLod
+ByteAddressBuffer _LodVerts;
+StructuredBuffer<uint> _LodSpanOfSlot;
+RWStructuredBuffer<uint> _LodOut;
+float4x4 _LodVP;
+float4 _LodScreen;
+uint _LodSlots;
+uint _LodSpans;
+[numthreads(64,1,1)]
+void SpanLodClear(uint3 t:SV_DispatchThreadID)
+{
+    uint s=t.x;if(s>=_LodSpans)return;
+    _LodOut[s*2]=0x7F7FFFFFu;_LodOut[s*2+1]=0u;
+}
+[numthreads(64,1,1)]
+void SpanLod(uint3 t:SV_DispatchThreadID)
+{
+    uint slot=t.x;if(slot>=_LodSlots)return;
+    uint span=_LodSpanOfSlot[slot];if(span>=_LodSpans)return;
+    float2 s[4];float2 tx[4];bool nz=false;
+    [unroll] for(uint k=0;k<4;k++)
+    {
+        uint a=(slot*4+k)*60u;float3 p=asfloat(_LodVerts.Load3(a));nz=nz||any(p!=0);
+        float4 uvi=asfloat(_LodVerts.Load4(a+28));float4 r=asfloat(_LodVerts.Load4(a+44));
+        float4 c=mul(_LodVP,float4(p,1));float2 n=c.xy/c.w;
+        s[k]=float2((n.x*0.5+0.5)*_LodScreen.x,(0.5-n.y*0.5)*_LodScreen.y);
+        tx[k]=uvi.xy*r.xy/max(2*r.zw,1e-12);
+    }
+    if(!nz)return;
+    float2 lo=min(min(s[0],s[1]),min(s[2],s[3])),hi=max(max(s[0],s[1]),max(s[2],s[3]));
+    if(hi.x<0||hi.y<0||lo.x>_LodScreen.x||lo.y>_LodScreen.y)return;
+    float mag=3.0e38;
+    [unroll] for(uint i=0;i<4;i++)[unroll] for(uint j=i+1;j<4;j++)
+    {
+        float dt=length(tx[j]-tx[i]);if(dt>0.5)mag=min(mag,length(s[j]-s[i])/dt);
+    }
+    InterlockedMin(_LodOut[span*2],asuint(mag));
+    InterlockedAdd(_LodOut[span*2+1],1u);
+}

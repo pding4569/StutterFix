@@ -69,6 +69,25 @@ namespace StutterFix
             return "저해상도로 보낸 장식 " + n + " (1/" + div + ", 확대 " + minMag + "배 이상)";
         }
 
+        // 측정 전용: GpuDeco 구간 재질 전부에 NO_DIRECT_TEXTURES(배열 텍스처만) 변형을 강제로 켠다. 일부 장식은 틀린 그림이 된다.
+        static readonly List<Material> forced = new List<Material>();
+        internal static string NoDirect(bool on)
+        {
+            if (!on) { foreach (var m in forced) if (m) m.DisableKeyword("NO_DIRECT_TEXTURES"); int k = forced.Count; forced.Clear(); return "되돌림 " + k; }
+            int n = 0, already = 0;
+            foreach (var r in Resources.FindObjectsOfTypeAll<MeshRenderer>())
+            {
+                if (!r || r.name != "GpuDeco collapse span") continue;
+                foreach (var m in r.sharedMaterials)
+                {
+                    if (!m) continue;
+                    if (m.IsKeywordEnabled("NO_DIRECT_TEXTURES")) { already++; continue; }
+                    m.EnableKeyword("NO_DIRECT_TEXTURES"); forced.Add(m); n++;
+                }
+            }
+            return "강제 켬 " + n + " / 원래 켜짐 " + already;
+        }
+
         static string Off()
         {
             int n = moved.Count;

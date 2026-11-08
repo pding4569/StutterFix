@@ -58,6 +58,8 @@ Shader "StutterFix/GpuDecoBatch"
         _SrcBlend ("Source blend", Float) = 1
         _DstBlend ("Destination blend", Float) = 10
         _BlendOp ("Blend operation", Float) = 0
+        _LodMode ("LOD composite", Float) = 0
+        _LodTex ("LOD texture", 2D) = "black" {}
     }
     SubShader
     {
@@ -75,13 +77,23 @@ Shader "StutterFix/GpuDecoBatch"
             #pragma only_renderers d3d11
             #pragma vertex vert
             #pragma fragment frag
-            #pragma multi_compile_local _ NO_DIRECT_TEXTURES
+            #pragma multi_compile_local _ NO_DIRECT_TEXTURES DIRECT_FEW
             #include "UnityCG.cginc"
             Texture2DArray _Tex0;
             Texture2DArray _Tex1;
             Texture2DArray _Tex2;
             Texture2DArray _Tex3;
-#ifndef NO_DIRECT_TEXTURES
+#if defined(DIRECT_FEW)
+            Texture2D _Big0;
+            Texture2D _Big1;
+            Texture2D _Big2;
+            Texture2D _Big3;
+            Texture2D _Big4;
+            Texture2D _Big5;
+            Texture2D _Big6;
+            Texture2D _Big7;
+            float _DirectMap[48];
+#elif !defined(NO_DIRECT_TEXTURES)
             Texture2D _Big0;
             Texture2D _Big1;
             Texture2D _Big2;
@@ -134,6 +146,9 @@ Shader "StutterFix/GpuDecoBatch"
             SamplerState sampler_point_clamp;
             SamplerState sampler_linear_clamp;
             ByteAddressBuffer _CollapseVerts;
+            float _LodMode;
+            float4 _LodTarget;
+            Texture2D _LodTex;
             struct appdata { float3 vertex:POSITION; };
             struct v2f { float4 vertex:SV_POSITION; float4 color:COLOR; float2 uv:TEXCOORD0; nointerpolation float2 info:TEXCOORD1; nointerpolation float4 region:TEXCOORD2; };
             v2f vert(appdata v)
@@ -142,10 +157,19 @@ Shader "StutterFix/GpuDecoBatch"
                 uint a=(uint)(v.vertex.x+0.5)*60u;
                 float3 p=asfloat(_CollapseVerts.Load3(a));
                 float4 uvi=asfloat(_CollapseVerts.Load4(a+28));
-                v2f o;o.vertex=UnityObjectToClipPos(float4(p,1));o.color=asfloat(_CollapseVerts.Load4(a+12));o.uv=uvi.xy;o.info=uvi.zw;o.region=asfloat(_CollapseVerts.Load4(a+44));return o;
+                v2f o;
+                // 합치기 모드(렌더러 MPB): 정점 x 는 모서리 번호 0~3, 화면 전체 사각형을 그린다(저해상도 그림을 원래 순서 자리에 섞는다).
+                if(_LodMode>0.5)
+                {
+                    uint cid=(uint)(v.vertex.x+0.5);
+                    o.vertex=float4((cid==1||cid==2)?1:-1,cid>=2?1:-1,UNITY_NEAR_CLIP_VALUE,1);
+                    o.color=1;o.uv=0;o.info=0;o.region=0;return o;
+                }
+                o.vertex=UnityObjectToClipPos(float4(p,1));o.color=asfloat(_CollapseVerts.Load4(a+12));o.uv=uvi.xy;o.info=uvi.zw;o.region=asfloat(_CollapseVerts.Load4(a+44));return o;
             }
             float4 frag(v2f v):SV_Target
             {
+                if(_LodMode>0.5)return _LodTex.SampleLevel(sampler_linear_clamp,v.vertex.xy*_LodTarget.zw,0);
                 bool usePoint=v.info.x>=128;int binding=(int)v.info.x%128;
                 // 모든 텍스처가 밉 1단이라 SampleLevel(0) 은 SampleGrad 와 같다(미분·그래디언트 필요 없음).
                 // Clamp to the copied rectangle's texel centres so padded BC blocks never bleed.
@@ -163,6 +187,54 @@ Shader "StutterFix/GpuDecoBatch"
                         { if(usePoint) c=_Tex2.SampleLevel(sampler_point_clamp,float3(uv,v.info.y),0); else c=_Tex2.SampleLevel(sampler_linear_clamp,float3(uv,v.info.y),0); }
                     } else {
                         { if(usePoint) c=_Tex3.SampleLevel(sampler_point_clamp,float3(uv,v.info.y),0); else c=_Tex3.SampleLevel(sampler_linear_clamp,float3(uv,v.info.y),0); }
+                    }
+                }
+#elif defined(DIRECT_FEW)
+                // 구간이 쓰는 직접 텍스처만 8칸에 다시 매긴다(재질의 _DirectMap). 그림은 같고 바인딩 수·셰이더 크기만 준다.
+                if(binding>=4) binding=4+(int)_DirectMap[binding-4];
+                [branch] if(binding<=5) {
+                    [branch] if(binding<=2) {
+                        [branch] if(binding<=1) {
+                            [branch] if(binding<=0) {
+                                { if(usePoint) c=_Tex0.SampleLevel(sampler_point_clamp,float3(uv,v.info.y),0); else c=_Tex0.SampleLevel(sampler_linear_clamp,float3(uv,v.info.y),0); }
+                            } else {
+                                { if(usePoint) c=_Tex1.SampleLevel(sampler_point_clamp,float3(uv,v.info.y),0); else c=_Tex1.SampleLevel(sampler_linear_clamp,float3(uv,v.info.y),0); }
+                            }
+                        } else {
+                            { if(usePoint) c=_Tex2.SampleLevel(sampler_point_clamp,float3(uv,v.info.y),0); else c=_Tex2.SampleLevel(sampler_linear_clamp,float3(uv,v.info.y),0); }
+                        }
+                    } else {
+                        [branch] if(binding<=4) {
+                            [branch] if(binding<=3) {
+                                { if(usePoint) c=_Tex3.SampleLevel(sampler_point_clamp,float3(uv,v.info.y),0); else c=_Tex3.SampleLevel(sampler_linear_clamp,float3(uv,v.info.y),0); }
+                            } else {
+                                { if(usePoint) c=_Big0.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big0.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                            }
+                        } else {
+                            { if(usePoint) c=_Big1.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big1.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                        }
+                    }
+                } else {
+                    [branch] if(binding<=8) {
+                        [branch] if(binding<=7) {
+                            [branch] if(binding<=6) {
+                                { if(usePoint) c=_Big2.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big2.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                            } else {
+                                { if(usePoint) c=_Big3.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big3.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                            }
+                        } else {
+                            { if(usePoint) c=_Big4.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big4.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                        }
+                    } else {
+                        [branch] if(binding<=10) {
+                            [branch] if(binding<=9) {
+                                { if(usePoint) c=_Big5.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big5.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                            } else {
+                                { if(usePoint) c=_Big6.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big6.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                            }
+                        } else {
+                            { if(usePoint) c=_Big7.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big7.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                        }
                     }
                 }
 #else

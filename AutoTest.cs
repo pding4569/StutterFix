@@ -935,6 +935,16 @@ namespace StutterFix
                 case "texdensity": TexDensity.Run(arg); return true;
                 case "stencilprobe": Log("[stencilprobe] " + StencilProbe.Run(arg.Trim())); return true;
                 case "lodprobe": Log("[lodprobe] " + LodProbe.Run(arg.Trim())); return true;
+                case "nodirect": Log("[nodirect] " + LodProbe.NoDirect(arg.Trim() != "off")); return true;
+                case "fewdirect": DrawCollapsePolicy.FewDirect = arg.Trim() != "off"; Log("[fewdirect] " + DrawCollapsePolicy.FewDirect); return true;
+                case "renderlod":
+                    {
+                        var ra = arg.Trim();
+                        if (ra == "state") { Log("[renderlod] " + DecoBake.LodState()); return true; }
+                        if (ra == "off") { DecoBake.RenderLod.Enabled = false; DecoBake.LodRelease(); }
+                        else { DecoBake.RenderLod.Enabled = true; if (float.TryParse(ra, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out var rq) && rq > 0) DecoBake.RenderLod.Quality = rq; }
+                        Log("[renderlod] " + DecoBake.LodState()); return true;
+                    }
                 case "tightshape": Log("[tightshape] " + (arg.Trim() == "off" ? TightSprite.Restore() : TightSprite.Apply())); return true;
                 case "clipprobe": Log("[clipprobe] " + StencilProbe.Clip(arg.Trim())); return true;
 #endif

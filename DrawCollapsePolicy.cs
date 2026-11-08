@@ -14,6 +14,8 @@ namespace StutterFix
         // device, even though the native API accepts 128 SRVs.
         internal const int ArrayBindings=4;
         internal const int DirectBindings=48;
+        internal const int FewDirectBindings=8; // DIRECT_FEW: 구간이 쓰는 직접 텍스처가 이 수 이하면 작은 변형
+        internal static bool FewDirect=true; // 측정: fewdirect on|off
         internal const int TextureBindings=ArrayBindings+DirectBindings;
         internal const int OwnedChecksPerFrame=4;
         // Orthographic camera translation changes every distance by this same

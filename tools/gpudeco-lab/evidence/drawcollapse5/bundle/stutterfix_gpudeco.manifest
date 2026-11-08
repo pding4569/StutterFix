@@ -1,16 +1,16 @@
 ManifestFileVersion: 0
 UnityVersion: 6000.3.10f1
-CRC: 1597616548
+CRC: 2365853132
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 6acdf9d2f13aa32498c5f3887efcdb37
+    Hash: ab3db04d39ae6c10377451d8441f57a2
   TypeTreeHash:
     serializedVersion: 2
     Hash: 34e8c41394b642a55c7c8ae8c457d08a
   IncrementalBuildHash:
     serializedVersion: 2
-    Hash: ee66817e89c9a26ffc0d4beaebf552f5
+    Hash: 92f21159d91877382d03763205392939
 HashAppended: 0
 ClassTypes:
 - Class: 48
@@ -19,7 +19,8 @@ ClassTypes:
   Script: {instanceID: 0}
 SerializeReferenceClassIdentifiers: []
 Assets:
-- Assets/Shaders/GpuTileComposite.shader
-- Assets/Shaders/GpuDecoBatch.shader
 - Assets/Shaders/GpuDeco.compute
+- Assets/Shaders/GpuDecoLod.compute
+- Assets/Shaders/GpuDecoBatch.shader
+- Assets/Shaders/GpuTileComposite.shader
 Dependencies: []

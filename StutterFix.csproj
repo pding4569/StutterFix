@@ -103,6 +103,7 @@
     <Compile Include="DrawCollapsePolicy.cs" />
     <Compile Include="GpuDecoDrawCollapse.cs" />
     <Compile Include="GpuDecoDrawCollapseRenderer.cs" />
+    <Compile Include="GpuDecoLod.cs" />
     <Compile Include="GpuDecoDrawCollapseGate.cs" Condition="'$(AutoTestBuild)' == '1'" />
     <Compile Include="RenderMergeLayoutPolicy.cs" />
     <Compile Include="LiveDeco.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
