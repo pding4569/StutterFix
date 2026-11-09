@@ -218,6 +218,7 @@ namespace StutterFix
             if (((d.repeatX != 1 || d.repeatY != 1) && !DrawCollapsePolicy.Repeat) || r.drawMode != SpriteDrawMode.Simple) return "repeat-tile";
             if (MeshOn(d) || (d.meshRenderer && d.meshRenderer.enabled && d.meshRenderer.gameObject.activeInHierarchy)) return "mesh-mode";
             if (((int)Blend(d) != 0 || (d.blendModeEffect && d.blendModeEffect.enabled)) && !GpuDecoBlend.Takeable(d, r)) return "blend";
+            if (DrawCollapsePolicy.SplitNow && RunLod.CandidateRenderer(r)) return "runlod-split";
             if (!p || !Inited(p) || !IsDecoration(p) || !ReferenceEquals(p.decoration, d)
                 || !ReferenceEquals(Cached(p), d.pivotTrans) || p.enabled) return "parallax-binding";
             if (!d.pivotTrans || d.pivotTrans.parent != expectedManager.transform) return "pivot-parent";

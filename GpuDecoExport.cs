@@ -927,6 +927,12 @@ namespace StutterFix
                 PrepareGpuImageAdmission();
                 PrecomputeAllTrimBounds();
 #endif
+                {
+                    long refs = 0; if (table.InputEvents != null) foreach (var e in table.InputEvents) if (e.Targets != null) refs += e.Targets.Length;
+                    DrawCollapsePolicy.SplitNow = DrawCollapsePolicy.RunLodSplit && Main.Config.RunLod
+                        && baselineObjects.Length < DrawCollapsePolicy.SplitAllDecos;   // 이벤트 대상 수는 DD(20.8만)·Exit(17.1만)도 커서 기준에서 뺐다
+                    if (DrawCollapsePolicy.RunLodSplit && Main.Config.RunLod) Main.Entry.Logger.Log("[GPU 장식] RunLod 와 나눠 맡기: " + (DrawCollapsePolicy.SplitNow ? "나눔" : "전부 맡음") + " (장식 " + baselineObjects.Length + "개, 이벤트 대상 " + refs + ")");
+                }
                 for (int index = 0; index < baselineObjects.Length; index++)
                 {
                     if (table.Decorations[index].Reasons.Count != 0) continue;

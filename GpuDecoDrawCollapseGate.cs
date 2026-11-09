@@ -65,6 +65,7 @@ namespace StutterFix
                     case "splitorder":DrawCollapsePolicy.SplitByOrder=on;break;
                     case "hideproxies":DrawCollapsePolicy.HideProxies=on;break;
                     case "shape":DrawCollapsePolicy.ShapeCells=on;break;
+                    case "runlodsplit":DrawCollapsePolicy.RunLodSplit=on;break;
                     case "nudge":DrawCollapsePolicy.NudgeTieSpans=on;break;   // 측정: 구간 그리기만 끔(계산은 그대로)
                     default:throw new ArgumentException("policy tight|keepafter|clip|skiporder|skipcompute|globalverts on|off");
                 }

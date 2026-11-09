@@ -19,6 +19,14 @@ namespace StutterFix
         internal static int Frames, RunsDrawn, MembersDrawn;
         const int HideLayer = 31;
 
+        // GPU 장식과 나눠 맡기: RunLod 가 다루는 장식(모음의 후보 조건과 같음: Sprites/Tile·Default, 미리 곱한 알파, 단순 그리기, 마스크 없음)
+        internal static bool CandidateRenderer(Renderer r)
+        {
+            var m = r ? r.sharedMaterial : null;
+            if (!m || !(r is SpriteRenderer sr) || sr.drawMode != SpriteDrawMode.Simple || sr.maskInteraction != SpriteMaskInteraction.None) return false;
+            var sh = m.shader; if (!sh || (sh.name != "Sprites/Tile" && sh.name != "Sprites/Default")) return false;
+            return !m.HasProperty("_SrcBlend") || (m.GetFloat("_SrcBlend") == 1f && m.GetFloat("_DstBlend") == 10f);
+        }
         // GPU 장식 맡기 검사용: RunLod 가 붙이는 보임 알림 컴포넌트(그림에 영향 없음)
         internal static bool IsOwnTag(Component c) => c is VisTag || c is BarrierTag;
         sealed class VisTag : MonoBehaviour
