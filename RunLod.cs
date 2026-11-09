@@ -19,6 +19,8 @@ namespace StutterFix
         internal static int Frames, RunsDrawn, MembersDrawn;
         const int HideLayer = 31;
 
+        // GPU 장식 맡기 검사용: RunLod 가 붙이는 보임 알림 컴포넌트(그림에 영향 없음)
+        internal static bool IsOwnTag(Component c) => c is VisTag || c is BarrierTag;
         sealed class VisTag : MonoBehaviour
         {
             internal Cand C;

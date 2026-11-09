@@ -18,6 +18,9 @@ namespace StutterFix
                     || ReferenceEquals(component, d.parallax) || ReferenceEquals(component, d.blendModeEffect)
                     || ReferenceEquals(component, d.meshBlendModeEffect) || ReferenceEquals(component, d.spriteAlphaMask))
                     continue;
+                // RunLod 의 보임 알림(OnBecameVisible 만 받음)은 장식 그림·변환에 손대지 않는다. 이걸 막으면 RunLod 를 켠 판에서
+                // GPU 장식이 맡을 장식이 사라졌다(Windflower 4,010개 거부, Arche 는 붙는 시점에 따라 판마다 달라짐).
+                if (RunLod.IsOwnTag(component)) continue;
                 if (component.GetType() == typeof(ToggleVisible))
                 {
                     var toggle = (ToggleVisible)component;
