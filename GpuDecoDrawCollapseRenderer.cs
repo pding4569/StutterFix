@@ -383,7 +383,8 @@ namespace StutterFix
             }
             // 형태 칸 기록은 항목 기록(항목마다 2개) 뒤에 붙인다(_CollapseTexture[_Count*2 + 번호-1]).
             PrepareShapes(source);
-            if(gpuShapeTable.Length>0){var ext=new Vector4[info.Length+gpuShapeTable.Length];Array.Copy(info,ext,info.Length);Array.Copy(gpuShapeTable,0,ext,info.Length,gpuShapeTable.Length);info=ext;}
+            // 형태 칸을 켜면 기록 자리를 늘 예약해 둔다(칸이 늦게 도착해도 버퍼를 다시 만들지 않고 올리기만 한다)
+            if(DrawCollapsePolicy.ShapeCells && DrawCollapsePolicy.GlobalVerts){var ext=new Vector4[info.Length+Math.Max(gpuShapeTable.Length,ShapeReserve)];Array.Copy(info,ext,info.Length);Array.Copy(gpuShapeTable,0,ext,info.Length,gpuShapeTable.Length);info=ext;}
             gpuCollapseTexture=new ComputeBuffer(info.Length,16);gpuCollapseTexture.SetData(info);
 #if AUTOTEST || GPUDECO
             RememberGpuImageCollapseAddresses(addresses);

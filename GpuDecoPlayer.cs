@@ -668,7 +668,9 @@ namespace StutterFix
             var songNow = scrConductor.instance;
             bool midSong = songNow != null && songNow.hasSongStarted && songNow.songposition_minusi > 0.5; // 시작 키 전(Start 상태)의 곡 위치는 지난 판의 값이라 믿지 않는다
             // 재사용 라운드·CPU 처리 장식·동적 제외 흔적·곡 중간 시작(장벽 상태가 달라짐)이면 통합을 다시 계획한다
-            bool otherRebuild = (gpuReusedRound && !prebuilt) || gpuLiveCpuFallbackCount != 0 || hadDynamic;
+            // 형태 칸이 준비 뒤에 도착했으면 기록을 올리고 다시 계획한다(켜는 시점은 멈춘 시작 화면)
+            bool shapeRebuild = ApplyShapesIfReady();
+            bool otherRebuild = (gpuReusedRound && !prebuilt) || gpuLiveCpuFallbackCount != 0 || hadDynamic || shapeRebuild;
             bool reuseTry = DrawCollapsePolicy.MidReusePlan && midSong && prebuilt && !otherRebuild;
             bool needRebuild = otherRebuild || (midSong && !reuseTry);
             if (needRebuild)
@@ -717,7 +719,7 @@ namespace StutterFix
             gpuPlanPreBuilt = false; DisposeGpuLive(); gpuPreparedHash = 0; gpuCollapseIncludedPrepared = null; gpuFallbackExcludedItems.Clear(); gpuFallbackBarrierRows.Clear();
             CancelBuild(); ClearBaseline(); table = null; // initial(처음 Setup 기록)은 남긴다: 다시 하기는 장식을 새로 Setup 하지 않을 수 있다
             effectList = null; prepEffectSnapshot = null; prepFloors = null;
-            gpuTrimBounds.Clear(); gpuImageBlock.Clear();
+            gpuTrimBounds.Clear(); gpuImageBlock.Clear(); ForgetShapes();
 #if !DEV && !AUTOTEST
             DecoAnim.ClearGpuRecordMetadata();
 #endif

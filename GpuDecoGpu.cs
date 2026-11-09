@@ -162,7 +162,7 @@ namespace StutterFix
             foreach(float v in next.Constants)Require(DecoBakeCore.Finite(v),"nonfinite image constants");
             foreach(float v in next.UV)Require(DecoBakeCore.Finite(v),"nonfinite image UV");
             Require(next.Constants[0]!=0 && next.Constants[1]!=0 && next.Constants[2]!=0 && next.Constants[3]!=0
-                && (next.Flags&~(hasImageGeometry?127:63))==0,"image geometry constants");
+                && (next.Flags&~((hasImageGeometry?127:63)|128|256))==0,"image geometry constants");   // 128/256 = 화면 고정(시차 clampToScreen / CameraAspect)
             for(int i=0;i<4;i++)
             {
                 imageStaticUpload[i]=new Vector4(next.Shape[i*3],next.Shape[i*3+1],next.Shape[i*3+2],0);

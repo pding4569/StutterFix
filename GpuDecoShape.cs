@@ -16,8 +16,9 @@ namespace StutterFix
         static Vector4[] gpuShapeTable = Array.Empty<Vector4>();
         static uint[] gpuSlotBits;   // 자리 → 지도 값 높은 비트(형태 기록 번호 << 18)
         static int gpuShapeItems, gpuShapeRectsUsed, gpuShapeActors;
+        static bool gpuShapeAwaiting;   // 준비 때 칸이 아직 없어 형태 칸 없이 계획했다
         static readonly Dictionary<(int, int), int> gpuShapeKeyStart = new Dictionary<(int, int), int>();   // (텍스처, 자리 수 K) → 기록 시작
-        const int ShapeMaxRecords = 16383, ShapeMaxItems = 0x3FFFF;
+        const int ShapeMaxRecords = 16383, ShapeMaxItems = 0x3FFFF, ShapeReserve = 4096;
 
         static Vector4[] ShapeRectsFor(ComputeShader cs, Texture2D t)
         {
@@ -26,18 +27,87 @@ namespace StutterFix
             var none = Array.Empty<Vector4>();
             int side = Math.Max(t.width, t.height);
             if (!cs || !cs.HasKernel("AlphaCells") || side < DrawCollapsePolicy.ShapeMinSide || t.mipmapCount != 1) { gpuShapeRects[id] = none; return none; }
-            int G = side >= 256 ? DrawCollapsePolicy.ShapeGrid : Math.Max(4, DrawCollapsePolicy.ShapeGrid / 2);
+            int G = ShapeGridFor(t);
             int k = cs.FindKernel("AlphaCells");
             var buf = new ComputeBuffer(G * G, 4); var cells = new uint[G * G];
             try
             {
                 buf.SetData(cells);
                 cs.SetTexture(k, "_TrimTex", t); cs.SetBuffer(k, "_CellOut", buf);
-                cs.SetInts("_TrimSize", t.width, t.height); cs.SetInt("_CellGrid", G); cs.SetInt("_CellMargin", 2);
+                cs.SetInts("_TrimSize", t.width, t.height); cs.SetInt("_CellGrid", G); cs.SetInt("_CellMargin", 2); cs.SetInt("_CellBase", 0);
                 cs.Dispatch(k, (t.width + 15) / 16, (t.height + 15) / 16, 1);
                 buf.GetData(cells);
             }
             finally { buf.Release(); }
+            var result = RectsFromCells(cells, 0, G);
+            gpuShapeRects[id] = result; return result;
+        }
+        static int ShapeGridFor(Texture2D t) => Math.Max(t.width, t.height) >= 256 ? DrawCollapsePolicy.ShapeGrid : Math.Max(4, DrawCollapsePolicy.ShapeGrid / 2);
+        static bool ShapeCandidate(Texture2D t) => t && Math.Max(t.width, t.height) >= DrawCollapsePolicy.ShapeMinSide && t.mipmapCount == 1;
+        // 여러 텍스처를 한 버퍼에 모아 계산하고 마지막에 한 번만 읽는다(텍스처마다 GPU 를 기다리지 않음).
+        // 결과를 기다리지 않는다: 읽기를 요청해 두고(AsyncGPUReadback) 도착하면 표에 넣는다. 동기 GetData 는 로딩 중 쌓인
+        // GPU 작업(텍스처 올리기 등)까지 기다려 DD 재생 준비가 12.3 -> 16.2초로 늘었다.
+        static bool gpuShapePending, gpuShapeArrived;
+        static int gpuShapeGeneration;
+        static void ShapeRectsBatchAsync(ComputeShader cs, List<Texture2D> textures)
+        {
+            var todo = new List<Texture2D>(); var bases = new List<int>(); var grids = new List<int>(); int total = 0;
+            foreach (var t in textures) { if (!t || gpuShapeRects.ContainsKey(t.GetInstanceID())) continue; if (!ShapeCandidate(t)) { gpuShapeRects[t.GetInstanceID()] = Array.Empty<Vector4>(); continue; } todo.Add(t); bases.Add(total); int G = ShapeGridFor(t); grids.Add(G); total += G * G; }
+            if (todo.Count == 0 || !cs || !cs.HasKernel("AlphaCells")) return;
+            int k = cs.FindKernel("AlphaCells");
+            var buf = new ComputeBuffer(total, 4); buf.SetData(new uint[total]);
+            cs.SetBuffer(k, "_CellOut", buf); cs.SetInt("_CellMargin", 2);
+            for (int q = 0; q < todo.Count; q++)
+            {
+                var t = todo[q]; cs.SetTexture(k, "_TrimTex", t); cs.SetInts("_TrimSize", t.width, t.height);
+                cs.SetInt("_CellGrid", grids[q]); cs.SetInt("_CellBase", bases[q]);
+                cs.Dispatch(k, (t.width + 15) / 16, (t.height + 15) / 16, 1);
+            }
+            var ids = todo.ConvertAll(x => x.GetInstanceID()); int gen = gpuShapeGeneration; gpuShapePending = true;
+            long t0 = System.Diagnostics.Stopwatch.GetTimestamp();
+            UnityEngine.Rendering.AsyncGPUReadback.Request(buf, req =>
+            {
+                try
+                {
+                    if (gen != gpuShapeGeneration || req.hasError) return;
+                    var data = req.GetData<uint>();
+                    var cells = new uint[data.Length]; data.CopyTo(cells);
+                    for (int q = 0; q < ids.Count; q++) gpuShapeRects[ids[q]] = RectsFromCells(cells, bases[q], grids[q]);
+                    gpuShapeArrived = true;
+                    GpuLog("SHAPE_ASYNC textures=" + ids.Count + " cells=" + cells.Length + " wait_ms=" + ((System.Diagnostics.Stopwatch.GetTimestamp() - t0) * 1000.0 / System.Diagnostics.Stopwatch.Frequency).ToString("F0"));
+                }
+                finally { if (gen == gpuShapeGeneration) gpuShapePending = false; buf.Release(); }
+            });
+        }
+        static void ShapeRectsBatch(ComputeShader cs, List<Texture2D> textures)
+        {
+            var todo = new List<Texture2D>(); var bases = new List<int>(); int total = 0;
+            foreach (var t in textures) { if (!t || gpuShapeRects.ContainsKey(t.GetInstanceID())) continue; if (!ShapeCandidate(t)) { gpuShapeRects[t.GetInstanceID()] = Array.Empty<Vector4>(); continue; } todo.Add(t); bases.Add(total); int G = ShapeGridFor(t); total += G * G; }
+            if (todo.Count == 0 || !cs || !cs.HasKernel("AlphaCells")) return;
+            int k = cs.FindKernel("AlphaCells");
+            var buf = new ComputeBuffer(total, 4); var cells = new uint[total];
+            try
+            {
+                long tB = System.Diagnostics.Stopwatch.GetTimestamp();
+                buf.SetData(cells); cs.SetBuffer(k, "_CellOut", buf); cs.SetInt("_CellMargin", 2);
+                for (int q = 0; q < todo.Count; q++)
+                {
+                    var t = todo[q]; cs.SetTexture(k, "_TrimTex", t); cs.SetInts("_TrimSize", t.width, t.height);
+                    cs.SetInt("_CellGrid", ShapeGridFor(t)); cs.SetInt("_CellBase", bases[q]);
+                    cs.Dispatch(k, (t.width + 15) / 16, (t.height + 15) / 16, 1);
+                }
+                long tD = System.Diagnostics.Stopwatch.GetTimestamp();
+                buf.GetData(cells);
+                long tG = System.Diagnostics.Stopwatch.GetTimestamp();
+                GpuLog("SHAPE_BATCH textures=" + todo.Count + " cells=" + total + " dispatch_ms=" + ((tD - tB) * 1000.0 / System.Diagnostics.Stopwatch.Frequency).ToString("F1") + " readback_ms=" + ((tG - tD) * 1000.0 / System.Diagnostics.Stopwatch.Frequency).ToString("F1"));
+            }
+            finally { buf.Release(); }
+            for (int q = 0; q < todo.Count; q++) gpuShapeRects[todo[q].GetInstanceID()] = RectsFromCells(cells, bases[q], ShapeGridFor(todo[q]));
+        }
+        static Vector4[] RectsFromCells(uint[] all, int b, int G)
+        {
+            var none = Array.Empty<Vector4>();
+            var cells = new uint[G * G]; Array.Copy(all, b, cells, 0, G * G);
             // 가로로 이어진 칸 → 같은 범위면 아래 줄과 합친다
             var open = new List<int[]>(); var rects = new List<int[]>(); // x0,x1,y0,y1 (칸 단위, x1·y1 포함)
             for (int y = 0; y < G; y++)
@@ -54,10 +124,10 @@ namespace StutterFix
             }
             rects.AddRange(open);
             long kept = 0; foreach (var r in rects) kept += (long)(r[1] - r[0] + 1) * (r[3] - r[2] + 1);
-            if (rects.Count == 0 || rects.Count > DrawCollapsePolicy.ShapeMaxRects || kept > DrawCollapsePolicy.ShapeMaxKeep * G * G) { gpuShapeRects[id] = none; return none; }
+            if (rects.Count == 0 || rects.Count > DrawCollapsePolicy.ShapeMaxRects || kept > DrawCollapsePolicy.ShapeMaxKeep * G * G) return none;
             var result = new Vector4[rects.Count];
             for (int i = 0; i < rects.Count; i++) { var r = rects[i]; result[i] = new Vector4(r[0] / (float)G, r[2] / (float)G, (r[1] + 1) / (float)G, (r[3] + 1) / (float)G); }
-            gpuShapeRects[id] = result; return result;
+            return result;
         }
 
         // 준비(PrepareDrawCollapse) 때: 맡을 항목마다 형태 칸 기록을 정한다. 기록은 텍스처마다 한 벌(같은 텍스처 항목끼리 공유).
@@ -70,6 +140,22 @@ namespace StutterFix
             long t0 = System.Diagnostics.Stopwatch.GetTimestamp();
             // 고정 기록: 1 = 사각형 전체, 2 = 빈 칸(이미지가 준비 안 한 텍스처로 바뀌면 첫 자리 전체 + 나머지 빈 칸 = 원래 그림)
             var table = new List<Vector4> { new Vector4(0, 0, 1, 1), new Vector4(0, 0, 0, 0) }; var texStart = new Dictionary<int, int>(); gpuShapeKeyStart.Clear();
+            {
+                var all = new List<Texture2D>(); var seenT = new HashSet<int>();
+                void AddT(Texture2D x) { if (x && seenT.Add(x.GetInstanceID())) all.Add(x); }
+                for (int i = 0; i < n; i++) { var sr0 = gpuCollapseOwnedRows[i]?.R as SpriteRenderer; if (sr0 && sr0.sprite) AddT(sr0.sprite.texture); }
+                if (gpuImageVariants != null) foreach (var vv in gpuImageVariants) if (vv != null && vv.Status == GpuDecoImageVariant.Kind.ReadyQuad && vv.Source != null && vv.Source.sprite) AddT(vv.Source.sprite.texture);
+                bool missing = false; foreach (var x in all) if (!gpuShapeRects.ContainsKey(x.GetInstanceID())) { missing = true; break; }
+                if (missing)
+                {
+                    // 아직 칸이 없다: 비동기로 계산을 걸고 이번 계획에는 형태 칸 없이 간다(켤 때 ApplyShapesIfReady 가 다시 계획).
+                    if (!gpuShapePending) ShapeRectsBatchAsync(gpuLiveShader, all);
+                    gpuShapeAwaiting = true;
+                    GpuLog("SHAPE_CELLS deferred textures=" + all.Count);
+                    return;
+                }
+                gpuShapeAwaiting = false;
+            }
             var why = new Dictionary<string, int>();
             void W(string k, Texture2D tx) { string key = k + ":" + (tx ? tx.name : "-"); why.TryGetValue(key, out int c0); why[key] = c0 + 1; }
             for (int i = 0; i < n; i++)
@@ -114,6 +200,19 @@ namespace StutterFix
             GpuLog("SHAPE_CELLS_SKIP " + string.Join(" | ", System.Linq.Enumerable.Take(System.Linq.Enumerable.OrderByDescending(why, x => x.Value), 10)));
             GpuLog("SHAPE_CELLS actors=" + gpuShapeActors + " items=" + gpuShapeItems + " records=" + table.Count + " textures=" + texStart.Count + " ms=" + ((System.Diagnostics.Stopwatch.GetTimestamp() - t0) * 1000.0 / System.Diagnostics.Stopwatch.Frequency).ToString("F1"));
         }
+        // 켜기 직전(GpuDecoPlayer): 비동기 칸이 도착했으면 기록 표를 만들어 _CollapseTexture 의 예약 자리에 올리고 true(다시 계획 필요).
+        internal static bool ApplyShapesIfReady()
+        {
+            if (!gpuShapeAwaiting || gpuLiveSlices.Count == 0 || gpuCollapseTexture == null) return false;
+            var source = gpuLiveSlices[0];
+            PrepareShapes(source);
+            if (gpuShapeAwaiting || gpuShapeTable.Length == 0) return false;
+            int n = source.Data.Items.Length;
+            if (n * 2 + gpuShapeTable.Length > gpuCollapseTexture.count) { gpuItemShapeCount = new int[n]; gpuShapeItems = 0; return false; }
+            gpuCollapseTexture.SetData(gpuShapeTable, 0, n * 2, gpuShapeTable.Length);
+            return gpuShapeItems > 0;
+        }
+        internal static void ForgetShapes() { gpuShapeRects.Clear(); gpuShapeGeneration++; gpuShapePending = false; gpuShapeArrived = false; gpuShapeAwaiting = false; }
         // 이미지가 바뀌었다(UpdateDrawCollapseTextureSlot): 그 텍스처의 칸 기록으로 자리들을 바꾼다. 준비 안 한 텍스처면 첫 자리 전체 + 나머지 빈 칸.
         static void UpdateShapeForTexture(int item, Texture2D tex)
         {

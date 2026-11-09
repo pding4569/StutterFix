@@ -540,16 +540,26 @@ void AlphaBounds(uint3 id:SV_DispatchThreadID, uint gi:SV_GroupIndex)
 // 형태 칸: 텍스처를 _CellGrid x _CellGrid 칸으로 나눠, 알파>0 텍셀에서 _CellMargin 텍셀 안에 걸치는 칸을 1 로 표시한다.
 // 쌍선형 샘플은 1 텍셀 안만 읽으므로 여백 2 이면 빈 칸 안의 어떤 점도 알파 0 만 읽는다(화면 결과 같음).
 RWStructuredBuffer<uint> _CellOut;
-uint _CellGrid, _CellMargin;
+uint _CellGrid, _CellMargin, _CellBase;   // _CellBase: 여러 텍스처를 한 버퍼에 모을 때 이 텍스처 칸의 시작
+groupshared uint gCell[4];
 [numthreads(16,16,1)]
-void AlphaCells(uint3 id:SV_DispatchThreadID)
+void AlphaCells(uint3 id:SV_DispatchThreadID, uint gi:SV_GroupIndex)
 {
-    if(id.x>=_TrimSize.x || id.y>=_TrimSize.y)return;
-    if(!(_TrimTex.Load(int3(id.xy,0)).a>0))return;
+    // 묶음(16x16 텍셀)마다 알파>0 범위를 공유 메모리에 모으고 묶음당 한 번만 칸을 표시한다
+    // (큰 불투명 텍스처에서 수백만 스레드가 같은 칸에 쓰면 쓰기가 줄을 서서 수 초가 걸렸다).
+    if(gi==0){gCell[0]=0xFFFFFFFF;gCell[1]=0xFFFFFFFF;gCell[2]=0;gCell[3]=0;}
+    GroupMemoryBarrierWithGroupSync();
+    if(id.x<_TrimSize.x && id.y<_TrimSize.y && _TrimTex.Load(int3(id.xy,0)).a>0)
+    {
+        InterlockedMin(gCell[0],id.x);InterlockedMin(gCell[1],id.y);
+        InterlockedMax(gCell[2],id.x);InterlockedMax(gCell[3],id.y);
+    }
+    GroupMemoryBarrierWithGroupSync();
+    if(gi!=0 || gCell[0]==0xFFFFFFFF)return;
     int m=(int)_CellMargin;
-    int x0=max(0,(int)id.x-m),x1=min((int)_TrimSize.x-1,(int)id.x+m);
-    int y0=max(0,(int)id.y-m),y1=min((int)_TrimSize.y-1,(int)id.y+m);
+    int x0=max(0,(int)gCell[0]-m),x1=min((int)_TrimSize.x-1,(int)gCell[2]+m);
+    int y0=max(0,(int)gCell[1]-m),y1=min((int)_TrimSize.y-1,(int)gCell[3]+m);
     uint cx0=(uint)x0*_CellGrid/_TrimSize.x,cx1=(uint)x1*_CellGrid/_TrimSize.x;
     uint cy0=(uint)y0*_CellGrid/_TrimSize.y,cy1=(uint)y1*_CellGrid/_TrimSize.y;
-    for(uint cy=cy0;cy<=cy1;cy++)for(uint cx=cx0;cx<=cx1;cx++)_CellOut[cy*_CellGrid+cx]=1u;
+    for(uint cy=cy0;cy<=cy1;cy++)for(uint cx=cx0;cx<=cx1;cx++)_CellOut[_CellBase+cy*_CellGrid+cx]=1u;
 }
