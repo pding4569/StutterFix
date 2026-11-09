@@ -1,0 +1,3 @@
+[gpudeco-lab] editor=6000.3.10f1 device=NVIDIA GeForce RTX 4060 Ti api=Direct3D11
+LOD_CAMERA_PROJECTION=PASS cases=2 rgba_max_error=0 oracle=UnityObjectToClipPos_targetTexture
+LOD_COMPOSITE=PASS cases=80 rgba_max_error=0 projections=screen,texture divisors=2,4 sizes=even,odd filters=point,linear frames=moving,edge,empty,reappear partial_clear_dirty=magenta

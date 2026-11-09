@@ -139,7 +139,7 @@ namespace StutterFix
         // 측정(RunLod 켬, 2560): Arche 분담 102.9 대 전부 245.0, Windflower 210.4 대 196.1, HELLO 232.3 대 196.3(원래 103.0/211.7/233.2)
         internal static bool SplitNow=false;
         internal const int SplitAllDecos=12000, SplitAllTargets=150000;
-        internal static int ShapeGrid=16, ShapeMinSide=64, ShapeMaxRects=48;
+        internal static int ShapeGrid=16, ShapeMinSide=64, ShapeMaxRects=96;
         internal static float ShapeMaxKeep=.6f;
         // 형태 칸 재료를 이미지 풀기(작업 스레드)에서 계산한 것으로 한다(맵 열 때 한 번에, GPU 읽기·켤 때 다시 계획 없음)
         internal static bool ShapeFromDecode=true;

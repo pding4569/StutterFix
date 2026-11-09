@@ -307,7 +307,9 @@ namespace StutterFix
                         if (waitSec == 0f) { var sp2 = arg.Split(' '); waitTarget = double.Parse(sp2[0], System.Globalization.CultureInfo.InvariantCulture); waitSec = sp2.Length > 1 ? float.Parse(sp2[1], System.Globalization.CultureInfo.InvariantCulture) : 400f; }
                         var c2 = scrConductor.instance;
                         if (c2 != null && Hitch.Playing && c2.songposition_minusi >= waitTarget) return true;
-                        if (now - stepStart >= waitSec) throw new Exception("곡 시계가 " + waitTarget + "초에 닿지 않음");
+                        if (now - stepStart >= waitSec) throw new Exception("곡 시계가 " + waitTarget + "초에 닿지 않음"
+                            + " (현재=" + (c2 == null ? "없음" : c2.songposition_minusi.ToString("F3", System.Globalization.CultureInfo.InvariantCulture))
+                            + ", playing=" + Hitch.Playing + ", GC=" + GcControl.Enabled + ", 상태=" + GcControl.LastScene + ")");
                         return false;
                     }
                 case "wait":
@@ -866,11 +868,17 @@ namespace StutterFix
                         var sp = arg.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
                         double at = double.Parse(sp[0], System.Globalization.CultureInfo.InvariantCulture);
                         double lead = sp.Length > 1 ? double.Parse(sp[1], System.Globalization.CultureInfo.InvariantCulture) : 8;
-                        var fl = ADOBase.lm.listFloors; int pick = 0;
-                        for (int i = 0; i < fl.Count; i++) { if (fl[i] != null && fl[i].entryTime >= at - lead) { pick = i; break; } pick = i; }
+                        if (double.IsNaN(at) || double.IsInfinity(at) || at < 0 || double.IsNaN(lead) || double.IsInfinity(lead) || lead < 0)
+                            throw new Exception("seek: 곡 시각과 앞 여유는 유한한 0 이상 값이어야 함");
+                        if (ed.playMode) throw new Exception("seek: stop 후 편집 상태에서 실행해야 함");
+                        var fl = ADOBase.lm.listFloors; int pick = -1;
+                        for (int i = 0; i < fl.Count; i++) if (fl[i] != null && fl[i].entryTime >= at - lead) { pick = i; break; }
+                        // 범위 밖 요청/아직 준비되지 않은 entryTime을 맵 끝 타일로 바꾸면 즉시 완주해 원인을 숨긴다.
+                        if (pick < 0 || (pick == fl.Count - 1 && at - lead > 0))
+                            throw new Exception("seek: 요청 앞 여유 시각 " + (at - lead).ToString("F3", System.Globalization.CultureInfo.InvariantCulture)
+                                + "초에 재생 가능한 타일이 없음 (타일 수=" + fl.Count + ", 맵/entryTime 확인)");
                         ed.SelectFloor(fl[pick], true);
                         Log(string.Format("{0:F1}초 {1:F0}초 앞: 타일 {2} (그 타일 {3:F1}초) 선택", at, lead, pick, fl[pick].entryTime));
-                        if (ed.playMode) { Log("이미 재생 중"); return true; }
                         if (autoChanged) RDC.auto = desiredAuto;
                         Log("재생 (자동 플레이 " + (RDC.auto ? "켬" : "끔") + ")");
                         ed.Play();

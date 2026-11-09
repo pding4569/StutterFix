@@ -15,6 +15,7 @@ Set-Content -LiteralPath (Join-Path $projectRoot 'Assets/Editor/DecoBake.Core.cs
 $dataSource = Get-Content -LiteralPath (Join-Path $repoRoot 'GpuDecoData.cs') -Raw
 Set-Content -LiteralPath (Join-Path $projectRoot 'Assets/Editor/GpuDecoData.cs') -Value ("#define GPUDECO_FIXTURE`n" + $dataSource) -Encoding utf8
 Copy-Item -LiteralPath (Join-Path $labRoot 'GpuDecoLab.cs') -Destination (Join-Path $projectRoot 'Assets/Editor/GpuDecoLab.cs')
+Copy-Item -LiteralPath (Join-Path $labRoot 'GpuDecoLodProbe.cs') -Destination (Join-Path $projectRoot 'Assets/Editor/GpuDecoLodProbe.cs')
 Copy-Item -LiteralPath (Join-Path $labRoot 'GpuDecoDrawCollapseProbe.cs') -Destination (Join-Path $projectRoot 'Assets/Editor/GpuDecoDrawCollapseProbe.cs')
 Copy-Item -LiteralPath (Join-Path $labRoot 'GpuDecoSubmeshes.cs') -Destination (Join-Path $projectRoot 'Assets/Editor/GpuDecoSubmeshes.cs')
 Copy-Item -LiteralPath (Join-Path $labRoot 'GpuDecoColorProbe.cs') -Destination (Join-Path $projectRoot 'Assets/Editor/GpuDecoColorProbe.cs')
@@ -31,5 +32,6 @@ Set-Content -LiteralPath (Join-Path $projectRoot 'Packages/manifest.json') -Valu
 Write-Output "Prepared independent lab: $projectRoot"
 Copy-Item -LiteralPath (Join-Path $labRoot 'GpuDecoImageMatrixProbe.cs') -Destination (Join-Path $projectRoot 'Assets/Editor/GpuDecoImageMatrixProbe.cs')
 Copy-Item -LiteralPath (Join-Path $labRoot 'GpuDecoLod.compute') -Destination (Join-Path $projectRoot 'Assets/Shaders/GpuDecoLod.compute')
+Copy-Item -LiteralPath (Join-Path $labRoot 'GpuDecoLodClear.shader') -Destination (Join-Path $projectRoot 'Assets/Shaders/GpuDecoLodClear.shader')
 Copy-Item -LiteralPath (Join-Path $labRoot 'RunLodComposite.shader') -Destination (Join-Path $projectRoot 'Assets/Shaders/RunLodComposite.shader')
 Copy-Item -LiteralPath (Join-Path $labRoot 'GpuDecoBatchBlend.shader') -Destination (Join-Path $projectRoot 'Assets/Shaders/GpuDecoBatchBlend.shader')

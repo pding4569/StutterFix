@@ -22,7 +22,8 @@ namespace StutterFix
 
         static ComputeShader lodCompute;
         static int lodKClear = -1, lodK = -1;
-        static ComputeBuffer lodOut, lodSpanOfSlot;
+        static ComputeBuffer lodOut, lodSpanOfSlot, lodBox;
+        static readonly int pLodSpan = Shader.PropertyToID("_LodSpan"), pLodBox = Shader.PropertyToID("_LodBox");
         static uint[] lodLatest;
         static int lodLatestSpans;
         static int lodInFlight;
@@ -32,6 +33,7 @@ namespace StutterFix
         static RenderTexture[] lodRt;
         static Mesh[] lodQuad;
         static MaterialPropertyBlock lodMpb;
+        static Material lodClearMaterial;
         static readonly int pLodMode = Shader.PropertyToID("_LodMode"), pLodTex = Shader.PropertyToID("_LodTex"), pLodTarget = Shader.PropertyToID("_LodTarget");
 
         static bool LodBlendOk(Material m)
@@ -48,6 +50,9 @@ namespace StutterFix
             if (!RenderLod.Enabled || gpuCollapseSpans.Count == 0 || gpuCollapseMapCpu == null || gpuLiveBundle == null || !gpuLiveCamera) return;
             lodCompute = gpuLiveBundle.LoadAsset<ComputeShader>("Assets/Shaders/GpuDecoLod.compute");
             if (!lodCompute || gpuCollapseShader.FindPropertyIndex("_LodMode") < 0) { GpuLog("RENDERLOD unsupported bundle"); lodCompute = null; return; }
+            var clearShader = gpuLiveBundle.LoadAsset<Shader>("Assets/Shaders/GpuDecoLodClear.shader");
+            if (!clearShader || !clearShader.isSupported) { GpuLog("RENDERLOD unsupported clear shader"); lodCompute = null; return; }
+            lodClearMaterial = new Material(clearShader) { name = "StutterFix.RenderLod clear" };
             lodKClear = lodCompute.FindKernel("SpanLodClear"); lodK = lodCompute.FindKernel("SpanLod");
             int spans = gpuCollapseSpans.Count;
             var spanOfSlot = new uint[Math.Max(1, gpuCollapseAllCount)];
@@ -58,7 +63,7 @@ namespace StutterFix
                 for (int n = 0; n < s.Items.Length; n++) spanOfSlot[s.Base + n] = id;
             }
             lodSpanOfSlot = new ComputeBuffer(spanOfSlot.Length, 4); lodSpanOfSlot.SetData(spanOfSlot);
-            lodOut = new ComputeBuffer(spans * 2, 4);
+            lodOut = new ComputeBuffer(spans * 2, 4); lodBox = new ComputeBuffer(spans * 4, 4); Shader.SetGlobalBuffer(pLodBox, lodBox);
             lodLatest = null; lodLatestSpans = spans; lodInFlight = 0;
             lodLevel = new int[spans]; lodRt = new RenderTexture[spans]; lodQuad = new Mesh[spans];
             lodMpb = new MaterialPropertyBlock();
@@ -72,11 +77,12 @@ namespace StutterFix
         {
             if (lodCbCamera && lodCb != null) lodCbCamera.RemoveCommandBuffer(CameraEvent.BeforeForwardAlpha, lodCb);
             lodCb?.Release(); lodCb = null; lodCbCamera = null;
+            if (lodClearMaterial) UnityEngine.Object.Destroy(lodClearMaterial); lodClearMaterial = null;
             if (lodLevel != null)
                 for (int k = 0; k < lodLevel.Length && k < gpuCollapseSpans.Count; k++) if (lodLevel[k] != 0) LodLeave(k);
             if (lodRt != null) foreach (var rt in lodRt) if (rt) { rt.Release(); UnityEngine.Object.Destroy(rt); }
             if (lodQuad != null) foreach (var q in lodQuad) if (q) UnityEngine.Object.Destroy(q);
-            lodOut?.Dispose(); lodOut = null; lodSpanOfSlot?.Dispose(); lodSpanOfSlot = null;
+            lodOut?.Dispose(); lodOut = null; lodBox?.Dispose(); lodBox = null; lodSpanOfSlot?.Dispose(); lodSpanOfSlot = null;
             lodLevel = null; lodRt = null; lodQuad = null; lodLatest = null; lodCompute = null;
         }
 
@@ -97,28 +103,32 @@ namespace StutterFix
             RenderLod.Frames++;
             var cam = gpuLiveCamera; var target = cam.targetTexture;
             int w = target ? target.width : Screen.width, h = target ? target.height : Screen.height;
+            // 이 경로의 픽셀 좌표는 전체 타깃 기준이다. 분할 화면/부분 viewport는 원래 메시로 되돌린다.
+            if (cam.pixelRect != new Rect(0, 0, w, h)) { LodRelease(); return; }
             int spans = lodLatestSpans;
+            var drawVp = GL.GetGPUProjectionMatrix(cam.projectionMatrix, target != null) * cam.worldToCameraMatrix;
             // 1) 이번 프레임 배율 계산(결과는 비동기로 1~2프레임 뒤 도착)
-            if (lodInFlight < 3)
+            // 배율·화면 범위 계산은 매 프레임(합성 사각형이 이번 프레임 범위를 읽는다). 비동기 읽기만 밀린 개수로 제한한다.
             {
                 var root = gpuCollapseSpans[0].Renderer ? gpuCollapseSpans[0].Renderer.localToWorldMatrix : Matrix4x4.identity;
-                var vp = GL.GetGPUProjectionMatrix(cam.projectionMatrix, target != null) * cam.worldToCameraMatrix * root;
+                var vp = drawVp * root;
                 lodCompute.SetInt("_LodSpans", spans); lodCompute.SetInt("_LodSlots", gpuCollapseAllCount);
                 lodCompute.SetMatrix("_LodVP", vp); lodCompute.SetVector("_LodScreen", new Vector4(w, h, 0, 0));
-                lodCompute.SetBuffer(lodKClear, "_LodOut", lodOut);
+                lodCompute.SetBuffer(lodKClear, "_LodOut", lodOut); lodCompute.SetBuffer(lodKClear, "_LodBox", lodBox); lodCompute.SetBuffer(lodK, "_LodBox", lodBox);
                 lodCompute.Dispatch(lodKClear, (spans + 63) / 64, 1, 1);
                 lodCompute.SetBuffer(lodK, "_LodOut", lodOut); lodCompute.SetBuffer(lodK, "_LodSpanOfSlot", lodSpanOfSlot);
                 lodCompute.SetBuffer(lodK, "_LodVerts", gpuCollapseAllVerts);
                 lodCompute.Dispatch(lodK, (gpuCollapseAllCount + 63) / 64, 1, 1);
-                lodInFlight++;
                 var buf = lodOut;
+                if (lodInFlight < 3) { lodInFlight++;
                 AsyncGPUReadback.Request(lodOut, r =>
                 {
+                    if (buf != lodOut) return; // 이전 준비 세대의 콜백은 현재 진행 중인 읽기 수를 바꾸지 않는다.
                     lodInFlight = Math.Max(0, lodInFlight - 1);
-                    if (r.hasError || buf != lodOut) return;
+                    if (r.hasError) return;
                     var d = r.GetData<uint>(); if (lodLatest == null || lodLatest.Length != d.Length) lodLatest = new uint[d.Length];
                     d.CopyTo(lodLatest); RenderLod.Readbacks++;
-                });
+                }); }
             }
             // 2) 마지막으로 도착한 배율로 등급을 정하고, 저해상도 그리기 명령을 다시 적는다.
             lodCb.Clear();
@@ -158,17 +168,23 @@ namespace StutterFix
                 }
                 // 정렬 거리는 렌더러 경계 중심으로 정해지므로 원래 구간 메시와 같은 경계를 준다.
                 quad.bounds = s.Mesh.bounds;
-                lodCb.SetRenderTarget(rt); lodCb.ClearRenderTarget(false, true, Color.clear);
-                lodCb.DrawMesh(s.Mesh, s.Renderer.localToWorldMatrix, s.Material, 0, 0);
+                lodCb.SetRenderTarget(rt);
+                lodCb.SetViewport(new Rect(0, 0, lw, lh));
+                lodMpb.Clear(); lodMpb.SetFloat(pLodSpan, k);
+                lodMpb.SetVector(pLodTarget, new Vector4(w, h, 1f / w, 1f / h));
+                lodMpb.SetVector("_LodClearSize", new Vector4(lw, lh, 0, 0));
+                lodCb.DrawMesh(quad, Matrix4x4.identity, lodClearMaterial, 0, 0, lodMpb);
+                lodMpb.Clear(); lodMpb.SetFloat(pLodMode, 2f); lodMpb.SetMatrix("_LodDrawVP", drawVp);
+                lodCb.DrawMesh(s.Mesh, s.Renderer.localToWorldMatrix, s.Material, 0, 0, lodMpb);
                 if (lodLevel[k] == 0)
                 {
                     var mf = s.Renderer.GetComponent<MeshFilter>(); if (mf) mf.sharedMesh = quad;
                 }
                 lodLevel[k] = want;
-                lodMpb.Clear(); lodMpb.SetFloat(pLodMode, 1f); lodMpb.SetTexture(pLodTex, rt); lodMpb.SetVector(pLodTarget, new Vector4(w, h, 1f / w, 1f / h));
+                lodMpb.Clear(); lodMpb.SetFloat(pLodMode, 1f); lodMpb.SetFloat(pLodSpan, k); lodMpb.SetTexture(pLodTex, rt); lodMpb.SetVector(pLodTarget, new Vector4(w, h, 1f / w, 1f / h));
                 s.Renderer.SetPropertyBlock(lodMpb);
             }
-            if (used > 0) { lodCb.SetRenderTarget(BuiltinRenderTextureType.CameraTarget); RenderLod.LodSpanFrames += used; }
+            if (used > 0) { lodCb.SetRenderTarget(BuiltinRenderTextureType.CameraTarget); lodCb.SetViewport(cam.pixelRect); RenderLod.LodSpanFrames += used; }
         }
 
         internal static string LodState()

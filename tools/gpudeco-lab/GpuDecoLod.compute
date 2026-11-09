@@ -4,6 +4,8 @@
 ByteAddressBuffer _LodVerts;
 StructuredBuffer<uint> _LodSpanOfSlot;
 RWStructuredBuffer<uint> _LodOut;
+// 구간마다 이번 프레임 화면 사각형(픽셀, 위에서 아래): minX,minY,maxX,maxY. 합성 사각형을 이 범위로만 그린다(전체 화면 합성 제거).
+RWStructuredBuffer<int> _LodBox;
 float4x4 _LodVP;
 float4 _LodScreen;
 uint _LodSlots;
@@ -13,6 +15,7 @@ void SpanLodClear(uint3 t:SV_DispatchThreadID)
 {
     uint s=t.x;if(s>=_LodSpans)return;
     _LodOut[s*2]=0x7F7FFFFFu;_LodOut[s*2+1]=0u;
+    _LodBox[s*4]=0x7FFFFFFF;_LodBox[s*4+1]=0x7FFFFFFF;_LodBox[s*4+2]=-1;_LodBox[s*4+3]=-1;
 }
 [numthreads(64,1,1)]
 void SpanLod(uint3 t:SV_DispatchThreadID)
@@ -36,6 +39,11 @@ void SpanLod(uint3 t:SV_DispatchThreadID)
     {
         float dt=length(tx[j]-tx[i]);if(dt>0.5)mag=min(mag,length(s[j]-s[i])/dt);
     }
+    // 1/4 RT의 선형 확대 필터가 원래 기하 경계 밖으로 퍼지는 부분도 합성한다.
+    // 최대 한 저해상도 텍셀(화면 4픽셀)을 확보해 전체 화면 합성과 같은 샘플을 보존한다.
+    int2 bl=int2(clamp(floor(lo)-4,0,_LodScreen.xy)),bh=int2(clamp(ceil(hi)+4,0,_LodScreen.xy));
+    InterlockedMin(_LodBox[span*4],bl.x);InterlockedMin(_LodBox[span*4+1],bl.y);
+    InterlockedMax(_LodBox[span*4+2],bh.x);InterlockedMax(_LodBox[span*4+3],bh.y);
     InterlockedMin(_LodOut[span*2],asuint(mag));
     InterlockedAdd(_LodOut[span*2+1],1u);
 }

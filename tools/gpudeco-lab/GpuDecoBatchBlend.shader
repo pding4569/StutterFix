@@ -4,6 +4,7 @@ Shader "StutterFix/GpuDecoBatchBlend"
     Properties
     {
 
+        [HideInInspector] _LodMode ("LOD mode", Float) = 0
         _SrcBlend ("Source blend", Float) = 1
         _DstBlend ("Destination blend", Float) = 10
         _BlendOp ("Blend operation", Float) = 0
@@ -98,14 +99,17 @@ Shader "StutterFix/GpuDecoBatchBlend"
             ByteAddressBuffer _CollapseVerts;
             Texture2D _GrabTexture;
             float _LodMode;
+            float4x4 _LodDrawVP;
             float _SfDebugFlat;
             float _SfNoDiscard;
             float _SfDebugMode;   // 측정: 1 이면 투명 픽셀 버리기를 끈다
             float4 _LodTarget;
+            StructuredBuffer<int> _LodBox;   // 저해상도 합성 범위(구간마다 화면 픽셀 minX,minY,maxX,maxY, 위에서 아래)
+            float _LodSpan;
             Texture2D _LodTex;
             struct appdata { float3 vertex:POSITION; };
 #ifndef SF_SIMPLE
-            struct v2f { float4 vertex:SV_POSITION; float4 color:COLOR; float2 uv:TEXCOORD0; nointerpolation float2 info:TEXCOORD1; nointerpolation float4 region:TEXCOORD2;
+            struct v2f { float4 vertex:SV_POSITION; float4 color:COLOR; float2 uv:TEXCOORD0; nointerpolation uint2 info:TEXCOORD1; nointerpolation float4 region:TEXCOORD2;
 #ifdef SF_BLEND
                 float4 grabPos:TEXCOORD3;
 #endif
@@ -118,17 +122,29 @@ Shader "StutterFix/GpuDecoBatchBlend"
                 float4 uvi=asfloat(_CollapseVerts.Load4(a+28));
                 v2f o;
                 // 합치기 모드(렌더러 MPB): 정점 x 는 모서리 번호 0~3, 화면 전체 사각형을 그린다(저해상도 그림을 원래 순서 자리에 섞는다).
-                if(_LodMode>0.5)
+                if(_LodMode>0.5 && _LodMode<1.5)
                 {
                     uint cid=(uint)(v.vertex.x+0.5);
-                    o.vertex=float4((cid==1||cid==2)?1:-1,cid>=2?1:-1,UNITY_NEAR_CLIP_VALUE,1);
+                    // 이번 프레임 구간 화면 범위만 덮는다(예전: 화면 전체를 구간마다 합성해 DD 119 FPS)
+                    uint sb=(uint)(_LodSpan+0.5)*4u;int4 bx=int4(_LodBox[sb],_LodBox[sb+1],_LodBox[sb+2],_LodBox[sb+3]);
+                    float2 px=float2((cid==1||cid==2)?bx.z:bx.x,cid>=2?bx.y:bx.w);
+                    if(bx.z<bx.x || bx.w<bx.y)px=0;
+                    o.vertex=float4(px.x*_LodTarget.z*2-1,1-px.y*_LodTarget.w*2,UNITY_NEAR_CLIP_VALUE,1);
                     o.color=1;o.uv=0;o.info=0;o.region=0;
 #ifdef SF_BLEND
                     o.grabPos=0;
 #endif
                     return o;
                 }
-                o.vertex=UnityObjectToClipPos(float4(p,1));o.color=asfloat(_CollapseVerts.Load4(a+12));o.uv=uvi.xy;o.info=uvi.zw;o.region=asfloat(_CollapseVerts.Load4(a+44));
+                // 저해상도 RT도 범위 계산과 같은 GPU 투영을 쓴다. SetRenderTarget에 따른 암묵적 Y 반전에 기대지 않는다.
+                o.vertex=_LodMode>1.5?mul(_LodDrawVP,mul(unity_ObjectToWorld,float4(p,1))):UnityObjectToClipPos(float4(p,1));
+                o.color=asfloat(_CollapseVerts.Load4(a+12));o.uv=uvi.xy;o.region=asfloat(_CollapseVerts.Load4(a+44));
+                uint fx=(uint)(uvi.z+0.5);uint binding=fx&127u;
+#if defined(DIRECT_FEW) && !defined(NO_DIRECT_TEXTURES)
+                if(binding>=4)binding=4+(uint)_DirectMap[binding-4];
+#endif
+                // info의 두 성분 크기는 그대로. 레이어는 비트 재해석만 하여 원래 float를 정확히 보존한다.
+                o.info=uint2((fx&~127u)|binding,asuint(uvi.w));
 #ifdef SF_BLEND
                 o.grabPos=ComputeGrabScreenPos(o.vertex);
 #endif
@@ -136,12 +152,12 @@ Shader "StutterFix/GpuDecoBatchBlend"
             }
             float4 frag(v2f v):SV_Target
             {
-                if(_LodMode>0.5)return _LodTex.SampleLevel(sampler_linear_clamp,v.vertex.xy*_LodTarget.zw,0);
+                if(_LodMode>0.5 && _LodMode<1.5)return _LodTex.SampleLevel(sampler_linear_clamp,v.vertex.xy*_LodTarget.zw,0);
                 // 측정 전용 전역 값: 1 이면 텍스처 없이 색만(픽셀 셰이더 비용 가르기)
                 if(_SfDebugFlat>0.5){float4 f=v.color;f.rgb*=f.a;return f*0.25;}
                 if(_SfDebugMode>2.5)discard;   // 측정 전용 3: 아무것도 안 읽고 버림(픽셀 처리 시작 비용)
                 // info.x = 바인딩 + 점 샘플링 128 + 반복 256. 반복이면 UV 를 frac 으로 감싼다(게임의 Repeat 랩, 이음매 반 텍셀만 다름).
-                bool usePoint=fmod(v.info.x,256.0)>=128;bool wrapU=fmod(v.info.x,512.0)>=256;bool wrapV=fmod(v.info.x,1024.0)>=512;int binding=(int)v.info.x%128;
+                uint fx=v.info.x;bool usePoint=(fx&128u)!=0;bool wrapU=(fx&256u)!=0;bool wrapV=(fx&512u)!=0;int binding=(int)(fx&127u);
                 float2 uvIn=float2(wrapU?frac(v.uv.x):v.uv.x,wrapV?frac(v.uv.y):v.uv.y);
                 // 모든 텍스처가 밉 1단이라 SampleLevel(0) 은 SampleGrad 와 같다(미분·그래디언트 필요 없음).
                 // Clamp to the copied rectangle's texel centres so padded BC blocks never bleed.
@@ -150,35 +166,34 @@ Shader "StutterFix/GpuDecoBatchBlend"
 #ifdef NO_DIRECT_TEXTURES
                 [branch] if(binding<=1) {
                     [branch] if(binding<=0) {
-                        { if(usePoint) c=_SfDecoTex0.SampleLevel(sampler_point_clamp,float3(uv,v.info.y),0); else c=_SfDecoTex0.SampleLevel(sampler_linear_clamp,float3(uv,v.info.y),0); }
+                        { if(usePoint) c=_SfDecoTex0.SampleLevel(sampler_point_clamp,float3(uv,asfloat(v.info.y)),0); else c=_SfDecoTex0.SampleLevel(sampler_linear_clamp,float3(uv,asfloat(v.info.y)),0); }
                     } else {
-                        { if(usePoint) c=_SfDecoTex1.SampleLevel(sampler_point_clamp,float3(uv,v.info.y),0); else c=_SfDecoTex1.SampleLevel(sampler_linear_clamp,float3(uv,v.info.y),0); }
+                        { if(usePoint) c=_SfDecoTex1.SampleLevel(sampler_point_clamp,float3(uv,asfloat(v.info.y)),0); else c=_SfDecoTex1.SampleLevel(sampler_linear_clamp,float3(uv,asfloat(v.info.y)),0); }
                     }
                 } else {
                     [branch] if(binding<=2) {
-                        { if(usePoint) c=_SfDecoTex2.SampleLevel(sampler_point_clamp,float3(uv,v.info.y),0); else c=_SfDecoTex2.SampleLevel(sampler_linear_clamp,float3(uv,v.info.y),0); }
+                        { if(usePoint) c=_SfDecoTex2.SampleLevel(sampler_point_clamp,float3(uv,asfloat(v.info.y)),0); else c=_SfDecoTex2.SampleLevel(sampler_linear_clamp,float3(uv,asfloat(v.info.y)),0); }
                     } else {
-                        { if(usePoint) c=_SfDecoTex3.SampleLevel(sampler_point_clamp,float3(uv,v.info.y),0); else c=_SfDecoTex3.SampleLevel(sampler_linear_clamp,float3(uv,v.info.y),0); }
+                        { if(usePoint) c=_SfDecoTex3.SampleLevel(sampler_point_clamp,float3(uv,asfloat(v.info.y)),0); else c=_SfDecoTex3.SampleLevel(sampler_linear_clamp,float3(uv,asfloat(v.info.y)),0); }
                     }
                 }
 #elif defined(DIRECT_FEW)
                 // 구간이 쓰는 직접 텍스처만 8칸에 다시 매긴다(재질의 _DirectMap). 그림은 같고 바인딩 수·셰이더 크기만 준다.
-                if(binding>=4) binding=4+(int)_DirectMap[binding-4];
                 [branch] if(binding<=5) {
                     [branch] if(binding<=2) {
                         [branch] if(binding<=1) {
                             [branch] if(binding<=0) {
-                                { if(usePoint) c=_SfDecoTex0.SampleLevel(sampler_point_clamp,float3(uv,v.info.y),0); else c=_SfDecoTex0.SampleLevel(sampler_linear_clamp,float3(uv,v.info.y),0); }
+                                { if(usePoint) c=_SfDecoTex0.SampleLevel(sampler_point_clamp,float3(uv,asfloat(v.info.y)),0); else c=_SfDecoTex0.SampleLevel(sampler_linear_clamp,float3(uv,asfloat(v.info.y)),0); }
                             } else {
-                                { if(usePoint) c=_SfDecoTex1.SampleLevel(sampler_point_clamp,float3(uv,v.info.y),0); else c=_SfDecoTex1.SampleLevel(sampler_linear_clamp,float3(uv,v.info.y),0); }
+                                { if(usePoint) c=_SfDecoTex1.SampleLevel(sampler_point_clamp,float3(uv,asfloat(v.info.y)),0); else c=_SfDecoTex1.SampleLevel(sampler_linear_clamp,float3(uv,asfloat(v.info.y)),0); }
                             }
                         } else {
-                            { if(usePoint) c=_SfDecoTex2.SampleLevel(sampler_point_clamp,float3(uv,v.info.y),0); else c=_SfDecoTex2.SampleLevel(sampler_linear_clamp,float3(uv,v.info.y),0); }
+                            { if(usePoint) c=_SfDecoTex2.SampleLevel(sampler_point_clamp,float3(uv,asfloat(v.info.y)),0); else c=_SfDecoTex2.SampleLevel(sampler_linear_clamp,float3(uv,asfloat(v.info.y)),0); }
                         }
                     } else {
                         [branch] if(binding<=4) {
                             [branch] if(binding<=3) {
-                                { if(usePoint) c=_SfDecoTex3.SampleLevel(sampler_point_clamp,float3(uv,v.info.y),0); else c=_SfDecoTex3.SampleLevel(sampler_linear_clamp,float3(uv,v.info.y),0); }
+                                { if(usePoint) c=_SfDecoTex3.SampleLevel(sampler_point_clamp,float3(uv,asfloat(v.info.y)),0); else c=_SfDecoTex3.SampleLevel(sampler_linear_clamp,float3(uv,asfloat(v.info.y)),0); }
                             } else {
                                 { if(usePoint) c=_Big0.SampleLevel(sampler_point_clamp,uvIn,0); else c=_Big0.SampleLevel(sampler_linear_clamp,uvIn,0); }
                             }
@@ -216,15 +231,15 @@ Shader "StutterFix/GpuDecoBatchBlend"
                             [branch] if(binding<=3) {
                                 [branch] if(binding<=1) {
                                     [branch] if(binding<=0) {
-                                        { if(usePoint) c=_SfDecoTex0.SampleLevel(sampler_point_clamp,float3(uv,v.info.y),0); else c=_SfDecoTex0.SampleLevel(sampler_linear_clamp,float3(uv,v.info.y),0); }
+                                        { if(usePoint) c=_SfDecoTex0.SampleLevel(sampler_point_clamp,float3(uv,asfloat(v.info.y)),0); else c=_SfDecoTex0.SampleLevel(sampler_linear_clamp,float3(uv,asfloat(v.info.y)),0); }
                                     } else {
-                                        { if(usePoint) c=_SfDecoTex1.SampleLevel(sampler_point_clamp,float3(uv,v.info.y),0); else c=_SfDecoTex1.SampleLevel(sampler_linear_clamp,float3(uv,v.info.y),0); }
+                                        { if(usePoint) c=_SfDecoTex1.SampleLevel(sampler_point_clamp,float3(uv,asfloat(v.info.y)),0); else c=_SfDecoTex1.SampleLevel(sampler_linear_clamp,float3(uv,asfloat(v.info.y)),0); }
                                     }
                                 } else {
                                     [branch] if(binding<=2) {
-                                        { if(usePoint) c=_SfDecoTex2.SampleLevel(sampler_point_clamp,float3(uv,v.info.y),0); else c=_SfDecoTex2.SampleLevel(sampler_linear_clamp,float3(uv,v.info.y),0); }
+                                        { if(usePoint) c=_SfDecoTex2.SampleLevel(sampler_point_clamp,float3(uv,asfloat(v.info.y)),0); else c=_SfDecoTex2.SampleLevel(sampler_linear_clamp,float3(uv,asfloat(v.info.y)),0); }
                                     } else {
-                                        { if(usePoint) c=_SfDecoTex3.SampleLevel(sampler_point_clamp,float3(uv,v.info.y),0); else c=_SfDecoTex3.SampleLevel(sampler_linear_clamp,float3(uv,v.info.y),0); }
+                                        { if(usePoint) c=_SfDecoTex3.SampleLevel(sampler_point_clamp,float3(uv,asfloat(v.info.y)),0); else c=_SfDecoTex3.SampleLevel(sampler_linear_clamp,float3(uv,asfloat(v.info.y)),0); }
                                     }
                                 }
                             } else {
@@ -425,7 +440,7 @@ Shader "StutterFix/GpuDecoBatchBlend"
                 // 혼합 모드(Blend Modes 에셋의 SpritesDefault/UnifiedGrab 과 같은 식). 화면 복사본은 같은 이름의 GrabPass 를 공유한다.
                 // 모드 번호 = info.x / 1024 (그 에셋의 키워드 순서): 1 Darken 2 Multiply 4 LinearBurn 6 Lighten 7 Screen 9 LinearDodge
                 // 11 Overlay 12 SoftLight 18 Difference 19 Exclusion 20 Subtract 21 Divide. 출력은 (결과*알파, 알파)로 원래와 같다.
-                int bm=(int)(v.info.x/1024.0);
+                int bm=(int)(fx>>10);
                 if(bm>0)
                 {
                     c*=v.color;
@@ -447,7 +462,7 @@ Shader "StutterFix/GpuDecoBatchBlend"
                 }
 #endif
                 // 더하기(9): 미리 곱한 섞기에 (s*a, 0) = d + a*s (Particles/Additive, Blend Modes LinearDodge 와 같은 값). 화면 복사 없음.
-                if(v.info.x>=9216.0 && v.info.x<10240.0){c*=v.color;return float4(c.rgb*c.a,0);}
+                if((fx>>10)==9u){c*=v.color;return float4(c.rgb*c.a,0);}
                 c*=v.color;c.rgb*=c.a;return c;
             }
 #else

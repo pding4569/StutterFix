@@ -30,7 +30,7 @@ namespace StutterFix
                 Vector4[] r0 = Array.Empty<Vector4>();
                 if (ShapeCandidate(t) && ShapeCellsCpu.TryGet(id, out var bits) && bits != null)
                 {
-                    int G0 = ShapeCellsCpu.Grid; var cellsU = new uint[G0 * G0];
+                    int G0 = bits.Length == 16 ? 32 : 16; var cellsU = new uint[G0 * G0];   // 비트 수로 칸 수를 안다(32x32 = ulong 16개)
                     for (int b = 0; b < cellsU.Length; b++) cellsU[b] = (bits[b >> 6] >> (b & 63) & 1UL) != 0 ? 1u : 0u;
                     r0 = RectsFromCells(cellsU, 0, G0);
                 }

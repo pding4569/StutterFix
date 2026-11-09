@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace StutterFix
@@ -8,7 +8,9 @@ namespace StutterFix
     // 여백 4 텍셀: 쌍선형 샘플(1 텍셀)과 DXT 압축 블록(4x4)까지 덮는다. 줄은 유니티 텍스처 원본 배열 순서(v = y/높이).
     internal static class ShapeCellsCpu
     {
-        internal const int Grid = 16, Margin = 4;
+        internal const int Margin = 4;
+        // 칸 수: 긴 변 256 이상은 32x32(가는 선·윤곽 이미지에서 더 깎인다, thin_triangle 19.7% -> 10.5%), 그보다 작으면 16x16
+        internal static int GridFor(int w, int h) => Math.Max(w, h) >= 256 ? 32 : 16;
         static readonly Dictionary<int, ulong[]> byTexture = new Dictionary<int, ulong[]>();
         static readonly object gate = new object();
 
@@ -18,6 +20,7 @@ namespace StutterFix
             if (px == IntPtr.Zero || w < 64 && h < 64) return null;
             int ao = format == 4 ? 3 : format == 5 ? 0 : -1;
             if (ao < 0) return null;
+            int Grid = GridFor(w, h);
             var bits = new ulong[Grid * Grid / 64];
             byte* p = (byte*)px;
             // 줄마다 알파>0 인 텍셀의 칸 범위(여백 포함)를 표시한다. 같은 칸을 이미 표시했으면 그 칸 끝까지 건너뛴다.
