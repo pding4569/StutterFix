@@ -49,7 +49,8 @@ namespace StutterFix
             public IntPtr Blocks; public long BlockSize; public bool Dxt5;   // 미리 압축한 DXT (없으면 Zero)
             // 줄 묶음 압축: 전체 블록 줄, 다음에 나눠 줄 줄, 끝난 줄, 지금 압축 중인 묶음 수, 압축 그만둠(게임이 먼저 가져감), 다 됨
             public int Rows, NextRow, DoneRows, InFlight, Layout; public bool Abandoned, BlocksReady, Urgent;   // Urgent: 게임이 기다리는 중
-            public bool PixelsOrphan, BlocksOrphan;   // 가져간 쪽이 풀기를 작업 스레드에 맡김 (압축 중인 묶음이 남아 있을 때)
+            public bool PixelsOrphan, BlocksOrphan;
+            public ulong[] Cells;   // 형태 칸(ShapeCellsCpu): 16x16 칸의 알파>0 표시   // 가져간 쪽이 풀기를 작업 스레드에 맡김 (압축 중인 묶음이 남아 있을 때)
         }
 
         private static readonly object gate = new object();
@@ -772,6 +773,8 @@ namespace StutterFix
                 long bsize = compress ? DxtEncoder.BlocksSize(w, h, d5) : 0;
                 IntPtr blocks = IntPtr.Zero;
                 if (compress) { try { blocks = Marshal.AllocHGlobal((IntPtr)bsize); } catch { blocks = IntPtr.Zero; bsize = 0; } }
+                ulong[] cells = null;
+                if (ok) { try { cells = ShapeCellsCpu.Compute(px, w, h, f); } catch { cells = null; } }   // 형태 칸 재료(작업 스레드)
                 lock (gate)
                 {
                     if (!running || it.State != 1 || it.Index < consumed)   // 게임이 이미 지나간 것
@@ -781,7 +784,7 @@ namespace StutterFix
                     }
                     else if (ok)
                     {
-                        it.Width = w; it.Height = h; it.Format = f; it.Pixels = px; it.Size = size; it.Factor = factor; it.Extra = extra; it.Jpg = jpg;
+                        it.Width = w; it.Height = h; it.Format = f; it.Pixels = px; it.Size = size; it.Factor = factor; it.Extra = extra; it.Jpg = jpg; it.Cells = cells;
                         if (blocks != IntPtr.Zero)
                         {
                             it.Blocks = blocks; it.BlockSize = bsize; it.Dxt5 = d5; it.Layout = f == PngDecoder.FormatARGB32 ? 1 : f == PngDecoder.FormatRGB24 ? 2 : 0;
@@ -968,6 +971,7 @@ namespace StutterFix
                     if (it.Blocks != IntPtr.Zero && it.BlocksReady) { TexCompress.Register(tex, it.Blocks, it.BlockSize, it.Dxt5, it.Width, it.Height, (TextureFormat)it.Format); it.Blocks = IntPtr.Zero; }
                 }
                 if (it.Factor < 1f) shrunk[tex] = it.Factor;   // 스프라이트를 만들 때 크기 기준을 맞춘다
+                ShapeCellsCpu.Register(tex, it.Cells);
                 used++;
                 putMs += (Stopwatch.GetTimestamp() - t0) * 1000.0 / Stopwatch.Frequency;
                 return true;

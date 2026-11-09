@@ -287,6 +287,7 @@
     <Compile Include="StartProbe.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="PngDecoder.cs" />
     <Compile Include="ImagePrefetch.cs" />
+    <Compile Include="ShapeCellsCpu.cs" />
     <Compile Include="TweenFix.cs" />
     <Compile Include="RenderWatch.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="SamplerWatch.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />

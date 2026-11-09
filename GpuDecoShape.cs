@@ -24,6 +24,18 @@ namespace StutterFix
         {
             int id = t.GetInstanceID();
             if (gpuShapeRects.TryGetValue(id, out var cached)) return cached;
+            // 맵을 열 때 이미지 풀기에서 미리 계산한 칸(ShapeCellsCpu)만 쓴다: GPU 읽기·기다림·켤 때 다시 계획 없음
+            if (DrawCollapsePolicy.ShapeFromDecode)
+            {
+                Vector4[] r0 = Array.Empty<Vector4>();
+                if (ShapeCandidate(t) && ShapeCellsCpu.TryGet(id, out var bits) && bits != null)
+                {
+                    int G0 = ShapeCellsCpu.Grid; var cellsU = new uint[G0 * G0];
+                    for (int b = 0; b < cellsU.Length; b++) cellsU[b] = (bits[b >> 6] >> (b & 63) & 1UL) != 0 ? 1u : 0u;
+                    r0 = RectsFromCells(cellsU, 0, G0);
+                }
+                gpuShapeRects[id] = r0; return r0;
+            }
             var none = Array.Empty<Vector4>();
             int side = Math.Max(t.width, t.height);
             if (!cs || !cs.HasKernel("AlphaCells") || side < DrawCollapsePolicy.ShapeMinSide || t.mipmapCount != 1) { gpuShapeRects[id] = none; return none; }
@@ -145,7 +157,7 @@ namespace StutterFix
                 void AddT(Texture2D x) { if (x && seenT.Add(x.GetInstanceID())) all.Add(x); }
                 for (int i = 0; i < n; i++) { var sr0 = gpuCollapseOwnedRows[i]?.R as SpriteRenderer; if (sr0 && sr0.sprite) AddT(sr0.sprite.texture); }
                 if (gpuImageVariants != null) foreach (var vv in gpuImageVariants) if (vv != null && vv.Status == GpuDecoImageVariant.Kind.ReadyQuad && vv.Source != null && vv.Source.sprite) AddT(vv.Source.sprite.texture);
-                bool missing = false; foreach (var x in all) if (!gpuShapeRects.ContainsKey(x.GetInstanceID())) { missing = true; break; }
+                bool missing = false; if (!DrawCollapsePolicy.ShapeFromDecode) foreach (var x in all) if (!gpuShapeRects.ContainsKey(x.GetInstanceID())) { missing = true; break; }
                 if (missing)
                 {
                     // 아직 칸이 없다: 비동기로 계산을 걸고 이번 계획에는 형태 칸 없이 간다(켤 때 ApplyShapesIfReady 가 다시 계획).

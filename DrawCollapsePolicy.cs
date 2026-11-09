@@ -141,6 +141,8 @@ namespace StutterFix
         internal const int SplitAllDecos=12000, SplitAllTargets=150000;
         internal static int ShapeGrid=16, ShapeMinSide=64, ShapeMaxRects=48;
         internal static float ShapeMaxKeep=.6f;
+        // 형태 칸 재료를 이미지 풀기(작업 스레드)에서 계산한 것으로 한다(맵 열 때 한 번에, GPU 읽기·켤 때 다시 계획 없음)
+        internal static bool ShapeFromDecode=true;
         internal static string ShapeOnly=null;   // 측정 전용: 이름에 이 글자가 든 텍스처에만 형태 칸
         internal const int TightMarginTexels=4;
         internal const float TightMaxAreaRatio=.8f;

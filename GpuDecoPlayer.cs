@@ -669,7 +669,9 @@ namespace StutterFix
             bool midSong = songNow != null && songNow.hasSongStarted && songNow.songposition_minusi > 0.5; // 시작 키 전(Start 상태)의 곡 위치는 지난 판의 값이라 믿지 않는다
             // 재사용 라운드·CPU 처리 장식·동적 제외 흔적·곡 중간 시작(장벽 상태가 달라짐)이면 통합을 다시 계획한다
             // 형태 칸이 준비 뒤에 도착했으면 기록을 올리고 다시 계획한다(켜는 시점은 멈춘 시작 화면)
+            ActMark("기준복원");
             bool shapeRebuild = ApplyShapesIfReady();
+            ActMark("형태칸");
             bool otherRebuild = (gpuReusedRound && !prebuilt) || gpuLiveCpuFallbackCount != 0 || hadDynamic || shapeRebuild;
             bool reuseTry = DrawCollapsePolicy.MidReusePlan && midSong && prebuilt && !otherRebuild;
             bool needRebuild = otherRebuild || (midSong && !reuseTry);
@@ -678,6 +680,7 @@ namespace StutterFix
                 // StartGpuLive 가 독립 렌더러(GpuDeco.Live run)를 켜 둔 채로 계획하면 그것들이 "켜진 장벽"으로 잡혀 동점 장식이 수천 개로 불어난다
                 // (에디터에서 같은 맵을 여러 번 재생하면 독립 렌더러 1,500개, FPS 143). 첫 라운드는 계획이 준비 때 렌더러가 꺼진 채 이뤄진다.
                 foreach (var sl in gpuLiveSlices) foreach (var rr in sl.Renderers) if (rr && rr.enabled) rr.enabled = false;
+                ActMark("독립렌더러끄기");
                 RebuildDrawCollapse();
             }
             ActMark("계획(재구성)");
