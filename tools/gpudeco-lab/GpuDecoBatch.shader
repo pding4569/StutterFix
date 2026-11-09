@@ -135,8 +135,8 @@ Shader "StutterFix/GpuDecoBatch"
                 // 측정 전용 전역 값: 1 이면 텍스처 없이 색만(픽셀 셰이더 비용 가르기)
                 if(_SfDebugFlat>0.5){float4 f=v.color;f.rgb*=f.a;return f*0.25;}
                 // info.x = 바인딩 + 점 샘플링 128 + 반복 256. 반복이면 UV 를 frac 으로 감싼다(게임의 Repeat 랩, 이음매 반 텍셀만 다름).
-                bool usePoint=fmod(v.info.x,256.0)>=128;bool repeatUv=fmod(v.info.x,512.0)>=256;int binding=(int)v.info.x%128;
-                float2 uvIn=repeatUv?frac(v.uv):v.uv;
+                bool usePoint=fmod(v.info.x,256.0)>=128;bool wrapU=fmod(v.info.x,512.0)>=256;bool wrapV=fmod(v.info.x,1024.0)>=512;int binding=(int)v.info.x%128;
+                float2 uvIn=float2(wrapU?frac(v.uv.x):v.uv.x,wrapV?frac(v.uv.y):v.uv.y);
                 // 모든 텍스처가 밉 1단이라 SampleLevel(0) 은 SampleGrad 와 같다(미분·그래디언트 필요 없음).
                 // Clamp to the copied rectangle's texel centres so padded BC blocks never bleed.
                 float2 uv=clamp(uvIn*v.region.xy,v.region.zw,v.region.xy-v.region.zw);
@@ -412,9 +412,9 @@ Shader "StutterFix/GpuDecoBatch"
 #endif
 #ifdef SF_BLEND
                 // 혼합 모드(Blend Modes 에셋의 SpritesDefault/UnifiedGrab 과 같은 식). 화면 복사본은 같은 이름의 GrabPass 를 공유한다.
-                // 모드 번호 = info.x / 512 (그 에셋의 키워드 순서): 1 Darken 2 Multiply 4 LinearBurn 6 Lighten 7 Screen 9 LinearDodge
+                // 모드 번호 = info.x / 1024 (그 에셋의 키워드 순서): 1 Darken 2 Multiply 4 LinearBurn 6 Lighten 7 Screen 9 LinearDodge
                 // 11 Overlay 12 SoftLight 18 Difference 19 Exclusion 20 Subtract 21 Divide. 출력은 (결과*알파, 알파)로 원래와 같다.
-                int bm=(int)(v.info.x/512.0);
+                int bm=(int)(v.info.x/1024.0);
                 if(bm>0)
                 {
                     c*=v.color;

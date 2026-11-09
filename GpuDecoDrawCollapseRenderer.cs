@@ -201,9 +201,9 @@ namespace StutterFix
             for(int i=0;i<source.Data.Items.Length;i++)
             {
                 var row=gpuCollapseOwnedRows[i];var sprite=row?.R as SpriteRenderer;
-                RequireLive(sprite && sprite.sprite && row.M && row.M.shader.name=="Sprites/Tile"
+                RequireLive(sprite && sprite.sprite && row.M && (row.M.shader.name=="Sprites/Tile" || (DrawCollapsePolicy.BlendModes && source.Data.Items[i].BlendMode>0 && row.M.shader.name==GpuDecoBlend.GrabShader))
                     && sprite.maskInteraction==SpriteMaskInteraction.None,"drawcollapse unsupported owned material/mask");
-                RequireLive(row.M.shaderKeywords.All(k=>k=="USE_POINT_SAMPLING"),"drawcollapse unsupported shader keywords: "+string.Join(",",row.M.shaderKeywords));
+                RequireLive(row.M.shaderKeywords.All(k=>k=="USE_POINT_SAMPLING" || (source.Data.Items[i].BlendMode>0 && (k.StartsWith("BLENDMODES_MODE_") || k=="FORCE_POINT_SAMPLING"))),"drawcollapse unsupported shader keywords: "+string.Join(",",row.M.shaderKeywords));
                 RequireLive((!row.M.HasProperty("_Color") || row.M.GetColor("_Color")==Color.white)
                     && (!row.M.HasProperty("_Opacity") || row.M.GetFloat("_Opacity")==1),
                     "drawcollapse unsupported material tint/opacity");
@@ -1132,13 +1132,14 @@ namespace StutterFix
             GpuLog("DRAWCOLLAPSE_NODIRECT spans="+noDirectSpans+" of "+gpuCollapseSpans.Count);
             if(GpuDecoPlayer.Product)Main.Entry.Logger.Log("[GPU 장식] 그리기 구간 "+gpuCollapseSpans.Count+"개 중 배열 텍스처만 쓰는 구간 "+noDirectSpans+"개, 직접 텍스처 적은 구간 "+fewSpans+"개");
         }
-        // 텍스처 정보 앞쪽: x = 바인딩 + 점 샘플링 128 + 반복 256, y = 배열 층, zw = 반복 배율(반복이 아니면 0)
+        // 텍스처 정보 앞쪽: x = 바인딩 + 점 샘플링 128 + U 랩 반복 256 + V 랩 반복 512 + 혼합 모드*1024, y = 배열 층,
+        // zw = UV 배율(재질 RepeatX/Y 실효값, 1 이면 0). 랩 비트는 그 텍스처의 실제 랩 모드(Repeat 일 때만 frac, 아니면 가장자리 고정)를 따른다.
         internal static Vector4 CollapseInfo0(Vector4 address,Material m,GpuDecoData.Item it)
         {
             bool rep=DrawCollapsePolicy.Repeat && it!=null && (it.RepeatX!=1f || it.RepeatY!=1f);
             bool point=m && (m.IsKeywordEnabled("USE_POINT_SAMPLING") || m.IsKeywordEnabled("FORCE_POINT_SAMPLING"));
             int blend=it!=null && DrawCollapsePolicy.BlendModes ? it.BlendMode : 0;
-            return new Vector4(address.x+(point?128:0)+(rep?256:0)+blend*512,address.y,rep?it.RepeatX:0,rep?it.RepeatY:0);
+            return new Vector4(address.x+(point?128:0)+(rep&&it.WrapU?256:0)+(rep&&it.WrapV?512:0)+blend*1024,address.y,rep?it.RepeatX:0,rep?it.RepeatY:0);
         }
         // 구간 재질의 텍스처 묶기: 배열(_SfDecoTex*), 직접 텍스처(_Big*), DIRECT_FEW 의 _DirectMap. Properties 에 없으므로 재질마다 직접 넣는다.
         static void BindCollapseTextures(Material m,bool noDirect,List<int> few)

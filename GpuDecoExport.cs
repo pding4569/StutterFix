@@ -843,7 +843,8 @@ namespace StutterFix
                 Initial = src.Initial, Actual = src.Actual, Tracks = src.Tracks,
                 Anchors = new GpuDecoData.Anchor[16],
                 Constants = src.Constants, Shape = src.Shape, OffsetBasis = src.OffsetBasis,
-                Corners = src.Corners, UV = src.UV, World = src.World, Color = src.Color, Triangles = src.Triangles
+                Corners = src.Corners, UV = src.UV, World = src.World, Color = src.Color, Triangles = src.Triangles,
+                RepeatX = src.RepeatX, RepeatY = src.RepeatY, WrapU = src.WrapU, WrapV = src.WrapV, BlendMode = src.BlendMode
             };
         }
 
@@ -976,7 +977,8 @@ namespace StutterFix
                         Constants = new[] { ts.x, ts.y, d.textureScaleMultiplier.x, d.textureScaleMultiplier.y, d.startRot, d.croppedPivotOffset.x, d.croppedPivotOffset.y, d.pivotTrans.position.z },
                         Initial = (float[])table.Decorations[index].Initial.Clone(),
                         Triangles = sp.triangles.Select(x => (int)x).ToArray(),
-                        RepeatX = d.repeatX, RepeatY = d.repeatY, BlendMode = DrawCollapsePolicy.BlendModes ? System.Math.Max(0, GpuDecoBlend.Id(d)) : 0
+                        RepeatX = GpuDecoBlend.EffectiveRepeat(r, "RepeatX"), RepeatY = GpuDecoBlend.EffectiveRepeat(r, "RepeatY"),
+                        WrapU = sp.texture && sp.texture.wrapModeU == TextureWrapMode.Repeat, WrapV = sp.texture && sp.texture.wrapModeV == TextureWrapMode.Repeat, BlendMode = DrawCollapsePolicy.BlendModes ? System.Math.Max(0, GpuDecoBlend.Id(d)) : 0
                     };
                     // Live G2 never binary-searches Tracks on GPU; pass empty Tracks to save VRAM and guarantee 0 fallback searches.
                     for (int ch = 0; ch < 16; ch++) item.Tracks[ch] = Array.Empty<DecoBakeCore.Segment>();
@@ -3031,7 +3033,7 @@ namespace StutterFix
                         | (DrawCollapsePolicy.ScreenFixed && d.parallax.clampToScreen ? 128 : 0) | (DrawCollapsePolicy.ScreenFixed && d.placementType == DecPlacementType.CameraAspect ? 256 : 0)
                 };
                 var ts = d.scaleMultiplier * d.textureScaleMultiplier;
-                item.Constants = new[] { ts.x, ts.y, d.textureScaleMultiplier.x, d.textureScaleMultiplier.y, d.startRot, d.croppedPivotOffset.x, d.croppedPivotOffset.y, d.pivotTrans.position.z }; item.RepeatX = d.repeatX; item.RepeatY = d.repeatY; item.BlendMode = DrawCollapsePolicy.BlendModes ? System.Math.Max(0, GpuDecoBlend.Id(d)) : 0;
+                item.Constants = new[] { ts.x, ts.y, d.textureScaleMultiplier.x, d.textureScaleMultiplier.y, d.startRot, d.croppedPivotOffset.x, d.croppedPivotOffset.y, d.pivotTrans.position.z }; item.RepeatX = GpuDecoBlend.EffectiveRepeat(r, "RepeatX"); item.RepeatY = GpuDecoBlend.EffectiveRepeat(r, "RepeatY"); item.WrapU = r.sprite && r.sprite.texture && r.sprite.texture.wrapModeU == TextureWrapMode.Repeat; item.WrapV = r.sprite && r.sprite.texture && r.sprite.texture.wrapModeV == TextureWrapMode.Repeat; item.BlendMode = DrawCollapsePolicy.BlendModes ? System.Math.Max(0, GpuDecoBlend.Id(d)) : 0;
                 if (ts.x == 0 || ts.y == 0 || d.textureScaleMultiplier.x == 0 || d.textureScaleMultiplier.y == 0) throw new InvalidOperationException("export: zero static scale");
                 var c = d.color; var p = d.parallax.multiplier;
                 item.Actual = new[] { d.pivotPosVec.x, d.pivotPosVec.y, d.pivotOffsetVec.x, d.pivotOffsetVec.y, d.rotAngle, d.scaleVec.x, d.scaleVec.y,

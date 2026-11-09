@@ -242,7 +242,7 @@ namespace StutterFix
                 RequireLive(slice.Independent&&slice.Gpu!=null&&slice.Gpu.HasNativeLiveKernel&&slice.Renderers.Count==slice.Data.Items.Length,"GPU image renderer mapping");
                 var prior=slice.Data.Items[item];var renderer=slice.Renderers[item];
                 RequireLive(renderer&&source.sharedMaterial&&renderer.sharedMaterial
-                    &&source.sharedMaterial.shader==renderer.sharedMaterial.shader
+                    &&(source.sharedMaterial.shader==renderer.sharedMaterial.shader || prior.BlendMode>0 || source.sharedMaterial.shader.name==GpuDecoBlend.GrabShader || renderer.sharedMaterial.shader.name==GpuDecoBlend.GrabShader)
                     &&source.sharedMaterial.renderQueue==renderer.sharedMaterial.renderQueue
                     &&source.sortingLayerID==renderer.sortingLayerID&&source.sortingOrder==renderer.sortingOrder,"GPU image material/order changed");
                 next.Index=prior.Index;next.Id=prior.Id;next.MaterialId=source.sharedMaterial.GetInstanceID();

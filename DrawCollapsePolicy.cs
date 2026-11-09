@@ -16,13 +16,13 @@ namespace StutterFix
         internal const int DirectBindings=48;
         internal const int FewDirectBindings=8; // DIRECT_FEW: 구간이 쓰는 직접 텍스처가 이 수 이하면 작은 변형
         internal static bool FewDirect=true; // 측정: fewdirect on|off
-        internal static bool GlobalDirect=false; // 측정: globaldirect on|off (직접 텍스처를 전역으로)
+        internal static bool GlobalDirect=false; // 측정: globaldirect on|off (직접 텍스처를 전역으로)
         // 화면 밖까지 뻗은 초대형 사각형(월드 25 넘음)도 맡는다. 예전 거부 이유는 대각선 경계의 래스터 반올림 차이(최대 5/255, 눈으로 같음)였다. 측정: oversized on|off
         internal static bool AllowOversized=true;
         // 반복(tile) 장식을 맡는다(묶음 그리기만). 측정: repeat on|off
-        internal static bool Repeat=true;
+        internal static bool Repeat=false;   // 7777 사슬 등에서 그림이 원래와 달라 기본 끔(UV·랩 처리로는 해결 안 됨, 원인 조사 중)
         // 혼합 모드 장식(Blend Modes 에셋, UnifiedGrab)을 맡는다. 측정: blendmodes on|off
-        internal static bool BlendModes=true;
+        internal static bool BlendModes=false;   // 진행 중: DD 에서 활성화 검사(이미지 비어 있음 등)를 아직 통과 못 함
         // 계획 직전에 채운다: 화면 복사(GrabPass)를 쓰는 소유 항목. 일반 항목 다음에 오면 구간을 끊어 복사 시점을 원래와 같게 한다.
         internal static bool[] GrabItems;
         // 화면 고정(Camera·CameraAspect 배치, clampToScreen) 장식을 맡는다. 측정: screenfixed on|off
@@ -139,7 +139,7 @@ namespace StutterFix
         // 같은 묶음에서 모든 활성 장벽보다 뒤에 그려지던 장식도 구간에 유지한다(대표 거리를 -미세 이동).
         internal static bool KeepAfterBarrier=true; // 262초 픽셀 최대 차이 4(0.4% 픽셀). GPU 병목에서는 폴백 14개의 전체 재평가를 없애 FPS +
         internal const float TieNudge=2e-4f;
-        internal const int MaxSpans=700;
+        internal const int MaxSpans=3000; // 혼합 모드 장식은 하나씩 구간(원래도 장식마다 화면 복사 + 그리기)이라 DD 는 1276
         internal static List<int[]> Plan(List<Row> rows)
         {
             rows.Sort((a,b)=>a.Key.CompareTo(b.Key));
@@ -155,7 +155,8 @@ namespace StutterFix
                     // 정렬 순서(층,순서,큐)가 바뀔 때마다 구간을 끊는다: 다른 순서의 장벽이 곡 도중 활성화돼도 구간 한가운데로 들어올 수 없다.
                     if(SplitByOrder && haveBucket && items.Count>0 && (row.Key.Layer!=bl || row.Key.Order!=bo || row.Key.Queue!=bq)){spans.Add(items.ToArray());items.Clear();}
                     bool grab=GrabItems!=null && (uint)row.Renderer<(uint)GrabItems.Length && GrabItems[row.Renderer];
-                    if(grab && !lastGrab && items.Count>0){spans.Add(items.ToArray());items.Clear();}
+                    // 혼합 항목은 그리기마다 화면을 복사하므로(원래 Grab 셰이더와 같게) 구간 하나에 하나씩만 둔다
+                    if((grab || lastGrab) && items.Count>0){spans.Add(items.ToArray());items.Clear();}
                     lastGrab=grab;
                     bl=row.Key.Layer;bo=row.Key.Order;bq=row.Key.Queue;haveBucket=true;
                     items.Add(row.Renderer);continue;

@@ -192,12 +192,12 @@ namespace StutterFix
             var m = materials[0];
             if (blendOk && m.shader.name == GpuDecoBlend.GrabShader)
             {
-                // 혼합 모드 재질: 화면 복사 + 한 패스. 키워드는 모드·점 샘플링·픽셀 스냅만.
-                if (m.renderQueue != 3000) return "shader-pass-queue";
+                // 혼합 모드 재질: 화면 복사(GrabPass) + 한 패스. 키워드는 모드·점 샘플링만.
+                if (m.renderQueue != 3000 || m.passCount != 2) return "shader-pass-queue";
                 if (!m.shaderKeywords.All(k => k.StartsWith("BLENDMODES_MODE_") || k == "FORCE_POINT_SAMPLING")) return "keywords";
                 return null;
             }
-            if (m.shader.name != "Sprites/Tile" || m.passCount != 1 || m.renderQueue != 3000) return "shader-pass-queue";
+            if (m.shader.name != "Sprites/Tile" || m.passCount != 1 || m.renderQueue != 3000) return blendOk ? "shader-pass-queue:" + m.shader.name + ":" + m.passCount + ":" + m.renderQueue : "shader-pass-queue";
             if (!m.GetShaderPassEnabled(m.GetPassName(0))) return "disabled-pass";
             if (!m.shaderKeywords.All(k => k == "USE_POINT_SAMPLING")) return "keywords";
             return null;
@@ -210,7 +210,7 @@ namespace StutterFix
             if (d.followPlanet || d.stickToFloor || d.syncFloorDepth) return "parent-follow";
             if (((d.repeatX != 1 || d.repeatY != 1) && !DrawCollapsePolicy.Repeat) || r.drawMode != SpriteDrawMode.Simple) return "repeat-tile";
             if (MeshOn(d) || (d.meshRenderer && d.meshRenderer.enabled && d.meshRenderer.gameObject.activeInHierarchy)) return "mesh-mode";
-            if ((int)Blend(d) != 0 || (d.blendModeEffect && d.blendModeEffect.enabled)) return "blend";
+            if (((int)Blend(d) != 0 || (d.blendModeEffect && d.blendModeEffect.enabled)) && !(GpuDecoBlend.Id(d) > 0 && DrawCollapsePolicy.BlendModes)) return "blend";
             if (!p || !Inited(p) || !IsDecoration(p) || !ReferenceEquals(p.decoration, d)
                 || !ReferenceEquals(Cached(p), d.pivotTrans) || p.enabled) return "parallax-binding";
             if (!d.pivotTrans || d.pivotTrans.parent != expectedManager.transform) return "pivot-parent";

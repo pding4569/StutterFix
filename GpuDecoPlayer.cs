@@ -748,7 +748,7 @@ namespace StutterFix
                 RequireLive(original.maskInteraction==SpriteMaskInteraction.None && !original.GetComponentInParent<SortingGroup>(), "소유 장식 마스크 또는 정렬 그룹 변경");
                 var material=original.sharedMaterial;
                 var shader=material?material.shader:null;
-                RequireLive(material && shader && shader.name=="Sprites/Tile" && material.passCount==1
+                RequireLive(material && shader && ((shader.name=="Sprites/Tile" && material.passCount==1) || (shader.name==GpuDecoBlend.GrabShader && slice.Data.Items[item].BlendMode>0))
                     && material.GetInstanceID()==slice.Data.Items[item].MaterialId, "소유 장식 재질 변경");
                 if(!GpuImageActor(gpuLiveOwnedIndices[master]))
                     RequireLive(texture.GetInstanceID()==slice.Data.Items[item].TextureId, "준비하지 않은 텍스처 변경");

@@ -11,9 +11,11 @@ namespace StutterFix
         static string PerItemPrepareReason(GpuLiveRow row,GpuDecoData.Item item)
         {
             var sprite=row?.R as SpriteRenderer;
-            if(!(sprite && sprite.sprite && row.M && row.M.shader.name=="Sprites/Tile"
+            // 혼합 모드 장식(GpuDecoBlend)은 Blend Modes 의 Grab 셰이더 재질이다. 모드·점 샘플링 키워드만 허용한다.
+            bool blendMat=row?.M && item!=null && item.BlendMode>0 && DrawCollapsePolicy.BlendModes && row.M.shader.name==GpuDecoBlend.GrabShader;
+            if(!(sprite && sprite.sprite && row.M && (row.M.shader.name=="Sprites/Tile" || blendMat)
                 && sprite.maskInteraction==SpriteMaskInteraction.None))return "material/mask";
-            if(!row.M.shaderKeywords.All(k=>k=="USE_POINT_SAMPLING"))return "keywords";
+            if(!row.M.shaderKeywords.All(k=>k=="USE_POINT_SAMPLING" || (blendMat && (k.StartsWith("BLENDMODES_MODE_") || k=="FORCE_POINT_SAMPLING"))))return "keywords";
             if(!((!row.M.HasProperty("_Color") || row.M.GetColor("_Color")==Color.white)
                 && (!row.M.HasProperty("_Opacity") || row.M.GetFloat("_Opacity")==1)))return "tint/opacity";
             var t=sprite.sprite.texture;

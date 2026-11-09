@@ -107,6 +107,7 @@ namespace StutterFix
             // 장식 반복(tile): 묶음 그리기에서 UV 에 곱하고 픽셀 셰이더가 frac 으로 감싼다(게임: UV*Repeat + 텍스처 Repeat 랩)
             internal float RepeatX = 1, RepeatY = 1;
             internal int BlendMode;   // GpuDecoBlend 모드 번호(0 = 없음)
+            internal bool WrapU, WrapV;   // 텍스처의 실제 랩 모드가 Repeat 인 축
         }
         static void Floats(BinaryWriter w, float[] values) { foreach (float v in values) { Check(v); w.Write(v); } }
         static void Floats(BinaryReader r, float[] values) { for (int i = 0; i < values.Length; i++) { values[i] = r.ReadSingle(); Check(values[i]); } }
