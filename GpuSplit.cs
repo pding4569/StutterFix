@@ -32,14 +32,14 @@ namespace StutterFix
             arg = arg.Trim();
             if (arg.StartsWith("pixeldiff ", StringComparison.Ordinal))
             {
-                if (Busy || GpuHide.Busy || GpuCensus.Busy) throw new InvalidOperationException("pixeldiff requires gpusplit/gpuhide/census off");
+                if (Busy || GpuHide.Busy || GpuCensus.Busy || Occlude.Busy) throw new InvalidOperationException("pixeldiff requires gpusplit/gpuhide/census/occlude off");
                 var parsedDiff = GpuSplitPolicy.ParseSelection(arg.Substring(10).Trim());
                 if (!parsedDiff.Live) throw new ArgumentException("pixeldiff requires live filter");
                 GpuSplitPixelDiff.Begin(parsedDiff, arg.Substring(10).Trim()); return;
             }
             if (arg == "census")
             {
-                if (GpuSplitPixelDiff.Busy || GpuHide.Busy || GpuCensus.Busy) throw new InvalidOperationException("pixeldiff/gpuhide/census active");
+                if (GpuSplitPixelDiff.Busy || GpuHide.Busy || GpuCensus.Busy || Occlude.Busy) throw new InvalidOperationException("pixeldiff/gpuhide/census/occlude active");
                 if (Active) { instance.censusPending = true; return; }
                 if (censusRequest) return;
                 var census = new GameObject("StutterFix.GpuSplit.Census").AddComponent<GpuSplit>();
@@ -70,7 +70,7 @@ namespace StutterFix
             if (!arg.StartsWith("hide ", StringComparison.Ordinal)) throw new ArgumentException("gpusplit hide <group>|refresh|state|off");
             string target = arg.Substring(5).Trim();
             var parsed = GpuSplitPolicy.ParseSelection(target); // Invalid input must not change the current session.
-            if (GpuHide.Busy || GpuCensus.Busy || GpuSplitPixelDiff.Busy) throw new InvalidOperationException("gpuhide/census/pixeldiff active");
+            if (GpuHide.Busy || GpuCensus.Busy || GpuSplitPixelDiff.Busy || Occlude.Busy) throw new InvalidOperationException("gpuhide/census/pixeldiff/occlude active");
             if (Active && instance.selector == target)
             {
                 try { instance.Scan(); } catch { Stop(); throw; }

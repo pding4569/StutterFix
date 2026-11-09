@@ -932,6 +932,7 @@ namespace StutterFix
                 case "archegpu": ArcheGpuResearch.Command(arg); return true;
                 case "fxoff": ArcheGpuResearch.Select(arg); return true;
                 case "gpucensus": GpuCensus.Run(); return true;
+                case "occlude": if (arg.Trim() == "collect") { ShapeCellsCpu.CollectOpaque = true; Log("[occlude] 다음 맵 열기부터 불투명 정보 수집"); return true; } Occlude.Command(arg); return true;
                 case "gpuhide": GpuHide.Command(arg); return true;
                 case "runlod": Log("[runlod] " + RunLod.Command(arg)); return true;
                 case "runprobe": Log("[runprobe] " + RunProbe.Run(float.TryParse(arg.Trim(), System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out var rpm) ? rpm : 4f)); return true;
@@ -943,6 +944,7 @@ namespace StutterFix
                             if (sr.sprite && sr.sprite.texture && sr.sprite.texture.name.IndexOf(key, StringComparison.OrdinalIgnoreCase) >= 0) { sr.forceRenderingOff = true; n++; }
                         Log("[hidetex] " + key + " " + n); return true;
                     }
+                case "decotexmin": GpuHide.DecoTexMin = int.Parse(arg.Trim()); Log("[decotexmin] " + GpuHide.DecoTexMin); return true;
                 case "hidegroup": { var q = arg.Split(' '); Log("[hidegroup] " + q[0] + " " + GpuHide.Toggle(q[0], q.Length > 1 && q[1] == "on")); return true; }
                 case "holdskip": HoldFix.Command(arg); return true;
                 case "waitskip": EnginePatch.WaitSkip(arg != "off"); return true;
@@ -1843,6 +1845,7 @@ namespace StutterFix
 #endif
         private static void EndBatch(string why)
         {
+            Occlude.Stop();
 #if AUTOTEST
             DecoBake.FinishGpuMergeTest(why);
 #endif
@@ -1872,6 +1875,7 @@ namespace StutterFix
 
         private static void Finish(string why)
         {
+            Occlude.Stop();
 #if AUTOTEST
             DecoBake.FinishGpuMergeTest(why);
 #endif

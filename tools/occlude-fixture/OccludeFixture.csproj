@@ -1,0 +1,7 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework><OutputType>Exe</OutputType>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks><EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+  </PropertyGroup>
+  <ItemGroup><Compile Include="../../ShapeCellsCpu.cs" Link="ShapeCellsCpu.cs" /><Compile Include="../../OccludePolicy.cs" Link="OccludePolicy.cs" /><Compile Include="Program.cs" /></ItemGroup>
+</Project>

@@ -513,6 +513,7 @@ ParticleTextWatch.Install(harmony);
             Try(DecoRender.Stop);
             Try(FilterGpuProbe.Stop);
             Try(GpuHide.Stop);
+            Try(Occlude.Stop);
             Try(GpuSplit.Stop);
 #if DEV || AUTOTEST
             Try(FrameCompare.Unload);

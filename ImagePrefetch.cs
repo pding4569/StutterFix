@@ -51,6 +51,7 @@ namespace StutterFix
             public int Rows, NextRow, DoneRows, InFlight, Layout; public bool Abandoned, BlocksReady, Urgent;   // Urgent: 게임이 기다리는 중
             public bool PixelsOrphan, BlocksOrphan;
             public ulong[] Cells;   // 형태 칸(ShapeCellsCpu): 16x16 칸의 알파>0 표시   // 가져간 쪽이 풀기를 작업 스레드에 맡김 (압축 중인 묶음이 남아 있을 때)
+            public ShapeCellsCpu.OpaqueInfo Opaque;
         }
 
         private static readonly object gate = new object();
@@ -774,7 +775,8 @@ namespace StutterFix
                 IntPtr blocks = IntPtr.Zero;
                 if (compress) { try { blocks = Marshal.AllocHGlobal((IntPtr)bsize); } catch { blocks = IntPtr.Zero; bsize = 0; } }
                 ulong[] cells = null;
-                if (ok) { try { cells = ShapeCellsCpu.Compute(px, w, h, f); } catch { cells = null; } }   // 형태 칸 재료(작업 스레드)
+                ShapeCellsCpu.OpaqueInfo opaque = null;
+                if (ok) { try { cells = ShapeCellsCpu.Compute(px, w, h, f, out opaque); } catch { cells = null; opaque = null; } }
                 lock (gate)
                 {
                     if (!running || it.State != 1 || it.Index < consumed)   // 게임이 이미 지나간 것
@@ -785,6 +787,7 @@ namespace StutterFix
                     else if (ok)
                     {
                         it.Width = w; it.Height = h; it.Format = f; it.Pixels = px; it.Size = size; it.Factor = factor; it.Extra = extra; it.Jpg = jpg; it.Cells = cells;
+                        it.Opaque = opaque;
                         if (blocks != IntPtr.Zero)
                         {
                             it.Blocks = blocks; it.BlockSize = bsize; it.Dxt5 = d5; it.Layout = f == PngDecoder.FormatARGB32 ? 1 : f == PngDecoder.FormatRGB24 ? 2 : 0;
@@ -972,6 +975,7 @@ namespace StutterFix
                 }
                 if (it.Factor < 1f) shrunk[tex] = it.Factor;   // 스프라이트를 만들 때 크기 기준을 맞춘다
                 ShapeCellsCpu.Register(tex, it.Cells);
+                ShapeCellsCpu.RegisterOpaque(tex, it.Opaque);
                 used++;
                 putMs += (Stopwatch.GetTimestamp() - t0) * 1000.0 / Stopwatch.Frequency;
                 return true;

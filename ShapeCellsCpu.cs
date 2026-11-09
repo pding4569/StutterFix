@@ -13,10 +13,38 @@ namespace StutterFix
         internal static int GridFor(int w, int h) => Math.Max(w, h) >= 256 ? 32 : 16;
         static readonly Dictionary<int, ulong[]> byTexture = new Dictionary<int, ulong[]>();
         static readonly object gate = new object();
+        internal sealed class OpaqueInfo
+        {
+            internal ulong[] Bits;
+            internal bool All;
+            internal int Width, Height;
+        }
+        sealed class OpaqueEntry { internal WeakReference<UnityEngine.Texture2D> Texture; internal OpaqueInfo Info; internal uint Version; internal bool Armed; }
+        static readonly Dictionary<int, OpaqueEntry> opaqueByTexture = new Dictionary<int, OpaqueEntry>();
 
         // 작업 스레드: format 4 = RGBA32(알파 +3), 5 = ARGB32(알파 +0). 그 밖(알파 없음)은 null = 전부 불투명.
+        internal static volatile bool CollectOpaque;
         internal static unsafe ulong[] Compute(IntPtr px, int w, int h, int format)
+            => Compute(px, w, h, format, out _);
+        internal static unsafe ulong[] Compute(IntPtr px, int w, int h, int format, out OpaqueInfo opaque)
         {
+            opaque = null;
+            // Unlike occupancy, opacity must examine EVERY texel, including small images.
+            // 진단 전용(occlude): 4개 맵에서 화면 전체 불투명 가리개 0개라 기본 끔. 켜면 다음 맵 열기부터 모든 텍셀을 훑는다.
+            if (CollectOpaque && px != IntPtr.Zero && w > 0 && h > 0 && (format == 3 || format == 4 || format == 5))
+            {
+                int grid = GridFor(w, h), alpha = format == 4 ? 3 : 0;
+                var ob = new ulong[grid * grid / 64];
+                for (int i = 0; i < ob.Length; i++) ob[i] = ulong.MaxValue;
+                bool all = true;
+                if (format != 3) for (int y = 0; y < h; y++) for (int x = 0; x < w; x++)
+                    if (((byte*)px)[((long)y * w + x) * 4 + alpha] != 255)
+                    {
+                        int bit = (y * grid / h) * grid + x * grid / w;
+                        ob[bit >> 6] &= ~(1UL << (bit & 63)); all = false;
+                    }
+                opaque = new OpaqueInfo { Bits = ob, All = all, Width = w, Height = h };
+            }
             if (px == IntPtr.Zero || w < 64 && h < 64) return null;
             int ao = format == 4 ? 3 : format == 5 ? 0 : -1;
             if (ao < 0) return null;
@@ -51,6 +79,30 @@ namespace StutterFix
             lock (gate) byTexture[tex.GetInstanceID()] = bits;
         }
         internal static bool TryGet(int textureId, out ulong[] bits) { lock (gate) return byTexture.TryGetValue(textureId, out bits); }
+        internal static void RegisterOpaque(UnityEngine.Texture2D tex, OpaqueInfo info)
+        {
+            if (!tex || info == null) return;
+            // Decoded opacity does not prove opacity after a lossy texture conversion.
+            if (tex.format != UnityEngine.TextureFormat.RGBA32 && tex.format != UnityEngine.TextureFormat.ARGB32
+                && tex.format != UnityEngine.TextureFormat.RGB24) return;
+            lock (gate) opaqueByTexture[tex.GetInstanceID()] = new OpaqueEntry { Texture = new WeakReference<UnityEngine.Texture2D>(tex), Info = info, Version = tex.updateCount };
+        }
+        internal static bool TryGetOpaque(UnityEngine.Texture2D tex, out ulong[] bits, out bool allOpaque)
+        {
+            bits = null; allOpaque = false;
+            if (!tex) return false;
+            lock (gate)
+            {
+                if (!opaqueByTexture.TryGetValue(tex.GetInstanceID(), out var entry) || !entry.Texture.TryGetTarget(out var registered) || registered != tex
+                    || tex.width != entry.Info.Width || tex.height != entry.Info.Height
+                    || (tex.format != UnityEngine.TextureFormat.RGBA32 && tex.format != UnityEngine.TextureFormat.ARGB32
+                        && tex.format != UnityEngine.TextureFormat.RGB24)) return false;
+                // Register is before the game's initial Apply. Arm after loading, on first query.
+                if (!entry.Armed) { entry.Version = tex.updateCount; entry.Armed = true; }
+                else if (tex.updateCount != entry.Version) return false;
+                bits = entry.Info.Bits; allOpaque = entry.Info.All; return true;
+            }
+        }
         internal static int Count { get { lock (gate) return byTexture.Count; } }
     }
 }

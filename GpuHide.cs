@@ -24,7 +24,7 @@ namespace StutterFix
         internal static void Command(string arg)
         {
             if (arg.Trim() == "off") { Stop(); return; }
-            if (Busy || GpuCensus.Busy || GpuSplit.Busy) throw new InvalidOperationException("gpuhide/census/gpusplit already active");
+            if (Busy || GpuCensus.Busy || GpuSplit.Busy || Occlude.Busy) throw new InvalidOperationException("gpuhide/census/gpusplit/occlude already active");
             int space = arg.LastIndexOf(' ');
             if (space < 1 || !float.TryParse(arg.Substring(space+1), NumberStyles.Float, CultureInfo.InvariantCulture, out float duration)
                 || float.IsNaN(duration) || float.IsInfinity(duration) || duration < 1 || duration > 30)
@@ -48,6 +48,8 @@ namespace StutterFix
         static readonly List<KeyValuePair<SpriteRenderer, Texture>> toggledTex = new List<KeyValuePair<SpriteRenderer, Texture>>();
         static readonly List<KeyValuePair<SpriteRenderer, Sprite>> toggledSprites = new List<KeyValuePair<SpriteRenderer, Sprite>>();
         static Camera directMain; static RenderTexture directMainRt;
+        static readonly Dictionary<Texture, RenderTexture> decoCopies = new Dictionary<Texture, RenderTexture>();
+        internal static int DecoTexMin = 2048;
         internal static string Toggle(string group, bool on)
         {
             // 렌더러가 아닌 것(카메라·캔버스)은 따로 되돌린다.
@@ -65,6 +67,40 @@ namespace StutterFix
                 return "cams_off=" + toggledCams.Count;
             }
             // 진단(GPU 병목 가르기): 타일 장식의 텍스처만 4x4 흰 텍스처로 바꿔 캐시 미스 비용을 분리한다.
+            // 진단(GPU 병목 가르기): 보이는 큰 장식 그림(긴 변 >= decoTexMin)을 밉맵 붙인 사본(decomip) 또는 반 해상도 사본(decohalf)으로
+            // 바꿔 축소 샘플링 비용을 잰다. 그림이 조금 바뀐다(밉맵: 축소 때 부드러워짐, 반: 해상도 절반).
+            if (group == "decomip" || group == "decohalf" || group == "decoquarter")
+            {
+                if (!on)
+                {
+                    foreach (var kv in toggledTex) if (kv.Key) { var mpb0 = new MaterialPropertyBlock(); kv.Key.GetPropertyBlock(mpb0); if (kv.Value) mpb0.SetTexture("_MainTex", kv.Value); kv.Key.SetPropertyBlock(mpb0); }
+                    int m0 = toggledTex.Count; toggledTex.Clear();
+                    foreach (var rt0 in decoCopies.Values) if (rt0) { rt0.Release(); UnityEngine.Object.Destroy(rt0); }
+                    int c0 = decoCopies.Count; decoCopies.Clear(); return "tex_restored=" + m0 + " copies_freed=" + c0;
+                }
+                if (toggledTex.Count > 0) throw new InvalidOperationException("already swapped");
+                int div = group == "decohalf" ? 2 : group == "decoquarter" ? 4 : 1; bool mip = group == "decomip";
+                long bytes = 0; int skippedMip = 0;
+                var mpb = new MaterialPropertyBlock();
+                foreach (var sr in Resources.FindObjectsOfTypeAll<SpriteRenderer>())
+                {
+                    if (!sr || !sr.gameObject.scene.IsValid() || !sr.enabled || !sr.gameObject.activeInHierarchy || sr.forceRenderingOff || !sr.sprite) continue;
+                    if (!GpuCensus.IsDecoration(sr)) continue;
+                    var tex = sr.sprite.texture; if (!tex || Math.Max(tex.width, tex.height) < DecoTexMin) continue;
+                    if (mip && tex.mipmapCount > 1) { skippedMip++; continue; }
+                    if (!decoCopies.TryGetValue(tex, out var rt))
+                    {
+                        int w = Math.Max(1, tex.width / div), h = Math.Max(1, tex.height / div);
+                        rt = new RenderTexture(w, h, 0, RenderTextureFormat.ARGB32, RenderTextureReadWrite.Default) { useMipMap = mip, autoGenerateMips = false, name = "sf-" + group };
+                        rt.filterMode = mip ? FilterMode.Trilinear : tex.filterMode; rt.wrapModeU = tex.wrapModeU; rt.wrapModeV = tex.wrapModeV; rt.anisoLevel = 0;
+                        rt.Create(); Graphics.Blit(tex, rt); if (mip) rt.GenerateMips();
+                        bytes += (long)w * h * 4 * (mip ? 4 : 3) / 3; decoCopies[tex] = rt;
+                    }
+                    toggledTex.Add(new KeyValuePair<SpriteRenderer, Texture>(sr, tex));
+                    sr.GetPropertyBlock(mpb); mpb.SetTexture("_MainTex", rt); sr.SetPropertyBlock(mpb);
+                }
+                return group + " swapped=" + toggledTex.Count + " copies=" + decoCopies.Count + " MB=" + (bytes >> 20) + " min=" + DecoTexMin + " already_mipped=" + skippedMip;
+            }
             if (group == "tiletex1x1")
             {
                 if (!on) { foreach (var kv in toggledTex) if (kv.Key) { var mpb0 = new MaterialPropertyBlock(); kv.Key.GetPropertyBlock(mpb0); if (kv.Value) mpb0.SetTexture("_MainTex", kv.Value); kv.Key.SetPropertyBlock(mpb0); } int m0 = toggledTex.Count; toggledTex.Clear(); return "tex_restored=" + m0; }
