@@ -384,7 +384,7 @@ namespace StutterFix
             var ids = new Dictionary<scrDecoration, int>();
             var ordered = new HashSet<ffxPlusBase>();
             var events = new List<DecoBakeCore.Event>();
-            g1EventGuards.Clear();
+            g1EventGuards.Clear(); g1DepthSets.Clear();
             var curVisible = new Dictionary<scrDecoration, bool>();
             foreach(var kv in g1Initial) curVisible[kv.Key] = kv.Value.Visible;
             var imageWrites = new HashSet<scrDecoration>();

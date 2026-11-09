@@ -12,7 +12,7 @@ namespace StutterFix
         {
             var sprite=row?.R as SpriteRenderer;
             // 혼합 모드 장식(GpuDecoBlend)은 Blend Modes 의 Grab 셰이더 재질이다. 모드·점 샘플링 키워드만 허용한다.
-            bool blendMat=row?.M && item!=null && item.BlendMode>0 && DrawCollapsePolicy.BlendModes && row.M.shader.name==GpuDecoBlend.GrabShader;
+            bool blendMat=row?.M && item!=null && item.BlendMode>0 && DrawCollapsePolicy.BlendModes && GpuDecoBlend.ShaderFits(row.M.shader,item.BlendMode);
             if(!(sprite && sprite.sprite && row.M && (row.M.shader.name=="Sprites/Tile" || blendMat)
                 && sprite.maskInteraction==SpriteMaskInteraction.None))return "material/mask";
             if(!row.M.shaderKeywords.All(k=>k=="USE_POINT_SAMPLING" || (blendMat && (k.StartsWith("BLENDMODES_MODE_") || k=="FORCE_POINT_SAMPLING"))))return "keywords";

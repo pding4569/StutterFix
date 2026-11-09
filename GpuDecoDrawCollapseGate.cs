@@ -44,6 +44,7 @@ namespace StutterFix
             }
             if(args.Length==3 && args[0]=="policy")
             {
+                if(args[1]=="trimmin"){DrawCollapsePolicy.TrimMinSide=int.Parse(args[2],Inv);GpuLog("DRAWCOLLAPSE_POLICY trimmin="+DrawCollapsePolicy.TrimMinSide);return true;}
                 if(args[1]=="tightmin"){DrawCollapsePolicy.TightMinSide=int.Parse(args[2],Inv);GpuLog("DRAWCOLLAPSE_POLICY tightmin="+DrawCollapsePolicy.TightMinSide);return true;}
                 bool on=args[2]=="on";
                 switch(args[1])

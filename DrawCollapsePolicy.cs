@@ -22,7 +22,12 @@ namespace StutterFix
         // 반복(tile) 장식을 맡는다(묶음 그리기만). 측정: repeat on|off
         internal static bool Repeat=false;   // 7777 사슬 등에서 그림이 원래와 달라 기본 끔(UV·랩 처리로는 해결 안 됨, 원인 조사 중)
         // 혼합 모드 장식(Blend Modes 에셋, UnifiedGrab)을 맡는다. 측정: blendmodes on|off
-        internal static bool BlendModes=false;   // 진행 중: DD 에서 활성화 검사(이미지 비어 있음 등)를 아직 통과 못 함
+        // 곡 중 깊이(정렬 층·순서)가 바뀌는 장식: 쓰는 깊이마다 그리기 자리를 계획하고 지금 깊이의 자리만 켠다. 측정: depthinst on|off
+        internal static bool DepthInstances=false;
+        internal static int MaxDepthInstances=8;   // 측정: depthinst <수>
+        internal static bool BlendModes=false;
+        // 화면 복사(GrabPass)가 필요한 혼합 모드도 맡는다. 끄면 그 장식은 원래 렌더러로 남아 화면 밖일 때 유니티가 걸러낸다(구간 렌더러는 걸러지지 않아 매 프레임 전체 화면 복사). 측정: blendgrab on|off
+        internal static bool BlendGrab=true;   // 진행 중: DD 에서 활성화 검사(이미지 비어 있음 등)를 아직 통과 못 함
         // 계획 직전에 채운다: 화면 복사(GrabPass)를 쓰는 소유 항목. 일반 항목 다음에 오면 구간을 끊어 복사 시점을 원래와 같게 한다.
         internal static bool[] GrabItems;
         // 화면 고정(Camera·CameraAspect 배치, clampToScreen) 장식을 맡는다. 측정: screenfixed on|off
@@ -124,6 +129,8 @@ namespace StutterFix
         // 큰 이미지 장식의 쿼드를 불투명한 부분에만 맞게 줄인다(투명 여백 래스터라이즈 제거). 텍스처 긴 변이 TightMinSide 이상일 때만.
         internal static bool TightLargeQuads=true;
         internal static int TightMinSide=1025;
+        // 투명 여백 깎기(쿼드를 알파>0 범위로 줄임)를 하는 텍스처의 최소 긴 변. 측정: gpudeco drawcollapse policy trimmin N
+        internal static int TrimMinSide=512;
         internal const int TightMarginTexels=4;
         internal const float TightMaxAreaRatio=.8f;
         // 2048 을 넘는 같은 크기 DXT5(4K 프레임 계열 등)를 정확한 크기의 배열 하나로 묶는다. 3개 미만이면 직접 슬롯을 쓴다.

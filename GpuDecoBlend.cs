@@ -29,6 +29,41 @@ namespace StutterFix
             var m = r ? r.sharedMaterial : null;
             return m && m.HasProperty(prop) ? m.GetFloat(prop) : 1f;
         }
+        // 더하기(LinearDodge)는 모드의 FastBlend 가 재생 중 Legacy Particles/Additive 재질(d + a*s)로 바꿔 끼운다.
+        // 같은 값은 화면 복사 없이 미리 곱한 섞기(One, OneMinusSrcAlpha)에 (s*a, 0)을 내면 나오므로,
+        // 더하기는 화면 복사 없는 일반 구간에서 그리고 Grab 재질/Additive 재질 어느 쪽이어도 같은 장식으로 본다.
+        internal const string AddShader = "Legacy Shaders/Particles/Additive";
+        internal const int LinearDodge = 9;
+        internal static bool NeedsGrab(int mode) { return mode > 0 && mode != LinearDodge; }
+        // 이 혼합 모드를 그리는 원래 재질의 셰이더로 맞는가
+        internal static bool ShaderFits(UnityEngine.Shader s, int mode)
+        {
+            if (!s || mode <= 0) return false;
+            string n = s.name;
+            return n == GrabShader || (mode == LinearDodge && n == AddShader);
+        }
+        // 맡을 수 있는 혼합 장식: 모드를 지원하고, 재질이 그 모드의 원래 셰이더(Grab, 더하기는 Additive 도)인 것만.
+        internal static bool Takeable(scrVisualDecoration d, UnityEngine.Renderer r)
+        {
+            if (!DrawCollapsePolicy.BlendModes) return false;
+            int id = Id(d);
+            if (id <= 0) return false;
+            if (NeedsGrab(id) && !DrawCollapsePolicy.BlendGrab) return false;
+            var m = r ? r.sharedMaterial : null;
+            return m && ShaderFits(m.shader, id);
+        }
+        // 준비 때 항목의 혼합 모드를 정한다. 진단: 재질은 혼합인데 0 으로 정해진 첫 몇 개를 적는다.
+        static int noted;
+        internal static int ItemMode(scrVisualDecoration d, UnityEngine.Renderer r)
+        {
+            int mode = Takeable(d, r) ? Id(d) : 0;
+            var m = r ? r.sharedMaterial : null;
+            if (mode == 0 && m && m.shader && (m.shader.name == GrabShader || m.shader.name == AddShader) && noted++ < 6)
+                Main.Entry.Logger.Log("[gpudeco blend] 혼합 재질인데 모드 0: " + (d ? d.name : "null") + " field=" + (d ? blendField(d).ToString() : "-")
+                    + " id=" + Id(d) + " shader=" + m.shader.name + " effect=" + (d && d.blendModeEffect ? d.blendModeEffect.enabled.ToString() : "null")
+                    + " policy=" + DrawCollapsePolicy.BlendModes);
+            return mode;
+        }
         internal static bool Supported(scrVisualDecoration d) { int id = Id(d); return id == 0 || (id > 0 && DrawCollapsePolicy.BlendModes); }
     }
 }

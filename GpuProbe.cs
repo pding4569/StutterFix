@@ -17,6 +17,7 @@ namespace StutterFix
         const int ScopeCount = 512, FirstEffect = 35;
         [DllImport("gpuprobe", CallingConvention = CallingConvention.Cdecl)] static extern IntPtr gp_event();
         [DllImport("gpuprobe", CallingConvention = CallingConvention.Cdecl)] static extern ulong gp_status(int k);
+        [DllImport("gpuprobe", CallingConvention = CallingConvention.Cdecl)] static extern ulong gp_pstat(int k);
         [DllImport("gpuprobe", CallingConvention = CallingConvention.Cdecl)] static extern int gp_snapshot([Out] ulong[] output, int length);
         sealed class CameraScope { internal Camera Camera; internal int Id; internal CommandBuffer End; }
         static GpuProbe instance;
@@ -184,6 +185,7 @@ namespace StutterFix
             if (gp_snapshot(data, data.Length) == 0) { Main.Entry.Logger.Log("[gpuprobe] snapshot busy; retry state"); return; }
             ulong n = data[0];
             p.ReportCounters();
+            try { ulong pf = gp_pstat(0); if (pf > 0) Main.Entry.Logger.Log($"[gpuprobe] pipeline frames={pf} ps_invocations_per_frame={gp_pstat(1) / pf} raster_tris_per_frame={gp_pstat(2) / pf} clip_in_tris_per_frame={gp_pstat(3) / pf}"); } catch { }
             Main.Entry.Logger.Log($"[gpuprobe] ready={gp_status(0)} completed={n} requested={p.sampledFrames} invalid={gp_status(2)} ring_full={gp_status(3)} overflow={gp_status(4)} not_ready={gp_status(5)} errors={gp_status(6)} effect_outside_camera={gp_status(7)} unknown_camera={p.unknownCameras} unknown_effect={p.unknownEffects}");
             for (int i = 0; i < ScopeCount; i++)
             {

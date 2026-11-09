@@ -239,6 +239,7 @@ namespace StutterFix
             }
         }
         static int[][] gpuLiveMasterToSliceItem = Array.Empty<int[]>();
+        static int[][] gpuMasterDepths = Array.Empty<int[]>();   // 소유 장식 → 곡 중 갖는 깊이들(바뀌지 않으면 null)
 
         // Unified master channel & source state (no binary search; updated only on effect start/end)
         static LiveChannel[] gpuMasterChannels = Array.Empty<LiveChannel>();
@@ -341,6 +342,7 @@ namespace StutterFix
                 if(GpuRecoveryTesting){SaveGpuTarget(masterIdx,d);captured=true;}
                 ApplyGpuLiveEffectToTarget(fx, masterIdx, d);
                 ApplyG1Visible(fx,masterIdx,d);
+                ApplyG1Depth(fx,masterIdx,d);
 #if AUTOTEST
                 gpuLiveSkippedRecs+=keys;
 #endif
@@ -978,7 +980,7 @@ namespace StutterFix
                         Initial = (float[])table.Decorations[index].Initial.Clone(),
                         Triangles = sp.triangles.Select(x => (int)x).ToArray(),
                         RepeatX = GpuDecoBlend.EffectiveRepeat(r, "RepeatX"), RepeatY = GpuDecoBlend.EffectiveRepeat(r, "RepeatY"),
-                        WrapU = sp.texture && sp.texture.wrapModeU == TextureWrapMode.Repeat, WrapV = sp.texture && sp.texture.wrapModeV == TextureWrapMode.Repeat, BlendMode = DrawCollapsePolicy.BlendModes ? System.Math.Max(0, GpuDecoBlend.Id(d)) : 0
+                        WrapU = sp.texture && sp.texture.wrapModeU == TextureWrapMode.Repeat, WrapV = sp.texture && sp.texture.wrapModeV == TextureWrapMode.Repeat, BlendMode = GpuDecoBlend.ItemMode(d, r)
                     };
                     // Live G2 never binary-searches Tracks on GPU; pass empty Tracks to save VRAM and guarantee 0 fallback searches.
                     for (int ch = 0; ch < 16; ch++) item.Tracks[ch] = Array.Empty<DecoBakeCore.Segment>();
@@ -1077,6 +1079,7 @@ namespace StutterFix
                 gpuLiveOwnedSet.Clear();
                 gpuLiveOwnedVisuals.Clear();
                 gpuLiveMasterByDeco.Clear();
+                var masterDepths = new List<int[]>();
                 foreach (var row in masterRows)
                 {
                     if (row.Item < 0) continue;
@@ -1088,7 +1091,9 @@ namespace StutterFix
                     gpuLiveOwnedSet.Add(vd);
                     gpuLiveOwnedVisuals.Add(vd);
                     gpuLiveMasterByDeco[vd] = masterIdx;
+                    masterDepths.Add(g1DepthSets.TryGetValue(vd, out var depthSet) && depthSet.Count > 1 ? depthSet.OrderBy(x => x).ToArray() : null);
                 }
+                gpuMasterDepths = masterDepths.ToArray();
                 gpuLiveOwnedIndices = ownedIndices.ToArray();
                 gpuLiveOwnedRenderers = ownedRenderers.ToArray();
                 gpuLiveOriginalOff = new bool[gpuLiveOwnedRenderers.Length];
@@ -1939,6 +1944,7 @@ namespace StutterFix
             gpuLiveMasterByDeco.Clear();
             gpuLiveCpuFallback=Array.Empty<bool>();gpuLiveCpuFallbackCount=0;
             gpuLiveOwnedIndices = Array.Empty<int>();
+            gpuMasterDepths = Array.Empty<int[]>();
             gpuLiveOwnedRenderers = Array.Empty<SpriteRenderer>();
             gpuLiveEnabledOff = Array.Empty<bool>();
             gpuLiveOriginalOff = Array.Empty<bool>();
@@ -3033,7 +3039,7 @@ namespace StutterFix
                         | (DrawCollapsePolicy.ScreenFixed && d.parallax.clampToScreen ? 128 : 0) | (DrawCollapsePolicy.ScreenFixed && d.placementType == DecPlacementType.CameraAspect ? 256 : 0)
                 };
                 var ts = d.scaleMultiplier * d.textureScaleMultiplier;
-                item.Constants = new[] { ts.x, ts.y, d.textureScaleMultiplier.x, d.textureScaleMultiplier.y, d.startRot, d.croppedPivotOffset.x, d.croppedPivotOffset.y, d.pivotTrans.position.z }; item.RepeatX = GpuDecoBlend.EffectiveRepeat(r, "RepeatX"); item.RepeatY = GpuDecoBlend.EffectiveRepeat(r, "RepeatY"); item.WrapU = r.sprite && r.sprite.texture && r.sprite.texture.wrapModeU == TextureWrapMode.Repeat; item.WrapV = r.sprite && r.sprite.texture && r.sprite.texture.wrapModeV == TextureWrapMode.Repeat; item.BlendMode = DrawCollapsePolicy.BlendModes ? System.Math.Max(0, GpuDecoBlend.Id(d)) : 0;
+                item.Constants = new[] { ts.x, ts.y, d.textureScaleMultiplier.x, d.textureScaleMultiplier.y, d.startRot, d.croppedPivotOffset.x, d.croppedPivotOffset.y, d.pivotTrans.position.z }; item.RepeatX = GpuDecoBlend.EffectiveRepeat(r, "RepeatX"); item.RepeatY = GpuDecoBlend.EffectiveRepeat(r, "RepeatY"); item.WrapU = r.sprite && r.sprite.texture && r.sprite.texture.wrapModeU == TextureWrapMode.Repeat; item.WrapV = r.sprite && r.sprite.texture && r.sprite.texture.wrapModeV == TextureWrapMode.Repeat; item.BlendMode = GpuDecoBlend.ItemMode(d, r);
                 if (ts.x == 0 || ts.y == 0 || d.textureScaleMultiplier.x == 0 || d.textureScaleMultiplier.y == 0) throw new InvalidOperationException("export: zero static scale");
                 var c = d.color; var p = d.parallax.multiplier;
                 item.Actual = new[] { d.pivotPosVec.x, d.pivotPosVec.y, d.pivotOffsetVec.x, d.pivotOffsetVec.y, d.rotAngle, d.scaleVec.x, d.scaleVec.y,

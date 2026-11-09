@@ -225,6 +225,7 @@ namespace StutterFix
         {
             if(dirtyMin > dirtyMax || dirtyMin < 0) return;
             int count = dirtyMax - dirtyMin + 1;
+            UpBytes += (long)count * 16; UpCalls++;
             if(hasLiveKernel)
                 liveChannelsBuffer.SetData(liveChannels, dirtyMin, dirtyMin, count);
             else if(fallbackAnchors != null)
@@ -234,6 +235,7 @@ namespace StutterFix
         internal void UploadSourceE(float[] sourceE, float[] rawProgress, int count,int first=0)
         {
             if(first >= count) return;
+            UpBytes += (long)(count-first) * 4; UpCalls++;
             if(hasLiveKernel)
                 sourceEBuffer.SetData(sourceE, first, first, count-first);
             else
@@ -241,6 +243,7 @@ namespace StutterFix
         }
         // 제품이 켜는 값: 독립 평가에서도 알파 0 항목을 건너뛴다(랩·시험 경로는 0 그대로).
         internal static int AlphaEarlyOut;
+        internal static long UpBytes, UpCalls;   // 진단: 프레임마다 올린 채널·시계 바이트(ownprobe up 으로 읽음)
         static readonly int pCameraOrtho=UnityEngine.Shader.PropertyToID("_CameraOrtho");
         internal void SetCameraOrtho(Vector4 v){if(shader)shader.SetVector(pCameraOrtho,v);}
         internal void SetLiveUniforms(Vector4 camera, double time)

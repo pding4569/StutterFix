@@ -68,7 +68,7 @@ namespace StutterFix
         }
 
         static void DepthChanged(scrVisualDecoration __instance)
-        { if (Product) DecoBake.GpuDepthChanged(__instance); }
+        { if (Product) { DecoBake.GpuDepthChanged(__instance); DecoBake.GpuOwnedDepthChanged(__instance); } }
         static void SceneChanged(UnityEngine.SceneManagement.Scene oldScene, UnityEngine.SceneManagement.Scene newScene) => End("화면 전환");
         static void Ending(MethodBase __originalMethod) => End(__originalMethod.Name);
 
@@ -748,8 +748,9 @@ namespace StutterFix
                 RequireLive(original.maskInteraction==SpriteMaskInteraction.None && !original.GetComponentInParent<SortingGroup>(), "소유 장식 마스크 또는 정렬 그룹 변경");
                 var material=original.sharedMaterial;
                 var shader=material?material.shader:null;
-                RequireLive(material && shader && ((shader.name=="Sprites/Tile" && material.passCount==1) || (shader.name==GpuDecoBlend.GrabShader && slice.Data.Items[item].BlendMode>0))
-                    && material.GetInstanceID()==slice.Data.Items[item].MaterialId, "소유 장식 재질 변경");
+                RequireLive(material && shader && ((shader.name=="Sprites/Tile" && material.passCount==1) || GpuDecoBlend.ShaderFits(shader,slice.Data.Items[item].BlendMode))
+                    // 혼합 장식은 에셋이 재질을 새로 만들거나 FastBlend 가 더하기 재질로 바꿔 끼울 수 있다: 모드가 그대로면 같은 그림이다
+                    && (material.GetInstanceID()==slice.Data.Items[item].MaterialId || (slice.Data.Items[item].BlendMode>0 && GpuDecoBlend.Id(original.GetComponentInParent<scrVisualDecoration>())==slice.Data.Items[item].BlendMode)), "소유 장식 재질 변경: " + original.name + " shader=" + (shader?shader.name:"null") + " item_blend=" + slice.Data.Items[item].BlendMode + " now_blend=" + GpuDecoBlend.Id(original.GetComponentInParent<scrVisualDecoration>()) + " mat_same=" + (material && material.GetInstanceID()==slice.Data.Items[item].MaterialId));
                 if(!GpuImageActor(gpuLiveOwnedIndices[master]))
                     RequireLive(texture.GetInstanceID()==slice.Data.Items[item].TextureId, "준비하지 않은 텍스처 변경");
             }

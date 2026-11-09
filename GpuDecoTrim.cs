@@ -20,7 +20,7 @@ namespace StutterFix
             {
                 var vd=baselineObjects[i] as scrVisualDecoration;
                 var t=vd?.spriteRenderer?.sprite?.texture;
-                if(t && Math.Max(t.width,t.height)>=512 && t.mipmapCount==1)
+                if(t && Math.Max(t.width,t.height)>=DrawCollapsePolicy.TrimMinSide && t.mipmapCount==1)
                 {
                     int id=t.GetInstanceID();
                     if(gpuTrimProbed.Add(id))allTex[id]=t;
@@ -28,7 +28,7 @@ namespace StutterFix
             }
             if(allTex.Count==0)return;
             int prevMin=DrawCollapsePolicy.TightMinSide;
-            DrawCollapsePolicy.TightMinSide=512;
+            DrawCollapsePolicy.TightMinSide=DrawCollapsePolicy.TrimMinSide;
             try{ComputeTrimBounds(gpuLiveShader,allTex);}finally{DrawCollapsePolicy.TightMinSide=prevMin;}
         }
         internal static void TryTrimRawQuad(Texture2D texture,ref Vector2[] corners,ref Vector2[] uv)
@@ -37,10 +37,10 @@ namespace StutterFix
             int id=texture.GetInstanceID();
             if(!gpuTrimBounds.TryGetValue(id,out var b))
             {
-                if(!gpuTrimProbed.Add(id)||Math.Max(texture.width,texture.height)<512||texture.mipmapCount!=1||!gpuLiveShader||!gpuLiveShader.HasKernel("AlphaBounds"))return;
+                if(!gpuTrimProbed.Add(id)||Math.Max(texture.width,texture.height)<DrawCollapsePolicy.TrimMinSide||texture.mipmapCount!=1||!gpuLiveShader||!gpuLiveShader.HasKernel("AlphaBounds"))return;
                 var one=new Dictionary<int,Texture2D>{{id,texture}};
                 int prevMin=DrawCollapsePolicy.TightMinSide;
-                DrawCollapsePolicy.TightMinSide=512;
+                DrawCollapsePolicy.TightMinSide=DrawCollapsePolicy.TrimMinSide;
                 try{ComputeTrimBounds(gpuLiveShader,one);}finally{DrawCollapsePolicy.TightMinSide=prevMin;}
                 if(!gpuTrimBounds.TryGetValue(id,out b))return;
             }

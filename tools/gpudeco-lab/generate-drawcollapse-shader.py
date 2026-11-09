@@ -67,6 +67,8 @@ DECLARATIONS
             ByteAddressBuffer _CollapseVerts;
             float _LodMode;
             float _SfDebugFlat;
+            float _SfNoDiscard;
+            float _SfDebugMode;   // 측정: 1 이면 투명 픽셀 버리기를 끈다
             float4 _LodTarget;
             Texture2D _LodTex;
             struct appdata { float3 vertex:POSITION; };
@@ -105,6 +107,7 @@ DECLARATIONS
                 if(_LodMode>0.5)return _LodTex.SampleLevel(sampler_linear_clamp,v.vertex.xy*_LodTarget.zw,0);
                 // 측정 전용 전역 값: 1 이면 텍스처 없이 색만(픽셀 셰이더 비용 가르기)
                 if(_SfDebugFlat>0.5){float4 f=v.color;f.rgb*=f.a;return f*0.25;}
+                if(_SfDebugMode>2.5)discard;   // 측정 전용 3: 아무것도 안 읽고 버림(픽셀 처리 시작 비용)
                 // info.x = 바인딩 + 점 샘플링 128 + 반복 256. 반복이면 UV 를 frac 으로 감싼다(게임의 Repeat 랩, 이음매 반 텍셀만 다름).
                 bool usePoint=fmod(v.info.x,256.0)>=128;bool wrapU=fmod(v.info.x,512.0)>=256;bool wrapV=fmod(v.info.x,1024.0)>=512;int binding=(int)v.info.x%128;
                 float2 uvIn=float2(wrapU?frac(v.uv.x):v.uv.x,wrapV?frac(v.uv.y):v.uv.y);
@@ -113,6 +116,11 @@ DECLARATIONS
                 float2 uv=clamp(uvIn*v.region.xy,v.region.zw,v.region.xy-v.region.zw);
                 float4 c=0;
 BRANCHES
+                // 텍스처 알파가 정확히 0 인 픽셀은 어느 섞기 모드에서도 화면을 바꾸지 않는다: 섞기(ROP) 전에 버린다.
+                // 겹친 큰 투명 여백이 많은 맵(DD 55초: 228개, 약 138화면분)에서 섞기 대역이 구간 그리기 비용의 대부분이었다.
+                if(_SfNoDiscard<0.5 && c.a<=0.0)discard;
+                // 측정 전용: 1 = 읽은 뒤 전부 버림(섞기 없는 비용), 2 = 화면 2x2 중 1 픽셀만 남김(섞는 양 1/4)
+                if(_SfDebugMode>0.5){if(_SfDebugMode<1.5 || (((uint)v.vertex.x|(uint)v.vertex.y)&1u)!=0u)discard;}
 #ifdef SF_BLEND
                 // 혼합 모드(Blend Modes 에셋의 SpritesDefault/UnifiedGrab 과 같은 식). 화면 복사본은 같은 이름의 GrabPass 를 공유한다.
                 // 모드 번호 = info.x / 1024 (그 에셋의 키워드 순서): 1 Darken 2 Multiply 4 LinearBurn 6 Lighten 7 Screen 9 LinearDodge
@@ -138,6 +146,8 @@ BRANCHES
                     return float4(r*c.a,c.a);
                 }
 #endif
+                // 더하기(9): 미리 곱한 섞기에 (s*a, 0) = d + a*s (Particles/Additive, Blend Modes LinearDodge 와 같은 값). 화면 복사 없음.
+                if(v.info.x>=9216.0 && v.info.x<10240.0){c*=v.color;return float4(c.rgb*c.a,0);}
                 c*=v.color;c.rgb*=c.a;return c;
             }
 #else

@@ -18,6 +18,8 @@ namespace StutterFix
             internal string Target;
         }
         static readonly Dictionary<scrDecoration,G1Initial> g1Initial = new Dictionary<scrDecoration,G1Initial>();
+        // 곡 중 깊이가 바뀌는 장식의 모든 깊이(처음 깊이 포함). 깊이 인스턴스를 켰을 때만 채운다.
+        static readonly Dictionary<scrDecoration,HashSet<int>> g1DepthSets = new Dictionary<scrDecoration,HashSet<int>>();
         static readonly AccessTools.FieldRef<scrDecoration,bool> g1RendererEnabled = AccessTools.FieldRefAccess<scrDecoration,bool>("rendererEnabled");
         static readonly AccessTools.FieldRef<scrVisualDecoration,MaskingType> g1Mask = AccessTools.FieldRefAccess<scrVisualDecoration,MaskingType>("maskingType");
         static void CaptureG1Initial(scrDecoration d)
@@ -34,7 +36,17 @@ namespace StutterFix
         {
             if(!g1Initial.TryGetValue(d,out var s)){row.Reasons.Add("초기 부가 상태 없음");return;}
             var v=(scrVisualDecoration)d;
-            if(f.depthUsed && (d.syncFloorDepth || f.targetDepth!=s.Depth))row.Reasons.Add("깊이 변경");
+            if(f.depthUsed && (d.syncFloorDepth || f.targetDepth!=s.Depth))
+            {
+                // 깊이 인스턴스: 이 장식이 곡 중에 갖는 깊이를 모두 모은다(타일 깊이 따르기는 값이 타일에서 오므로 제외)
+                if(DrawCollapsePolicy.DepthInstances && !d.syncFloorDepth)
+                {
+                    if(!g1DepthSets.TryGetValue(d,out var set)){set=new HashSet<int>{s.Depth};g1DepthSets[d]=set;}
+                    set.Add(f.targetDepth);
+                    if(set.Count>DrawCollapsePolicy.MaxDepthInstances)row.Reasons.Add("깊이 변경 많음");
+                }
+                else row.Reasons.Add("깊이 변경");
+            }
             if(f.cropPivotOffsetUsed && !(f.targetCropPivotOffset/100f).Equals(s.Crop))row.Reasons.Add("크롭 변경");
             if(f.smoothingUsed && f.targetSmoothing!=s.Smooth)row.Reasons.Add("부드럽게 변경");
             if(f.originalSizeUsed)
@@ -111,11 +123,14 @@ namespace StutterFix
         {
             RequireLive(!gpuCollapseOn || DrawCollapsePolicy.GlobalVerts,"G1 discrete visibility requires global collapse map");
             if(!gpuCollapseOn || gpuCollapseMapCpu==null || gpuCollapseSlotOfItem==null || !gpuCollapseIncluded[item])return;
-            int slot=gpuCollapseSlotOfItem[item];if(slot<0)return;
-            uint value=G1DrawHidden(gpuLiveSlices[0].MasterItems[item])?uint.MaxValue:(uint)item;
-            if(gpuCollapseMapCpu[slot]==value)return;
-            gpuCollapseMapCpu[slot]=value;
-            gpuCollapseAllMap?.SetData(gpuCollapseMapCpu,slot,slot,1);
+            WriteItemSlots(item,!G1DrawHidden(gpuLiveSlices[0].MasterItems[item]),true);
+        }
+        // 게임 ffxMoveDecorationsPlus.StartEffect 와 같은 자리(SetVisible 바로 뒤)에서 깊이를 바꾼다. 원래 렌더러는 그리지 않지만
+        // 정렬 상태를 게임과 같게 두고, SetDepth 후크가 GPU 쪽 자리(깊이 인스턴스)와 독립 렌더러를 맞춘다.
+        static void ApplyG1Depth(ffxMoveDecorationsPlus f,int master,scrDecoration d)
+        {
+            if(!f.depthUsed || !DrawCollapsePolicy.DepthInstances)return;   // 끄면 소유 장식의 깊이 이벤트는 모두 같은 값(준비 때 거름)
+            d.SetDepth(f.targetDepth);
         }
         static void ApplyG1Visible(ffxMoveDecorationsPlus f,int master,scrDecoration d)
         {

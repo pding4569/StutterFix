@@ -89,6 +89,7 @@ namespace StutterFix
             gpuCollapseArrays.Clear();gpuCollapseBarriers.Clear();gpuTieBarrierItem.Clear();gpuCollapseAuxiliaries.Clear();
             gpuCollapseDirect.Clear();
             gpuCollapseArrayOnly=null;
+            gpuInstRows.Clear();gpuInstItem.Clear();gpuItemInstIds=null;gpuItemSlots=null;gpuSlotDepth=null;gpuSpanHasInst=null;gpuItemDepthNow=null;gpuInstBase=int.MaxValue;
             gpuCollapseIncluded=null;gpuCollapseSeen=null;gpuCollapseKeysValid=false;gpuCollapseScanned=false;gpuCollapseDirtyIds.Clear();gpuCollapseNewDecos.Clear();gpuCollapseOwnedRows=null;gpuCollapseTextureFallback=null;gpuCollapseTextureFallbackCount=0;
         }
         static bool CollapseSupportedFormat(Texture2D t)
@@ -107,6 +108,9 @@ namespace StutterFix
             if(m<=1024)return 1024;
             return 0;
         }
+#if AUTOTEST
+        static readonly Dictionary<(int,int,int,float),string> tieDiagKind=new Dictionary<(int,int,int,float),string>();
+#endif
         static void DemoteTieExcludedRows(List<GpuLiveRow> rows)
         {
             if(rows==null || rows.Count==0)return;
@@ -120,9 +124,15 @@ namespace StutterFix
                 var bkey=(bk.Layer,bk.Order,bk.Queue,bk.Distance);
                 if(!activeBucketMinMat.TryGetValue(bkey,out int curMin) || bk.Material<curMin)activeBucketMinMat[bkey]=bk.Material;
                 if(!activeBucketMaxMat.TryGetValue(bkey,out int curMax) || bk.Material>curMax)activeBucketMaxMat[bkey]=bk.Material;
+#if AUTOTEST
+                if(!tieDiagKind.ContainsKey(bkey))tieDiagKind[bkey]=row.R.GetType().Name+":"+(row.M?row.M.shader.name:"-")+":L"+bk.Layer+"/O"+bk.Order+(row.R.GetComponentInParent<scrDecoration>() is scrDecoration dd0?":deco:"+dd0.name+":blend="+(dd0 is scrVisualDecoration vv0?GpuDecoBlend.Id(vv0)+":take="+GpuDecoBlend.Takeable(vv0,vv0.spriteRenderer)+":mask="+vv0.spriteRenderer.maskInteraction+":fx="+(vv0.blendModeEffect?vv0.blendModeEffect.MaskMode.ToString():"-")+":mesh="+(vv0.meshRenderer&&vv0.meshRenderer.enabled):"-"):"");
+#endif
             }
             if(activeBucketMinMat.Count==0)return;
             var demoted=new HashSet<int>();
+#if AUTOTEST
+            var tieCount=new Dictionary<string,int>();
+#endif
             foreach(var row in rows)
             {
                 if(row.Item<0 || !row.R || !row.M)continue;
@@ -135,8 +145,15 @@ namespace StutterFix
                     if(DrawCollapsePolicy.KeepAfterBarrier && activeBucketMaxMat.TryGetValue(bkey,out int maxBarrierMat) && ok.Material>maxBarrierMat)continue;
                 }
                 demoted.Add(row.Item);
+#if AUTOTEST
+                if(tieDiagKind.TryGetValue(bkey,out var tk)){tieCount.TryGetValue(tk,out int tc);tieCount[tk]=tc+1;}
+#endif
                 row.Item=-1;
             }
+#if AUTOTEST
+            if(GpuDecoPlayer.Product)Main.Entry.Logger.Log("[GPU 장식] 동점 정리 장벽 종류(내린 장식 수): "+string.Join(" | ",tieCount.OrderByDescending(x=>x.Value).Take(12).Select(x=>x.Key+"="+x.Value)));
+            tieDiagKind.Clear();
+#endif
             if(demoted.Count==0)return;
             foreach(var row in rows)if(demoted.Contains(row.AuxiliaryOwner))row.AuxiliaryOwner=-1;
             if(GpuDecoPlayer.Product)Main.Entry.Logger.Log("[GPU 장식] 동점 묶음 사전 정리(원본 컬링 유지): 내린 장식 "+demoted.Count+"개");
@@ -201,7 +218,7 @@ namespace StutterFix
             for(int i=0;i<source.Data.Items.Length;i++)
             {
                 var row=gpuCollapseOwnedRows[i];var sprite=row?.R as SpriteRenderer;
-                RequireLive(sprite && sprite.sprite && row.M && (row.M.shader.name=="Sprites/Tile" || (DrawCollapsePolicy.BlendModes && source.Data.Items[i].BlendMode>0 && row.M.shader.name==GpuDecoBlend.GrabShader))
+                RequireLive(sprite && sprite.sprite && row.M && (row.M.shader.name=="Sprites/Tile" || (DrawCollapsePolicy.BlendModes && GpuDecoBlend.ShaderFits(row.M.shader,source.Data.Items[i].BlendMode)))
                     && sprite.maskInteraction==SpriteMaskInteraction.None,"drawcollapse unsupported owned material/mask");
                 RequireLive(row.M.shaderKeywords.All(k=>k=="USE_POINT_SAMPLING" || (source.Data.Items[i].BlendMode>0 && (k.StartsWith("BLENDMODES_MODE_") || k=="FORCE_POINT_SAMPLING"))),"drawcollapse unsupported shader keywords: "+string.Join(",",row.M.shaderKeywords));
                 RequireLive((!row.M.HasProperty("_Color") || row.M.GetColor("_Color")==Color.white)
@@ -468,7 +485,7 @@ namespace StutterFix
             for(int k=0;k<gpuCollapseSpans.Count;k++)
             {
                 var items=gpuCollapseSpans[k].Items;gpuSpanVisible[k]=items.Length;
-                for(int j=0;j<items.Length;j++)gpuSpanOfItem[items[j]]=k;
+                for(int j=0;j<items.Length;j++)if(items[j]<gpuInstBase)gpuSpanOfItem[items[j]]=k;
                 MarkSpanDirty(k);
             }
             gpuItemHiddenState=new bool[n]; // 처음엔 모두 보일 수 있다고 두고, RefreshAlpha 가 실제 상태로 맞춘다
@@ -479,6 +496,7 @@ namespace StutterFix
             if(gpuSpanOfItem==null || (uint)item>=(uint)gpuSpanOfItem.Length)return;
             int k=gpuSpanOfItem[item];if(k<0 || gpuItemHiddenState[item]==hidden)return;
             gpuItemHiddenState[item]=hidden;
+            if(gpuSpanHasInst!=null && gpuSpanHasInst[k])return;   // 인스턴스 자리가 든 구간은 항상 전체 색인으로 그린다
             gpuSpanVisible[k]+=hidden?-1:1;
             gpuCollapseSpans[k].IndexDirty=true;
             MarkSpanDirty(k);
@@ -554,6 +572,151 @@ namespace StutterFix
         // ---- 곡 중에 깊이가 바뀌는 장벽: 실제 그리는 순서가 원래 ID 순서와 어긋나는 구간은 독립 렌더러로 넘긴다 ----
         static uint[] gpuCollapseMapCpu;
         static int[] gpuCollapseSlotOfItem;
+        // ---- 곡 중 깊이가 바뀌는 소유 장식(깊이 인스턴스) ----
+        // 그 장식이 갖는 깊이마다 정렬 키가 다른 그리기 자리를 하나씩 계획하고, 지금 깊이의 자리만 항목 번호를 넣는다(나머지는 빈 자리).
+        // 구간 항목 번호가 gpuInstBase 이상이면 인스턴스 줄이다: 실제 항목은 gpuInstItem, 정렬 키는 gpuInstRows.
+        static int gpuInstBase=int.MaxValue;
+        static readonly List<GpuLiveRow> gpuInstRows=new List<GpuLiveRow>();
+        static readonly List<int> gpuInstItem=new List<int>();
+        static int[] gpuItemDepthNow;                       // 항목 → 지금 깊이(깊이 인스턴스 항목만 의미)
+        static Dictionary<int,List<int>> gpuItemSlots;      // 깊이 인스턴스 항목 → 그 항목의 모든 자리
+        static Dictionary<int,List<int>> gpuItemInstIds;    // 깊이 인스턴스 항목 → 인스턴스 줄 번호들
+        static int[] gpuSlotDepth;                          // 자리 → 그 자리의 깊이
+        static bool[] gpuSpanHasInst;                       // 인스턴스 자리가 든 구간(빈 구간 끄기·색인 줄이기를 하지 않는다)
+        static int CR(int id)=>id<gpuInstBase?id:gpuInstItem[id-gpuInstBase];
+        static GpuLiveRow CRow(int id)=>id<gpuInstBase?gpuCollapseOwnedRows[id]:gpuInstRows[id-gpuInstBase];
+        static bool DepthItem(int item)=>gpuItemInstIds!=null && gpuItemInstIds.ContainsKey(item);
+        static int SpanGameLayer(int id){var row=CRow(id);return DepthItem(CR(id))?DepthGameLayer(RowDepth(row)):row.R.gameObject.layer;}
+        // 계획 때: 깊이가 바뀌는 통합 항목마다 다른 깊이의 줄을 더한다. 그 깊이 묶음에 켜진 장벽이 있거나 같은 재질의 줄이 이미 있으면
+        // (원래도 순서가 재질·ID 동점 규칙에 달림) 그 항목은 통합에서 빼고 독립 렌더러로 둔다.
+        static void BuildDepthInstanceRows(List<DrawCollapsePolicy.Row> rows,GpuLiveSlice source,Dictionary<(int,int,int,float),int> activeMin)
+        {
+            gpuInstRows.Clear();gpuInstItem.Clear();gpuItemInstIds=null;gpuItemSlots=null;gpuSlotDepth=null;
+            int n=gpuCollapseOwnedRows.Length;gpuInstBase=n;
+            gpuItemDepthNow=new int[n];
+            // 모든 항목의 지금 깊이(깊이 변경 후크가 같은 값이면 아무것도 하지 않게)
+            for(int i=0;i<n;i++){int m0=source.MasterItems[i];var r0=(uint)m0<(uint)gpuLiveOwnedRenderers.Length?gpuLiveOwnedRenderers[m0]:null;gpuItemDepthNow[i]=r0?-r0.sortingOrder:0;}
+            if(!DrawCollapsePolicy.DepthInstances || gpuMasterDepths==null || gpuMasterDepths.Length==0)return;
+            var taken=new HashSet<(int,int,int,float,int)>();
+            foreach(var b in gpuCollapseBarriers)taken.Add((b.Key.Layer,b.Key.Order,b.Key.Queue,b.Key.Distance,b.Key.Material));
+            for(int i=0;i<n;i++)if(gpuCollapseIncluded[i] && gpuCollapseOwnedRows[i]!=null){var k=gpuCollapseOwnedRows[i].Key;taken.Add((k.Layer,k.Order,k.Queue,k.Distance,k.Material));}
+            int made=0,dropped=0;
+            for(int i=0;i<n;i++)
+            {
+                int master=source.MasterItems[i];
+                var depths=(uint)master<(uint)gpuMasterDepths.Length?gpuMasterDepths[master]:null;
+                if(depths==null)continue;
+                var orow=gpuCollapseOwnedRows[i];
+                if(!gpuCollapseIncluded[i] || orow==null || !orow.R)continue;
+                int primary=RowDepth(orow);
+                var keys=new List<SceneRenderOrder.Key>();bool bad=false;
+                foreach(int dep in depths)
+                {
+                    if(dep==primary)continue;
+                    var k=new SceneRenderOrder.Key(SortingLayer.GetLayerValueFromID(DepthSortingLayerId(dep)),-dep,orow.Key.Queue,orow.Key.Distance,orow.Key.Material,orow.Key.Renderer,orow.Key.Slot);
+                    if(activeMin.ContainsKey((k.Layer,k.Order,k.Queue,k.Distance)) || taken.Contains((k.Layer,k.Order,k.Queue,k.Distance,k.Material))){bad=true;break;}
+                    keys.Add(k);
+                }
+                if(bad)
+                {
+                    gpuCollapseIncluded[i]=false;dropped++;
+                    if(!gpuCollapseTextureFallback[i]){gpuCollapseTextureFallback[i]=true;gpuCollapseTextureFallbackCount++;}
+                    var ir=source.Renderers[i];
+                    if(ir){var tieRow=new GpuLiveRow{R=ir,M=ir.sharedMaterial,Item=-1,AuxiliaryOwner=-1,Key=GpuDecoScene.SortKey(ir,ir.sharedMaterial,gpuLiveCamera)};gpuCollapseBarriers.Add(tieRow);gpuTieBarrierItem[tieRow]=i;}
+                    continue;
+                }
+                var ids=new List<int>();
+                foreach(var k in keys)
+                {
+                    taken.Add((k.Layer,k.Order,k.Queue,k.Distance,k.Material));
+                    int id=n+gpuInstRows.Count;
+                    gpuInstRows.Add(new GpuLiveRow{R=orow.R,M=orow.M,Item=orow.Item,AuxiliaryOwner=-1,Key=k,Signature=orow.Signature});
+                    gpuInstItem.Add(i);ids.Add(id);
+                    rows.Add(new DrawCollapsePolicy.Row(k,true,id));
+                }
+                if(gpuItemInstIds==null)gpuItemInstIds=new Dictionary<int,List<int>>();
+                gpuItemInstIds[i]=ids;made+=ids.Count;
+            }
+            Main.Entry.Logger.Log("[GPU 장식] 깊이 인스턴스 "+made+"줄(항목 "+(gpuItemInstIds!=null?gpuItemInstIds.Count:0)+"개), 순서 모호로 통합에서 뺀 항목 "+dropped+"개");
+        }
+        // 활성화 직전(곡 중간 시작 포함): 원래 렌더러의 지금 깊이로 자리를 맞춘다.
+        static void SyncAllDepthItems()
+        {
+            if(gpuItemInstIds==null || gpuItemDepthNow==null || gpuCollapseMapCpu==null)return;
+            var source=gpuLiveSlices[0];bool dirty=false;
+            foreach(var kv in gpuItemInstIds)
+            {
+                int i=kv.Key;int master=source.MasterItems[i];
+                gpuItemDepthNow[i]=-gpuLiveOwnedRenderers[master].sortingOrder;
+                if(gpuCollapseIncluded[i] && WriteItemSlots(i,!G1DrawHidden(master),false))dirty=true;
+            }
+            if(dirty)gpuCollapseAllMap?.SetData(gpuCollapseMapCpu);
+        }
+        // 게임 SetDepth: 깊이 >= 0 이면 Bg 층·레이어 9, 음수면 Default 층·레이어 7, 순서 -깊이
+        static int DepthGameLayer(int depth)=>depth>=0?9:7;
+        static int DepthSortingLayerId(int depth)=>SortingLayer.NameToID(depth>=0?"Bg":"Default");
+        static int RowDepth(GpuLiveRow row)=>-row.Key.Order;
+        // 지금 깊이에 맞는 줄(정렬 키 점검용)
+        static GpuLiveRow CurrentDepthRow(int item)
+        {
+            var row=gpuCollapseOwnedRows[item];
+            if(row==null || gpuItemInstIds==null || !gpuItemInstIds.TryGetValue(item,out var ids))return row;
+            int now=gpuItemDepthNow[item];
+            if(RowDepth(row)==now)return row;
+            foreach(int id in ids){var r=gpuInstRows[id-gpuInstBase];if(RowDepth(r)==now)return r;}
+            return row;
+        }
+        // 항목의 모든 자리에 쓴다: show 면 깊이가 맞는 자리만 항목 번호, 나머지는 빈 자리. upload 면 바뀐 자리만 바로 올린다.
+        static bool WriteItemSlots(int item,bool show,bool upload)
+        {
+            bool dirty=false;
+            if(gpuItemSlots!=null && gpuItemSlots.TryGetValue(item,out var slots))
+            {
+                int now=gpuItemDepthNow[item];
+                foreach(int s in slots)
+                {
+                    uint v=show && gpuSlotDepth[s]==now?(uint)item:uint.MaxValue;
+                    if(gpuCollapseMapCpu[s]==v)continue;
+                    gpuCollapseMapCpu[s]=v;dirty=true;
+                    if(upload)gpuCollapseAllMap?.SetData(gpuCollapseMapCpu,s,s,1);
+                }
+                return dirty;
+            }
+            int slot=gpuCollapseSlotOfItem!=null?gpuCollapseSlotOfItem[item]:-1;
+            if(slot<0)return false;
+            uint value=show?(uint)item:uint.MaxValue;
+            if(gpuCollapseMapCpu[slot]==value)return false;
+            gpuCollapseMapCpu[slot]=value;
+            if(upload)gpuCollapseAllMap?.SetData(gpuCollapseMapCpu,slot,slot,1);
+            return true;
+        }
+        // SetDepth 후크(제품): 소유 장식의 깊이가 바뀌었다. 독립 렌더러(텍스처 대체·동점 제외 등)는 원래와 같은 정렬로 두고,
+        // 통합 중이면 지금 깊이의 자리로 옮긴다. 준비하지 않은 깊이면 원래 방식으로 돌아간다.
+        internal static void GpuOwnedDepthChanged(scrVisualDecoration d)
+        {
+            try
+            {
+                if(!gpuLiveActive || !d || !gpuLiveMasterByDeco.TryGetValue(d,out int master))return;
+                var r=d.spriteRenderer;if(!r)return;
+                int depth=-r.sortingOrder;
+                for(int s=0;s<gpuLiveSlices.Count;s++)
+                {
+                    int item=gpuLiveMasterToSliceItem[master][s];if(item<0)continue;
+                    var ir=gpuLiveSlices[s].Renderers[item];
+                    if(ir && (ir.sortingOrder!=r.sortingOrder || ir.sortingLayerID!=r.sortingLayerID)){ir.sortingLayerID=r.sortingLayerID;ir.sortingOrder=r.sortingOrder;ir.gameObject.layer=r.gameObject.layer;if(gpuCollapseOn)EnsureWatchedBarrier(ir);}
+                }
+                if(!gpuCollapseOn || gpuItemDepthNow==null || gpuLiveSlices.Count==0)return;
+                int it=gpuLiveMasterToSliceItem[master][0];
+                if(it<0 || (uint)it>=(uint)gpuItemDepthNow.Length || gpuItemDepthNow[it]==depth)return;
+                gpuItemDepthNow[it]=depth;
+                if(!gpuCollapseIncluded[it])return;
+                bool prepared=false;
+                if(gpuItemSlots!=null && gpuItemSlots.TryGetValue(it,out var slots))foreach(int sl in slots)if(gpuSlotDepth[sl]==depth){prepared=true;break;}
+                if(!prepared){gpuCollapsePendingFallback=gpuCollapsePendingFallback??("소유 장식 깊이 변경(준비 안 한 깊이) item="+it+" depth="+depth);return;}
+                SyncG1CollapseItem(it);
+            }
+            catch(Exception e){gpuCollapsePendingFallback=gpuCollapsePendingFallback??("소유 장식 깊이 변경 처리 예외: "+e.Message);}
+        }
         static Dictionary<int,GpuLiveRow> gpuBarrierRowById;
         static readonly HashSet<int> gpuBarrierWatch=new HashSet<int>();
         static readonly Dictionary<int,(int,int,int,float,int)> gpuBarrierChecked=new Dictionary<int,(int,int,int,float,int)>();
@@ -760,15 +923,15 @@ namespace StutterFix
             if(gpuSpanExcluded[k])return;
             gpuSpanExcluded[k]=true;gpuDynExcludedSpans++;
             var sp=gpuCollapseSpans[k];var slice=gpuLiveSlices[0];bool mapDirty=false;
-            foreach(int item in sp.Items)
+            foreach(int id in sp.Items)
             {
+                int item=CR(id);
                 if(!gpuCollapseIncluded[item])continue;
                 gpuCollapseIncluded[item]=false;gpuDynExcludedItems.Add(item);
                 if(gpuDynZero==null || gpuDynZero.Length!=gpuCollapseIncluded.Length)gpuDynZero=new bool[gpuCollapseIncluded.Length];
                 gpuDynZero[item]=DynAlphaZero(slice.MasterItems[item]);
                 if(!gpuCollapseTextureFallback[item]){gpuCollapseTextureFallback[item]=true;gpuCollapseTextureFallbackCount++;}
-                int slot=gpuCollapseSlotOfItem!=null?gpuCollapseSlotOfItem[item]:-1;
-                if(slot>=0){gpuCollapseMapCpu[slot]=uint.MaxValue;mapDirty=true;}
+                if(WriteItemSlots(item,false,false))mapDirty=true;
                 if(gpuSpanOfItem!=null)gpuSpanOfItem[item]=-1;
                 slice.RefreshItem(item);
             }
@@ -781,19 +944,21 @@ namespace StutterFix
             if(!gpuSpanExcludedFlag(k))return;
             gpuSpanExcluded[k]=false;gpuDynExcludedSpans=Math.Max(0,gpuDynExcludedSpans-1);
             var sp=gpuCollapseSpans[k];var slice=gpuLiveSlices[0];bool mapDirty=false;int visible=0;
-            foreach(int item in sp.Items)
+            foreach(int id in sp.Items)
             {
+                int item=CR(id);
+                if(gpuCollapseIncluded[item])continue;   // 같은 항목의 다른 깊이 자리가 이미 되돌렸다
                 if(gpuCollapseIncludedSaved!=null && !gpuCollapseIncludedSaved[item])continue; // 준비 때부터 통합에서 빠진 항목은 그대로
                 gpuCollapseIncluded[item]=true;gpuDynExcludedItems.Remove(item);
                 if(gpuDynZero!=null && (uint)item<(uint)gpuDynZero.Length)gpuDynZero[item]=false;
                 bool saved=gpuCollapseFallbackSaved!=null && gpuCollapseFallbackSaved[item];
                 if(gpuCollapseTextureFallback[item] && !saved){gpuCollapseTextureFallback[item]=false;gpuCollapseTextureFallbackCount--;}
-                int slot=gpuCollapseSlotOfItem!=null?gpuCollapseSlotOfItem[item]:-1;
-                if(slot>=0){gpuCollapseMapCpu[slot]=(uint)item;mapDirty=true;}
-                if(gpuSpanOfItem!=null){gpuSpanOfItem[item]=k;bool hid=slice.IsHiddenAlpha(item);gpuItemHiddenState[item]=hid;if(!hid)visible++;}
+                if(WriteItemSlots(item,true,false))mapDirty=true;
+                if(gpuSpanOfItem!=null){if(id==item)gpuSpanOfItem[item]=k;bool hid=slice.IsHiddenAlpha(item);gpuItemHiddenState[item]=hid;if(!hid)visible++;}
                 slice.RefreshItem(item);
             }
             if(mapDirty && gpuCollapseAllMap!=null)gpuCollapseAllMap.SetData(gpuCollapseMapCpu);
+            if(gpuSpanHasInst!=null && gpuSpanHasInst[k])visible=sp.Items.Length;
             if(gpuSpanVisible!=null){gpuSpanVisible[k]=visible;MarkSpanDirty(k);}
             Main.Entry.Logger.Log("[GPU 장식] 어긋나게 하던 장벽이 숨어 구간 "+k+"(항목 "+sp.Items.Length+"개)를 다시 통합으로 되돌림");
         }
@@ -971,6 +1136,7 @@ namespace StutterFix
 #endif
             if(GpuDecoPlayer.Product)Main.Entry.Logger.Log("[GPU 장식] 동점 묶음 때문에 독립 렌더러로 남긴 장식 "+tieExcluded+"개 (동점 묶음 "+activeBucketMinMat.Count+"개)");
             GpuLog("DRAWCOLLAPSE_REPLAN barriers_removed="+lostBarriers+" stale_tie_removed="+staleTie+" barriers_added="+addedBarriers+" barriers_now="+gpuCollapseBarriers.Count+" reread="+rereadBarriers+" keys_cached="+keysValid+" shift="+keyShift.ToString("R",Inv));
+            BuildDepthInstanceRows(rows,source,activeBucketMinMat);
             foreach(var row in gpuCollapseBarriers)
                 rows.Add(new DrawCollapsePolicy.Row(row.Key,false,row.R.GetInstanceID()));
             for(int i=0;i<gpuCollapseOwnedRows.Length;i++)
@@ -981,7 +1147,7 @@ namespace StutterFix
             gpuCollapseDirtyIds.Clear();
             long dcT2=Stopwatch.GetTimestamp();
             // 혼합 모드 항목(화면 복사를 쓰는 항목) 표: 일반 항목 다음에 오면 구간을 끊는다
-            {var src0=gpuLiveSlices[0].Data.Items;var gi=new bool[src0.Length];for(int q=0;q<src0.Length;q++)gi[q]=DrawCollapsePolicy.BlendModes && src0[q].BlendMode>0;DrawCollapsePolicy.GrabItems=gi;}
+            {var src0=gpuLiveSlices[0].Data.Items;var gi=new bool[src0.Length+gpuInstRows.Count];for(int q=0;q<gi.Length;q++)gi[q]=DrawCollapsePolicy.BlendModes && GpuDecoBlend.NeedsGrab(src0[CR(q)].BlendMode);DrawCollapsePolicy.GrabItems=gi;}
             var plan=DrawCollapsePolicy.Plan(rows);
             DrawCollapsePolicy.GrabItems=null;
             dcPlanMs=DcMs(dcT2);dcMeshMs=0;long dcT3=Stopwatch.GetTimestamp();
@@ -997,32 +1163,33 @@ namespace StutterFix
             foreach(var items in plan)
             {
                 long dcL0=Stopwatch.GetTimestamp();
-                var first=gpuCollapseOwnedRows[items[0]];var last=gpuCollapseOwnedRows[items[items.Length-1]];
+                var first=CRow(items[0]);var last=CRow(items[items.Length-1]);
                 var s=new CollapseSpan{Items=items,First=first.Key,Last=last.Key};gpuCollapseSpans.Add(s);
                 s.Base=baseRun;baseRun+=items.Length;
-                RequireLive(items.All(i=>gpuCollapseOwnedRows[i].R.gameObject.layer==first.R.gameObject.layer),
+                int spanLayer=SpanGameLayer(items[0]);
+                RequireLive(items.All(i=>SpanGameLayer(i)==spanLayer),
                     "drawcollapse span crosses camera culling layers");
                 // 블렌드 상태와 큐가 같은 구간은 재질 하나를 공유한다(엔진의 CanFlattenSharedMaterialData 해시 비용을 구간 수만큼 안 낸다).
                 var blend=new float[3];int bi=0;
                 foreach(string p in new[]{"_SrcBlend","_DstBlend","_BlendOp"})
                 {
                     float expected=first.M.HasProperty(p)?first.M.GetFloat(p):(p=="_SrcBlend"?1:p=="_DstBlend"?10:0);
-                    RequireLive(items.All(i=>!gpuCollapseOwnedRows[i].M.HasProperty(p) || gpuCollapseOwnedRows[i].M.GetFloat(p)==expected),
+                    RequireLive(items.All(i=>!CRow(i).M.HasProperty(p) || CRow(i).M.GetFloat(p)==expected),
                         "drawcollapse incompatible blend states "+p);
                     blend[bi++]=expected;
                 }
                 bool noDirect=supportsNoDirect && gpuCollapseArrayOnly!=null
-                    && items.All(i=>(uint)i<(uint)gpuCollapseArrayOnly.Length && gpuCollapseArrayOnly[i]);
+                    && items.All(i=>(uint)CR(i)<(uint)gpuCollapseArrayOnly.Length && gpuCollapseArrayOnly[CR(i)]);
                 // 직접 텍스처를 조금만 쓰는 구간: 쓰는 것만 작은 칸에 매기는 DIRECT_FEW 변형(같은 그림, 바인딩·셰이더가 작다).
                 List<int> few=null;
                 if(!noDirect && supportsFew && DrawCollapsePolicy.FewDirect)
                 {
                     var u=new SortedSet<int>();
-                    foreach(int it in items){var ds=(uint)it<(uint)gpuCollapseDirectSet.Length?gpuCollapseDirectSet[it]:null;if(ds==null){u=null;break;}foreach(int d in ds)u.Add(d);if(u.Count>DrawCollapsePolicy.FewDirectBindings)break;}
+                    foreach(int it0 in items){int it=CR(it0);var ds=(uint)it<(uint)gpuCollapseDirectSet.Length?gpuCollapseDirectSet[it]:null;if(ds==null){u=null;break;}foreach(int d in ds)u.Add(d);if(u.Count>DrawCollapsePolicy.FewDirectBindings)break;}
                     if(u!=null && u.Count<=DrawCollapsePolicy.FewDirectBindings)few=u.ToList();
                 }
                 // 혼합 모드 항목이 있는 구간은 화면 복사(GrabPass)를 쓰는 셰이더로 그린다
-                bool grabSpan=gpuCollapseBlendShader && items.Any(it=>source.Data.Items[it].BlendMode>0);
+                bool grabSpan=gpuCollapseBlendShader && items.Any(it=>GpuDecoBlend.NeedsGrab(source.Data.Items[CR(it)].BlendMode));
                 string matKey=first.M.renderQueue+"/"+blend[0]+"/"+blend[1]+"/"+blend[2]+"/"+noDirect+(few!=null?"/f"+string.Join(",",few):"")+(grabSpan?"/grab":"");
                 if(!gpuCollapseSharedMats.TryGetValue(matKey,out var shared) || !shared)
                 {
@@ -1056,7 +1223,7 @@ namespace StutterFix
                 s.Mesh.SetVertexBufferData(new float[items.Length*60],0,0,items.Length*60);
                 }
                 var indices=new int[items.Length*6];
-                for(int n=0;n<items.Length;n++)for(int t=0;t<6;t++)indices[n*6+t]=n*4+source.Data.Items[items[n]].Triangles[t];
+                for(int n=0;n<items.Length;n++)for(int t=0;t<6;t++)indices[n*6+t]=n*4+source.Data.Items[CR(items[n])].Triangles[t];
                 s.AllIndices=indices;s.ActiveIndices=new int[indices.Length];s.LastUploadedIndexCount=indices.Length;s.IndexDirty=true;
                 s.Mesh.subMeshCount=1;s.Mesh.SetIndices(indices,MeshTopology.Triangles,0,false);
                 // Refresh the sort center too: a start-of-song mesh bound is stale at ready.
@@ -1075,13 +1242,14 @@ namespace StutterFix
                 if(!DrawCollapsePolicy.GlobalVerts)s.Vertices=s.Mesh.GetVertexBuffer(0);
                 dcMeshBuildMs+=DcMs(dcL1);long dcL2=Stopwatch.GetTimestamp();
                 RequireLive(s.Mesh.subMeshCount==1 && (DrawCollapsePolicy.GlobalVerts || s.Mesh.GetVertexBufferStride(0)==60),"drawcollapse raw mesh layout");
-                if(!DrawCollapsePolicy.GlobalVerts){s.Map=new ComputeBuffer(items.Length,4);s.Map.SetData(items.Select(i=>(uint)i).ToArray());}
+                if(!DrawCollapsePolicy.GlobalVerts){s.Map=new ComputeBuffer(items.Length,4);s.Map.SetData(items.Select(i=>(uint)CR(i)).ToArray());}
                 dcBufMs+=DcMs(dcL2);long dcL3=Stopwatch.GetTimestamp();
-                var go=new GameObject("GpuDeco collapse span"){hideFlags=HideFlags.HideAndDontSave,layer=first.R.gameObject.layer};
+                var go=new GameObject("GpuDeco collapse span"){hideFlags=HideFlags.HideAndDontSave,layer=spanLayer};
                 go.transform.SetParent(gpuLiveRoot.transform,false);go.AddComponent<MeshFilter>().sharedMesh=s.Mesh;
                 s.Renderer=go.AddComponent<MeshRenderer>();s.Renderer.enabled=false;s.Renderer.sharedMaterial=s.Material;
                 s.Renderer.motionVectorGenerationMode=MotionVectorGenerationMode.ForceNoMotion;s.Renderer.allowOcclusionWhenDynamic=false;
-                s.Renderer.sortingLayerID=first.R.sortingLayerID;s.Renderer.sortingOrder=first.R.sortingOrder;
+                if(DepthItem(CR(items[0]))){int fd=RowDepth(first);s.Renderer.sortingLayerID=DepthSortingLayerId(fd);s.Renderer.sortingOrder=-fd;}
+                else{s.Renderer.sortingLayerID=first.R.sortingLayerID;s.Renderer.sortingOrder=first.R.sortingOrder;}
                 s.Renderer.shadowCastingMode=ShadowCastingMode.Off;s.Renderer.receiveShadows=false;
                 s.Renderer.lightProbeUsage=LightProbeUsage.Off;s.Renderer.reflectionProbeUsage=ReflectionProbeUsage.Off;
                 RequireLive(s.Renderer.sharedMaterials.Length==1,"drawcollapse requires one material");
@@ -1092,10 +1260,20 @@ namespace StutterFix
                 gpuCollapseAllVerts?.Dispose();gpuCollapseAllMap?.Dispose();
                 gpuCollapseAllCount=baseRun;
                 var allMap=new uint[baseRun];int at=0;
-                foreach(var sp in gpuCollapseSpans)foreach(int it in sp.Items)allMap[at++]=(uint)it;
+                var slotDepth=new int[baseRun];
+                if(gpuItemInstIds!=null)gpuItemSlots=new Dictionary<int,List<int>>();
+                foreach(var sp in gpuCollapseSpans)foreach(int id in sp.Items)
+                {
+                    int it=CR(id);slotDepth[at]=RowDepth(CRow(id));
+                    if(gpuItemSlots!=null && gpuItemInstIds.ContainsKey(it)){if(!gpuItemSlots.TryGetValue(it,out var ls)){ls=new List<int>();gpuItemSlots[it]=ls;}ls.Add(at);}
+                    allMap[at++]=(uint)it;
+                }
+                gpuSlotDepth=slotDepth;
                 gpuCollapseMapCpu=allMap;gpuCollapseSlotOfItem=new int[gpuLiveSlices[0].Data.Items.Length];
                 for(int q=0;q<gpuCollapseSlotOfItem.Length;q++)gpuCollapseSlotOfItem[q]=-1;
                 for(int q=0;q<allMap.Length;q++)gpuCollapseSlotOfItem[allMap[q]]=q;
+                // 깊이 인스턴스 항목: 지금 깊이의 자리만 남긴다
+                if(gpuItemSlots!=null)foreach(var kv in gpuItemSlots)WriteItemSlots(kv.Key,!G1DrawHidden(gpuLiveSlices[0].MasterItems[kv.Key]),false);
                 gpuCollapseAllVerts=new ComputeBuffer(Math.Max(1,baseRun*60),4,ComputeBufferType.Raw);
                 gpuCollapseAllMap=new ComputeBuffer(Math.Max(1,baseRun),4);gpuCollapseAllMap.SetData(allMap);
                 Shader.SetGlobalBuffer("_CollapseVerts",gpuCollapseAllVerts);
@@ -1125,12 +1303,14 @@ namespace StutterFix
                 ri=rj;
             }
             BuildBarrierIndex();
+            gpuSpanHasInst=new bool[gpuCollapseSpans.Count];
+            for(int k=0;k<gpuCollapseSpans.Count;k++)foreach(int id in gpuCollapseSpans[k].Items)if(id>=gpuInstBase){gpuSpanHasInst[k]=true;break;}
             BuildSpanAlphaTracking();
             gpuSpanExcluded=null;
             GpuLog("DRAWCOLLAPSE_SAME_BUCKET_SPANS spans_in_multi_runs="+multiSpans+" nudged_spans="+nudgedSpans);
             if(GpuDecoPlayer.Product)Main.Entry.Logger.Log("[GPU 장식] 동점 묶음 구간 "+multiSpans+"개(재질 따로), 거리 보정 "+nudgedSpans+"개, 공유 재질 종류 "+gpuCollapseSharedMats.Count);
             GpuLog("DRAWCOLLAPSE_NODIRECT spans="+noDirectSpans+" of "+gpuCollapseSpans.Count);
-            if(GpuDecoPlayer.Product)Main.Entry.Logger.Log("[GPU 장식] 그리기 구간 "+gpuCollapseSpans.Count+"개 중 배열 텍스처만 쓰는 구간 "+noDirectSpans+"개, 직접 텍스처 적은 구간 "+fewSpans+"개");
+            if(GpuDecoPlayer.Product)Main.Entry.Logger.Log("[GPU 장식] 그리기 구간 "+gpuCollapseSpans.Count+"개 중 배열 텍스처만 쓰는 구간 "+noDirectSpans+"개, 직접 텍스처 적은 구간 "+fewSpans+"개, 화면 복사 구간 "+gpuCollapseSpans.Count(sp=>sp.Material && sp.Material.shader==gpuCollapseBlendShader)+"개 (모드별 항목: "+string.Join(",",gpuCollapseSpans.SelectMany(sp=>sp.Items).Select(id=>source.Data.Items[CR(id)].BlendMode).Where(b=>b>0).GroupBy(b=>b).OrderBy(g=>g.Key).Select(g=>g.Key+"="+g.Count()))+")");
         }
         // 텍스처 정보 앞쪽: x = 바인딩 + 점 샘플링 128 + U 랩 반복 256 + V 랩 반복 512 + 혼합 모드*1024, y = 배열 층,
         // zw = UV 배율(재질 RepeatX/Y 실효값, 1 이면 0). 랩 비트는 그 텍스처의 실제 랩 모드(Repeat 일 때만 frac, 아니면 가장자리 고정)를 따른다.
@@ -1271,6 +1451,7 @@ namespace StutterFix
 #endif
         static void ValidateDrawCollapse(bool full=true)
         {
+            SyncAllDepthItems();
 #if AUTOTEST
             var guard=new DrawCollapseGuard(full && !GpuDecoPlayer.Product, DiagFull ? DiagOrder : (GpuDecoPlayer.Product && !full ? GpuDecoPlayer.OrderViolation : (Action<string>)null));
 #else
@@ -1334,7 +1515,7 @@ namespace StutterFix
                     for(int n=0;n<checks;n++)
                     {
                         int i=fullOwned?n:gpuCollapseOwnedCursor++%count;
-                        CheckDrawCollapseKey(gpuCollapseOwnedRows[i],shift,guard,i);
+                        CheckDrawCollapseKey(CurrentDepthRow(i),shift,guard,i);
                     }
                     if(!fullOwned && count>0)gpuCollapseOwnedCursor%=count;
                 }
@@ -1359,11 +1540,11 @@ namespace StutterFix
                         // 구간 범위 안/경계: 실제 거리까지 읽어 순서를 확인한다.
                         if(!haveKey){key=GpuDecoScene.SortKey(r,DrawCollapseMaterial(barrier),gpuLiveCamera,barrier.Key.Slot);haveKey=true;}
                         var proxy=GpuDecoScene.SortKey(span.Renderer,span.Material,gpuLiveCamera);
-                        var first=gpuCollapseOwnedRows[span.Items[0]];
-                        var last=gpuCollapseOwnedRows[span.Items[span.Items.Length-1]];
+                        var first=CRow(span.Items[0]);
+                        var last=CRow(span.Items[span.Items.Length-1]);
                         if(!first.R || !last.R)continue; // Already recorded by the owned checks.
-                        var firstKey=GpuDecoScene.SortKey(first.R,first.M,gpuLiveCamera,first.Key.Slot);
-                        var lastKey=GpuDecoScene.SortKey(last.R,last.M,gpuLiveCamera,last.Key.Slot);
+                        var firstKey=LiveRowKey(first,CR(span.Items[0]));
+                        var lastKey=LiveRowKey(last,CR(span.Items[span.Items.Length-1]));
                         var judge=key;
                         bool before=judge.CompareTo(firstKey)<0,after=judge.CompareTo(lastKey)>0;
                         if(!((before && key.CompareTo(proxy)<0) || (after && key.CompareTo(proxy)>0)))guard.Check(false,
@@ -1379,6 +1560,12 @@ namespace StutterFix
             if(full)GpuLog("DRAWCOLLAPSE_VALIDATE_MS full="+DcMs(dcV0).ToString("F1",Inv)+" barriers="+gpuCollapseBarriers.Count+" auxiliaries="+gpuCollapseAuxiliaries.Count);
 #endif
             guard.Finish(GpuLog);
+        }
+        // 줄의 지금 정렬 키. 깊이 인스턴스 항목은 렌더러의 지금 깊이가 아니라 그 줄의 층·순서를 쓴다.
+        static SceneRenderOrder.Key LiveRowKey(GpuLiveRow row,int item)
+        {
+            if(!DepthItem(item))return GpuDecoScene.SortKey(row.R,row.M,gpuLiveCamera,row.Key.Slot);
+            return new SceneRenderOrder.Key(row.Key.Layer,row.Key.Order,row.M?row.M.renderQueue:-1,GpuDecoScene.Distance(row.R,gpuLiveCamera),row.M?row.M.GetInstanceID():0,row.R.GetInstanceID(),row.Key.Slot);
         }
         static void CheckDrawCollapseKey(GpuLiveRow row,float shift,DrawCollapseGuard guard,int item)
         {

@@ -223,7 +223,9 @@ namespace StutterFix
         {
             if(!d.spriteRenderer.sprite)
             {
-                RequireLive(g1ImageExpectedEmpty[master],"unexpected missing GPU image sprite");
+                // 혼합 모드 장식은 활성화 순간 이미지가 비어 있을 수 있다(원래도 그리지 않음): 빈 칸으로 맡는다
+                if(!g1ImageExpectedEmpty[master] && DrawCollapsePolicy.BlendModes && GpuDecoBlend.Id(d)>0)g1ImageExpectedEmpty[master]=true;
+                RequireLive(g1ImageExpectedEmpty[master],"unexpected missing GPU image sprite: "+d.name+" master="+master+" blend="+GpuDecoBlend.Id(d)+" renderer="+(d.spriteRenderer?d.spriteRenderer.enabled.ToString():"null"));
                 g1ImageEmpty[master]=true;RefreshG1Draw(master);return;
             }
             // Explicit diagnostic A only; no per-frame Transform writes.
@@ -242,10 +244,12 @@ namespace StutterFix
                 RequireLive(slice.Independent&&slice.Gpu!=null&&slice.Gpu.HasNativeLiveKernel&&slice.Renderers.Count==slice.Data.Items.Length,"GPU image renderer mapping");
                 var prior=slice.Data.Items[item];var renderer=slice.Renderers[item];
                 RequireLive(renderer&&source.sharedMaterial&&renderer.sharedMaterial
-                    &&(source.sharedMaterial.shader==renderer.sharedMaterial.shader || prior.BlendMode>0 || source.sharedMaterial.shader.name==GpuDecoBlend.GrabShader || renderer.sharedMaterial.shader.name==GpuDecoBlend.GrabShader)
+                    &&(source.sharedMaterial.shader==renderer.sharedMaterial.shader || prior.BlendMode>0 || GpuDecoBlend.ShaderFits(source.sharedMaterial.shader,prior.BlendMode))
                     &&source.sharedMaterial.renderQueue==renderer.sharedMaterial.renderQueue
                     &&source.sortingLayerID==renderer.sortingLayerID&&source.sortingOrder==renderer.sortingOrder,"GPU image material/order changed");
                 next.Index=prior.Index;next.Id=prior.Id;next.MaterialId=source.sharedMaterial.GetInstanceID();
+                next.Flags|=prior.Flags&(128|256);   // 화면 고정(시차 clampToScreen / CameraAspect) 표시는 이미지가 바뀌어도 그대로
+                next.RepeatX=prior.RepeatX;next.RepeatY=prior.RepeatY;next.BlendMode=prior.BlendMode;
                 next.Initial=prior.Initial;next.Tracks=prior.Tracks;next.Anchors=prior.Anchors;
                 if(gpuImageMatrix)
                 {

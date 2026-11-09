@@ -951,6 +951,11 @@ namespace StutterFix
                 case "sfflat": Shader.SetGlobalFloat("_SfDebugFlat", arg.Trim() == "off" ? 0f : 1f); Log("[sfflat] " + arg.Trim()); return true;
                 case "sfsimple": Log("[sfsimple] " + LodProbe.Simple(arg.Trim() != "off")); return true;
                 case "coverage": Log("[coverage] " + DecoBake.CoverageProbe()); return true;
+                case "depthinst": { var a0 = arg.Trim(); DrawCollapsePolicy.DepthInstances = a0 != "off"; if (int.TryParse(a0, out int mx) && mx > 1) DrawCollapsePolicy.MaxDepthInstances = mx; Log("[depthinst] " + DrawCollapsePolicy.DepthInstances + " max=" + DrawCollapsePolicy.MaxDepthInstances); return true; }
+                case "blendgrab": DrawCollapsePolicy.BlendGrab = arg.Trim() != "off"; Log("[blendgrab] " + DrawCollapsePolicy.BlendGrab); return true;
+                case "ownprobe": Log("[ownprobe] " + DecoBake.OwnProbe(arg)); return true;
+                case "sfnodiscard": Shader.SetGlobalFloat("_SfNoDiscard", arg.Trim() == "off" ? 0f : 1f); Log("[sfnodiscard] " + arg.Trim()); return true;
+                case "sfdebug": Shader.SetGlobalFloat("_SfDebugMode", float.Parse(arg.Trim(), System.Globalization.CultureInfo.InvariantCulture)); Log("[sfdebug] " + arg.Trim()); return true;
                 case "blendmodes": DrawCollapsePolicy.BlendModes = arg.Trim() != "off"; Log("[blendmodes] " + DrawCollapsePolicy.BlendModes); return true;
                 case "oversized": DrawCollapsePolicy.AllowOversized = arg.Trim() != "off"; Log("[oversized] " + DrawCollapsePolicy.AllowOversized); return true;
                 case "globaldirect": DrawCollapsePolicy.GlobalDirect = arg.Trim() != "off"; Log("[globaldirect] " + DrawCollapsePolicy.GlobalDirect); return true;

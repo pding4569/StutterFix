@@ -22,7 +22,7 @@ namespace StutterFix
                 native += RectArea(vp, new[] { new Vector3(b.min.x, b.min.y, b.center.z), new Vector3(b.max.x, b.min.y, b.center.z), new Vector3(b.max.x, b.max.y, b.center.z), new Vector3(b.min.x, b.max.y, b.center.z) });
                 nativeN++;
             }
-            double gpu = 0; int gpuN = 0;
+            double gpu = 0; int gpuN = 0; double zeroA = 0; int zeroN = 0;
             if (gpuCollapseOn && gpuCollapseAllVerts != null && gpuCollapseAllCount > 0)
             {
                 var raw = new float[gpuCollapseAllCount * 60];
@@ -39,11 +39,12 @@ namespace StutterFix
                         if (p != Vector3.zero) nz = true;
                         pts[k] = root.MultiplyPoint3x4(p);
                     }
+                    if (nz && raw[(s * 4) * 15 + 6] <= 0) { zeroA += RectArea(vp, pts); zeroN++; }
                     if (!nz || raw[(s * 4) * 15 + 6] <= 0) continue;   // 정점 0 = 안 그림, 색 알파 0
                     gpu += RectArea(vp, pts); gpuN++;
                 }
             }
-            return string.Format(System.Globalization.CultureInfo.InvariantCulture, "원래 장식 렌더러 {0}개 {1:F1}장 | GpuDeco 구간 항목 {2}개 {3:F1}장", nativeN, native, gpuN, gpu);
+            return string.Format(System.Globalization.CultureInfo.InvariantCulture, "원래 장식 렌더러 {0}개 {1:F1}장 | GpuDeco 구간 항목 {2}개 {3:F1}장 | 알파0인데 정점 있는 항목 {4}개 {5:F1}장", nativeN, native, gpuN, gpu, zeroN, zeroA);
         }
 
         // 네 점의 화면 사각형(축 정렬)을 화면 [0,1] 로 잘라 넓이(화면 장수)
