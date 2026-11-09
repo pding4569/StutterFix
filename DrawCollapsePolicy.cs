@@ -131,6 +131,10 @@ namespace StutterFix
         internal static int TightMinSide=1025;
         // 투명 여백 깎기(쿼드를 알파>0 범위로 줄임)를 하는 텍스처의 최소 긴 변. 측정: gpudeco drawcollapse policy trimmin N
         internal static int TrimMinSide=512;
+        // 형태 칸(GpuDecoShape): 투명 여백이 많은 텍스처를 칸 사각형 몇 개로만 그린다. 측정: gpudeco drawcollapse policy shape on|off, shapegrid N
+        internal static bool ShapeCells=false;
+        internal static int ShapeGrid=16, ShapeMinSide=64, ShapeMaxRects=48;
+        internal static float ShapeMaxKeep=.6f;
         internal const int TightMarginTexels=4;
         internal const float TightMaxAreaRatio=.8f;
         // 2048 을 넘는 같은 크기 DXT5(4K 프레임 계열 등)를 정확한 크기의 배열 하나로 묶는다. 3개 미만이면 직접 슬롯을 쓴다.

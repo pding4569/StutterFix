@@ -11,6 +11,7 @@
 #pragma kernel ImagePixelProbe
 #pragma kernel LinearProbe
 #pragma kernel AlphaBounds
+#pragma kernel AlphaCells
 #pragma target 5.0
 
 struct Segment { float hi, lo, duration, start, end, target, over, period; uint ease, scale; };
@@ -253,6 +254,8 @@ void EaseProbe(uint3 thread:SV_DispatchThreadID)
     uint i=thread.x; if(i>=_Count) return;
     float4 p=_Probe[i]; _ProbeOut[i]=Ease(_ProbeIds[i],p.x,p.y,p.z,p.w);
 }
+// 형태 칸: 이 자리가 그리는 텍스처 UV 사각형(_CollapseTexture[_Count*2 + 번호-1] = u0,v0,u1,v1). 0 이면 원래 사각형 전체.
+static uint gShapeRec=0;
 void WriteVerticesAt(uint i, float v[16], uint outputItem, bool collapse)
 {
     float4 color=float4(v[7],v[8],v[9],v[10]*v[11]);
@@ -339,6 +342,27 @@ void WriteVerticesAt(uint i, float v[16], uint outputItem, bool collapse)
             return;
         }
     }
+    // 형태 칸 자리: 네 모서리를 UV 사각형 안으로 옮기고 위치는 원래 네 모서리의 쌍선형(사각형이 아핀이라 정확한 같은 대응).
+    float2 shapeUv[4];bool shaped=false;
+    if(collapse && gShapeRec>0u)
+    {
+        float4 R=_CollapseTexture[_Count*2u+gShapeRec-1u];
+        float2 U0=_UV[i*4],U1=_UV[i*4+1],U2=_UV[i*4+2],U3=_UV[i*4+3];
+        float uA=min(min(U0.x,U1.x),min(U2.x,U3.x)),uB=max(max(U0.x,U1.x),max(U2.x,U3.x));
+        float vA=min(min(U0.y,U1.y),min(U2.y,U3.y)),vB=max(max(U0.y,U1.y),max(U2.y,U3.y));
+        float du=max(uB-uA,1e-12),dv=max(vB-vA,1e-12);
+        uint idx[4]={0,1,2,3};
+        [unroll] for(uint c3=0;c3<4;c3++){float2 Uc=_UV[i*4+c3];uint sb=(Uc.x-uA)/du>0.5?1u:0u,tb=(Uc.y-vA)/dv>0.5?1u:0u;idx[sb+2u*tb]=c3;}
+        float3 P0=wp[idx[0]],P1=wp[idx[1]],P2=wp[idx[2]],P3=wp[idx[3]];
+        [unroll] for(uint c4=0;c4<4;c4++)
+        {
+            float2 Uc=_UV[i*4+c4];bool sb=(Uc.x-uA)/du>0.5,tb=(Uc.y-vA)/dv>0.5;
+            float nu=sb?min(uB,R.z):max(uA,R.x),nv=tb?min(vB,R.w):max(vA,R.y);
+            float s=saturate((nu-uA)/du),t=saturate((nv-vA)/dv);
+            wp[c4]=lerp(lerp(P0,P1,s),lerp(P2,P3,s),t);shapeUv[c4]=float2(nu,nv);
+        }
+        shaped=true;
+    }
     [unroll] for(uint k=0;k<4;k++)
     {
         precise float3 worldPoint=wp[k];
@@ -348,7 +372,7 @@ void WriteVerticesAt(uint i, float v[16], uint outputItem, bool collapse)
             _Vertices.Store3(address,asuint(worldPoint));
             _Vertices.Store4(address+12,asuint(drawColor));
             // 반복 장식: UV 에 반복 배율을 곱한다(info0.zw, 반복이 아니면 0). 픽셀 셰이더가 frac 으로 감싼다.
-            float2 uvk=_UV[i*4+k]; if(info0.z>0) uvk*=info0.zw;
+            float2 uvk=shaped?shapeUv[k]:_UV[i*4+k]; if(info0.z>0) uvk*=info0.zw;
             _Vertices.Store4(address+28,asuint(float4(uvk,info0.xy)));
             _Vertices.Store4(address+44,asuint(info1));
         }
@@ -365,7 +389,9 @@ void WriteVerticesFromChannels(uint i, float v[16]) { WriteVerticesAt(i,v,i,fals
 void EvaluateCollapse(uint3 thread:SV_DispatchThreadID)
 {
     uint slot=thread.x;if(slot>=_CollapseCount)return;
-    uint i=_CollapseMap[slot];float v[16];
+    uint rawMap=_CollapseMap[slot];float v[16];
+    // 낮은 18비트 = 항목, 높은 14비트 = 형태 칸 사각형 기록 번호(1부터, 0 = 사각형 전체). 0xFFFFFFFF = 빈 자리.
+    uint i=rawMap==0xFFFFFFFFu?0xFFFFFFFFu:(rawMap&0x3FFFFu);gShapeRec=rawMap==0xFFFFFFFFu?0u:(rawMap>>18);
     // 센티널(0xFFFFFFFF 등 항목 수 이상): 동적으로 독립 렌더러로 넘긴 슬롯. 정점을 비운다.
     if(i>=_Count){[unroll] for(uint z=0;z<4;z++)_Vertices.Store3((slot*4+z)*60u,uint3(0,0,0));return;}
     // 알파 두 채널을 먼저 읽어 안 보이면 나머지 채널·FP64 계산을 건너뛴다.
@@ -509,4 +535,21 @@ void AlphaBounds(uint3 id:SV_DispatchThreadID, uint gi:SV_GroupIndex)
         InterlockedMin(_TrimOut[0],gTrim[0]);InterlockedMin(_TrimOut[1],gTrim[1]);
         InterlockedMax(_TrimOut[2],gTrim[2]);InterlockedMax(_TrimOut[3],gTrim[3]);
     }
+}
+
+// 형태 칸: 텍스처를 _CellGrid x _CellGrid 칸으로 나눠, 알파>0 텍셀에서 _CellMargin 텍셀 안에 걸치는 칸을 1 로 표시한다.
+// 쌍선형 샘플은 1 텍셀 안만 읽으므로 여백 2 이면 빈 칸 안의 어떤 점도 알파 0 만 읽는다(화면 결과 같음).
+RWStructuredBuffer<uint> _CellOut;
+uint _CellGrid, _CellMargin;
+[numthreads(16,16,1)]
+void AlphaCells(uint3 id:SV_DispatchThreadID)
+{
+    if(id.x>=_TrimSize.x || id.y>=_TrimSize.y)return;
+    if(!(_TrimTex.Load(int3(id.xy,0)).a>0))return;
+    int m=(int)_CellMargin;
+    int x0=max(0,(int)id.x-m),x1=min((int)_TrimSize.x-1,(int)id.x+m);
+    int y0=max(0,(int)id.y-m),y1=min((int)_TrimSize.y-1,(int)id.y+m);
+    uint cx0=(uint)x0*_CellGrid/_TrimSize.x,cx1=(uint)x1*_CellGrid/_TrimSize.x;
+    uint cy0=(uint)y0*_CellGrid/_TrimSize.y,cy1=(uint)y1*_CellGrid/_TrimSize.y;
+    for(uint cy=cy0;cy<=cy1;cy++)for(uint cx=cx0;cx<=cx1;cx++)_CellOut[cy*_CellGrid+cx]=1u;
 }

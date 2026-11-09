@@ -109,6 +109,7 @@
     <Compile Include="RunLod.cs" />
     <Compile Include="CoverageProbe.cs" />
     <Compile Include="OwnProbe.cs" />
+    <Compile Include="GpuDecoShape.cs" />
     <Compile Include="GpuDecoBlend.cs" />
     <Compile Include="GpuDecoDrawCollapseGate.cs" Condition="'$(AutoTestBuild)' == '1'" />
     <Compile Include="RenderMergeLayoutPolicy.cs" />

@@ -45,6 +45,7 @@ namespace StutterFix
         sealed class CollapseSpan : IDisposable
         {
             internal int[] Items;
+            internal int[] Recs;   // 자리마다 형태 칸 기록 번호(1부터, 0 = 사각형 전체). null = 모두 0
             internal int[] AllIndices;
             internal int[] ActiveIndices;
             internal int LastUploadedIndexCount=-1;
@@ -90,6 +91,7 @@ namespace StutterFix
             gpuCollapseDirect.Clear();
             gpuCollapseArrayOnly=null;
             gpuInstRows.Clear();gpuInstItem.Clear();gpuItemInstIds=null;gpuItemSlots=null;gpuSlotDepth=null;gpuSpanHasInst=null;gpuItemDepthNow=null;gpuInstBase=int.MaxValue;
+            gpuSlotBits=null;gpuItemShapeStart=gpuItemShapeCount=null;gpuShapeTable=Array.Empty<Vector4>();gpuShapeItems=0;
             gpuCollapseIncluded=null;gpuCollapseSeen=null;gpuCollapseKeysValid=false;gpuCollapseScanned=false;gpuCollapseDirtyIds.Clear();gpuCollapseNewDecos.Clear();gpuCollapseOwnedRows=null;gpuCollapseTextureFallback=null;gpuCollapseTextureFallbackCount=0;
         }
         static bool CollapseSupportedFormat(Texture2D t)
@@ -379,6 +381,9 @@ namespace StutterFix
                 info[i*2]=CollapseInfo0(address,gpuCollapseOwnedRows[i].M,source.Data.Items[i]);
                 info[i*2+1]=new Vector4(address.z,address.w,address.z/t.width*.5f,address.w/t.height*.5f);
             }
+            // 형태 칸 기록은 항목 기록(항목마다 2개) 뒤에 붙인다(_CollapseTexture[_Count*2 + 번호-1]).
+            PrepareShapes(source);
+            if(gpuShapeTable.Length>0){var ext=new Vector4[info.Length+gpuShapeTable.Length];Array.Copy(info,ext,info.Length);Array.Copy(gpuShapeTable,0,ext,info.Length,gpuShapeTable.Length);info=ext;}
             gpuCollapseTexture=new ComputeBuffer(info.Length,16);gpuCollapseTexture.SetData(info);
 #if AUTOTEST || GPUDECO
             RememberGpuImageCollapseAddresses(addresses);
@@ -675,7 +680,7 @@ namespace StutterFix
                 int now=gpuItemDepthNow[item];
                 foreach(int s in slots)
                 {
-                    uint v=show && gpuSlotDepth[s]==now?(uint)item:uint.MaxValue;
+                    uint v=show && gpuSlotDepth[s]==now?((uint)item|(gpuSlotBits!=null?gpuSlotBits[s]:0u)):uint.MaxValue;
                     if(gpuCollapseMapCpu[s]==v)continue;
                     gpuCollapseMapCpu[s]=v;dirty=true;
                     if(upload)gpuCollapseAllMap?.SetData(gpuCollapseMapCpu,s,s,1);
@@ -684,7 +689,7 @@ namespace StutterFix
             }
             int slot=gpuCollapseSlotOfItem!=null?gpuCollapseSlotOfItem[item]:-1;
             if(slot<0)return false;
-            uint value=show?(uint)item:uint.MaxValue;
+            uint value=show?((uint)item|(gpuSlotBits!=null?gpuSlotBits[slot]:0u)):uint.MaxValue;
             if(gpuCollapseMapCpu[slot]==value)return false;
             gpuCollapseMapCpu[slot]=value;
             if(upload)gpuCollapseAllMap?.SetData(gpuCollapseMapCpu,slot,slot,1);
@@ -1150,6 +1155,7 @@ namespace StutterFix
             {var src0=gpuLiveSlices[0].Data.Items;var gi=new bool[src0.Length+gpuInstRows.Count];for(int q=0;q<gi.Length;q++)gi[q]=DrawCollapsePolicy.BlendModes && GpuDecoBlend.NeedsGrab(src0[CR(q)].BlendMode);DrawCollapsePolicy.GrabItems=gi;}
             var plan=DrawCollapsePolicy.Plan(rows);
             DrawCollapsePolicy.GrabItems=null;
+            plan=ExpandShapeSpans(plan,out var planRecs);
             dcPlanMs=DcMs(dcT2);dcMeshMs=0;long dcT3=Stopwatch.GetTimestamp();
             RequireLive(plan.Count>0 && plan.Count<=DrawCollapsePolicy.MaxSpans,"drawcollapse conservative prepared spans="+plan.Count+" exceeds renderer budget");
             dcMatMs=dcMeshBuildMs=dcBufMs=dcGoMs=0;
@@ -1160,11 +1166,12 @@ namespace StutterFix
             bool supportsFew=gpuCollapseShader.keywordSpace.FindKeyword(CollapseFewKeyword).isValid;
 
             if(DrawCollapsePolicy.GlobalDirect)for(int a=0;a<DrawCollapsePolicy.DirectBindings && gpuCollapseDirect.Count>0;a++)Shader.SetGlobalTexture("_Big"+a,gpuCollapseDirect[Math.Min(a,gpuCollapseDirect.Count-1)]);
-            foreach(var items in plan)
+            for(int planIndex=0;planIndex<plan.Count;planIndex++)
             {
+                var items=plan[planIndex];
                 long dcL0=Stopwatch.GetTimestamp();
                 var first=CRow(items[0]);var last=CRow(items[items.Length-1]);
-                var s=new CollapseSpan{Items=items,First=first.Key,Last=last.Key};gpuCollapseSpans.Add(s);
+                var s=new CollapseSpan{Items=items,First=first.Key,Last=last.Key,Recs=planRecs?[planIndex]};gpuCollapseSpans.Add(s);
                 s.Base=baseRun;baseRun+=items.Length;
                 int spanLayer=SpanGameLayer(items[0]);
                 RequireLive(items.All(i=>SpanGameLayer(i)==spanLayer),
@@ -1260,18 +1267,20 @@ namespace StutterFix
                 gpuCollapseAllVerts?.Dispose();gpuCollapseAllMap?.Dispose();
                 gpuCollapseAllCount=baseRun;
                 var allMap=new uint[baseRun];int at=0;
-                var slotDepth=new int[baseRun];
-                if(gpuItemInstIds!=null)gpuItemSlots=new Dictionary<int,List<int>>();
-                foreach(var sp in gpuCollapseSpans)foreach(int id in sp.Items)
+                var slotDepth=new int[baseRun];var slotBits=new uint[baseRun];
+                if(gpuItemInstIds!=null || gpuShapeItems>0)gpuItemSlots=new Dictionary<int,List<int>>();
+                foreach(var sp in gpuCollapseSpans)for(int e=0;e<sp.Items.Length;e++)
                 {
-                    int it=CR(id);slotDepth[at]=RowDepth(CRow(id));
-                    if(gpuItemSlots!=null && gpuItemInstIds.ContainsKey(it)){if(!gpuItemSlots.TryGetValue(it,out var ls)){ls=new List<int>();gpuItemSlots[it]=ls;}ls.Add(at);}
-                    allMap[at++]=(uint)it;
+                    int id=sp.Items[e];int it=CR(id);slotDepth[at]=RowDepth(CRow(id));
+                    int rec=sp.Recs!=null?sp.Recs[e]:0;slotBits[at]=(uint)rec<<18;
+                    if(gpuItemSlots!=null && (DepthItem(it) || rec>0)){if(!gpuItemSlots.TryGetValue(it,out var ls)){ls=new List<int>();gpuItemSlots[it]=ls;}ls.Add(at);}
+                    allMap[at++]=(uint)it|slotBits[at-1];
                 }
+                gpuSlotBits=slotBits;
                 gpuSlotDepth=slotDepth;
                 gpuCollapseMapCpu=allMap;gpuCollapseSlotOfItem=new int[gpuLiveSlices[0].Data.Items.Length];
                 for(int q=0;q<gpuCollapseSlotOfItem.Length;q++)gpuCollapseSlotOfItem[q]=-1;
-                for(int q=0;q<allMap.Length;q++)gpuCollapseSlotOfItem[allMap[q]]=q;
+                for(int q=0;q<allMap.Length;q++)gpuCollapseSlotOfItem[allMap[q]&0x3FFFFu]=q;   // 높은 비트 = 형태 칸 기록 번호
                 // 깊이 인스턴스 항목: 지금 깊이의 자리만 남긴다
                 if(gpuItemSlots!=null)foreach(var kv in gpuItemSlots)WriteItemSlots(kv.Key,!G1DrawHidden(gpuLiveSlices[0].MasterItems[kv.Key]),false);
                 gpuCollapseAllVerts=new ComputeBuffer(Math.Max(1,baseRun*60),4,ComputeBufferType.Raw);

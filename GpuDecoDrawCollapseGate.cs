@@ -1,4 +1,4 @@
-﻿#if AUTOTEST
+#if AUTOTEST
 using System;
 using System.Diagnostics;
 using System.Linq;
@@ -44,6 +44,7 @@ namespace StutterFix
             }
             if(args.Length==3 && args[0]=="policy")
             {
+                if(args[1]=="shapegrid"){DrawCollapsePolicy.ShapeGrid=int.Parse(args[2],Inv);GpuLog("DRAWCOLLAPSE_POLICY shapegrid="+DrawCollapsePolicy.ShapeGrid);return true;}
                 if(args[1]=="trimmin"){DrawCollapsePolicy.TrimMinSide=int.Parse(args[2],Inv);GpuLog("DRAWCOLLAPSE_POLICY trimmin="+DrawCollapsePolicy.TrimMinSide);return true;}
                 if(args[1]=="tightmin"){DrawCollapsePolicy.TightMinSide=int.Parse(args[2],Inv);GpuLog("DRAWCOLLAPSE_POLICY tightmin="+DrawCollapsePolicy.TightMinSide);return true;}
                 bool on=args[2]=="on";
@@ -61,7 +62,8 @@ namespace StutterFix
                     case "skipcompute":DrawCollapsePolicy.SkipPausedCompute=on;break;
                     case "nocompute":DrawCollapsePolicy.SkipComputeForTest=on;break;
                     case "splitorder":DrawCollapsePolicy.SplitByOrder=on;break;
-                    case "hideproxies":DrawCollapsePolicy.HideProxies=on;break;   // 측정: 구간 그리기만 끔(계산은 그대로)
+                    case "hideproxies":DrawCollapsePolicy.HideProxies=on;break;
+                    case "shape":DrawCollapsePolicy.ShapeCells=on;break;   // 측정: 구간 그리기만 끔(계산은 그대로)
                     default:throw new ArgumentException("policy tight|keepafter|clip|skiporder|skipcompute|globalverts on|off");
                 }
                 GpuLog("DRAWCOLLAPSE_POLICY tight="+DrawCollapsePolicy.TightLargeQuads+" keepafter="+DrawCollapsePolicy.KeepAfterBarrier);return true;
