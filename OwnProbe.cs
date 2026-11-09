@@ -56,6 +56,60 @@ namespace StutterFix
                 var rt = cam ? cam.targetTexture : null;
                 return "main_camera target=" + (rt ? rt.width + "x" + rt.height + " " + rt.graphicsFormat + " depth=" + rt.depthStencilFormat + " aa=" + rt.antiAliasing : "screen " + Screen.width + "x" + Screen.height) + " hdr=" + (cam && cam.allowHDR);
             }
+            if (arg.Trim().StartsWith("items "))
+            {
+                string want = arg.Trim().Substring(6).Trim(); var src = gpuLiveSlices.Count > 0 ? gpuLiveSlices[0] : null; if (src == null) return "no slice";
+                float[] vals = null; try { vals = src.Gpu.ReadValuesForDiag(); } catch { }
+                int shown = 0;
+                for (int i = 0; i < src.Data.Items.Length && shown < 12; i++)
+                {
+                    var row = gpuCollapseOwnedRows != null ? gpuCollapseOwnedRows[i] : null; var sr = row?.R as SpriteRenderer;
+                    if (!sr || !sr.sprite || !sr.sprite.texture.name.Contains(want)) continue;
+                    int m = src.MasterItems[i]; var d = sr.GetComponentInParent<scrVisualDecoration>();
+                    int slot = gpuCollapseSlotOfItem != null ? gpuCollapseSlotOfItem[i] : -1;
+                    Main.Entry.Logger.Log("[ownprobe-item] " + sr.sprite.texture.name + " item=" + i + " incl=" + (gpuCollapseIncluded != null && gpuCollapseIncluded[i]) + " fb=" + DrawCollapseTextureFallback(i)
+                        + " g1hidden=" + G1DrawHidden(m) + " map=" + (slot >= 0 ? gpuCollapseMapCpu[slot].ToString("X") : "-") + " hiddenState=" + (gpuItemHiddenState != null && gpuItemHiddenState[i])
+                        + " gpuAlpha=" + (vals != null ? (vals[i * 16 + 10] * vals[i * 16 + 11]).ToString("F3") : "?") + " deco_visible=" + (d ? g1RendererEnabled(d).ToString() : "?") + " opacity=" + (d ? d.opacity.ToString("F2") : "?") + " color.a=" + (d ? d.color.a.ToString("F2") : "?") + " srEnabled=" + sr.enabled + " forceOff=" + sr.forceRenderingOff);
+                    shown++;
+                }
+                return "items " + want + " shown=" + shown;
+            }
+            if (arg.Trim() == "tieprobe2") return TieProbe2.Run(null);
+            if (arg.Trim() == "tieprobe3") return TieProbe2.RunPair();
+            if (arg.Trim() == "natorder")
+            {
+                var cam = Camera.allCameras.FirstOrDefault(c => c.name == "Camera");
+                var rows = new List<(SceneRenderOrder.Key k, string s)>();
+                foreach (var r in Object.FindObjectsByType<Renderer>(FindObjectsInactive.Exclude, FindObjectsSortMode.None))
+                {
+                    if (!r || !r.enabled || r.forceRenderingOff || !r.isVisible || !r.sharedMaterial || r.sharedMaterial.renderQueue <= 2500) continue;
+                    if ((cam.cullingMask & (1 << r.gameObject.layer)) == 0) continue;
+                    var k = GpuDecoScene.SortKey(r, r.sharedMaterial, cam);
+                    string nm = r is SpriteRenderer sr && sr.sprite ? sr.sprite.texture.name : r.name;
+                    rows.Add((k, (ownProbeList.Contains(r) ? "OWN " : "oth ") + r.GetType().Name + ":" + nm + " L" + k.Layer + " O" + k.Order + " d" + k.Distance.ToString("F3") + " mat" + k.Material + " sh=" + r.sharedMaterial.shader.name));
+                }
+                rows.Sort((x, y) => x.k.CompareTo(y.k));
+                foreach (var r in rows) Main.Entry.Logger.Log("[ownprobe-nat] " + r.s);
+                return "native listed=" + rows.Count;
+            }
+            if (arg.Trim() == "spans")
+            {
+                // 켜진 구간(그리는 순서 = 정렬 키 순)과 담긴 항목 텍스처, 원래 렌더러의 정렬 키
+                var cam = Camera.allCameras.FirstOrDefault(c => c.name == "Camera");
+                var rows = new List<(SceneRenderOrder.Key k, string s)>();
+                for (int si = 0; si < gpuCollapseSpans.Count; si++)
+                {
+                    var sp = gpuCollapseSpans[si]; if (!sp.Renderer || !sp.Renderer.enabled) continue;
+                    var names = new Dictionary<string, int>();
+                    foreach (int id in sp.Items) { var r = CRow(id)?.R as SpriteRenderer; string nm = r && r.sprite ? r.sprite.texture.name : "?"; names.TryGetValue(nm, out int c0); names[nm] = c0 + 1; }
+                    var k = GpuDecoScene.SortKey(sp.Renderer, sp.Material, cam);
+                    rows.Add((k, "SPAN#" + si + " L" + k.Layer + " O" + k.Order + " d" + k.Distance.ToString("F3") + " mat" + k.Material + (sp.Material && sp.Material.shader == gpuCollapseBlendShader ? " grab" : "") + " [" + string.Join(",", names.Select(x => x.Key + "x" + x.Value)) + "] nudged=" + sp.Nudged + " dyn=" + sp.DynState + " first=L" + sp.First.Layer + "/O" + sp.First.Order + "/m" + sp.First.Material));
+                }
+                foreach (var b in gpuCollapseBarriers) if (b.R && DrawCollapseBarrierActive(b) && b.R.isVisible) { var k = GpuDecoScene.SortKey(b.R, b.M, cam); rows.Add((k, "BAR " + b.R.GetType().Name + ":" + b.R.name + " L" + k.Layer + " O" + k.Order + " d" + k.Distance.ToString("F3") + " mat" + k.Material + " sh=" + (b.M ? b.M.shader.name : "-"))); }
+                rows.Sort((x, y) => x.k.CompareTo(y.k));
+                foreach (var r in rows) Main.Entry.Logger.Log("[ownprobe-order] " + r.s);
+                return "spans listed=" + rows.Count;
+            }
             if (arg.Trim() == "live")
             {
                 int indep = 0, indepVis = 0, spans = 0, spansVis = 0, orig = 0;

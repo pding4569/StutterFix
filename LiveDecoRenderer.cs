@@ -864,7 +864,7 @@ namespace StutterFix
                     if (!material || material.renderQueue <= 2500) throw new InvalidOperationException("unsupported/missing live material");
                     var key = image != null && image.Owned ? new SceneRenderOrder.Key(
                         SortingLayer.GetLayerValueFromID(s.R.sortingLayerID), s.R.sortingOrder, material.renderQueue,
-                        0, material.GetInstanceID(), s.R.GetInstanceID(), row.Slot) : MatShare.SortKey(s.R, material, camera, row.Slot);
+                        0, material.GetInstanceID(), s.R.GetInstanceID(), row.Slot, SceneRenderOrder.ShaderRank(material)) : MatShare.SortKey(s.R, material, camera, row.Slot);
                     if (image != null && image.Owned)
                     {
                         // The supported sorting axis is Z only; sprite/mesh centers have identical Z.
@@ -875,7 +875,7 @@ namespace StutterFix
                             ? (camera.transparencySortMode == TransparencySortMode.CustomAxis ? camera.transparencySortAxis : GraphicsSettings.transparencySortAxis)
                             : camera.transform.forward;
                         float distance = mode == TransparencySortMode.CustomAxis ? z * axis.z : (z - camera.transform.position.z) * axis.z;
-                        key = new SceneRenderOrder.Key(key.Layer, key.Order, key.Queue, distance, key.Material, key.Renderer, key.Slot);
+                        key = new SceneRenderOrder.Key(key.Layer, key.Order, key.Queue, distance, key.Material, key.Renderer, key.Slot, key.Shader);
                     }
                     bool owned = image != null && image.Owned;
                     int layer = s.R.gameObject.layer;

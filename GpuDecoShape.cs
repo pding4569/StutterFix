@@ -43,7 +43,7 @@ namespace StutterFix
             gpuShapeRects[id] = result; return result;
         }
         static int ShapeGridFor(Texture2D t) => Math.Max(t.width, t.height) >= 256 ? DrawCollapsePolicy.ShapeGrid : Math.Max(4, DrawCollapsePolicy.ShapeGrid / 2);
-        static bool ShapeCandidate(Texture2D t) => t && Math.Max(t.width, t.height) >= DrawCollapsePolicy.ShapeMinSide && t.mipmapCount == 1;
+        static bool ShapeCandidate(Texture2D t) => t && Math.Max(t.width, t.height) >= DrawCollapsePolicy.ShapeMinSide && t.mipmapCount == 1 && (DrawCollapsePolicy.ShapeOnly == null || t.name.Contains(DrawCollapsePolicy.ShapeOnly));
         // 여러 텍스처를 한 버퍼에 모아 계산하고 마지막에 한 번만 읽는다(텍스처마다 GPU 를 기다리지 않음).
         // 결과를 기다리지 않는다: 읽기를 요청해 두고(AsyncGPUReadback) 도착하면 표에 넣는다. 동기 GetData 는 로딩 중 쌓인
         // GPU 작업(텍스처 올리기 등)까지 기다려 DD 재생 준비가 12.3 -> 16.2초로 늘었다.

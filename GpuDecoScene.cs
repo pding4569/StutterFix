@@ -49,7 +49,7 @@ namespace StutterFix
         }
         internal static SceneRenderOrder.Key SortKey(Renderer r, Material m, Camera cam, int slot = 0)
             => new SceneRenderOrder.Key(SortingLayer.GetLayerValueFromID(r.sortingLayerID), r.sortingOrder,
-                m ? m.renderQueue : -1, Distance(r, cam), m ? m.GetInstanceID() : 0, r.GetInstanceID(), slot);
+                m ? m.renderQueue : -1, Distance(r, cam), m ? m.GetInstanceID() : 0, r.GetInstanceID(), slot, SceneRenderOrder.ShaderRank(m));
         internal static float Distance(Renderer r, Camera cam)
         {
             Vector3 pos = r.bounds.center;

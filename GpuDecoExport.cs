@@ -823,7 +823,7 @@ namespace StutterFix
             else
                 distance = mode == TransparencySortMode.Orthographic ? Vector3.Dot(pos - cam.transform.position, cam.transform.forward) : (pos - cam.transform.position).sqrMagnitude;
             return new SceneRenderOrder.Key(SortingLayer.GetLayerValueFromID(r.sortingLayerID), r.sortingOrder,
-                m ? m.renderQueue : -1, distance, m ? m.GetInstanceID() : 0, r.GetInstanceID(), 0);
+                m ? m.renderQueue : -1, distance, m ? m.GetInstanceID() : 0, r.GetInstanceID(), 0, SceneRenderOrder.ShaderRank(m));
         }
         static string MaterialSignature(Material m)
         {

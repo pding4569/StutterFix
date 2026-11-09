@@ -116,16 +116,18 @@ namespace StutterFix
         static void DemoteTieExcludedRows(List<GpuLiveRow> rows)
         {
             if(rows==null || rows.Count==0)return;
-            var activeBucketMinMat=new Dictionary<(int,int,int,float),int>();
-            var activeBucketMaxMat=new Dictionary<(int,int,int,float),int>();
+            // 키 = (층,순서,큐,거리,셰이더). 같은 셰이더 안에서만 재질 ID 순서가 측정으로 확인됐다(다른 셰이더 장벽은 엔진 순서에 맡긴다:
+            // 7777 124초에서 Sprites/Tile 장식을 Blend Modes Grab 장벽 뒤로 미는 판단이 화면을 밝게 틀리게 했다).
+            var activeBucketMinMat=new Dictionary<(int,int,int,float,int),long>();
+            var activeBucketMaxMat=new Dictionary<(int,int,int,float,int),long>();
             foreach(var row in rows)
             {
                 if(row.Item>=0 || row.AuxiliaryOwner>=0 || !row.R || !row.M)continue;
                 if(!DrawCollapseBarrierActive(row) || row.R is SpriteMask)continue;
                 var bk=row.Key;
-                var bkey=(bk.Layer,bk.Order,bk.Queue,bk.Distance);
-                if(!activeBucketMinMat.TryGetValue(bkey,out int curMin) || bk.Material<curMin)activeBucketMinMat[bkey]=bk.Material;
-                if(!activeBucketMaxMat.TryGetValue(bkey,out int curMax) || bk.Material>curMax)activeBucketMaxMat[bkey]=bk.Material;
+                var bkey=(bk.Layer,bk.Order,bk.Queue,bk.Distance);var skey=(bk.Layer,bk.Order,bk.Queue,bk.Distance,bk.Shader);
+                if(!activeBucketMinMat.TryGetValue(skey,out long curMin) || bk.Rank<curMin)activeBucketMinMat[skey]=bk.Rank;
+                if(!activeBucketMaxMat.TryGetValue(skey,out long curMax) || bk.Rank>curMax)activeBucketMaxMat[skey]=bk.Rank;
 #if AUTOTEST
                 if(!tieDiagKind.ContainsKey(bkey))tieDiagKind[bkey]=row.R.GetType().Name+":"+(row.M?row.M.shader.name:"-")+":L"+bk.Layer+"/O"+bk.Order+(row.R.GetComponentInParent<scrDecoration>() is scrDecoration dd0?":deco:"+dd0.name+":blend="+(dd0 is scrVisualDecoration vv0?GpuDecoBlend.Id(vv0)+":take="+GpuDecoBlend.Takeable(vv0,vv0.spriteRenderer)+":mask="+vv0.spriteRenderer.maskInteraction+":fx="+(vv0.blendModeEffect?vv0.blendModeEffect.MaskMode.ToString():"-")+":mesh="+(vv0.meshRenderer&&vv0.meshRenderer.enabled):"-"):"");
 #endif
@@ -139,12 +141,12 @@ namespace StutterFix
             {
                 if(row.Item<0 || !row.R || !row.M)continue;
                 var ok=row.Key;
-                var bkey=(ok.Layer,ok.Order,ok.Queue,ok.Distance);
-                if(!activeBucketMinMat.TryGetValue(bkey,out int minBarrierMat))continue;
+                var bkey=(ok.Layer,ok.Order,ok.Queue,ok.Distance);var skey=(ok.Layer,ok.Order,ok.Queue,ok.Distance,ok.Shader);
+                if(!activeBucketMinMat.TryGetValue(skey,out long minBarrierMat))continue;
                 if(DrawCollapsePolicy.KeepBeforeBarrier)
                 {
-                    if(ok.Material<minBarrierMat)continue;
-                    if(DrawCollapsePolicy.KeepAfterBarrier && activeBucketMaxMat.TryGetValue(bkey,out int maxBarrierMat) && ok.Material>maxBarrierMat)continue;
+                    if(ok.Rank<minBarrierMat)continue;
+                    if(DrawCollapsePolicy.KeepAfterBarrier && activeBucketMaxMat.TryGetValue(skey,out long maxBarrierMat) && ok.Rank>maxBarrierMat)continue;
                 }
                 demoted.Add(row.Item);
 #if AUTOTEST
@@ -446,7 +448,7 @@ namespace StutterFix
         static readonly HashSet<int> gpuCollapseDirtyIds=new HashSet<int>();
         static readonly List<scrDecoration> gpuCollapseNewDecos=new List<scrDecoration>();
         static SceneRenderOrder.Key DcShiftKey(SceneRenderOrder.Key k,float shift)
-            =>shift==0f?k:new SceneRenderOrder.Key(k.Layer,k.Order,k.Queue,k.Distance-shift,k.Material,k.Renderer,k.Slot);
+            =>shift==0f?k:new SceneRenderOrder.Key(k.Layer,k.Order,k.Queue,k.Distance-shift,k.Material,k.Renderer,k.Slot,k.Shader);
         // Dormancy 가 이미 거는 장식 후크(ApplyColor/SetVisible/SetMaskingType/EnableMeshRenderer/Setup/Awake)와 SetDepth 후크에서 부른다.
         internal static void CollapseMarkDirty(scrDecoration d)
         {
@@ -595,7 +597,7 @@ namespace StutterFix
         static int SpanGameLayer(int id){var row=CRow(id);return DepthItem(CR(id))?DepthGameLayer(RowDepth(row)):row.R.gameObject.layer;}
         // 계획 때: 깊이가 바뀌는 통합 항목마다 다른 깊이의 줄을 더한다. 그 깊이 묶음에 켜진 장벽이 있거나 같은 재질의 줄이 이미 있으면
         // (원래도 순서가 재질·ID 동점 규칙에 달림) 그 항목은 통합에서 빼고 독립 렌더러로 둔다.
-        static void BuildDepthInstanceRows(List<DrawCollapsePolicy.Row> rows,GpuLiveSlice source,Dictionary<(int,int,int,float),int> activeMin)
+        static void BuildDepthInstanceRows(List<DrawCollapsePolicy.Row> rows,GpuLiveSlice source,Dictionary<(int,int,int,float,int),long> activeMin)
         {
             gpuInstRows.Clear();gpuInstItem.Clear();gpuItemInstIds=null;gpuItemSlots=null;gpuSlotDepth=null;
             int n=gpuCollapseOwnedRows.Length;gpuInstBase=n;
@@ -603,9 +605,9 @@ namespace StutterFix
             // 모든 항목의 지금 깊이(깊이 변경 후크가 같은 값이면 아무것도 하지 않게)
             for(int i=0;i<n;i++){int m0=source.MasterItems[i];var r0=(uint)m0<(uint)gpuLiveOwnedRenderers.Length?gpuLiveOwnedRenderers[m0]:null;gpuItemDepthNow[i]=r0?-r0.sortingOrder:0;}
             if(!DrawCollapsePolicy.DepthInstances || gpuMasterDepths==null || gpuMasterDepths.Length==0)return;
-            var taken=new HashSet<(int,int,int,float,int)>();
-            foreach(var b in gpuCollapseBarriers)taken.Add((b.Key.Layer,b.Key.Order,b.Key.Queue,b.Key.Distance,b.Key.Material));
-            for(int i=0;i<n;i++)if(gpuCollapseIncluded[i] && gpuCollapseOwnedRows[i]!=null){var k=gpuCollapseOwnedRows[i].Key;taken.Add((k.Layer,k.Order,k.Queue,k.Distance,k.Material));}
+            var taken=new HashSet<(int,int,int,float,long)>();
+            foreach(var b in gpuCollapseBarriers)taken.Add((b.Key.Layer,b.Key.Order,b.Key.Queue,b.Key.Distance,b.Key.Rank));
+            for(int i=0;i<n;i++)if(gpuCollapseIncluded[i] && gpuCollapseOwnedRows[i]!=null){var k=gpuCollapseOwnedRows[i].Key;taken.Add((k.Layer,k.Order,k.Queue,k.Distance,k.Rank));}
             int made=0,dropped=0;
             for(int i=0;i<n;i++)
             {
@@ -619,8 +621,8 @@ namespace StutterFix
                 foreach(int dep in depths)
                 {
                     if(dep==primary)continue;
-                    var k=new SceneRenderOrder.Key(SortingLayer.GetLayerValueFromID(DepthSortingLayerId(dep)),-dep,orow.Key.Queue,orow.Key.Distance,orow.Key.Material,orow.Key.Renderer,orow.Key.Slot);
-                    if(activeMin.ContainsKey((k.Layer,k.Order,k.Queue,k.Distance)) || taken.Contains((k.Layer,k.Order,k.Queue,k.Distance,k.Material))){bad=true;break;}
+                    var k=new SceneRenderOrder.Key(SortingLayer.GetLayerValueFromID(DepthSortingLayerId(dep)),-dep,orow.Key.Queue,orow.Key.Distance,orow.Key.Material,orow.Key.Renderer,orow.Key.Slot,orow.Key.Shader);
+                    if(activeMin.ContainsKey((k.Layer,k.Order,k.Queue,k.Distance,k.Shader)) || taken.Contains((k.Layer,k.Order,k.Queue,k.Distance,k.Rank))){bad=true;break;}
                     keys.Add(k);
                 }
                 if(bad)
@@ -634,7 +636,7 @@ namespace StutterFix
                 var ids=new List<int>();
                 foreach(var k in keys)
                 {
-                    taken.Add((k.Layer,k.Order,k.Queue,k.Distance,k.Material));
+                    taken.Add((k.Layer,k.Order,k.Queue,k.Distance,k.Rank));
                     int id=n+gpuInstRows.Count;
                     gpuInstRows.Add(new GpuLiveRow{R=orow.R,M=orow.M,Item=orow.Item,AuxiliaryOwner=-1,Key=k,Signature=orow.Signature});
                     gpuInstItem.Add(i);ids.Add(id);
@@ -761,7 +763,7 @@ namespace StutterFix
         static (int,float,int,int)[] gpuWatchSig;
         static bool[] gpuWatchActive;
         static (int,int,int,int)[] gpuWatchBucket;
-        static int[] gpuWatchMat;
+        static long[] gpuWatchMat;   // 감시 장벽의 동점 순위(셰이더 ID, 재질 ID)
         static Dictionary<(int,int,int,int),List<int>> gpuSpansByBucket;
         static readonly Dictionary<(int,int,int,int),HashSet<int>> gpuBucketMembers=new Dictionary<(int,int,int,int),HashSet<int>>();
         static readonly HashSet<(int,int,int,int)> gpuBucketDirty=new HashSet<(int,int,int,int)>();
@@ -783,7 +785,7 @@ namespace StutterFix
             foreach(int wid in gpuBarrierWatch)
                 if(gpuBarrierRowById.TryGetValue(wid,out var wrow) && seen.Add(wid))gpuWatchRows.Add(wrow);
             int n=gpuWatchRows.Count;
-            gpuWatchSig=new (int,float,int,int)[n];gpuWatchActive=new bool[n];gpuWatchBucket=new (int,int,int,int)[n];gpuWatchMat=new int[n];
+            gpuWatchSig=new (int,float,int,int)[n];gpuWatchActive=new bool[n];gpuWatchBucket=new (int,int,int,int)[n];gpuWatchMat=new long[n];
             gpuBucketMembers.Clear();gpuBucketDirty.Clear();
 #if AUTOTEST
             Main.Entry.Logger.Log("[GPU 장식] 감시 장벽 "+n+"개(비소유 장식 렌더러 + 구간 묶음의 장벽), 구간 묶음 "+gpuSpansByBucket.Count+"개");
@@ -842,7 +844,7 @@ namespace StutterFix
                 var cur=GpuDecoScene.SortKey(r,origMat,cam,row.Key.Slot);
                 var nb=BKey(cur.Layer,cur.Order,cur.Queue,cur.Distance+shift);
                 if(gpuWatchActive[w] && !gpuWatchBucket[w].Equals(nb))WatchRemove(w);
-                gpuWatchActive[w]=true;gpuWatchBucket[w]=nb;gpuWatchMat[w]=cur.Material;
+                gpuWatchActive[w]=true;gpuWatchBucket[w]=nb;gpuWatchMat[w]=cur.Rank;
 #if AUTOTEST
                 if(false)Main.Entry.Logger.Log("[GPU 장식] 감시 활성 w="+w+" "+r.GetType().Name+":"+r.name+" 키 "+DcKey(cur)+" 버킷 "+nb+" 구간 묶음에 있음 "+(gpuSpansByBucket!=null&&gpuSpansByBucket.ContainsKey(nb))+" shift "+shift.ToString("F2"));
 #endif
@@ -861,9 +863,9 @@ namespace StutterFix
             foreach(int k in spans)
             {
                 var sp=gpuCollapseSpans[k];if(!sp.Renderer || !sp.Mesh)continue;
-                int first=sp.First.Material,last=sp.Last.Material;
+                long first=sp.First.Rank,last=sp.Last.Rank;
                 bool before=false,after=false,straddle=false;
-                if(members!=null)foreach(int w in members){int a=gpuWatchMat[w];if(a<first)before=true;else if(a>last)after=true;else straddle=true;}
+                if(members!=null)foreach(int w in members){long a=gpuWatchMat[w];if((a>>32)!=(first>>32))continue; /* 다른 셰이더 장벽은 엔진 순서 */ if(a<first)before=true;else if(a>last)after=true;else straddle=true;}
                 int state=(straddle||(before&&after))?2:(before?1:(after?3:0));
 #if AUTOTEST
                 if(state!=0 && gpuDynLogged2++<6)Main.Entry.Logger.Log("[GPU 장식] 분류 묶음 "+key+" 구간 "+k+" (항목 "+sp.Items.Length+") 첫 id "+first+" 끝 id "+last+" 켜진 장벽 "+(members==null?0:members.Count)+" 앞 "+before+" 뒤 "+after+" 가름 "+straddle+" → 상태 "+state+" (이전 "+sp.DynState+")");
@@ -1060,8 +1062,12 @@ namespace StutterFix
 #if AUTOTEST
             diagBucketKinds.Clear();
 #endif
-            var activeBucketMinMat=new Dictionary<(int,int,int,float),int>();
-            var activeBucketMaxMat=new Dictionary<(int,int,int,float),int>();
+            // 키 = (층,순서,큐,거리,셰이더). 같은 셰이더 안에서만 재질 ID 순서가 측정으로 확인됐다(다른 셰이더 장벽은 엔진 순서에 맡긴다:
+            // 7777 124초에서 Sprites/Tile 장식을 Blend Modes Grab 장벽 뒤로 미는 판단이 화면을 밝게 틀리게 했다).
+            var activeBucketMinMat=new Dictionary<(int,int,int,float,int),long>();
+            var activeBucketMaxMat=new Dictionary<(int,int,int,float,int),long>();
+            var allBucketMin=new Dictionary<(int,int,int,float,int),long>();
+            var allBucketMax=new Dictionary<(int,int,int,float,int),long>();
             int rereadBarriers=0;
             foreach(var row in gpuCollapseBarriers)
             {
@@ -1075,14 +1081,21 @@ namespace StutterFix
                     row.M=material;row.Key=GpuDecoScene.SortKey(row.R,material,gpuLiveCamera,row.Key.Slot);rereadBarriers++;
                 }
                 else row.Key=DcShiftKey(row.Key,keyShift);
+                if(!(row.R is SpriteMask))
+                {
+                    // 켜짐과 상관없이 같은 묶음·같은 셰이더의 모든 장벽: 거리 밀기 방향(나중에 켜져도 순서가 맞게)
+                    var ak=row.Key;var akey=(ak.Layer,ak.Order,ak.Queue,ak.Distance,ak.Shader);
+                    if(!allBucketMin.TryGetValue(akey,out long a0) || ak.Rank<a0)allBucketMin[akey]=ak.Rank;
+                    if(!allBucketMax.TryGetValue(akey,out long a1) || ak.Rank>a1)allBucketMax[akey]=ak.Rank;
+                }
                 if(tieBarrier)
                 {
-                    var bk=row.Key;var bkey=(bk.Layer,bk.Order,bk.Queue,bk.Distance);
+                    var bk=row.Key;var bkey=(bk.Layer,bk.Order,bk.Queue,bk.Distance);var skey=(bk.Layer,bk.Order,bk.Queue,bk.Distance,bk.Shader);
 #if AUTOTEST
                     if(GpuDecoPlayer.Product){if(!diagBucketKinds.TryGetValue(bkey,out var ks)){ks=new HashSet<string>();diagBucketKinds[bkey]=ks;}ks.Add(row.R.GetType().Name+":"+row.R.name+(active?"[활성]":"[숨김]"));}
 #endif
-                    if(!activeBucketMinMat.TryGetValue(bkey,out int curMin) || bk.Material<curMin)activeBucketMinMat[bkey]=bk.Material;
-                    if(!activeBucketMaxMat.TryGetValue(bkey,out int curMax) || bk.Material>curMax)activeBucketMaxMat[bkey]=bk.Material;
+                    if(!activeBucketMinMat.TryGetValue(skey,out long curMin) || bk.Rank<curMin)activeBucketMinMat[skey]=bk.Rank;
+                    if(!activeBucketMaxMat.TryGetValue(skey,out long curMax) || bk.Rank>curMax)activeBucketMaxMat[skey]=bk.Rank;
                 }
             }
 #if AUTOTEST
@@ -1117,11 +1130,11 @@ namespace StutterFix
                 if(!gpuCollapseIncluded[i])continue;
                 var orow=gpuCollapseOwnedRows[i];if(orow==null || !orow.R)continue;
                 var ok=orow.Key;
-                if(!activeBucketMinMat.TryGetValue((ok.Layer,ok.Order,ok.Queue,ok.Distance),out int minBarrierMat))continue;
+                if(!activeBucketMinMat.TryGetValue((ok.Layer,ok.Order,ok.Queue,ok.Distance,ok.Shader),out long minBarrierMat))continue;
                 if(DrawCollapsePolicy.KeepBeforeBarrier)
                 {
-                    if(ok.Material<minBarrierMat)continue; // 모든 활성 장벽보다 앞: 구간에 유지(대표 거리를 +미세 이동)
-                    if(DrawCollapsePolicy.KeepAfterBarrier && activeBucketMaxMat.TryGetValue((ok.Layer,ok.Order,ok.Queue,ok.Distance),out int maxBarrierMat) && ok.Material>maxBarrierMat)continue;
+                    if(ok.Rank<minBarrierMat)continue; // 모든 활성 장벽보다 앞: 구간에 유지(대표 거리를 +미세 이동)
+                    if(DrawCollapsePolicy.KeepAfterBarrier && activeBucketMaxMat.TryGetValue((ok.Layer,ok.Order,ok.Queue,ok.Distance,ok.Shader),out long maxBarrierMat) && ok.Rank>maxBarrierMat)continue;
                 }
                 gpuCollapseIncluded[i]=false;
 #if AUTOTEST
@@ -1240,10 +1253,13 @@ namespace StutterFix
                 // 활성 장벽이 있는 정렬 묶음에서 시작하는 구간: 구간에 남은 장식은 모두 장벽보다 앞에 그려져야 하므로, 대표 렌더러의 정렬 거리를
                 // 아주 조금 더 멀게(먼저 그려지게) 해서 재질 ID 동점 해소를 엔진의 동점 규칙에 맡기지 않는다. 정점 위치는 GPU 가 쓰므로 화면은 같다.
                 var baseCenter=center;
-                if(DrawCollapsePolicy.NudgeTieSpans && activeBucketMinMat.ContainsKey((first.Key.Layer,first.Key.Order,first.Key.Queue,first.Key.Distance)))
+                var fk0=(first.Key.Layer,first.Key.Order,first.Key.Queue,first.Key.Distance,first.Key.Shader);
+                if(DrawCollapsePolicy.NudgeTieSpans && (activeBucketMinMat.ContainsKey(fk0) || allBucketMin.ContainsKey(fk0)))
                 {
-                    var fk=(first.Key.Layer,first.Key.Order,first.Key.Queue,first.Key.Distance);
-                    bool afterAll=activeBucketMaxMat.TryGetValue(fk,out int mx) && first.Key.Material>mx;
+                    var fk=fk0;
+                    // 방향은 같은 셰이더 장벽 전체 기준(준비 때 꺼져 있던 장벽이 곡 중에 켜져도 맞게). 구간이 장벽 범위 안이면 켜진 장벽 기준.
+                    bool afterAll=allBucketMax.TryGetValue(fk,out long amx) && first.Key.Rank>amx;
+                    if(!afterAll && allBucketMin.TryGetValue(fk,out long amn) && first.Key.Rank>amn)afterAll=activeBucketMaxMat.TryGetValue(fk,out long mx) && first.Key.Rank>mx;
                     center+=gpuCollapseCameraForward*(afterAll?-DrawCollapsePolicy.TieNudge:DrawCollapsePolicy.TieNudge);s.Nudged=true;nudgedSpans++;s.DynState=afterAll?1:3;
                 }
                 s.CenterNow=baseCenter;s.Mesh.bounds=new Bounds(center,new Vector3(2000000,2000000,0));s.Mesh.UploadMeshData(false);
@@ -1282,8 +1298,9 @@ namespace StutterFix
                 gpuCollapseMapCpu=allMap;gpuCollapseSlotOfItem=new int[gpuLiveSlices[0].Data.Items.Length];
                 for(int q=0;q<gpuCollapseSlotOfItem.Length;q++)gpuCollapseSlotOfItem[q]=-1;
                 for(int q=0;q<allMap.Length;q++)gpuCollapseSlotOfItem[allMap[q]&0x3FFFFu]=q;   // 높은 비트 = 형태 칸 기록 번호
-                // 깊이 인스턴스 항목: 지금 깊이의 자리만 남긴다
-                if(gpuItemSlots!=null)foreach(var kv in gpuItemSlots)WriteItemSlots(kv.Key,!G1DrawHidden(gpuLiveSlices[0].MasterItems[kv.Key]),false);
+                // 모든 항목의 숨김(SetVisible)·깊이 상태를 자리표에 다시 적용한다. 새 자리표는 모두 "보임"으로 채워지므로
+                // 켜는 시점에 다시 계획하면(형태 칸 도착·곡 중간 시작) 숨어 있어야 할 장식이 그려졌다(7777 124초: 원래 안 보이는 장식 수십 개, 평균 밝기 74 -> 95).
+                {var mi=gpuLiveSlices[0].MasterItems;for(int q=0;q<gpuCollapseSlotOfItem.Length;q++)if(gpuCollapseSlotOfItem[q]>=0 || (gpuItemSlots!=null && gpuItemSlots.ContainsKey(q)))WriteItemSlots(q,!G1DrawHidden(mi[q]),false);}
                 gpuCollapseAllVerts=new ComputeBuffer(Math.Max(1,baseRun*60),4,ComputeBufferType.Raw);
                 gpuCollapseAllMap=new ComputeBuffer(Math.Max(1,baseRun),4);gpuCollapseAllMap.SetData(allMap);
                 Shader.SetGlobalBuffer("_CollapseVerts",gpuCollapseAllVerts);
@@ -1575,7 +1592,7 @@ namespace StutterFix
         static SceneRenderOrder.Key LiveRowKey(GpuLiveRow row,int item)
         {
             if(!DepthItem(item))return GpuDecoScene.SortKey(row.R,row.M,gpuLiveCamera,row.Key.Slot);
-            return new SceneRenderOrder.Key(row.Key.Layer,row.Key.Order,row.M?row.M.renderQueue:-1,GpuDecoScene.Distance(row.R,gpuLiveCamera),row.M?row.M.GetInstanceID():0,row.R.GetInstanceID(),row.Key.Slot);
+            return new SceneRenderOrder.Key(row.Key.Layer,row.Key.Order,row.M?row.M.renderQueue:-1,GpuDecoScene.Distance(row.R,gpuLiveCamera),row.M?row.M.GetInstanceID():0,row.R.GetInstanceID(),row.Key.Slot,SceneRenderOrder.ShaderRank(row.M));
         }
         static void CheckDrawCollapseKey(GpuLiveRow row,float shift,DrawCollapseGuard guard,int item)
         {

@@ -39,7 +39,7 @@ namespace StutterFix
         // otherwise a lone moving barrier could cross a whole span undetected.
         internal static bool SameSortKey(SceneRenderOrder.Key prepared,SceneRenderOrder.Key current,float cameraShift)
             =>prepared.Layer==current.Layer && prepared.Order==current.Order && prepared.Queue==current.Queue
-                && prepared.Material==current.Material && prepared.Slot==current.Slot
+                && prepared.Material==current.Material && prepared.Shader==current.Shader && prepared.Slot==current.Slot
                 && Math.Abs(prepared.Distance-current.Distance-cameraShift)<=1e-3f;
         internal static int[] AdmitArrayGroups(int[] counts,int maxSlices)
         {
@@ -135,6 +135,7 @@ namespace StutterFix
         internal static bool ShapeCells=false;
         internal static int ShapeGrid=16, ShapeMinSide=64, ShapeMaxRects=48;
         internal static float ShapeMaxKeep=.6f;
+        internal static string ShapeOnly=null;   // 측정 전용: 이름에 이 글자가 든 텍스처에만 형태 칸
         internal const int TightMarginTexels=4;
         internal const float TightMaxAreaRatio=.8f;
         // 2048 을 넘는 같은 크기 DXT5(4K 프레임 계열 등)를 정확한 크기의 배열 하나로 묶는다. 3개 미만이면 직접 슬롯을 쓴다.
@@ -146,7 +147,7 @@ namespace StutterFix
         // 같은 정렬 묶음에서 장벽보다 앞에 그려지던 장식을 구간에 남기는 규칙. 켜면 260초 픽셀 42만 개가 달라져 기본 끔.
         internal const bool KeepBeforeBarrier=true;
         // 장벽과 같은 정렬 묶음에서 시작하는 구간의 대표 렌더러 거리를 TieNudge 만큼 더 멀게 해 동점을 없앤다.
-        internal const bool NudgeTieSpans=true;
+        internal static bool NudgeTieSpans=true;   // 측정: gpudeco drawcollapse policy nudge on|off
         // 같은 묶음에서 모든 활성 장벽보다 뒤에 그려지던 장식도 구간에 유지한다(대표 거리를 -미세 이동).
         internal static bool KeepAfterBarrier=true; // 262초 픽셀 최대 차이 4(0.4% 픽셀). GPU 병목에서는 폴백 14개의 전체 재평가를 없애 FPS +
         internal const float TieNudge=2e-4f;
