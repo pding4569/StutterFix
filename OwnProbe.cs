@@ -14,6 +14,7 @@ namespace StutterFix
         static readonly List<Renderer> ownProbeList = new List<Renderer>();
         static readonly List<int> ownProbeLayer = new List<int>();
         static int upFrame;
+        static readonly Dictionary<Renderer, int> ownHideLayer = new Dictionary<Renderer, int>();
         static readonly HashSet<Renderer> ownSpanWas = new HashSet<Renderer>();
         internal static string OwnProbe(string arg)
         {
@@ -67,6 +68,7 @@ namespace StutterFix
                     if (!sr || !sr.sprite || !sr.sprite.texture.name.Contains(want)) continue;
                     int m = src.MasterItems[i]; var d = sr.GetComponentInParent<scrVisualDecoration>();
                     int slot = gpuCollapseSlotOfItem != null ? gpuCollapseSlotOfItem[i] : -1;
+                    if (vals != null) Main.Entry.Logger.Log("[ownprobe-item]   ch=" + string.Join(",", Enumerable.Range(0, 16).Select(c => vals[i * 16 + c].ToString("G6"))));
                     Main.Entry.Logger.Log("[ownprobe-item] " + sr.sprite.texture.name + " item=" + i + " incl=" + (gpuCollapseIncluded != null && gpuCollapseIncluded[i]) + " fb=" + DrawCollapseTextureFallback(i)
                         + " g1hidden=" + G1DrawHidden(m) + " map=" + (slot >= 0 ? gpuCollapseMapCpu[slot].ToString("X") : "-") + " hiddenState=" + (gpuItemHiddenState != null && gpuItemHiddenState[i])
                         + " gpuAlpha=" + (vals != null ? (vals[i * 16 + 10] * vals[i * 16 + 11]).ToString("F3") : "?") + " deco_visible=" + (d ? g1RendererEnabled(d).ToString() : "?") + " opacity=" + (d ? d.opacity.ToString("F2") : "?") + " color.a=" + (d ? d.color.a.ToString("F2") : "?") + " srEnabled=" + sr.enabled + " forceOff=" + sr.forceRenderingOff);
@@ -76,6 +78,44 @@ namespace StutterFix
             }
             if (arg.Trim() == "tieprobe2") return TieProbe2.Run(null);
             if (arg.Trim() == "tieprobe3") return TieProbe2.RunPair();
+            if (arg.Trim().StartsWith("hidetex ") || arg.Trim().StartsWith("showtex "))
+            {
+                // GPU 장식이 켜져 있으면 그 텍스처 항목의 자리를 비우고, 꺼져 있으면 원래 렌더러를 31층으로 옮긴다(되돌리기 showtex)
+                bool hide = arg.Trim().StartsWith("hidetex "); string want = arg.Trim().Substring(8).Trim(); int n0 = 0;
+                if (gpuLiveActive && gpuCollapseOn && gpuLiveSlices.Count > 0)
+                {
+                    var src = gpuLiveSlices[0];
+                    for (int i = 0; i < src.Data.Items.Length; i++)
+                    {
+                        var sr = gpuCollapseOwnedRows[i]?.R as SpriteRenderer; if (!sr || !sr.sprite || !sr.sprite.texture.name.Contains(want)) continue;
+                        if (hide) WriteItemSlots(i, false, true); else SyncG1CollapseItem(i); n0++;
+                    }
+                    return (hide ? "gpu hid " : "gpu shown ") + want + " n=" + n0;
+                }
+                foreach (var d in Object.FindObjectsByType<scrVisualDecoration>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+                {
+                    var sr = d.spriteRenderer; if (!sr || !sr.sprite || !sr.sprite.texture.name.Contains(want)) continue;
+                    if (hide) { if (sr.gameObject.layer != 31) { ownHideLayer[sr] = sr.gameObject.layer; sr.gameObject.layer = 31; } }
+                    else if (ownHideLayer.TryGetValue(sr, out int l0)) { sr.gameObject.layer = l0; ownHideLayer.Remove(sr); }
+                    n0++;
+                }
+                return (hide ? "native hid " : "native shown ") + want + " n=" + n0;
+            }
+            if (arg.Trim().StartsWith("deco "))
+            {
+                string want = arg.Trim().Substring(5).Trim(); int n0 = 0;
+                foreach (var d in Object.FindObjectsByType<scrVisualDecoration>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+                {
+                    var sr = d.spriteRenderer; if (!sr || !sr.sprite || !sr.sprite.texture.name.Contains(want) || n0++ > 6) continue;
+                    var fx = d.blendModeEffect; var m = sr.sharedMaterial;
+                    Main.Entry.Logger.Log("[ownprobe-deco] " + sr.sprite.texture.name + " active=" + sr.gameObject.activeInHierarchy + " en=" + sr.enabled + " forceOff=" + sr.forceRenderingOff + " vis=" + sr.isVisible
+                        + " color=" + sr.color + " mat=" + (m ? m.shader.name + "#" + m.GetInstanceID() + " kw=" + string.Join(",", m.shaderKeywords) : "null") + " maskInt=" + sr.maskInteraction
+                        + " fx=" + (fx ? fx.enabled + "/" + fx.BlendMode + "/" + fx.MaskMode + "/" + fx.RenderMode : "none") + " layer=" + sr.gameObject.layer + " order=" + sr.sortingOrder + " pos=" + sr.transform.position + " bounds=" + sr.bounds.size);
+                    Main.Entry.Logger.Log("[ownprobe-deco]   placement=" + d.placementType + " parallax=" + (d.parallax != null ? d.parallax.multiplier + " clamp=" + d.parallax.clampToScreen + " dontX=" + d.parallax.dontAlterX + " dontY=" + d.parallax.dontAlterY : "null")
+                        + " pivotPos=" + d.pivotPosVec + " pivotOff=" + d.pivotOffsetVec + " parallaxOff=" + d.parallaxOffset + " rot=" + d.rotAngle + " scale=" + d.scaleVec + " lockScale=" + d.lockScale + " lockRot=" + d.lockRotation + " pivotTrans=" + (d.pivotTrans ? d.pivotTrans.position.ToString() : "-"));
+                }
+                return "deco " + want + " n=" + n0;
+            }
             if (arg.Trim() == "natorder")
             {
                 var cam = Camera.allCameras.FirstOrDefault(c => c.name == "Camera");

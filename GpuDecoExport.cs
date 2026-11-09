@@ -1053,6 +1053,7 @@ namespace StutterFix
                 {
                     DemotePerItemPrepareRows(masterRows,protoItems,null);
                     DemoteTieExcludedRows(masterRows);
+                    DemoteSharedGrabRows(masterRows,protoItems);
                     DemoteDirectTextureOverflowRows(masterRows,null);
                 }
                 var collapseRows=gpuCollapsePrepare?new List<GpuLiveRow>(masterRows):null;

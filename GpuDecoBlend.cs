@@ -49,6 +49,9 @@ namespace StutterFix
             int id = Id(d);
             if (id <= 0) return false;
             if (NeedsGrab(id) && !DrawCollapsePolicy.BlendGrab) return false;
+            // 혼합 효과의 마스크(스텐실)·텍스처 오버레이 모드는 화면 식이 다르다: 원래 렌더러로 남긴다(7777 light_flare (9))
+            var fx = d.blendModeEffect;
+            if (fx && (fx.MaskMode != BlendModes.MaskMode.Disabled || fx.RenderMode != BlendModes.RenderMode.SelfWithScreen)) return false;
             var m = r ? r.sharedMaterial : null;
             return m && ShaderFits(m.shader, id);
         }

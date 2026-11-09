@@ -110,14 +110,39 @@ namespace StutterFix
             if(m<=1024)return 1024;
             return 0;
         }
+        // 화면 복사(Grab) 혼합 장식은 정렬 묶음(층,순서,큐,거리)에 다른 렌더러가 없을 때만 맡는다. 섞여 있으면 화면 복사 셰이더와
+        // 일반 셰이더 사이의 엔진 순서를 구간 대표 렌더러로 그대로 재현할 수 없어(7777 124초) 원래 렌더러로 남긴다.
+        static void DemoteSharedGrabRows(List<GpuLiveRow> rows,Dictionary<int,GpuDecoData.Item> items)
+        {
+            if(rows==null || !DrawCollapsePolicy.BlendModes)return;
+            var count=new Dictionary<(int,int,int,float),int>();
+            var shaders=new Dictionary<(int,int,int,float),HashSet<int>>();
+            foreach(var row in rows)
+            {
+                if(!row.R || !row.M || row.AuxiliaryOwner>=0)continue;var k=row.Key;var bk=(k.Layer,k.Order,k.Queue,k.Distance);
+                count.TryGetValue(bk,out int c0);count[bk]=c0+1;
+                if(!shaders.TryGetValue(bk,out var hs)){hs=new HashSet<int>();shaders[bk]=hs;}hs.Add(k.Shader);
+            }
+            int demoted=0;
+            foreach(var row in rows)
+            {
+                if(row.Item<0 || !items.TryGetValue(row.Item,out var it) || it.BlendMode<=0)continue;
+                var k=row.Key;var bk=(k.Layer,k.Order,k.Queue,k.Distance);
+                // 화면 복사 장식: 묶음에 다른 렌더러가 하나라도 있으면. 더하기 등 화면 복사 없는 혼합 장식(원래 셰이더 Particles/Additive 등):
+                // 묶음에 셰이더가 다른 렌더러가 있으면(다른 셰이더 사이 엔진 순서를 모른다, 7777 124초 skygwangwon/cir_light 순서 뒤바뀜)
+                bool bad=GpuDecoBlend.NeedsGrab(it.BlendMode) ? (count.TryGetValue(bk,out int c) && c>1) : (shaders.TryGetValue(bk,out var hs2) && hs2.Count>1);
+                if(bad){row.Item=-1;demoted++;}
+            }
+            if(demoted>0 && GpuDecoPlayer.Product)Main.Entry.Logger.Log("[GPU 장식] 화면 복사 혼합 장식 중 다른 렌더러와 같은 정렬 묶음이라 원래 렌더러로 남긴 것: "+demoted+"개");
+        }
 #if AUTOTEST
         static readonly Dictionary<(int,int,int,float),string> tieDiagKind=new Dictionary<(int,int,int,float),string>();
 #endif
         static void DemoteTieExcludedRows(List<GpuLiveRow> rows)
         {
             if(rows==null || rows.Count==0)return;
-            // 키 = (층,순서,큐,거리,셰이더). 같은 셰이더 안에서만 재질 ID 순서가 측정으로 확인됐다(다른 셰이더 장벽은 엔진 순서에 맡긴다:
-            // 7777 124초에서 Sprites/Tile 장식을 Blend Modes Grab 장벽 뒤로 미는 판단이 화면을 밝게 틀리게 했다).
+            // 키 = (층,순서,큐,거리,셰이더). 같은 셰이더 안에서만 재질 ID 순서가 측정으로 확인됐다. 다른 셰이더 사이 순서는 아직 모른다
+            // (다른 셰이더까지 순위로 비교하면 7777 124초에서 화면이 밝게 틀렸다: 셰이더 ID 만 106.9, 화면 복사 뒤 규칙 더해도 107 대 원래 74).
             var activeBucketMinMat=new Dictionary<(int,int,int,float,int),long>();
             var activeBucketMaxMat=new Dictionary<(int,int,int,float,int),long>();
             foreach(var row in rows)
@@ -380,7 +405,7 @@ namespace StutterFix
                     if(!allInArray)gpuCollapseArrayOnly[i]=false;
                 }
 #endif
-                info[i*2]=CollapseInfo0(address,gpuCollapseOwnedRows[i].M,source.Data.Items[i]);
+                info[i*2]=CollapseInfo0(address,gpuCollapseOwnedRows[i].M,source.Data.Items[i],t);
                 info[i*2+1]=new Vector4(address.z,address.w,address.z/t.width*.5f,address.w/t.height*.5f);
             }
             // 형태 칸 기록은 항목 기록(항목마다 2개) 뒤에 붙인다(_CollapseTexture[_Count*2 + 번호-1]).
@@ -1062,8 +1087,8 @@ namespace StutterFix
 #if AUTOTEST
             diagBucketKinds.Clear();
 #endif
-            // 키 = (층,순서,큐,거리,셰이더). 같은 셰이더 안에서만 재질 ID 순서가 측정으로 확인됐다(다른 셰이더 장벽은 엔진 순서에 맡긴다:
-            // 7777 124초에서 Sprites/Tile 장식을 Blend Modes Grab 장벽 뒤로 미는 판단이 화면을 밝게 틀리게 했다).
+            // 키 = (층,순서,큐,거리,셰이더). 같은 셰이더 안에서만 재질 ID 순서가 측정으로 확인됐다. 다른 셰이더 사이 순서는 아직 모른다
+            // (다른 셰이더까지 순위로 비교하면 7777 124초에서 화면이 밝게 틀렸다: 셰이더 ID 만 106.9, 화면 복사 뒤 규칙 더해도 107 대 원래 74).
             var activeBucketMinMat=new Dictionary<(int,int,int,float,int),long>();
             var activeBucketMaxMat=new Dictionary<(int,int,int,float,int),long>();
             var allBucketMin=new Dictionary<(int,int,int,float,int),long>();
@@ -1180,6 +1205,10 @@ namespace StutterFix
             bool supportsFew=gpuCollapseShader.keywordSpace.FindKeyword(CollapseFewKeyword).isValid;
 
             if(DrawCollapsePolicy.GlobalDirect)for(int a=0;a<DrawCollapsePolicy.DirectBindings && gpuCollapseDirect.Count>0;a++)Shader.SetGlobalTexture("_Big"+a,gpuCollapseDirect[Math.Min(a,gpuCollapseDirect.Count-1)]);
+            // 화면 복사(Grab) 구간이 있는 정렬 묶음: 유니티는 화면 복사 셰이더를 같은 묶음의 일반 셰이더보다 뒤에 그린다.
+            // 그 묶음의 구간들을 모두 같은 화면 복사 셰이더로 그려 대표 렌더러 순서가 계획(재질 ID) 순서를 따르게 한다(7777 124초).
+            var grabBuckets=new HashSet<(int,int,int,float)>();
+            if(gpuCollapseBlendShader)foreach(var it0 in plan){if(it0.Any(it=>GpuDecoBlend.NeedsGrab(source.Data.Items[CR(it)].BlendMode))){var fk1=CRow(it0[0]).Key;grabBuckets.Add((fk1.Layer,fk1.Order,fk1.Queue,fk1.Distance));}}
             for(int planIndex=0;planIndex<plan.Count;planIndex++)
             {
                 var items=plan[planIndex];
@@ -1210,7 +1239,7 @@ namespace StutterFix
                     if(u!=null && u.Count<=DrawCollapsePolicy.FewDirectBindings)few=u.ToList();
                 }
                 // 혼합 모드 항목이 있는 구간은 화면 복사(GrabPass)를 쓰는 셰이더로 그린다
-                bool grabSpan=gpuCollapseBlendShader && items.Any(it=>GpuDecoBlend.NeedsGrab(source.Data.Items[CR(it)].BlendMode));
+                bool grabSpan=gpuCollapseBlendShader && (items.Any(it=>GpuDecoBlend.NeedsGrab(source.Data.Items[CR(it)].BlendMode)) || grabBuckets.Contains((first.Key.Layer,first.Key.Order,first.Key.Queue,first.Key.Distance)));
                 string matKey=first.M.renderQueue+"/"+blend[0]+"/"+blend[1]+"/"+blend[2]+"/"+noDirect+(few!=null?"/f"+string.Join(",",few):"")+(grabSpan?"/grab":"");
                 if(!gpuCollapseSharedMats.TryGetValue(matKey,out var shared) || !shared)
                 {
@@ -1341,10 +1370,12 @@ namespace StutterFix
         }
         // 텍스처 정보 앞쪽: x = 바인딩 + 점 샘플링 128 + U 랩 반복 256 + V 랩 반복 512 + 혼합 모드*1024, y = 배열 층,
         // zw = UV 배율(재질 RepeatX/Y 실효값, 1 이면 0). 랩 비트는 그 텍스처의 실제 랩 모드(Repeat 일 때만 frac, 아니면 가장자리 고정)를 따른다.
-        internal static Vector4 CollapseInfo0(Vector4 address,Material m,GpuDecoData.Item it)
+        internal static Vector4 CollapseInfo0(Vector4 address,Material m,GpuDecoData.Item it,Texture tex=null)
         {
             bool rep=DrawCollapsePolicy.Repeat && it!=null && (it.RepeatX!=1f || it.RepeatY!=1f);
             bool point=m && (m.IsKeywordEnabled("USE_POINT_SAMPLING") || m.IsKeywordEnabled("FORCE_POINT_SAMPLING"));
+            // 원래 셰이더(Sprites/Tile, Particles/Additive)는 키워드가 없으면 텍스처 자체의 필터로 읽는다: 점 필터 텍스처는 점 샘플링(7777 확대 배경)
+            if(tex && tex.filterMode==FilterMode.Point)point=true;
             int blend=it!=null && DrawCollapsePolicy.BlendModes ? it.BlendMode : 0;
             return new Vector4(address.x+(point?128:0)+(rep&&it.WrapU?256:0)+(rep&&it.WrapV?512:0)+blend*1024,address.y,rep?it.RepeatX:0,rep?it.RepeatY:0);
         }
