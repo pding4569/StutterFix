@@ -179,6 +179,7 @@ namespace StutterFix
                 return "merged_hidden=" + toggled.Count + " groups_kept=" + kept.Count;
             }
             // 진단: 장식 렌더러를 forceRenderingOff 가 아니라 enabled=false 로 씬 렌더러 목록에서 빼 본다(컬링·변환 처리 비용 측정).
+            if (group == "deco:hold") { InvisibleSkip.HoldHidden = on; return "hold=" + on; }
             if (group == "deco:disable")
             {
                 if (!on) { foreach (var kv in toggledEnabled) if (kv.Key) kv.Key.enabled = kv.Value; int m2 = toggledEnabled.Count; toggledEnabled.Clear(); return "enabled_restored=" + m2; }

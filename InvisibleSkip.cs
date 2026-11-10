@@ -21,6 +21,7 @@ namespace StutterFix
     // 투명도가 곧 보이는 정도인 것으로 확인된 셰이더에만 적용한다.
     public static class InvisibleSkip
     {
+        internal static bool HoldHidden;
         // 목록 조회를 유니티 객체 비교(가상 호출 두 번) 대신 참조 비교로 한다. 같은 장식이면 같은 C# 객체다.
         private sealed class RefEq : IEqualityComparer<SpriteRenderer>
         {
@@ -121,7 +122,7 @@ namespace StutterFix
             else if (Unhide(r, inst) && CountShown())
             {
                 if (LazySprite.Count > 0) LazySprite.Flush(inst);   // 미뤄 둔 이미지를 그리기 전에
-                r.forceRenderingOff = false;
+                r.forceRenderingOff = HoldHidden;   // HoldHidden: 진단(장식 안 그릴 때 상한 재기)에서만 true
                 Toggles++;
                 // 정답 표본이어도 모드가 위치를 미뤄 둔 장식(장식 이동 루프가 바로 미룸)이면 미룬 것을 반영한다. 정답 비교는 미룬 적 없는 것만.
                 bool truth = verify.Count > 0 && verify.Remove(inst);

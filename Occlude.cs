@@ -179,6 +179,27 @@ namespace StutterFix
                 { int bit = y*grid+x; if ((bits[bit>>6] & (1UL << (bit&63))) == 0) return false; }
             return true;
         }
+        // 진단(census): 화면을 다 덮는 장식이 왜 가리개가 못 되는지 첫 사유
+        string Why(Item it, Camera c)
+        {
+            var r = it.SR; if (!r) return "not-sprite";
+            var d = it.Deco; var s = r.sprite; var m = r.sharedMaterial;
+            string head = (s && s.texture ? s.texture.name + " " + s.texture.width + "x" + s.texture.height + " " + s.texture.format : "no-tex") + " sh=" + (m && m.shader ? m.shader.name : "-") + " L" + SortingLayer.GetLayerValueFromID(r.sortingLayerID) + "/O" + r.sortingOrder + ": ";
+            if (!SafeMaterial(it.R, out var sm)) return head + "unsafe-material";
+            if (!it.Decoration || !d) return head + "not-deco";
+            if ((int)Blend(d) != 0 || (d.blendModeEffect && d.blendModeEffect.enabled)) return head + "blend";
+            if (r.color.a != 1) return head + "color.a=" + r.color.a.ToString("F3", CultureInfo.InvariantCulture);
+            if (sm.HasProperty(ColorId) && sm.GetColor(ColorId).a != 1) return head + "mat.a=" + sm.GetColor(ColorId).a.ToString("F3", CultureInfo.InvariantCulture);
+            if (sm.HasProperty(RendererColorId) && sm.GetColor(RendererColorId).a != 1) return head + "renderercolor.a";
+            if (r.HasPropertyBlock()) return head + "mpb";
+            if (!s || s != it.Sprite || !it.Rectangle) return head + "sprite-changed-or-not-rect";
+            if (r.drawMode != SpriteDrawMode.Simple) return head + "drawmode";
+            var tx = s.texture;
+            if (!tx || tx.mipmapCount != 1 || tx.filterMode == FilterMode.Trilinear || tx.anisoLevel > 1) return head + "tex-sampling";
+            if (!ShapeCellsCpu.TryGetOpaque(tx, out var bits, out bool all)) return head + "opaque-unknown";
+            if (!all) return head + "has-transparent-texels" + (Opaque(it, sm) ? "(rect-opaque)" : "");
+            return head + "OK";
+        }
         bool Covers(Item it, Camera c)
         {
             var r = it.SR; var b = it.Bounds; var lo = b.min; var hi = b.max;
@@ -231,6 +252,16 @@ namespace StutterFix
             allocated += GC.GetAllocatedBytesForCurrentThread()-bytes;
             if (census)
             {
+                var whyCount = new System.Collections.Generic.Dictionary<string,int>();
+                foreach (var it in items)
+                {
+                    if (!it.SR || !it.Decoration) continue;
+                    var rr = it.R; if (!rr || !rr.enabled || !rr.gameObject.activeInHierarchy || rr.forceRenderingOff) continue;
+                    bool cov; try { cov = Covers(it, c); } catch { cov = false; }
+                    if (!cov) continue;
+                    string k = Why(it, c); whyCount.TryGetValue(k, out int n0); whyCount[k] = n0 + 1;
+                }
+                foreach (var kv in whyCount) Log("census fullscreen " + kv.Value + "x " + kv.Key);
                 Log("census covers=" + candidates + " lowest=" + (bottom == null ? "none" : bottom.R.name + "/layer="
                     + SortingLayer.GetLayerValueFromID(bottom.R.sortingLayerID) + "/order=" + bottom.R.sortingOrder)
                     + " hidden_deco=" + hidden + " area_screens=" + (area / Math.Max(1d,(double)c.pixelWidth*c.pixelHeight)).ToString("F3",CultureInfo.InvariantCulture)

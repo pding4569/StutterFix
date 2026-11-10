@@ -15,6 +15,25 @@ namespace StutterFix
     {
         internal static bool On;
         internal static float MinMag = 4f;
+        // 그리기 방식 Tiled(반복) 장식도 맡는다. 확대율은 반복 한 칸 기준(텍셀 수 = 그림 폭 x 반복 횟수), 재질 RepeatX/Y 도 곱한다. 기본 끔: runlod tiled on
+        internal static bool Tiled;
+        internal static int TiledCands;
+        static bool onlyTiled;
+        // GPU 장식이 반복(Repeat 기본 끔) 때문에 못 맡는 장식: 장식 repeatX/Y 가 1 이 아님
+        static bool RepeatDeco(SpriteRenderer sr) { var d = sr.GetComponentInParent<scrVisualDecoration>(); return d && (d.repeatX != 1 || d.repeatY != 1); }
+        static bool ModeOk(SpriteRenderer sr) => sr.drawMode == SpriteDrawMode.Simple || (Tiled && sr.drawMode == SpriteDrawMode.Tiled);
+        // 확대율 계산용 가로/세로 텍셀 수(반복 포함). Tiled 끔이면 원래 식(그림 rect 크기)
+        static void TexSize(SpriteRenderer r, Cand cd)
+        {
+            var tr = r.sprite.textureRect; float w = Mathf.Max(1f, tr.width), h = Mathf.Max(1f, tr.height);
+            if (Tiled)
+            {
+                if (r.drawMode == SpriteDrawMode.Tiled) { var sb = r.sprite.bounds.size; if (sb.x > 1e-6f) w *= Mathf.Max(1f, Mathf.Abs(r.size.x) / sb.x); if (sb.y > 1e-6f) h *= Mathf.Max(1f, Mathf.Abs(r.size.y) / sb.y); }
+                var m = r.sharedMaterial;
+                if (m) { if (m.HasProperty("RepeatX")) w *= Mathf.Max(1f, Mathf.Abs(m.GetFloat("RepeatX"))); if (m.HasProperty("RepeatY")) h *= Mathf.Max(1f, Mathf.Abs(m.GetFloat("RepeatY"))); }
+            }
+            cd.TexW = w; cd.TexH = h;
+        }
         internal static int MinRun = 2;
         internal static int Frames, RunsDrawn, MembersDrawn;
         const int HideLayer = 31;
@@ -23,7 +42,7 @@ namespace StutterFix
         internal static bool CandidateRenderer(Renderer r)
         {
             var m = r ? r.sharedMaterial : null;
-            if (!m || !(r is SpriteRenderer sr) || sr.drawMode != SpriteDrawMode.Simple || sr.maskInteraction != SpriteMaskInteraction.None) return false;
+            if (!m || !(r is SpriteRenderer sr) || !ModeOk(sr) || sr.maskInteraction != SpriteMaskInteraction.None) return false;
             var sh = m.shader; if (!sh || (sh.name != "Sprites/Tile" && sh.name != "Sprites/Default")) return false;
             return !m.HasProperty("_SrcBlend") || (m.GetFloat("_SrcBlend") == 1f && m.GetFloat("_DstBlend") == 10f);
         }
@@ -138,6 +157,26 @@ namespace StutterFix
             if (a[0] == "state") return State();
             if (a[0] == "pause") { Pause(); return "멈춤(모은 결과 유지)"; }
             if (a[0] == "resume") { if (!On && shader) { On = true; Camera.onPreCull += PreCull; } return State(); }
+            if (a[0] == "why")
+            {
+                // 진단: 단순 그리기가 아닌 장식 SpriteRenderer 가 왜 후보가 아닌지 묶어 센다(곡 중 한 번만 부를 것)
+                var cnt = new Dictionary<string, int>();
+                foreach (var sr in UnityEngine.Object.FindObjectsByType<SpriteRenderer>(FindObjectsInactive.Exclude, FindObjectsSortMode.None))
+                {
+                    if (!sr || sr.drawMode == SpriteDrawMode.Simple || !sr.GetComponentInParent<scrVisualDecoration>()) continue;
+                    var wm = sr.sharedMaterial; string sh = wm && wm.shader ? wm.shader.name : "-";
+                    string bl = wm && wm.HasProperty("_SrcBlend") ? wm.GetFloat("_SrcBlend") + "/" + wm.GetFloat("_DstBlend") : "none";
+                    var tex = sr.sprite ? sr.sprite.texture : null;
+                    string k = sr.drawMode + " mask=" + sr.maskInteraction + " sh=" + sh + " blend=" + bl + " col=" + (sr.GetComponent<Collider2D>() != null)
+                        + " sg=" + (sr.GetComponentInParent<UnityEngine.Rendering.SortingGroup>() != null) + " vis=" + sr.isVisible
+                        + " wrap=" + (tex ? tex.wrapMode.ToString() : "-") + " tiling=" + sr.tileMode;
+                    cnt.TryGetValue(k, out int c); cnt[k] = c + 1;
+                }
+                var sb = new System.Text.StringBuilder("why:");
+                foreach (var kv in cnt) sb.Append(" | ").Append(kv.Value).Append("x ").Append(kv.Key);
+                return sb.ToString();
+            }
+            if (a[0] == "tiled") { Tiled = a.Length < 2 || a[1] != "off"; return "tiled=" + Tiled + " (맵을 새로 열어야 모음에 반영)"; }
             if (a[0] == "force") { Force = a.Length < 2 || a[1] != "off"; return "force=" + Force; }
             if (a.Length > 0 && float.TryParse(a[0], System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out var m) && m > 0) MinMag = m;
             if (!On)
@@ -149,7 +188,7 @@ namespace StutterFix
             return State();
         }
 
-        static string State() => "on=" + On + " minMag=" + MinMag + " frames=" + Frames + " runs=" + RunsDrawn + " members=" + MembersDrawn
+        static string State() => "on=" + On + " minMag=" + MinMag + " tiled=" + Tiled + "/" + TiledCands + (onlyTiled ? "(tiled-only)" : "") + " frames=" + Frames + " runs=" + RunsDrawn + " members=" + MembersDrawn
             + " 후보 " + cands.Count + " 장벽 " + barriers.Count + " 장벽검사/프레임 " + (Frames > 0 ? (BarrierChecks / (float)Frames).ToString("F0") : "-") + string.Format(" ms/프레임 전체 {0:F3} 후보 {1:F3} 정렬 {2:F3} 묶음 {3:F3}", Ms(tTotal), Ms(tCand), Ms(tSort), Ms(tRuns)) + " 이득평균 " + savedEma.ToString("F2") + " GPU대기 " + waitEma.ToString("F2") + " 켜짐 " + active + " 전환 " + ModeSwitches + " 쉰프레임 " + ActiveOffFrames + " 묶음당 평균 " + (RunsDrawn > 0 ? (MembersDrawn / (float)RunsDrawn).ToString("F1") : "-");
 
         static double Ms(long ticks) => Frames > 0 ? ticks * 1000.0 / System.Diagnostics.Stopwatch.Frequency / Frames : 0;
@@ -173,7 +212,7 @@ namespace StutterFix
         {
             foreach (var c in cands) { Restore(c); if (c.Tag) c.Tag.C = null; }
             barrierTag = new BarrierTag[0]; barrierKey = new long[0]; barrierByKey = new Renderer[0];
-            cands.Clear(); barriers.Clear(); visible.Clear(); gatheredFrame = -9999; gstate = 0; gAll = null; mapOff = false;
+            cands.Clear(); barriers.Clear(); visible.Clear(); gatheredFrame = -9999; gstate = 0; gAll = null; mapOff = false; onlyTiled = false;
         }
 
         internal static void Off()
@@ -208,9 +247,11 @@ namespace StutterFix
             int decoCount = 0;
             try { var dm = scrDecorationManager.instance; if (dm != null) decoCount = allDecos(dm)?.Count ?? 0; } catch { }
             mapOff = decoCount > MaxCands;
+            // 장식이 아주 많은 맵(GPU 장식이 대부분 맡음)에서도 Tiled 를 켜면 Tiled 장식만 모은다(GPU 장식이 못 맡는 반복 배경)
+            onlyTiled = mapOff && Tiled; if (onlyTiled) mapOff = false;
             if (mapOff) { gstate = 2; gatheredFrame = Time.frameCount; Main.Entry.Logger.Log("[묶음 LOD] 이 맵은 끔: 장식 " + decoCount + " > " + MaxCands); return; }
             gAll = UnityEngine.Object.FindObjectsByType<Renderer>(FindObjectsInactive.Include, FindObjectsSortMode.None);
-            gPos = 0; gstate = 1;
+            gPos = 0; gstate = 1; TiledCands = 0;
             gFind = System.Diagnostics.Stopwatch.GetTimestamp() - t0; gTicks += gFind;
         }
 
@@ -224,7 +265,7 @@ namespace StutterFix
                 if (!r) continue;
                 var m = r.sharedMaterial;
                 bool cand = false;
-                if (m && r is SpriteRenderer sr && sr.drawMode == SpriteDrawMode.Simple && sr.maskInteraction == SpriteMaskInteraction.None)
+                if (m && r is SpriteRenderer sr && ModeOk(sr) && (!onlyTiled || sr.drawMode == SpriteDrawMode.Tiled || RepeatDeco(sr)) && sr.maskInteraction == SpriteMaskInteraction.None)
                 {
                     var sh = m.shader; int sid = sh ? sh.GetInstanceID() : 0;
                     if (!shaderOk.TryGetValue(sid, out bool ok)) { ok = sh && (sh.name == "Sprites/Tile" || sh.name == "Sprites/Default"); shaderOk[sid] = ok; }
@@ -232,7 +273,7 @@ namespace StutterFix
                     if (ok && (!m.HasProperty("_SrcBlend") || (m.GetFloat("_SrcBlend") == 1f && m.GetFloat("_DstBlend") == 10f))
                         && r.GetComponentInParent<scrVisualDecoration>() && !r.GetComponent<Collider2D>() && !r.GetComponentInParent<SortingGroup>())
                     {
-                        cand = true;
+                        cand = true; if (sr.drawMode == SpriteDrawMode.Tiled || (Tiled && RepeatDeco(sr))) TiledCands++;
                         var cd = new Cand { R = sr, Layer = r.gameObject.layer };
                         var tag = r.GetComponent<VisTag>() ?? r.gameObject.AddComponent<VisTag>(); tag.C = cd; cd.Tag = tag;
                         if (r.isVisible) { cd.Vis = true; cd.Listed = true; visible.Add(cd); }
@@ -371,8 +412,9 @@ namespace StutterFix
                 if (cd.M is null || ((Frames + vi) & 31) == 0)
                 {
                     var m0 = r.sharedMaterial;
-                    if (!ReferenceEquals(m0, cd.M)) { if (!m0 || !r.sprite) { Restore(cd); continue; } cd.M = m0; cd.Shader = m0.shader.GetInstanceID(); cd.Mat = m0.GetInstanceID(); cd.Q = m0.renderQueue; var tr = r.sprite.textureRect; cd.TexW = Mathf.Max(1f, tr.width); cd.TexH = Mathf.Max(1f, tr.height); }
+                    if (!ReferenceEquals(m0, cd.M)) { if (!m0 || !r.sprite) { Restore(cd); continue; } cd.M = m0; cd.Shader = m0.shader.GetInstanceID(); cd.Mat = m0.GetInstanceID(); cd.Q = m0.renderQueue; TexSize(r, cd); }
                 }
+                if (Tiled && ((Frames + vi) & 31) == 0 && r.sprite) TexSize(r, cd);
                 var sz = b.size;
                 float mag = Mathf.Min(sz.x * ppw / cd.TexW, sz.y * ppw / cd.TexH);
                 int sl = r.sortingLayerID; if (sl != cd.SlId || cd.SlVal == int.MinValue) { cd.SlId = sl; cd.SlVal = SortingLayer.GetLayerValueFromID(sl); }
