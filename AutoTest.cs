@@ -959,6 +959,42 @@ namespace StutterFix
                         return true;
                     }
                 case "srcdebug": if (arg.Trim() == "phases") { Log("[srcdebug] phases " + DecoBake.PhReport()); return true; } if (arg.Trim() == "check") { Log("[srcdebug] check " + DecoBake.SrcCheck()); return true; } DecoBake.SrcDebug = int.Parse(arg.Trim()); Log("[srcdebug] " + DecoBake.SrcDebug + " avg_active=" + (DecoBake.SrcFrames > 0 ? (DecoBake.SrcActiveSum / (double)DecoBake.SrcFrames).ToString("F1") : "0")); DecoBake.SrcActiveSum = 0; DecoBake.SrcFrames = 0; return true;
+                case "layercensus":
+                    {
+                        var counts = new System.Collections.Generic.Dictionary<string, int>();
+                        foreach (var r in Resources.FindObjectsOfTypeAll<Renderer>())
+                        {
+                            if (!r || !r.gameObject.scene.IsValid()) continue;
+                            int ly = r.gameObject.layer; if (ly != 10 && ly != 11) continue;
+                            bool act = r.enabled && r.gameObject.activeInHierarchy && !r.forceRenderingOff;
+                            string extra = "";
+                            if (act)
+                            {
+                                var m = r.sharedMaterial; var sr = r as SpriteRenderer;
+                                extra = " sh=" + (m && m.shader ? m.shader.name : "-") + " q=" + (m ? m.renderQueue : 0)
+                                    + (m && m.HasProperty("_Color") ? " matA=" + m.GetColor("_Color").a.ToString("F2") : "")
+                                    + (sr ? " sprite=" + (sr.sprite ? sr.sprite.name : "null") + " colA=" + sr.color.a.ToString("F2") : "")
+                                    + " size=" + r.bounds.size.x.ToString("F0") + "x" + r.bounds.size.y.ToString("F0");
+                            }
+                            string key = "L" + ly + " " + r.GetType().Name + (act ? " ACTIVE" : " off") + " " + r.gameObject.name + extra;
+                            counts.TryGetValue(key, out int c); counts[key] = c + 1;
+                        }
+                        var sb = new System.Text.StringBuilder(); foreach (var kv in counts) sb.Append(kv.Value).Append("x ").Append(kv.Key).Append(" | ");
+                        foreach (var c in Camera.allCameras) sb.Append("CAM ").Append(c.name).Append(" mask=").Append(c.cullingMask).Append(" depth=").Append(c.depth).Append(" clear=").Append(c.clearFlags).Append(" | ");
+                        foreach (var cv in Resources.FindObjectsOfTypeAll<Canvas>()) if (cv && cv.gameObject.scene.IsValid() && (cv.gameObject.layer == 10 || cv.gameObject.layer == 11)) sb.Append("CANVAS ").Append(cv.name).Append(" layer=").Append(cv.gameObject.layer).Append(" | ");
+                        Log("[layercensus] " + sb); return true;
+                    }
+                case "flashskip": { var a0 = arg.Trim(); if (a0 == "on" || a0 == "off") FlashSkip.SetEnabled(a0 == "on"); Log("[flashskip] " + FlashSkip.State()); return true; }
+                case "flashcolor":
+                    {
+                        // 시험 전용: 번쩍임 사각형(Bg·Fg, 옛 scrFlash)의 재질 색을 직접 정한다. 인자: r g b a
+                        var q = arg.Trim().Split(' '); var col = new Color(float.Parse(q[0], System.Globalization.CultureInfo.InvariantCulture), float.Parse(q[1], System.Globalization.CultureInfo.InvariantCulture), float.Parse(q[2], System.Globalization.CultureInfo.InvariantCulture), float.Parse(q[3], System.Globalization.CultureInfo.InvariantCulture));
+                        int cn = 0; var cam0 = scrCamera.instance;
+                        if (cam0 && cam0.flashPlusRendererBg) { cam0.flashPlusRendererBg.material.color = col; cn++; }
+                        if (cam0 && cam0.flashPlusRendererFg) { cam0.flashPlusRendererFg.material.color = col; cn++; }
+                        foreach (var f in UnityEngine.Object.FindObjectsByType<scrFlash>(FindObjectsInactive.Include, FindObjectsSortMode.None)) { var rr = f.GetComponent<Renderer>(); if (rr) { rr.material.color = col; cn++; } }
+                        Log("[flashcolor] " + col + " renderers=" + cn); return true;
+                    }
                 case "decodetach": Log("[decodetach] " + DecoDetach.Command(arg)); return true;
                 case "occlude": if (arg.Trim() == "collect") { ShapeCellsCpu.CollectOpaque = true; Log("[occlude] 다음 맵 열기부터 불투명 정보 수집"); return true; } Occlude.Command(arg); return true;
                 case "gpuhide": GpuHide.Command(arg); return true;

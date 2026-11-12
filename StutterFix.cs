@@ -1033,6 +1033,7 @@ ParticleTextWatch.Install(harmony);
 
             Try(GpuHide.Stop);
             Try(DecoDetach.FinishReattach);
+            Try(FlashSkip.Shutdown);
             Try(GpuPriority.Restore);
 
             Try(Occlude.Stop);
@@ -1998,6 +1999,7 @@ BlendProbe.Tick();
             EnginePatch.WaitSkip(Config.EngineWaitSkip);
             InvisibleSkip.Enabled = E("SkipInvisible", Config.SkipInvisible);
             DecoDetach.Enabled = E("GpuDecoDetach", Config.GpuDecoDetach);
+            FlashSkip.SetEnabled(E("SkipClearFlash", Config.SkipClearFlash));
 
             ThumbCam.Enabled = InvisibleSkip.Enabled; ThumbCam.Apply();
 
@@ -2453,6 +2455,7 @@ BlendProbe.Tick();
 
         public bool HitboxQuerySkip = false; // 히트박스 장식이 없을 때 공의 히트박스 물리 질의 건너뛰기(결과 같음)
         public bool PlayTurbo = false;        // 곡 중에만: 일시정지 공 카메라 끄기, 입력 없을 때 UI 이벤트·마우스 처리 건너뛰기, 장식 LateUpdate 같은 값 건너뛰기 등(turbo lite)
+        public bool SkipClearFlash = false;   // 번쩍임 사각형(전체 화면 두 장)을 재질 알파 0 이하인 프레임에는 안 그린다. FlashSkip.cs
         public bool GpuDecoDetach = false;    // GPU 장식이 켜져 있는 동안 장식 루트를 관리자에서 뗀다(Transform 계층 훑기 줄임, Arche 메인 -0.2~0.3ms). DecoDetach.cs
         public bool RunLod = true;            // 곡 중에만: 그리기 순서에서 연속된 크게 확대된 이미지 장식을 1/4 해상도로 모아 그려 한 번에 합치기(GPU 병목일 때만 켜짐, 눈으로는 같음)
         public bool DisplayPace = false;    // 화면에 나갈 프레임만 그리기: 곡 전체 2~2.5배 (재시작 후 적용)
