@@ -958,6 +958,7 @@ namespace StutterFix
                         if (ui) { ui.enabled = a0 != "ummoff"; Log("[guiprobe] UMM UI enabled=" + ui.enabled); } else Log("[guiprobe] UMM UI 없음");
                         return true;
                     }
+                case "srcdebug": if (arg.Trim() == "phases") { Log("[srcdebug] phases " + DecoBake.PhReport()); return true; } if (arg.Trim() == "check") { Log("[srcdebug] check " + DecoBake.SrcCheck()); return true; } DecoBake.SrcDebug = int.Parse(arg.Trim()); Log("[srcdebug] " + DecoBake.SrcDebug + " avg_active=" + (DecoBake.SrcFrames > 0 ? (DecoBake.SrcActiveSum / (double)DecoBake.SrcFrames).ToString("F1") : "0")); DecoBake.SrcActiveSum = 0; DecoBake.SrcFrames = 0; return true;
                 case "decodetach": Log("[decodetach] " + DecoDetach.Command(arg)); return true;
                 case "occlude": if (arg.Trim() == "collect") { ShapeCellsCpu.CollectOpaque = true; Log("[occlude] 다음 맵 열기부터 불투명 정보 수집"); return true; } Occlude.Command(arg); return true;
                 case "gpuhide": GpuHide.Command(arg); return true;

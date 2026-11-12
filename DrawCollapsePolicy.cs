@@ -138,6 +138,8 @@ namespace StutterFix
         // 형태 칸(GpuDecoShape): 투명 여백이 많은 텍스처를 칸 사각형 몇 개로만 그린다. 측정: gpudeco drawcollapse policy shape on|off, shapegrid N
         internal static bool ShapeCells=false;
         // RunLod 를 켠 판에서 RunLod 후보(일반 장식)는 RunLod 에 두고 GPU 장식은 나머지(혼합 등)만 맡는다. 측정: gpudeco drawcollapse policy runlodsplit on|off
+        // 보이는 항목만 남기도록 구간 인덱스 버퍼를 다시 만들어 올린다(ApplySpanCulling). 끄면 인덱스는 항상 전체. 측정: policy compact on|off
+        internal static bool CompactIndices=true;
         internal static bool RunLodSplit=false;
         // 이번 맵에서 나눠 맡는지(준비 때 정함). 장식이 많거나 이벤트 대상이 많은 맵(CPU 병목, Arche 28,835개·22.8만)은 GPU 장식이 전부 맡는다.
         // 측정(RunLod 켬, 2560): Arche 분담 102.9 대 전부 245.0, Windflower 210.4 대 196.1, HELLO 232.3 대 196.3(원래 103.0/211.7/233.2)

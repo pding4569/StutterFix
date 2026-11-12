@@ -29,6 +29,10 @@
     <OutputPath>bin/PlayerAuto/</OutputPath>
     <IntermediateOutputPath>obj/PlayerAuto/</IntermediateOutputPath>
   </PropertyGroup>
+  <PropertyGroup>
+    <!-- 소스 진행값·이징값을 슬롯 배열에 둔다(2026-11-12 기본 켬: 일시정지 픽셀 차이 0, 이징 재계산 일치 1835/1835) -->
+    <DefineConstants>$(DefineConstants);CLOCK_ARRAYS</DefineConstants>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(AutoTestBuild)' == '1' And '$(ClockArraysBuild)' == '1'">
     <DefineConstants>$(DefineConstants);CLOCK_ARRAYS</DefineConstants>
     <OutputPath>bin/PlayerAutoClockArrays/</OutputPath>

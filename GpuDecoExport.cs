@@ -52,9 +52,9 @@ namespace StutterFix
             internal int Slot;
             internal long Token=0;
             internal int SourceId;
-            internal int StartFrame;
+            internal int StartFrame { get { return gpuSrcStart[Slot]; } set { gpuSrcStart[Slot] = value; } }
             internal double StartSong;
-            internal float Dur;
+            internal float Dur { get { return gpuSrcDur[Slot]; } set { gpuSrcDur[Slot] = value; } }
 #if CLOCK_ARRAYS
             // The same float words are read by CPU recovery and uploaded to the GPU.
             internal ref float Pos => ref gpuSourceProgress[Slot];
@@ -63,13 +63,38 @@ namespace StutterFix
             internal float Pos;
             internal float CurrentE;
 #endif
-            internal Ease Ease;
-            internal float Over, Period;
-            internal bool Active;
+            // 소스 진행 루프(AdvanceGpuLiveSources)가 객체를 건드리지 않고 슬롯별 배열만 읽게 하려고, 루프가 읽는 값은 배열에 둔다.
+            // 객체당 약 100ns(캐시 미스)가 들던 것이 Arche 활성 소스 약 2,150개에서 프레임당 0.2ms 였다.
+            internal Ease Ease { get { return (Ease)gpuSrcEase[Slot]; } set { gpuSrcEase[Slot] = (int)value; } }
+            internal float Over { get { return gpuSrcOver[Slot]; } set { gpuSrcOver[Slot] = value; } }
+            internal float Period { get { return gpuSrcPeriod[Slot]; } set { gpuSrcPeriod[Slot] = value; } }
+            internal bool Active { get { return gpuSrcActive[Slot]; } set { gpuSrcActive[Slot] = value; } }
 #if DEV || AUTOTEST
             internal ExactEaseCohorts.Lease ClockLease=ExactEaseCohorts.Lease.Invalid;
 #endif
-            internal readonly List<int> MasterSlots = new List<int>(64);
+            internal readonly MasterSlotList MasterSlots;
+            internal GpuLiveSource(int slot) { Slot = slot; MasterSlots = new MasterSlotList(slot); }
+        }
+        // List<int> 와 같은 쓰임새(Add/Remove/Insert/AddRange/RemoveRange/IndexOf/Clear/Count)를 가진 목록. 바뀔 때마다 슬롯별 개수 배열을 맞춰
+        // 진행 루프가 "아무도 안 쓰는 소스인가"를 객체 없이 배열로 물을 수 있게 한다.
+        sealed class MasterSlotList
+        {
+            readonly List<int> list = new List<int>(64); readonly int slot;
+            internal MasterSlotList(int slot) { this.slot = slot; }
+            void Sync() { gpuSrcMasters[slot] = list.Count; }
+            internal int Count { get { return list.Count; } }
+            internal int Capacity { get { return list.Capacity; } set { list.Capacity = value; } }
+            internal int this[int i] { get { return list[i]; } set { list[i] = value; } }
+            internal void Add(int v) { list.Add(v); Sync(); }
+            internal void AddRange(IEnumerable<int> v) { list.AddRange(v); Sync(); }
+            internal void Insert(int i, int v) { list.Insert(i, v); Sync(); }
+            internal bool Remove(int v) { bool r = list.Remove(v); Sync(); return r; }
+            internal void RemoveAt(int i) { list.RemoveAt(i); Sync(); }
+            internal void RemoveRange(int i, int n) { list.RemoveRange(i, n); Sync(); }
+            internal void Clear() { list.Clear(); Sync(); }
+            internal int IndexOf(int v) { return list.IndexOf(v); }
+            internal bool Contains(int v) { return list.Contains(v); }
+            internal List<int>.Enumerator GetEnumerator() { return list.GetEnumerator(); }
         }
         sealed class GpuLiveSlice
         {
@@ -261,6 +286,10 @@ namespace StutterFix
         static readonly List<int> gpuActiveSourceSlots = new List<int>(256);
         static readonly float[] gpuSourceE = new float[MaxLiveSources];
         static readonly float[] gpuSourceProgress = new float[MaxLiveSources];
+        // 소스 진행 루프가 읽는 슬롯별 값(GpuLiveSource 의 속성이 여기에 쓴다)
+        static readonly float[] gpuSrcDur = new float[MaxLiveSources], gpuSrcOver = new float[MaxLiveSources], gpuSrcPeriod = new float[MaxLiveSources];
+        static readonly int[] gpuSrcEase = new int[MaxLiveSources], gpuSrcStart = new int[MaxLiveSources], gpuSrcMasters = new int[MaxLiveSources];
+        static readonly bool[] gpuSrcActive = new bool[MaxLiveSources];
 #if DEV || AUTOTEST
         static ExactEaseMemo gpuClockMemo; // Null/default OFF. Explicit command only.
         static bool gpuClockMemoVerify;
@@ -501,7 +530,7 @@ namespace StutterFix
             gpuFreeSourceSlots.Clear();
             for (int i = MaxLiveSources - 1; i >= 0; i--)
             {
-                if (gpuSourcePool[i] == null) gpuSourcePool[i] = new GpuLiveSource { Slot = i };
+                if (gpuSourcePool[i] == null) gpuSourcePool[i] = new GpuLiveSource(i);
                 else { gpuSourcePool[i].Active = false; gpuSourcePool[i].MasterSlots.Clear(); }
 #if DEV || AUTOTEST
                 gpuSourcePool[i].ClockLease=ExactEaseCohorts.Lease.Invalid;
@@ -693,6 +722,25 @@ namespace StutterFix
         }
 
         // Request B.1 & B.2: Advance all active sources once per frame by shared dt and evaluate double easing on CPU.
+#if AUTOTEST
+        internal static int SrcDebug;   // 측정 전용: 1 이면 이징을 선형으로, 2 면 소스 진행 루프를 통째로 건너뜀(화면이 틀어진다)
+        internal static long SrcActiveSum, SrcFrames, PhAdvance, PhImages, PhDirty, PhUpload, PhFrames, PhAlphaItems, PhSlices, PhQ1;
+        internal static string PhReport() { double f = 1000.0 / Stopwatch.Frequency / Math.Max(1, PhFrames); string r = "frames=" + PhFrames + " advance_ms=" + (PhAdvance * f).ToString("F5") + " images_ms=" + (PhImages * f).ToString("F5") + " dirty_ms=" + (PhDirty * f).ToString("F5") + " upload_ms=" + (PhUpload * f).ToString("F5"); r += " events_loop_ms=" + (PhQ1 * f).ToString("F5") + " alpha_items_per_frame=" + ((double)PhAlphaItems / Math.Max(1, PhFrames)).ToString("F1") + " slices=" + gpuLiveSlices.Count + " calls_per_frame=" + ((double)PhSlices / Math.Max(1, PhFrames)).ToString("F2") + " alpha_checks_per_frame=" + ((double)(gpuImageAlphaChecks - phChecks0) / Math.Max(1, PhFrames)).ToString("F1") + " watching=" + gpuImageWake.Watching.Count + " pending=" + gpuImageWake.Pending.Count; phChecks0 = gpuImageAlphaChecks; PhAlphaItems = PhSlices = PhQ1 = 0; PhAdvance = PhImages = PhDirty = PhUpload = PhFrames = 0; return r; }
+        static long phChecks0;
+        // 검증: 슬롯별 배열(gpuSrcMasters)이 실제 목록 길이와 같은지, 활성 목록에 없는데 활성인 슬롯이 없는지
+        internal static string SrcCheck()
+        {
+            int bad = 0, n = 0, active = 0, inList = 0; var seen = new HashSet<int>();
+            for (int i = 0; i < gpuActiveSourceSlots.Count; i++) { seen.Add(gpuActiveSourceSlots[i]); inList++; }
+            for (int s = 0; s < gpuSourcePool.Length; s++)
+            {
+                var src = gpuSourcePool[s]; if (src == null) continue; n++;
+                if (gpuSrcMasters[s] != src.MasterSlots.Count) bad++;
+                if (gpuSrcActive[s]) { active++; if (!seen.Contains(s)) bad++; }
+            }
+            return "pool=" + n + " active_flag=" + active + " active_list=" + inList + " mismatches=" + bad;
+        }
+#endif
         static void AdvanceGpuLiveSources()
         {
             int fc=Time.frameCount;
@@ -705,13 +753,17 @@ namespace StutterFix
 #if DEV || AUTOTEST
             gpuClockMemo?.BeginFrame();
 #endif
+#if AUTOTEST
+            SrcActiveSum+=gpuActiveSourceSlots.Count;SrcFrames++;
+            if(SrcDebug==2)return;
+#endif
             for (int i = 0; i < gpuActiveSourceSlots.Count;)
             {
                 int slot = gpuActiveSourceSlots[i];
-                var src = gpuSourcePool[slot];
-                if (!src.Active || src.MasterSlots.Count == 0)
+                // 객체(gpuSourcePool[slot])는 끝낼 때와 시험용 분기에서만 건드린다: 슬롯별 배열만 읽어 캐시 미스를 피한다.
+                if (!gpuSrcActive[slot] || gpuSrcMasters[slot] == 0)
                 {
-                    CompleteGpuLiveSource(src);
+                    CompleteGpuLiveSource(gpuSourcePool[slot]);
                     int last = gpuActiveSourceSlots.Count - 1;
                     gpuActiveSourceSlots[i] = gpuActiveSourceSlots[last];
                     gpuActiveSourceSlots.RemoveAt(last);
@@ -719,20 +771,24 @@ namespace StutterFix
                 }
                 // Sources created in scrVfxPlus.Update during frame F take their first Pos += dt step on frame F + 1,
                 // matching DOTweenComponent.Update -> DecoAnim.UpdatePrefix ordering.
-                if (src.StartFrame >= fc)
+                if (gpuSrcStart[slot] >= fc)
                 {
                     i++;
                     continue;
                 }
+#if DEV || AUTOTEST
+                var src = gpuSourcePool[slot];
+#endif
+                float srcDur = gpuSrcDur[slot];
 #if CLOCK_ARRAYS
                 ref float position = ref gpuSourceProgress[slot];
                 float nextPos = position + dt;
 #else
                 float nextPos = src.Pos + dt;
 #endif
-                if (nextPos >= src.Dur)
+                if (nextPos >= srcDur)
                 {
-                    CompleteGpuLiveSource(src);
+                    CompleteGpuLiveSource(gpuSourcePool[slot]);
                     int last = gpuActiveSourceSlots.Count - 1;
                     gpuActiveSourceSlots[i] = gpuActiveSourceSlots[last];
                     gpuActiveSourceSlots.RemoveAt(last);
@@ -767,7 +823,10 @@ namespace StutterFix
                 }
                 else
 #endif
-                    e=ZeroTween.Eval(src.Ease,nextPos,src.Dur,src.Over,src.Period);
+#if AUTOTEST
+                    if(SrcDebug==1)e=nextPos/srcDur;else
+#endif
+                    e=ZeroTween.Eval((Ease)gpuSrcEase[slot],nextPos,srcDur,gpuSrcOver[slot],gpuSrcPeriod[slot]);
 #if !CLOCK_ARRAYS
                 src.CurrentE = e;
 #endif
@@ -1455,15 +1514,20 @@ namespace StutterFix
             long t1 = Stopwatch.GetTimestamp();
 #endif
             AdvanceGpuLiveSources();
+#if AUTOTEST
+            long phA=Stopwatch.GetTimestamp();
+#endif
 #if AUTOTEST || GPUDECO
             FlushGpuImagesBeforeVisible();
             if(!gpuLiveActive)return;
 #endif
 #if AUTOTEST
+            long phB=Stopwatch.GetTimestamp();
             long probeAdvance=GpuDecoCostProbe.Enabled?Stopwatch.GetTimestamp():0;
 #endif
             active.FlushDirty();
 #if AUTOTEST
+            long phC=Stopwatch.GetTimestamp();
             long probeDirty=GpuDecoCostProbe.Enabled?Stopwatch.GetTimestamp():0;
 #endif
             // Inactive slices may have missed writes: switching always uploads the full used prefix.
@@ -1473,6 +1537,7 @@ namespace StutterFix
             gpuSourceDirtyMin=int.MaxValue;gpuSourceDirtyMax=-1;
 #if AUTOTEST
             long t2 = Stopwatch.GetTimestamp();
+            PhAdvance+=phA-t1;PhImages+=phB-phA;PhDirty+=phC-phB;PhUpload+=t2-phC;PhFrames++;
             if(GpuDecoCostProbe.Enabled)GpuDecoCostProbe.Frame(probeAdvance-t1,probeDirty-probeAdvance,t2-probeDirty,
                 gpuSourceHighWater,active.CopyMask?.Low??0,active.CopyMask?.High??0);
             long cm0=Stopwatch.GetTimestamp();

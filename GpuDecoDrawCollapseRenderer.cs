@@ -614,6 +614,7 @@ namespace StutterFix
             }
             Main.Entry.Logger.Log("[gpudeco] 구간 머티리얼 공유 "+(on?"켬":"끔"));
         }
+        internal static void ForceIndexRebuild(){if(gpuSpanOfItem==null)return;for(int k=0;k<gpuCollapseSpans.Count;k++){gpuCollapseSpans[k].IndexDirty=true;MarkSpanDirty(k);}}
         internal static void MarkAllSpansDirty(){if(gpuSpanOfItem==null)return;for(int k=0;k<gpuCollapseSpans.Count;k++)MarkSpanDirty(k);}
 #if DEV || AUTOTEST
         internal static long gpuSpanToggles;
@@ -635,7 +636,7 @@ namespace StutterFix
                 {
                     s.IndexDirty=false;
                     var items=s.Items;int visCount=gpuSpanVisible[k];
-                    if(visCount>=items.Length)
+                    if(visCount>=items.Length || !DrawCollapsePolicy.CompactIndices)
                     {
                         if(s.LastUploadedIndexCount!=s.AllIndices.Length)
                         {

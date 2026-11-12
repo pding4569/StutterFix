@@ -329,16 +329,27 @@ namespace StutterFix
         }
         static void FlushGpuImagesBeforeVisible()
         {
+#if AUTOTEST
+            long q0=System.Diagnostics.Stopwatch.GetTimestamp();
+#endif
             if(!gpuImageCandidate||gpuImagePending.Count==0)return;
             foreach(var slice in gpuLiveSlices)
+            {
+#if AUTOTEST
+                PhAlphaItems+=gpuImageAlphaEvents(slice).Count;PhSlices++;
+#endif
                 foreach(int item in gpuImageAlphaEvents(slice))
                 {
                     int master=slice.MasterItems[item];
                     if(gpuImageWake.AlphaDirty(master))gpuImageAlphaDirty++;
                 }
+            }
             // A dirty start may still have alpha=0. Keep ONLY pending images
             // with animated alpha until they become visible or static. Looking
             // only at MarkDirty would miss the following frame's 0 -> positive.
+#if AUTOTEST
+            PhQ1+=System.Diagnostics.Stopwatch.GetTimestamp()-q0;
+#endif
             gpuImageWake.Snapshot(gpuImagePendingScratch);
             foreach(int master in gpuImagePendingScratch)
             {
