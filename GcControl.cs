@@ -624,6 +624,7 @@ namespace StutterFix
             bool playing = IsPlaying();
             long hq = System.Diagnostics.Stopwatch.GetTimestamp();
             Hitch.Tick(dt, playing);
+            MouseSkip.Tick(playing);
             Main.TickCost[16] += System.Diagnostics.Stopwatch.GetTimestamp() - hq;
 
             if (!Enabled)

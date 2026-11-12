@@ -44,6 +44,7 @@
     <Compile Include="ColdOpenProbe.cs" />
     <Compile Include="DecoDetach.cs" />
     <Compile Include="FlashSkip.cs" />
+    <Compile Include="MouseSkip.cs" />
     <Compile Include="GpuPriority.cs" />
     <Compile Include="TightSpriteProbe.cs" />
     <Compile Include="LightProbe.cs" />
