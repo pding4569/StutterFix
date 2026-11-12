@@ -117,6 +117,8 @@ namespace StutterFix
             }
             // 3세대: 확대 장식 묶어 그리기(묶음 LOD)를 켰다가, 4세대(11-13 사용자 결정)에서 저사양 기능(기본 꺼짐)으로 되돌림. 손실 있음(PSNR 약 50dB).
             if (Config.DefaultsGen < 4) { Config.RunLod = false; Config.DefaultsGen = 4; try { Config.Save(modEntry); } catch { } }
+            // 5세대(11-13 사용자 결정): GPU 장식 처리를 기본 켬으로. 장식이 아주 많은 맵(Arche +100% 이상, DD +29%)에서만 켜지고, 지원 안 되는 맵·환경은 스스로 꺼진다.
+            if (Config.DefaultsGen < 5) { Config.GpuDeco = 1; Config.DefaultsGen = 5; try { Config.Save(modEntry); } catch { } }
 
             Resilience.Init();   // 비정상 종료 감지 (안전 모드면 이번 실행 동안 일부 기능을 끔)
 
@@ -2520,7 +2522,7 @@ BlendProbe.Tick();
 
         public bool HitSoundBatch = true;   // 2026-10-20: 기본 켬 (Arche 전곡 +6.6%, 막히면 자동으로 원래 방식). 저사양 페이지에 있다
 
-        public int DefaultsGen = 0;         // 기본값을 바꿔 한 번 덮어쓴 세대 (1 = 히트음 묶기·화면 밖 파티클 멈추기 켬, 2 = 앞서 준비 프레임 4·화면 대기 건너뛰기 켬, 3 = 확대 장식 묶어 그리기 켬, 4 = 그것을 저사양 기능으로 되돌려 끔)
+        public int DefaultsGen = 0;         // 기본값을 바꿔 한 번 덮어쓴 세대 (1 = 히트음 묶기·화면 밖 파티클 멈추기 켬, 2 = 앞서 준비 프레임 4·화면 대기 건너뛰기 켬, 3 = 확대 장식 묶어 그리기 켬, 4 = 그것을 저사양 기능으로 되돌려 끔, 5 = GPU 장식 처리 켬)
 
         public bool JitWarm = true;         // 모드·게임 효과 함수를 켤 때 미리 컴파일 (곡 초반 첫 효과의 JIT)       // 곡 중에 처음 쓰는 효과음(박자 소리 등)을 재생 준비 때 미리 불러오기
 
@@ -2642,7 +2644,7 @@ BlendProbe.Tick();
 
         public bool ExpFsChanged = false;   // 모드가 독점 전체 화면으로 바꿔 둠 (옵션을 끄면 되돌린다)
 
-        public int GpuDeco = 0;             // GPU 장식 처리: 기본 꺼짐
+        public int GpuDeco = 1;             // GPU 장식 처리: 기본 켬(3.0.0, DefaultsGen 5). 장식이 아주 많은 맵에서만 실제로 켜진다
 
         public int GpuDecoImages = 1;       // GPU 장식 처리 사용 시 이미지 소유: 기본 켬
 
