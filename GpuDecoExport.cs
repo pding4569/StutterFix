@@ -598,10 +598,11 @@ namespace StutterFix
         {
             var ch = gpuMasterChannels[masterSlot];
             if (ch.sourceIndex < 0) return ch.end;
-            var src = gpuSourcePool[ch.sourceIndex];
-            if (!src.Active || src.Pos >= src.Dur) return ch.end;
-            if (src.Pos <= 0f) return ch.start;
-            return (float)((double)ch.start + (double)ch.change * (double)src.CurrentE);
+            // 소스 객체를 읽지 않고 슬롯별 배열만 읽는다(소스 번호 = 슬롯 번호, 값은 객체 속성과 같은 배열): 계산은 그대로.
+            int s = ch.sourceIndex;
+            if (!gpuSrcActive[s] || gpuSourceProgress[s] >= gpuSrcDur[s]) return ch.end;
+            if (gpuSourceProgress[s] <= 0f) return ch.start;
+            return (float)((double)ch.start + (double)ch.change * (double)gpuSourceE[s]);
         }
 
         static void PropagateMasterSlotToSlices(int masterIdx, int c, LiveChannel lc, Anchor anc)
@@ -724,8 +725,8 @@ namespace StutterFix
         // Request B.1 & B.2: Advance all active sources once per frame by shared dt and evaluate double easing on CPU.
 #if AUTOTEST
         internal static int SrcDebug;   // 측정 전용: 1 이면 이징을 선형으로, 2 면 소스 진행 루프를 통째로 건너뜀(화면이 틀어진다)
-        internal static long SrcActiveSum, SrcFrames, PhAdvance, PhImages, PhDirty, PhUpload, PhFrames, PhAlphaItems, PhSlices, PhQ1;
-        internal static string PhReport() { double f = 1000.0 / Stopwatch.Frequency / Math.Max(1, PhFrames); string r = "frames=" + PhFrames + " advance_ms=" + (PhAdvance * f).ToString("F5") + " images_ms=" + (PhImages * f).ToString("F5") + " dirty_ms=" + (PhDirty * f).ToString("F5") + " upload_ms=" + (PhUpload * f).ToString("F5"); r += " events_loop_ms=" + (PhQ1 * f).ToString("F5") + " alpha_items_per_frame=" + ((double)PhAlphaItems / Math.Max(1, PhFrames)).ToString("F1") + " slices=" + gpuLiveSlices.Count + " calls_per_frame=" + ((double)PhSlices / Math.Max(1, PhFrames)).ToString("F2") + " alpha_checks_per_frame=" + ((double)(gpuImageAlphaChecks - phChecks0) / Math.Max(1, PhFrames)).ToString("F1") + " watching=" + gpuImageWake.Watching.Count + " pending=" + gpuImageWake.Pending.Count; phChecks0 = gpuImageAlphaChecks; PhAlphaItems = PhSlices = PhQ1 = 0; PhAdvance = PhImages = PhDirty = PhUpload = PhFrames = 0; return r; }
+        internal static long SrcActiveSum, SrcFrames, PhAdvance, PhImages, PhDirty, PhUpload, PhFrames, PhAlphaItems, PhSlices, PhQ1, PhV1, PhV2, PhV3, PhV3Calls, PhV3Max;
+        internal static string PhReport() { double f = 1000.0 / Stopwatch.Frequency / Math.Max(1, PhFrames); string r = "frames=" + PhFrames + " advance_ms=" + (PhAdvance * f).ToString("F5") + " images_ms=" + (PhImages * f).ToString("F5") + " dirty_ms=" + (PhDirty * f).ToString("F5") + " upload_ms=" + (PhUpload * f).ToString("F5"); r += " validate: order_tick_ms=" + (PhV1 * f).ToString("F5") + " excluded_vis_ms=" + (PhV2 * f).ToString("F5") + " full_validate_ms(avg)=" + (PhV3 * f).ToString("F5") + " full_calls=" + PhV3Calls + " full_max_ms=" + (PhV3Max * 1000.0 / Stopwatch.Frequency).ToString("F2") + " | events_loop_ms=" + (PhQ1 * f).ToString("F5") + " alpha_items_per_frame=" + ((double)PhAlphaItems / Math.Max(1, PhFrames)).ToString("F1") + " slices=" + gpuLiveSlices.Count + " calls_per_frame=" + ((double)PhSlices / Math.Max(1, PhFrames)).ToString("F2") + " alpha_checks_per_frame=" + ((double)(gpuImageAlphaChecks - phChecks0) / Math.Max(1, PhFrames)).ToString("F1") + " watching=" + gpuImageWake.Watching.Count + " pending=" + gpuImageWake.Pending.Count; phChecks0 = gpuImageAlphaChecks; PhAlphaItems = PhSlices = PhQ1 = PhV1 = PhV2 = PhV3 = PhV3Calls = PhV3Max = 0; PhAdvance = PhImages = PhDirty = PhUpload = PhFrames = 0; return r; }
         static long phChecks0;
         // 검증: 슬롯별 배열(gpuSrcMasters)이 실제 목록 길이와 같은지, 활성 목록에 없는데 활성인 슬롯이 없는지
         internal static string SrcCheck()

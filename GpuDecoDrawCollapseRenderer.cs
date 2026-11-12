@@ -1752,7 +1752,18 @@ namespace StutterFix
         static void CheckDrawCollapseBeforeDispatch(double time)
         {
             if(!gpuCollapseOn)return;
-            if(GpuDecoPlayer.Product){DynamicOrderTick();ExcludedVisibilityTick();}
+#if AUTOTEST
+            long vk0=System.Diagnostics.Stopwatch.GetTimestamp();
+#endif
+            if(GpuDecoPlayer.Product){DynamicOrderTick();
+#if AUTOTEST
+                PhV1+=System.Diagnostics.Stopwatch.GetTimestamp()-vk0;long vk1=System.Diagnostics.Stopwatch.GetTimestamp();
+#endif
+                ExcludedVisibilityTick();
+#if AUTOTEST
+                PhV2+=System.Diagnostics.Stopwatch.GetTimestamp()-vk1;
+#endif
+            }
             string reason=gpuCollapsePendingFallback;
             if(reason==null)
             {
@@ -1760,7 +1771,16 @@ namespace StutterFix
                 {
                     RequireLive(GpuDecoPlayer.Product || time>=257.5 && time<=270.25,"outside_prepared_260..270_window");
                     // 제품: 순서 점검은 로그만 남기므로 몇 프레임에 한 번이면 된다 (매 프레임 속성 읽기 약 0.09ms).
-                    if(!GpuDecoPlayer.Product || (Time.frameCount&63)==0)ValidateDrawCollapse(false);
+                    if(!GpuDecoPlayer.Product || (Time.frameCount&63)==0)
+                    {
+#if AUTOTEST
+                        long vk2=System.Diagnostics.Stopwatch.GetTimestamp();
+#endif
+                        ValidateDrawCollapse(false);
+#if AUTOTEST
+                        long vd=System.Diagnostics.Stopwatch.GetTimestamp()-vk2;PhV3+=vd;PhV3Calls++;if(vd>PhV3Max)PhV3Max=vd;
+#endif
+                    }
                 }
                 catch(Exception e){reason=e.GetType().Name+":"+e.Message;}
             }
