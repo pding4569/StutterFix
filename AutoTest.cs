@@ -600,6 +600,7 @@ namespace StutterFix
                     return true;
                 case "beatfix":
                     BeatFix.Enabled = arg != "off"; Log("박자 알림 건너뛰기 " + (BeatFix.Enabled ? "켬" : "끔")); return true;
+                case "tilecullmin": TileCull.MinFloors = int.Parse(arg.Trim()); Log("화면 밖 타일 최소 타일 수 " + TileCull.MinFloors); return true;
                 case "tilecull":
                     TileCull.ForceOff = arg == "off"; Log("화면 밖 타일 " + (TileCull.ForceOff ? "끔" : "켬")); return true;
                 case "gcfull":

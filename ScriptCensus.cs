@@ -29,6 +29,23 @@ namespace StutterFix
             var r = c as Renderer; if (r != null) r.enabled = on;
         }
 
+        static HarmonyLib.Harmony colorH; static long scCalls, scSameMat, scSameCached, scFrames0; static int scFrame0;
+        static readonly HarmonyLib.AccessTools.FieldRef<FloorRenderer, Color> cachedColorRef = HarmonyLib.AccessTools.FieldRefAccess<FloorRenderer, Color>("cachedColor");
+        static bool SameC(Color a, Color b) { return a.r == b.r && a.g == b.g && a.b == b.b && a.a == b.a; }
+        // 진단: 항상 원래 코드를 실행한다(건너뛰지 않음). 세터 앞에서 현재 머티리얼 색·기억한 색과 같은지만 센다.
+        static bool ColorPre(FloorMeshRenderer __instance, Color value)
+        {
+            scCalls++;
+            try
+            {
+                if (SameC(cachedColorRef(__instance), value)) scSameCached++;
+                var m = __instance.material;
+                if (m != null && SameC(m.GetColor(scrFloor.ShaderProperty_Color), value)) scSameMat++;
+            }
+            catch { }
+            return true;
+        }
+
         static bool Has(Type t, string name)
         {
             for (var x = t; x != null && x != typeof(MonoBehaviour) && x != typeof(object); x = x.BaseType)
@@ -155,6 +172,54 @@ namespace StutterFix
                 if (p.Length > 1 && p[1] == "off") { var c = wrap.GetComponent<Canvas>(); if (c) { UnityEngine.Object.Destroy(c); sb.Append(" | 떼어냄"); } }
                 return sb.ToString();
             }
+            if (cmd == "colorstat")
+            {
+                string a = p.Length > 1 ? p[1] : "show";
+                if (a == "on")
+                {
+                    if (colorH != null) return "이미 켬";
+                    colorH = new HarmonyLib.Harmony("StutterFix.colorstat");
+                    var set = HarmonyLib.AccessTools.PropertySetter(typeof(FloorMeshRenderer), "color");
+                    colorH.Patch(set, prefix: new HarmonyLib.HarmonyMethod(typeof(ScriptCensus), nameof(ColorPre)));
+                    scCalls = scSameMat = scSameCached = 0; scFrame0 = Time.frameCount;
+                    return "FloorMeshRenderer.color 세터 세기 시작";
+                }
+                if (a == "off") { if (colorH != null) { colorH.UnpatchAll("StutterFix.colorstat"); colorH = null; } return "끔"; }
+                int fr = Math.Max(1, Time.frameCount - scFrame0);
+                return "프레임 " + fr + "개 동안 세터 호출 " + scCalls + "번(프레임당 " + (scCalls / (double)fr).ToString("F1") + "), 현재 머티리얼 색과 같은 것 "
+                    + scSameMat + "(" + (scCalls > 0 ? (100.0 * scSameMat / scCalls).ToString("F0") : "0") + "%), 기억한 색(cachedColor)과 같은 것 " + scSameCached;
+            }
+            if (cmd == "layers")
+            {   // 레이어별 켜진 렌더러: 종류, 스프라이트 알파 0, forceRenderingOff, 화면에 보임(isVisible), 재질 이름 상위
+                var by = new Dictionary<string, int[]>(); var mats = new Dictionary<string, Dictionary<string, int>>();
+                foreach (var r in Resources.FindObjectsOfTypeAll<Renderer>())
+                {
+                    if (!r || !r.gameObject.scene.IsValid() || !r.enabled || !r.gameObject.activeInHierarchy) continue;
+                    string ln = LayerMask.LayerToName(r.gameObject.layer); if (string.IsNullOrEmpty(ln)) ln = r.gameObject.layer.ToString();
+                    string kind = r is SpriteRenderer ? "Sprite" : r is MeshRenderer ? "Mesh" : r is ParticleSystemRenderer ? "Particle" : r.GetType().Name;
+                    string k = ln + "/" + kind;
+                    int[] v; if (!by.TryGetValue(k, out v)) by[k] = v = new int[5];
+                    v[0]++;
+                    if (r.forceRenderingOff) v[2]++;
+                    if (r.isVisible) v[3]++;
+                    var sr = r as SpriteRenderer;
+                    if (sr != null && sr.color.a == 0f) v[1]++;
+                    if (sr != null && !sr.sprite) v[4]++;
+                    var m = r.sharedMaterial; string mn = m ? (m.shader ? m.shader.name : "?") : "-";
+                    Dictionary<string, int> md; if (!mats.TryGetValue(k, out md)) mats[k] = md = new Dictionary<string, int>();
+                    int c; md.TryGetValue(mn, out c); md[mn] = c + 1;
+                }
+                var l = new List<KeyValuePair<string, int[]>>(by); l.Sort((a, b) => b.Value[0].CompareTo(a.Value[0]));
+                var sb = new StringBuilder("레이어/종류=켜짐(알파0, 강제끔, 보임, 스프라이트없음) {셰이더}:");
+                for (int i = 0; i < l.Count && i < 12; i++)
+                {
+                    var md = mats[l[i].Key]; var ml = new List<KeyValuePair<string, int>>(md); ml.Sort((a, b) => b.Value.CompareTo(a.Value));
+                    sb.Append(" || ").Append(l[i].Key).Append('=').Append(l[i].Value[0]).Append('(').Append(l[i].Value[1]).Append(',').Append(l[i].Value[2]).Append(',').Append(l[i].Value[3]).Append(',').Append(l[i].Value[4]).Append(") {");
+                    for (int j = 0; j < ml.Count && j < 3; j++) sb.Append(ml[j].Key).Append(':').Append(ml[j].Value).Append(' ');
+                    sb.Append('}');
+                }
+                return sb.ToString();
+            }
             if (cmd == "cameras")
             {   // 카메라마다: 켜짐, 컬링 마스크가 포함하는 레이어, 출력 대상 크기, depth, 그 마스크에 걸리는 켜진 렌더러 수
                 var layerCount = new int[32]; var layerNames = new string[32];
@@ -209,7 +274,7 @@ namespace StutterFix
                 if (holder) { UnityEngine.Object.Destroy(holder); holder = null; }
                 return "지움";
             }
-            return "scriptcensus count | off <형식> | on | dummy <N> | dummyoff | census | masks off | canvaslist | canvasoff <이름> | cameras";
+            return "scriptcensus count | off <형식> | on | dummy <N> | dummyoff | census | masks off | canvaslist | canvasoff <이름> | cameras | layers | colorstat on|off|show";
         }
     }
 }
