@@ -1321,6 +1321,7 @@ namespace StutterFix
                     return true;
 #endif
                 case "cpubreak": Log("[CPU 분해] " + (arg == "on" ? CpuBreak.On() : arg == "begin" ? CpuBreak.Begin() : CpuBreak.End())); return true;
+                case "scriptcensus": Log("[scriptcensus] " + ScriptCensus.Command(arg)); return true;
                 case "updatecost": Log("[updatecost] " + UpdateCostProbe.Command(arg)); return true;
                 case "decojob": Log("[decojob] " + DecoJobShadow.Command(arg)); return true;
                 case "tightlate": Log("[tightlate] " + TightLate.Command(arg)); return true;
