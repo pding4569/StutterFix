@@ -155,6 +155,27 @@ namespace StutterFix
                 if (p.Length > 1 && p[1] == "off") { var c = wrap.GetComponent<Canvas>(); if (c) { UnityEngine.Object.Destroy(c); sb.Append(" | 떼어냄"); } }
                 return sb.ToString();
             }
+            if (cmd == "cameras")
+            {   // 카메라마다: 켜짐, 컬링 마스크가 포함하는 레이어, 출력 대상 크기, depth, 그 마스크에 걸리는 켜진 렌더러 수
+                var layerCount = new int[32]; var layerNames = new string[32];
+                foreach (var r in Resources.FindObjectsOfTypeAll<Renderer>())
+                {
+                    if (!r || !r.gameObject.scene.IsValid() || !r.enabled || !r.gameObject.activeInHierarchy || r.forceRenderingOff) continue;
+                    layerCount[r.gameObject.layer]++;
+                }
+                for (int i = 0; i < 32; i++) layerNames[i] = LayerMask.LayerToName(i);
+                var sb = new StringBuilder("카메라:");
+                foreach (var c in Resources.FindObjectsOfTypeAll<Camera>())
+                {
+                    if (!c || !c.gameObject.scene.IsValid()) continue;
+                    int mask = c.cullingMask, n = 0; var ls = new StringBuilder();
+                    for (int i = 0; i < 32; i++) if ((mask & (1 << i)) != 0 && layerCount[i] > 0) { n += layerCount[i]; ls.Append(string.IsNullOrEmpty(layerNames[i]) ? i.ToString() : layerNames[i]).Append(':').Append(layerCount[i]).Append(','); }
+                    sb.Append(" [").Append(c.name).Append(" 켜짐=").Append(c.enabled && c.gameObject.activeInHierarchy).Append(" 깊이=").Append(c.depth)
+                      .Append(" 대상=").Append(c.targetTexture ? c.targetTexture.width + "x" + c.targetTexture.height : "화면")
+                      .Append(" 렌더러=").Append(n).Append(" (").Append(ls).Append(")] ");
+                }
+                return sb.ToString();
+            }
             if (cmd == "canvaslist")
             {   // 루트 이름별 캔버스 수(켜진 것)와 그 안의 TMP/Text/Image 수
                 var by = new Dictionary<string, int[]>();
@@ -188,7 +209,7 @@ namespace StutterFix
                 if (holder) { UnityEngine.Object.Destroy(holder); holder = null; }
                 return "지움";
             }
-            return "scriptcensus count | off <형식> | on | dummy <N> | dummyoff | census | masks off | canvaslist | canvasoff <이름>";
+            return "scriptcensus count | off <형식> | on | dummy <N> | dummyoff | census | masks off | canvaslist | canvasoff <이름> | cameras";
         }
     }
 }

@@ -126,8 +126,19 @@ namespace StutterFix
         // 두 곳에서 Screen 크기 대신 배율을 곱한 크기를 쓰게 한다. 배율 100% 면 원래와 똑같다.
         internal static int RenderScalePct = 100;
         private static readonly AccessTools.FieldRef<scrCamera, RenderTexture> camRTRef = AccessTools.FieldRefAccess<scrCamera, RenderTexture>("camRT");
-        public static int RTWidth() { int p = EffectivePct; return p >= 100 ? Screen.width : Mathf.Max(64, Mathf.RoundToInt(Screen.width * p / 100f)); }
-        public static int RTHeight() { int p = EffectivePct; return p >= 100 ? Screen.height : Mathf.Max(64, Mathf.RoundToInt(Screen.height * p / 100f)); }
+#if DEV || AUTOTEST
+        internal static int DiagRtW, DiagRtH;   // 진단 전용: 게임 화면 버퍼 크기를 직접 지정(창보다 크게 그려 실제 해상도의 GPU 작업량을 흉내). 자동 시험 rtsize <w> <h>
+#endif
+        public static int RTWidth() {
+#if DEV || AUTOTEST
+            if (DiagRtW > 0) return DiagRtW;
+#endif
+            int p = EffectivePct; return p >= 100 ? Screen.width : Mathf.Max(64, Mathf.RoundToInt(Screen.width * p / 100f)); }
+        public static int RTHeight() {
+#if DEV || AUTOTEST
+            if (DiagRtH > 0) return DiagRtH;
+#endif
+            int p = EffectivePct; return p >= 100 ? Screen.height : Mathf.Max(64, Mathf.RoundToInt(Screen.height * p / 100f)); }
         public static bool NeedsRecreationPrefix(scrCamera __instance, ref bool __result)
         {
             var rt = camRTRef(__instance);

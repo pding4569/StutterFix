@@ -1321,6 +1321,7 @@ namespace StutterFix
                     return true;
 #endif
                 case "cpubreak": Log("[CPU 분해] " + (arg == "on" ? CpuBreak.On() : arg == "begin" ? CpuBreak.Begin() : CpuBreak.End())); return true;
+                case "rtsize": { var q = arg.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries); if (q.Length >= 2) { LowEnd.DiagRtW = int.Parse(q[0]); LowEnd.DiagRtH = int.Parse(q[1]); } else { LowEnd.DiagRtW = LowEnd.DiagRtH = 0; } Log("[rtsize] " + LowEnd.DiagRtW + "x" + LowEnd.DiagRtH + " (창 " + Screen.width + "x" + Screen.height + ")"); return true; }
                 case "scriptcensus": Log("[scriptcensus] " + ScriptCensus.Command(arg)); return true;
                 case "updatecost": Log("[updatecost] " + UpdateCostProbe.Command(arg)); return true;
                 case "decojob": Log("[decojob] " + DecoJobShadow.Command(arg)); return true;
