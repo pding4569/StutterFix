@@ -1263,9 +1263,6 @@ namespace StutterFix
                 ch |= Option("waitskip", ref c.EngineWaitSkip, T("화면 대기 건너뛰기", "Skip present wait"),
                     T("엔진이 지난 화면이 나갈 때까지 기다리는 시간을 없앱니다. 엔진 코드를 실행 중에 바꾸며, 버전이 다르면 스스로 꺼집니다.", "Removes the engine wait for the previous frame. Patches engine code at runtime; turns itself off on other versions."),
                     T("무거운 맵", "Heavy maps"));
-                ch |= Option("runlod", ref c.RunLod, T("확대 장식 묶어 그리기", "Batch magnified decorations"),
-                    T("크게 확대된 그림 장식이 연달아 그려지면 1/4 해상도로 모아 그린 뒤 한 번에 합칩니다. GPU가 모자랄 때만 켜지고, 눈으로는 같습니다.", "Draws runs of heavily magnified image decorations at quarter resolution and blends them once. Only active when the GPU is the limit; looks the same."),
-                    T("무거운 맵", "Heavy maps"));
                 EndGroup();
             }
             else if (sub == 3)
@@ -2072,6 +2069,10 @@ namespace StutterFix
                 T("파티클 장식이 화면 밖에 있는 동안 시뮬레이션을 멈춰 CPU 를 아낍니다. 파티클이 많은 맵에서 효과가 있습니다. 다시 화면에 들어오면 멈춘 곳부터 이어가서 원래와 모양·시점이 조금 달라질 수 있습니다." + (Compat.QPauseOffscreenParticles ? " (지금은 Quartz 가 같은 일을 하고 있어 쉬는 중)" : ""),
                   "Stops simulating particle decorations while they are off-screen to save CPU on particle-heavy levels. When they come back on screen they resume where they stopped, so they may look slightly different from the original." + (Compat.QPauseOffscreenParticles ? " (Idle now: Quartz is doing the same)" : "")),
                 null);
+            ch |= Option("runlod", ref c.RunLod, T("확대 장식 묶어 그리기", "Batch magnified decorations"),
+                T("크게 확대된 그림 장식이 연달아 그려지면 1/4 해상도로 모아 그린 뒤 한 번에 합칩니다. GPU가 모자랄 때만 켜지고, 그림이 아주 조금 흐려질 수 있습니다(원본 대비 PSNR 약 50dB). 흔들리는 장식에서는 가장자리가 미세하게 달라질 수 있습니다.",
+                  "Draws runs of heavily magnified image decorations at quarter resolution and blends them once. Only active when the GPU is the limit; the picture can get very slightly softer (about 50 dB PSNR vs. original), and edges of shaking decorations may differ a little."),
+                null);
             ch |= Option("hitsoundbatch", ref c.HitSoundBatch, T("히트음 예약 묶기", "Batch hit sound scheduling"),
                 T("타일마다 히트음을 하나씩 예약하는 대신 0.5초 단위로 미리 합쳐 예약해 곡 중 CPU 를 아낍니다(Arche 전곡 약 +6.6%). 사용자 지정 히트음 등 지원하지 않는 경우는 자동으로 원래 방식으로 돌아갑니다. 소리 타이밍·음량이 아주 조금 달라질 수 있습니다.",
                   "Mixes hit sounds ahead of time in 0.5 s segments instead of scheduling one per tile, saving CPU during play (about +6.6% on a heavy map). Unsupported cases such as custom hit sounds fall back to the original path automatically. Timing and volume may differ very slightly."),
@@ -2173,7 +2174,7 @@ namespace StutterFix
             { c.LowPriority = c.LowNoThrottle = c.LowNoFft = true; c.LowRenderScale = 75; c.LowImageCap = 1024; c.LowSplit = 1; c.LowMenuFps = 60; Save(); }
             GUILayout.Space(8);
             if (Btn(T("모두 끄기", "Turn all off"), sSecondary, GUILayout.Width(150), GUILayout.Height(38)))
-            { c.LowPriority = c.LowNoThrottle = c.LowNoFft = c.LowSharpUpscale = c.LowFsr = c.LowSharpen = c.LowHalfRender = c.LowAutoRes = c.LowPauseParticles = c.LowCompressImages = c.LowFloorSplit = false; c.LowRenderScale = 100; c.LowImageCap = 0; c.LowSplit = 0; c.LowMenuFps = 0; Save(); }
+            { c.LowPriority = c.LowNoThrottle = c.LowNoFft = c.LowSharpUpscale = c.LowFsr = c.LowSharpen = c.LowHalfRender = c.LowAutoRes = c.LowPauseParticles = c.LowCompressImages = c.LowFloorSplit = c.RunLod = false; c.LowRenderScale = 100; c.LowImageCap = 0; c.LowSplit = 0; c.LowMenuFps = 0; Save(); }
             GUILayout.EndHorizontal();
             GUILayout.Space(14);
             InfoCard(new[]
