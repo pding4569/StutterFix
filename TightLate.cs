@@ -166,9 +166,10 @@ namespace StutterFix
 #if DEV || AUTOTEST || GPUDECO
             if (!GpuListCaching || !GpuDecoPlayer.Active) ClearGpuList();
 #endif
-            if (!installed || !Enabled || !Hitch.Playing || SceneReset.Resetting
+            if (!installed || !Enabled || SceneReset.Resetting
                 || !MoveApply.Enabled || !Dormancy.Enabled || ADOBase.controller == null
-                || !ADOBase.controller.disableV15Features || ADOBase.customLevel == null) return list;
+                || !ADOBase.controller.disableV15Features || ADOBase.customLevel == null) { DecoDetach.CpuLost(); return list; }
+            if (!Hitch.Playing) return list;
             if (!ReferenceEquals(owner, mgr)) { Forget(); owner = mgr; }
             if (preparedEpoch != epoch || !ReferenceEquals(ownerCamera, ADOBase.controller.camy))
             {
@@ -176,11 +177,12 @@ namespace StutterFix
                 parentTransform = mgr.transform; parentIdentity = Identity(parentTransform);
                 compatible = Compatible(); preparedEpoch = epoch;
             }
-            if (!compatible) return list;
+            if (!compatible) { DecoDetach.CpuLost(); return list; }
             var camera = cameraTransform;
             Vector3 cam = camera.position; // once per manager invocation
             var parent = parentTransform;
             bool parentOK = parentIdentity;
+            DecoDetach.CpuTick(parent, Dormancy.AllCount, parentOK);
             int count = list.Count;
 #if DEV || AUTOTEST || GPUDECO
             int listVersion = 0;
@@ -279,7 +281,7 @@ namespace StutterFix
                 || !ReferenceEquals(p.cameraTransform, camera) || p.clampToScreen || p.dontAlterX || p.dontAlterY) return 5;
             if (e.Epoch != epoch || !ReferenceEquals(e.Pivot, pivot))
             {
-                e.Pivot = pivot; e.ParentOK = ReferenceEquals(pivot.parent, parent); e.Epoch = epoch; e.Has = false;
+                e.Pivot = pivot; e.ParentOK = ReferenceEquals(pivot.parent, parent) || (DecoDetach.DetachActive && (object)pivot.parent == null); e.Epoch = epoch; e.Has = false;
             }
             if (!parentOK || !e.ParentOK) return 6;
             return 0;

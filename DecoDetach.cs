@@ -28,6 +28,19 @@ namespace StutterFix
         private static int n, pos, rank, offCount, waitFrames;
         private static int mode;                       // 0 다 붙어 있음, 1 떼는 중, 2 다 뗌, 3 되붙이는 중
         internal static long DetachCalls, ReattachCalls;
+        // CPU 경로(GPU 장식이 꺼진 맵): 장식이 많으면(Windflower 6,290 +4.5%, Exit 3,524 +3.0%) 같은 방식으로 뗀다. TightLate 가 떼어진 루트를 부모 일치로 받아들인다
+        // (원본 UpdatePosition 과 비트 비교 20,577번 불일치 0, 떼기·되붙이기 전후 화면 픽셀 0 차이로 확인).
+        internal static bool CpuEnabled = true;
+        internal static int CpuMinDecos = 3000;
+        private static bool cpuDriven;
+        internal static long CpuStarts;
+        internal static bool DetachActive { get { return mode != 0 && offCount > 0; } }
+
+#if DEV || AUTOTEST
+        // 진단(시험 전용): 장식 루트가 전부 떼어져 있고 부모가 없는 상태인가 (TightLate 가 떼어진 루트를 받아들일지 정한다)
+        internal static bool AllDetachedForced;
+        internal static bool IsAllDetached { get { return AllDetachedForced && mode == 2 && offCount > 0; } }
+#endif
         internal static string State() { return "enabled=" + Enabled + " mode=" + mode + " children=" + n + " detached=" + offCount + " pos=" + pos + " detach_calls=" + DetachCalls + " reattach_calls=" + ReattachCalls; }
 
         internal static void Install(Harmony h)
@@ -36,6 +49,24 @@ namespace StutterFix
             if (m != null) h.Patch(m, prefix: new HarmonyMethod(typeof(DecoDetach), nameof(ClearPrefix)));
         }
         private static void ClearPrefix() { FinishReattach(); }
+
+        // TightLate.List 가 준비 조건을 다 통과한 프레임마다(재생 중). GPU 장식이 꺼진 맵에서 장식이 충분히 많으면 뗀다.
+        internal static void CpuTick(Transform p, int total, bool identity)
+        {
+            if (!Enabled || !CpuEnabled || (object)p == null) { CpuLost(); return; }
+#if DEV || AUTOTEST || GPUDECO
+            if (GpuDecoPlayer.Active) return;   // GPU 장식이 켜져 있으면 그쪽(ActiveTick)이 맡는다
+#endif
+            if (total < CpuMinDecos || !identity) { CpuLost(); return; }
+            int before = mode;
+            ActiveTick(p, total, total);
+            if (mode != 0) { if (!cpuDriven) { cpuDriven = true; CpuStarts++; Main.Entry.Logger.Log("[장식 떼기] CPU 경로 시작: 장식 " + total + "개"); } }
+            if (before != 2 && mode == 2) TightLate.Invalidate();
+        }
+        // 준비 조건이 깨졌다(꺼짐·호환 안 됨 등): 되붙이기를 시작한다(재생 일시정지에서는 부르지 않는다)
+        internal static void CpuLost() { if (cpuDriven && offCount > 0 && mode != 3) BeginReattach(); }
+        // 다시 하기·편집 복귀·종료 직전: 편집·초기화 코드가 부모 관계를 기대하므로 전부 되붙인다(큰 맵은 화면이 어차피 멈추는 순간)
+        internal static void OnTransition() { if (cpuDriven && (offCount > 0 || mode != 0)) FinishReattach(); }
 
         // GPU 장식이 켜져 있는 프레임마다
         internal static void ActiveTick(Transform p, int owned, int total)
@@ -98,6 +129,10 @@ namespace StutterFix
         {
             for (int i = 0; i < n; i++) kids[i] = null;
             mode = 0; n = 0; pos = 0; rank = 0; offCount = 0; parent = null; waitFrames = 0;
+            cpuDriven = false; TightLate.Invalidate();
+#if DEV || AUTOTEST
+            AllDetachedForced = false;
+#endif
         }
 
 #if DEV || AUTOTEST
@@ -108,6 +143,18 @@ namespace StutterFix
         {
             var a = arg.Trim().Split(' ');
             var dm = scrDecorationManager.instance;
+            if (a[0] == "force" && dm)
+            {
+                var fp = dm.transform;
+                if (mode != 0) FinishReattach();
+                Enabled = true; AllDetachedForced = true; Capture(fp); mode = 1; pos = 0;
+                long ft0 = Stopwatch.GetTimestamp();
+                for (; pos < n; pos++) { var k = kids[pos]; if (k) { k.SetParent(null, false); off[pos] = true; offCount++; DetachCalls++; } }
+                mode = 2; TightLate.Invalidate();
+                return "force: " + State() + " ms=" + ((Stopwatch.GetTimestamp() - ft0) * 1000.0 / Stopwatch.Frequency).ToString("F1");
+            }
+            if (a[0] == "unforce") { AllDetachedForced = false; FinishReattach(); TightLate.Invalidate(); return State(); }
+            if (a[0] == "cpu" && a.Length > 1) { CpuEnabled = a[1] == "on"; if (!CpuEnabled) { FinishReattach(); TightLate.Invalidate(); } return "cpu=" + CpuEnabled + " " + State(); }
             if (a[0] == "state") return State();
             if (a[0] == "on") { Enabled = true; return State(); }
             if (a[0] == "off") { Enabled = false; FinishReattach(); return State(); }
@@ -137,7 +184,7 @@ namespace StutterFix
                 }
                 return "verify b: snaps=" + snaps.Count + " transform_changed=" + moved + " not_under_manager=" + unparented + " sibling_index_changed=" + order + " max_dpos=" + mp.ToString("G4") + " max_drot_deg=" + mr.ToString("G4") + " max_dscale=" + ms.ToString("G4") + " first[" + first + "] destroyed=" + gone + " children_now=" + p.childCount + " | " + State();
             }
-            return "decodetach state|on|off|finish|budget <ms>|verify a|verify b";
+            return "decodetach state|on|off|finish|budget <ms>|cpu on|off|force|unforce|verify a|verify b";
         }
 #endif
     }

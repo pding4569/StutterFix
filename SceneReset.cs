@@ -33,6 +33,7 @@ namespace StutterFix
         public static void Prefix()
         {
             Count++;
+            DecoDetach.OnTransition();
 #if DEV || AUTOTEST
             MatShare.Stop();
             LiveDecoGate2.RestoreProfile();

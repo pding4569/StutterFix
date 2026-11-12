@@ -2000,6 +2000,7 @@ BlendProbe.Tick();
             EnginePatch.WaitSkip(Config.EngineWaitSkip);
             InvisibleSkip.Enabled = E("SkipInvisible", Config.SkipInvisible);
             DecoDetach.Enabled = E("GpuDecoDetach", Config.GpuDecoDetach);
+            DecoDetach.CpuEnabled = E("DecoDetachCpu", Config.DecoDetachCpu);
             FlashSkip.SetEnabled(E("SkipClearFlash", Config.SkipClearFlash));
             MouseSkip.Enabled = E("MouseEventsSkip", Config.MouseEventsSkip);
 
@@ -2460,6 +2461,7 @@ BlendProbe.Tick();
         public bool MouseEventsSkip = true;   // 곡 중 SendMouseEvents 단계를 뺀다(프레임당 0.04~0.13ms). MouseSkip.cs
         public bool SkipClearFlash = true;    // 번쩍임 사각형(전체 화면 두 장)을 재질 알파 0 이하인 프레임에는 안 그린다. FlashSkip.cs
         public bool GpuDecoDetach = true;     // GPU 장식이 켜져 있는 동안 장식 루트를 관리자에서 뗀다(Transform 계층 훑기 줄임, Arche 메인 -0.2~0.3ms). DecoDetach.cs
+        public bool DecoDetachCpu = true;     // GPU 장식이 꺼진 맵에서 장식이 3,000개 넘으면 장식 루트를 관리자에서 뗀다(Windflower +4.5%, Exit +3.0%, 비트 동일 검증). DecoDetach.cs
         public bool RunLod = true;            // 곡 중에만: 그리기 순서에서 연속된 크게 확대된 이미지 장식을 1/4 해상도로 모아 그려 한 번에 합치기(GPU 병목일 때만 켜짐, 눈으로는 같음)
         public bool DisplayPace = false;    // 화면에 나갈 프레임만 그리기: 곡 전체 2~2.5배 (재시작 후 적용)
 
