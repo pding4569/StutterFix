@@ -1,0 +1,27 @@
+#pragma kernel BuildTiles
+#pragma target 5.0
+struct Layer { float4 row0; float4 row1; float4 tint; float4 info; };
+StructuredBuffer<Layer> _Layers;
+RWStructuredBuffer<uint> _TileCounts;
+RWStructuredBuffer<uint> _TileIndices;
+int _Count;
+float4 _Size;
+// One thread per tile. Ascending loop reversed to preserve front-to-back order.
+// Testing UV extrema is conservative (may retain corner-only false positives).
+[numthreads(64,1,1)]
+void BuildTiles(uint3 tid:SV_DispatchThreadID) {
+ uint tilesX=(uint)_Size.z, tilesY=(uint)_Size.w;
+ uint tile=tid.x; if(tile>=tilesX*tilesY) return;
+ float2 lo=float2((tile%tilesX)*32,(tile/tilesX)*32)/_Size.xy;
+ float2 hi=min(lo+32/_Size.xy,1);
+ float2 a=float2(lo.x,1-hi.y), b=float2(hi.x,1-lo.y);
+ float2 center=(a+b)*.5, halfSize=(b-a)*.5;
+ uint n=0;
+ for(int id=_Count-1;id>=0;id--) {
+  Layer l=_Layers[id];
+  float2 c=float2(dot(l.row0.xyz,float3(center,1)),dot(l.row1.xyz,float3(center,1)));
+  float2 r=float2(dot(abs(l.row0.xy),halfSize),dot(abs(l.row1.xy),halfSize));
+  if(all(c+r>=0)&&all(c-r<=1)) _TileIndices[tile*64+n++]=id;
+ }
+ _TileCounts[tile]=n;
+}

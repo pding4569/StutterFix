@@ -8,11 +8,13 @@ namespace StutterFix
     {
         // 동점의 셰이더 순위. 게임 안 측정: 같은 종류 셰이더끼리는 셰이더 ID 오름차순(20/20)이지만, 화면 복사(GrabPass)가 있는
         // 여러 패스 셰이더는 ID 가 더 작아도 일반 셰이더보다 뒤에 그려진다(Sprites/Tile 770 대 Blend Modes Grab 344: Grab 이 나중 12/12).
+#if !DRAWCOLLAPSE_CHECK
         internal static int ShaderRank(UnityEngine.Material m)
         {
             if (!m || !m.shader) return 0;
             return m.shader.GetInstanceID() + (m.passCount > 1 ? 0x40000000 : 0);
         }
+#endif
         internal readonly struct Key : IComparable<Key>
         {
             internal readonly int Layer, Order, Queue, Material, Renderer, Slot, Shader;

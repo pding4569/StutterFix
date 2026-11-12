@@ -14,13 +14,22 @@ namespace StutterFix
             if (!cam) return "본 카메라 없음";
             var vp = cam.projectionMatrix * cam.worldToCameraMatrix;
             double native = 0; int nativeN = 0;
+            double nativeUsed = 0, unknownArea = 0; var wasteTop = new System.Collections.Generic.Dictionary<string, double>();
             foreach (var sr in Object.FindObjectsByType<SpriteRenderer>(FindObjectsInactive.Exclude, FindObjectsSortMode.None))
             {
                 if (!sr.enabled || sr.forceRenderingOff || !sr.isVisible || !sr.sprite || sr.color.a <= 0) continue;
                 if (!sr.GetComponentInParent<scrDecoration>()) continue;
                 var b = sr.bounds;
-                native += RectArea(vp, new[] { new Vector3(b.min.x, b.min.y, b.center.z), new Vector3(b.max.x, b.min.y, b.center.z), new Vector3(b.max.x, b.max.y, b.center.z), new Vector3(b.min.x, b.max.y, b.center.z) });
+                double ar0 = RectArea(vp, new[] { new Vector3(b.min.x, b.min.y, b.center.z), new Vector3(b.max.x, b.min.y, b.center.z), new Vector3(b.max.x, b.max.y, b.center.z), new Vector3(b.min.x, b.max.y, b.center.z) });
+                native += ar0;
                 nativeN++;
+                // 그림의 빈 칸(알파 0) 비율: 해독 때 만든 형태 칸으로 추정(그림 전체 기준, 화면에 걸친 부분만의 비율은 아님)
+                double occ = 1; var tx0 = sr.sprite.texture;
+                if (tx0 && ShapeCellsCpu.TryGet(tx0.GetInstanceID(), out var cellBits) && cellBits != null)
+                { int on = 0; foreach (var wd in cellBits) { ulong v = wd; while (v != 0) { v &= v - 1; on++; } } occ = (double)on / (cellBits.Length * 64); }
+                else if (tx0) unknownArea += ar0;
+                nativeUsed += ar0 * occ;
+                if (tx0 && occ < 1) { string wk = tx0.name + " " + tx0.width + "x" + tx0.height + " 채움 " + occ.ToString("F2", System.Globalization.CultureInfo.InvariantCulture); wasteTop.TryGetValue(wk, out double pw); wasteTop[wk] = pw + ar0 * (1 - occ); }
             }
             double gpu = 0; int gpuN = 0; double zeroA = 0; int zeroN = 0; var top = new System.Collections.Generic.Dictionary<string, double>();
             if (gpuCollapseOn && gpuCollapseAllVerts != null && gpuCollapseAllCount > 0)
@@ -47,6 +56,10 @@ namespace StutterFix
                     { var tx = srr.sprite.texture; string k = tx.name + " " + tx.width + "x" + tx.height + (TryGetTrimBounds(tx, out var tb) ? " trim=" + ((tb.z - tb.x) * (tb.w - tb.y)).ToString("F2") : " notrim"); top.TryGetValue(k, out double pv); top[k] = pv + ar; }
                 }
             }
+            var wl = new System.Collections.Generic.List<System.Collections.Generic.KeyValuePair<string, double>>(wasteTop); wl.Sort((x, y) => y.Value.CompareTo(x.Value));
+            var wsb = new System.Text.StringBuilder();
+            for (int wi = 0; wi < wl.Count && wi < 8; wi++) wsb.Append(wl[wi].Key).Append(" 빈칸 ").Append(wl[wi].Value.ToString("F2", System.Globalization.CultureInfo.InvariantCulture)).Append("장; ");
+            Main.Entry.Logger.Log(string.Format(System.Globalization.CultureInfo.InvariantCulture, "[coverage2] 원래 장식 {0}개 사각형 {1:F1}장, 채워진 칸 기준 {2:F1}장(빈 칸 {3:F1}장, 형태 정보 없는 넓이 {4:F1}장) | 빈 칸 상위: {5}", nativeN, native, nativeUsed, native - nativeUsed, unknownArea, wsb));
             return string.Format(System.Globalization.CultureInfo.InvariantCulture, "원래 장식 렌더러 {0}개 {1:F1}장 | GpuDeco 구간 항목 {2}개 {3:F1}장 | 알파0인데 정점 있는 항목 {4}개 {5:F1}장 | 면적 상위: {6}", nativeN, native, gpuN, gpu, zeroN, zeroA, string.Join(" ; ", top.OrderByDescending(x => x.Value).Take(8).Select(x => x.Key + "=" + x.Value.ToString("F1"))));
         }
 

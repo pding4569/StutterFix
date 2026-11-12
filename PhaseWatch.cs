@@ -91,7 +91,9 @@ namespace StutterFix
         internal static void Uninstall()
         {
 #if AUTOTEST
-            researchStart=null;researchOwnLoop=false;
+            researchStart=null;researchOwnLoop=false;researchCycles=null;
+            try { StopCallbackProbe(); }
+            catch (Exception ex) { Main.Entry.Logger.Error("phase callback cleanup failed: " + ex.Message); }
 #endif
             if (!installed) return;
             try { PlayerLoop.SetPlayerLoop(original); } catch { }
@@ -101,10 +103,17 @@ namespace StutterFix
 #if AUTOTEST
         // Reuse the existing stage markers, not per-decoration patches. This is
         // a diagnostic window; elapsed stages include waits and are not CPU/GPU
-        // execution times. No extra work is added to Record().
+        // execution times. CPU cycle sampling runs only in an explicit window.
         static long[] researchStart;
         static int researchFrame;
         static bool researchOwnLoop;
+        static PhaseCycleProbe researchCycles;
+        static PhaseCallbackProbe researchCallbacks;
+        static void StopCallbackProbe()
+        {
+            PhaseCallbackProbe.Stop();
+            researchCallbacks = null;
+        }
         internal static string ResearchWindow(string action)
         {
             if(action=="on")
@@ -115,11 +124,33 @@ namespace StutterFix
             }
             if(action=="off")
             {
-                bool own=researchOwnLoop;researchStart=null;researchOwnLoop=false;
+                bool own=researchOwnLoop;researchStart=null;researchOwnLoop=false;researchCycles=null;
                 if(own)Uninstall();
+                else StopCallbackProbe();
                 return "phase_window off owned_loop_removed="+own;
             }
             if(!installed)throw new InvalidOperationException("phasewindow on first");
+            if(action=="callbacks on"||action=="callbacks manager"||action=="callbacks gpudeco")
+            {
+                if(researchCycles!=null)throw new InvalidOperationException("Install callbacks before sampling");
+                researchCallbacks=PhaseCallbackProbe.Install(action.Substring("callbacks ".Length));
+                return researchCallbacks.Ready;
+            }
+            if(action=="cpu begin")
+            {
+                if(researchCycles!=null)throw new InvalidOperationException("phase CPU cycle window already open");
+                researchCycles=new PhaseCycleProbe(names,researchCallbacks);
+                researchCallbacks?.StartWindow(researchCycles);
+                return "phase_cycles begin scope=main_thread_complete_playerloop_samples";
+            }
+            if(action=="cpu end")
+            {
+                var probe=researchCycles;
+                researchCycles=null;
+                if(researchCallbacks!=null)researchCallbacks.Window=null;
+                if(probe==null)throw new InvalidOperationException("phase CPU cycle window not open");
+                return probe.Report();
+            }
             if(action=="begin")
             {
                 if(researchStart!=null)throw new InvalidOperationException("phase window already open");
@@ -152,6 +183,9 @@ namespace StutterFix
 
         private static void Record(int index)
         {
+#if AUTOTEST
+            researchCycles?.Record(index);
+#endif
             long now = Stopwatch.GetTimestamp();
             if (AllocPhases && songAlloc != null)
             {

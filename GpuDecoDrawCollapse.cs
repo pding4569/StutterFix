@@ -25,6 +25,10 @@ namespace StutterFix
                 &&gpuImageCollapseAddresses.TryGetValue(texture.GetInstanceID(),out _),"image_texture_not_registered_in_collapse");
             RequireGpuImageCollapseSampling(item,texture);
             var address=gpuImageCollapseAddresses[texture.GetInstanceID()];
+            address=ResolveImageArrayAddress(item,texture,address);
+#if AUTOTEST
+            RequireSingleArrayAddress(item,address);
+#endif
             gpuImageCollapseTextureUpload[0]=CollapseInfo0(address,material,gpuLiveSlices.Count>0 && (uint)item<(uint)gpuLiveSlices[0].Data.Items.Length?gpuLiveSlices[0].Data.Items[item]:null,texture);
             gpuImageCollapseTextureUpload[1]=new Vector4(address.z,address.w,address.z/texture.width*.5f,address.w/texture.height*.5f);
             gpuCollapseTexture.SetData(gpuImageCollapseTextureUpload,0,item*2,2);

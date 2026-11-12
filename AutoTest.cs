@@ -932,9 +932,37 @@ namespace StutterFix
                 case "archegpu": ArcheGpuResearch.Command(arg); return true;
                 case "fxoff": ArcheGpuResearch.Select(arg); return true;
                 case "gpucensus": GpuCensus.Run(); return true;
+                case "repeataudit": Log(RepeatRendererAudit.Run(arg.Trim())); return true;
+                case "spritediscard": Log(SpriteDiscardResearch.Command(arg.Trim())); return true;
+                case "spritechannels": Log(SpriteChannelResearch.Command(arg.Trim())); return true;
+                case "cpuwindow": Log(CpuWindowProbe.Command(arg.Trim())); return true;
+                case "leafprobe": Log(LeafProbe.Command(arg.Trim())); return true;
+                case "gpuprio": Log("[gpuprio] " + GpuPriority.Command(arg)); return true;
+                case "guiprobe":
+                    {
+                        // 진단: OnGUI 가 있는 켜진 컴포넌트 목록 / UMM 창 컴포넌트 끄기(창이 닫혀 있어도 매 프레임 IMGUI 이벤트 2번을 받는다)
+                        var a0 = arg.Trim();
+                        if (a0 == "list")
+                        {
+                            var sb = new System.Text.StringBuilder(); int n = 0;
+                            foreach (var mb in UnityEngine.Object.FindObjectsByType<MonoBehaviour>(FindObjectsInactive.Exclude, FindObjectsSortMode.None))
+                            {
+                                if (!mb || !mb.enabled) continue;
+                                var t = mb.GetType();
+                                if (t.GetMethod("OnGUI", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic) == null) continue;
+                                n++; sb.Append(t.FullName).Append("(layout=").Append(mb.useGUILayout).Append(") ");
+                            }
+                            Log("[guiprobe] OnGUI 컴포넌트 " + n + "개: " + sb); return true;
+                        }
+                        var ui = UnityModManagerNet.UnityModManager.UI.Instance;
+                        if (ui) { ui.enabled = a0 != "ummoff"; Log("[guiprobe] UMM UI enabled=" + ui.enabled); } else Log("[guiprobe] UMM UI 없음");
+                        return true;
+                    }
+                case "decodetach": Log("[decodetach] " + DecoDetach.Command(arg)); return true;
                 case "occlude": if (arg.Trim() == "collect") { ShapeCellsCpu.CollectOpaque = true; Log("[occlude] 다음 맵 열기부터 불투명 정보 수집"); return true; } Occlude.Command(arg); return true;
                 case "gpuhide": GpuHide.Command(arg); return true;
                 case "runlod": Log("[runlod] " + RunLod.Command(arg)); return true;
+                case "imagearrayreuse": Log("[imagearrayreuse] " + DecoBake.ImageArrayReuseCommand(arg)); return true;
                 case "runprobe": Log("[runprobe] " + RunProbe.Run(float.TryParse(arg.Trim(), System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out var rpm) ? rpm : 4f)); return true;
                 case "hidetex":
                     {
@@ -974,6 +1002,7 @@ namespace StutterFix
                     {
                         var ra = arg.Trim();
                         if (ra == "state") { Log("[renderlod] " + DecoBake.LodState()); return true; }
+                        if (ra.StartsWith("max ")) { DecoBake.RenderLod.MaxSpans = int.Parse(ra.Substring(4)); Log("[renderlod] max=" + DecoBake.RenderLod.MaxSpans); return true; }
                         if (ra == "off") { DecoBake.RenderLod.Enabled = false; DecoBake.LodRelease(); }
                         else { DecoBake.RenderLod.Enabled = true; if (float.TryParse(ra, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out var rq) && rq > 0) DecoBake.RenderLod.Quality = rq; }
                         Log("[renderlod] " + DecoBake.LodState()); return true;
@@ -1223,6 +1252,10 @@ namespace StutterFix
                 case "fuse": Log("[합치기 연구] " + (arg == "begin" ? FuseProbe.Begin() : FuseProbe.End())); return true;
                 case "decobatch": Log("[장식 일괄] " + (arg.StartsWith("shadow") ? DecoBatchShadow.Command(arg) : DecoAnim.BatchCommand(arg))); return true;
                 case "phasereport": PhaseWatch.ReportSong(); return true;
+#if AUTOTEST
+                case "slowfx": Log(EffectScan.SlowFxCommand(arg)); return true;
+                case "cameraframeprobe": Log(ManagedCameraTrace.Command(arg)); return true;
+#endif
 #if AUTOTEST
                 case "phasewindow": Log(PhaseWatch.ResearchWindow(arg)); return true;
                 case "decosamp": if (arg == "begin") { DecoAnim.SampReset(); DecoAnim.SampOn = true; Log("[decosamp] 시작"); } else { DecoAnim.SampOn = false; Log("[decosamp] " + DecoAnim.SampReport()); } return true;

@@ -1,0 +1,4 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><TargetFramework>net8.0</TargetFramework><OutputType>Exe</OutputType><DefineConstants>DEV</DefineConstants><AllowUnsafeBlocks>true</AllowUnsafeBlocks></PropertyGroup>
+  <ItemGroup><Compile Include="../../../ExactEaseMemo.cs" Link="ExactEaseMemo.cs" /><Compile Include="../../../ExactEaseCohorts.cs" Link="ExactEaseCohorts.cs" /></ItemGroup>
+</Project>

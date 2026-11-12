@@ -1,0 +1,61 @@
+// Original research code, MIT, StutterFix contributors.
+#pragma kernel Pack
+#pragma kernel MaskCells
+#pragma kernel AlphaRows
+Texture2D<float4> Source;
+RWTexture2D<float2> Packed;
+RWStructuredBuffer<uint> Invalid;
+int Width,Height;
+RWTexture2D<float> Mask;
+int Grid,WrapU,WrapV;
+RWStructuredBuffer<uint> Rows;
+groupshared uint Bad;
+groupshared uint MinRow, EndRow;
+[numthreads(8,8,1)]
+void Pack(uint3 p:SV_DispatchThreadID,uint lane:SV_GroupIndex)
+{
+    if(lane==0)Bad=0;
+    GroupMemoryBarrierWithGroupSync();
+    if(p.x<Width&&p.y<Height){
+        float4 c=Source.Load(int3(p.xy,0));
+        if(c.r!=c.g||c.r!=c.b)InterlockedOr(Bad,1);
+        Packed[p.xy]=float2(c.r,c.a);
+    }
+    GroupMemoryBarrierWithGroupSync();
+    if(lane==0&&Bad!=0)InterlockedAdd(Invalid[0],1);
+}
+[numthreads(8,8,1)]
+void MaskCells(uint3 p:SV_DispatchThreadID)
+{
+    if(p.x>=Grid||p.y>=Grid)return;
+    // Each normalized cell contains every bilinear footprint, plus two
+    // source texels of conservative padding. No color/alpha thresholds.
+    int2 lo=(int2)floor(float2(p.xy)*float2(Width,Height)/Grid)-2;
+    int2 hi=(int2)ceil(float2(p.xy+1)*float2(Width,Height)/Grid)+2;
+    bool any=false;
+    for(int y=lo.y;y<=hi.y&&!any;y++)for(int x=lo.x;x<=hi.x&&!any;x++){
+        int sx=WrapU!=0?((x%Width)+Width)%Width:clamp(x,0,Width-1);
+        int sy=WrapV!=0?((y%Height)+Height)%Height:clamp(y,0,Height-1);
+        if(Source.Load(int3(sx,sy,0)).a!=0)any=true;
+    }
+    Mask[p.xy]=any?1:0;
+    if(any)InterlockedAdd(Invalid[0],1);
+}
+
+[numthreads(8,8,1)]
+void AlphaRows(uint3 p:SV_DispatchThreadID,uint lane:SV_GroupIndex)
+{
+    if(lane==0){MinRow=(uint)Height;EndRow=0;}
+    GroupMemoryBarrierWithGroupSync();
+    if(p.x<(uint)Width&&p.y<(uint)Height&&Source.Load(int3(p.xy,0)).a!=0)
+    {
+        InterlockedMin(MinRow,p.y);
+        InterlockedMax(EndRow,p.y+1);
+    }
+    GroupMemoryBarrierWithGroupSync();
+    if(lane==0&&EndRow!=0)
+    {
+        InterlockedMin(Rows[0],MinRow);
+        InterlockedMax(Rows[1],EndRow);
+    }
+}

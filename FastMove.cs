@@ -38,6 +38,19 @@ namespace StutterFix
         private static readonly AccessTools.FieldRef<ffxMoveDecorationsPlus, scrDecorationManager> mgrRef = AccessTools.FieldRefAccess<ffxMoveDecorationsPlus, scrDecorationManager>("decManager");
         internal static List<string> TagsForIndex(ffxMoveDecorationsPlus fx){return tagsRef(fx);}
         internal static scrDecorationManager ManagerForIndex(ffxMoveDecorationsPlus fx){return mgrRef(fx);}
+#if AUTOTEST
+        // Only called after an explicitly captured effect. No target walk,
+        // reflection, allocations or new clock reads. Multi-tag count is unknown.
+        internal static void SlowFxShape(ffxMoveDecorationsPlus fx,out string first,out int tagCount,out int targets,out float duration,out uint properties)
+        {
+            var tags=tagsRef(fx);tagCount=tags?.Count??0;first=tagCount>0?tags[0]:null;targets=-1;duration=durRef(fx);
+            var mgr=mgrRef(fx);
+            if(tagCount==1 && first!=null && mgr)
+            {var dict=taggedRef(mgr);if(dict!=null && dict.TryGetValue(first,out var list))targets=list?.Count??-1;}
+            properties=(posUsed(fx)?1u:0)|(rotUsed(fx)?2u:0)|(scaleUsed(fx)?4u:0)|(colUsed(fx)?8u:0)|(opaUsed(fx)?16u:0)
+                |(visUsed(fx)?32u:0)|(depthUsed(fx)?64u:0)|(AnyImg(fx)?128u:0)|(parUsed(fx)?256u:0);
+        }
+#endif
         private static readonly AccessTools.FieldRef<scrDecorationManager, Dictionary<string, List<scrDecoration>>> taggedRef = AccessTools.FieldRefAccess<scrDecorationManager, Dictionary<string, List<scrDecoration>>>("taggedDecorations");
         private static readonly AccessTools.FieldRef<ffxMoveDecorationsPlus, float> tScale = AccessTools.FieldRefAccess<ffxMoveDecorationsPlus, float>("targetScale");
         private static readonly AccessTools.FieldRef<ffxMoveDecorationsPlus, Vector2> tScaleV2 = AccessTools.FieldRefAccess<ffxMoveDecorationsPlus, Vector2>("targetScaleV2");

@@ -25,6 +25,7 @@ static class Program
         pe = new PEReader(fs);
         if (!pe.HasMetadata) { Console.WriteLine("SKIP native PE (no managed metadata)"); return 0; }
         md = pe.GetMetadataReader();
+        if (Environment.GetEnvironmentVariable("DECO_HIERARCHY") == "1") { DecoHierarchy(); return 0; }
         if (Environment.GetEnvironmentVariable("DECO_GUARDS") == "1") { DecoGuards(); return 0; }
         if (Environment.GetEnvironmentVariable("DECO_READERS") == "1") { DecoReaders(); return 0; }
         if (Environment.GetEnvironmentVariable("DECO_TRANSFORMS") == "1") { DecoReaders(); return 0; }
@@ -35,6 +36,33 @@ static class Program
         if (!string.IsNullOrEmpty(method)) { ListMethods(method, fields); return 0; }
         FindCallers(args[1]);
         return 0;
+    }
+
+    // Broad candidate list, deliberately not a claim of data-flow proof.
+    static void DecoHierarchy()
+    {
+        foreach (var mh in md.MethodDefinitions)
+        {
+            var refs = new HashSet<string>(); bool manager = false, decoration = false, hierarchy = false;
+            foreach (var (op, tok) in Tokens(md.GetMethodDefinition(mh)))
+            {
+                if ((tok >> 24) == 0x70) continue;
+                var h = Handle(tok);
+                if (h.Kind != HandleKind.MethodDefinition && h.Kind != HandleKind.MemberReference && h.Kind != HandleKind.FieldDefinition && h.Kind != HandleKind.MethodSpecification) continue;
+                string name = MemberName(h);
+                if (name.Contains("scrDecorationManager::")) manager = true;
+                if (name.Contains("Decoration::")) decoration = true;
+                bool risk = name.Contains("::get_parent") || name.Contains("::get_root") || name.Contains("::GetSiblingIndex")
+                    || name.Contains("::SetSiblingIndex") || name.Contains("::GetComponentInParent") || name.Contains("::GetComponentsInChildren")
+                    || name.Contains("::GetComponentInChildren") || name.Contains("::GetChild") || name.Contains("::get_childCount")
+                    || name.Contains("::SetParent") || name.Contains("Transform::GetEnumerator");
+                hierarchy |= risk;
+                if (risk || name.Contains("scrDecorationManager::")) refs.Add(name);
+            }
+            if (!manager && !hierarchy) continue;
+            Console.WriteLine(MethodTitle(mh) + " manager_ref=" + manager + " decoration_ref=" + decoration + " hierarchy=" + hierarchy);
+            foreach (var r in refs) Console.WriteLine("  " + r);
+        }
     }
 
     static string TypeName(TypeDefinitionHandle h)

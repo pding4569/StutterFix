@@ -251,6 +251,10 @@ namespace StutterFix
 
         internal static void Reset()
         {
+#if AUTOTEST
+            EffectScan.ClearSlowFx();
+            ManagedCameraTrace.Stop();
+#endif
             queue.Clear();
             RecolorSplit.Reset();
             usedMs = 0;

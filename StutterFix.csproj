@@ -29,10 +29,17 @@
     <OutputPath>bin/PlayerAuto/</OutputPath>
     <IntermediateOutputPath>obj/PlayerAuto/</IntermediateOutputPath>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(AutoTestBuild)' == '1' And '$(ClockArraysBuild)' == '1'">
+    <DefineConstants>$(DefineConstants);CLOCK_ARRAYS</DefineConstants>
+    <OutputPath>bin/PlayerAutoClockArrays/</OutputPath>
+    <IntermediateOutputPath>obj/PlayerAutoClockArrays/</IntermediateOutputPath>
+  </PropertyGroup>
 
   <ItemGroup>
     <Compile Include="StutterFix.cs" />
     <Compile Include="ColdOpenProbe.cs" />
+    <Compile Include="DecoDetach.cs" />
+    <Compile Include="GpuPriority.cs" />
     <Compile Include="TightSpriteProbe.cs" />
     <Compile Include="LightProbe.cs" />
     <Compile Include="BeatProbe.cs" />
@@ -106,10 +113,20 @@
     <Compile Include="DrawCollapsePolicy.cs" />
     <Compile Include="GpuDecoDrawCollapse.cs" />
     <Compile Include="GpuDecoDrawCollapseRenderer.cs" />
+    <Compile Include="ImageArrayLeasePlan.cs" />
+    <Compile Include="GpuDecoImageArrayReuse.cs" />
+    <Compile Include="MapUploadRange.cs" />
+    <Compile Include="GpuDecoMapUploads.cs" />
+    <Compile Include="ManagedCameraTrace.cs" />
+    <Compile Include="SingleArrayProof.cs" />
+    <Compile Include="GpuDecoSingleArray.cs" />
     <Compile Include="GpuDecoLod.cs" />
     <Compile Include="RunProbe.cs" />
     <Compile Include="RunLod.cs" />
     <Compile Include="CoverageProbe.cs" />
+    <Compile Include="RepeatRendererAudit.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
+    <Compile Include="SpriteDiscardResearch.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
+    <Compile Include="SpriteChannelResearch.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="OwnProbe.cs" />
     <Compile Include="TieProbe2.cs" />
     <Compile Include="GpuDecoShape.cs" />
@@ -122,6 +139,10 @@
     <Compile Include="GpuDecoNativeBatch.cs" />
     <Compile Include="GpuDecoCopy.cs" />
     <Compile Include="GpuDecoThreadCpu.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
+    <Compile Include="CpuWindowProbe.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
+    <Compile Include="ExactEaseMemo.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
+    <Compile Include="ExactEaseCohorts.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
+    <Compile Include="LeafProbe.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="GpuDecoRenderMetrics.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="GpuDecoAlphaPolicy.cs" />
     <Compile Include="GpuDecoScopePlan.cs" />
@@ -280,6 +301,8 @@
     <Compile Include="AllocScan.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="TextFix.cs" />
     <Compile Include="PhaseWatch.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
+    <Compile Include="PhaseCycleProbe.cs" Condition="'$(AutoTestBuild)' == '1'" />
+    <Compile Include="PhaseCallbackProbe.cs" Condition="'$(AutoTestBuild)' == '1'" />
     <Compile Include="SlowScan.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="EffectScan.cs" />
     <Compile Include="EffectBudget.cs" />

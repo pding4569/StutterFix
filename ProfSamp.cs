@@ -198,6 +198,9 @@ namespace StutterFix
         }
 
         private static readonly Dictionary<ulong, string> cache = new Dictionary<ulong, string>();
+        internal static bool Running => run;
+        internal static string ResolveLeaf(ulong address,out bool managed)=>Resolve(address,mono_get_root_domain(),out managed);
+        internal static void ClearLeafCache()=>cache.Clear();
         private static string Resolve(ulong addr, IntPtr domain, out bool managed)
         {
             managed = false;

@@ -1,0 +1,23 @@
+using System.Collections;
+using System.Reflection;
+using System.Runtime.Serialization.Json;
+using System.Text.Json;
+string managed=@"D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\A Dance of Fire and Ice_Data\Managed";
+AppDomain.CurrentDomain.AssemblyResolve+=(s,e)=>{
+    string file=Path.Combine(managed,new AssemblyName(e.Name).Name+".dll");return File.Exists(file)?Assembly.LoadFrom(file):null;
+};
+var assembly=Assembly.LoadFrom(Path.GetFullPath(args[0]));
+var snapshotType=assembly.GetType("StutterFix.RepeatRendererAudit+Snapshot",true);
+var rowType=assembly.GetType("StutterFix.RepeatRendererAudit+Row",true);
+var snapshot=Activator.CreateInstance(snapshotType,true);
+var row=Activator.CreateInstance(rowType,true);
+string expected="반복 장식 \"test\"\\image\n";
+rowType.GetField("name").SetValue(row,expected);
+rowType.GetField("vertexCount").SetValue(row,4);
+((IList)snapshotType.GetField("rows").GetValue(snapshot)).Add(row);
+using var stream=new MemoryStream();
+new DataContractJsonSerializer(snapshotType).WriteObject(stream,snapshot);
+using var json=JsonDocument.Parse(stream.ToArray());
+var rows=json.RootElement.GetProperty("rows");
+if(rows.GetArrayLength()!=1||rows[0].GetProperty("name").GetString()!=expected||rows[0].GetProperty("vertexCount").GetInt32()!=4||!rows[0].GetProperty("localToWorld").TryGetProperty("m00",out _))return 1;
+Console.WriteLine("REPEAT_JSON_CHECK rows=1 unicode_escape_and_matrix_fields=ok scope=managed_serializer_not_game_native_mesh");return 0;

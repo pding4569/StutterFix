@@ -61,6 +61,9 @@ namespace StutterFix
             internal Vector3 CenterNow;   // 정렬 중심(정적 보정 포함)
             internal int DynState;        // 0 그대로, 1 거리 보정으로 뒤에 그리기, 2 독립 렌더러
             internal bool NoDirect; internal List<int> Few;   // 재질 텍스처 묶음 정보(복사한 재질에 다시 묶을 때)
+#if AUTOTEST
+            internal int SingleArray=-1;
+#endif
             public void Dispose()
             {
                 if(Renderer){Renderer.enabled=false;UnityEngine.Object.Destroy(Renderer.gameObject);}
@@ -69,17 +72,33 @@ namespace StutterFix
                 if(Material && !SharedMat)UnityEngine.Object.Destroy(Material);
             }
         }
-        static void InvalidateRecordedCollapse(){if(gpuLiveSlices.Count>0 && gpuLiveSlices[0].Gpu!=null)gpuLiveSlices[0].Gpu.ReleaseRecordedCollapse();}
+        static void InvalidateRecordedCollapse(){
+#if AUTOTEST
+            collapseDiagReady=false;
+#endif
+            if(gpuLiveSlices.Count>0 && gpuLiveSlices[0].Gpu!=null)gpuLiveSlices[0].Gpu.ReleaseRecordedCollapse();}
         static void HideDrawCollapse()
         {
+#if AUTOTEST
+            EndMapUploadContext();
+#endif
             LodRelease();
             gpuCollapseOn=false;gpuCollapsePendingFallback=null;
+#if AUTOTEST
+            collapseDiagReady=collapseDiagFreeze=collapseDiagCount=false;
+            collapseDiagDispatches=collapseDiagSkips=0;
+            collapseDiagEnabled=null;
+            RestoreCollapseDiagSuppression();
+            if(collapseDiagPreviousHide.HasValue)DrawCollapsePolicy.HideProxies=collapseDiagPreviousHide.Value;
+            collapseDiagPreviousHide=null;
+#endif
             foreach(var s in gpuCollapseSpans)if(s.Renderer)s.Renderer.enabled=false;
         }
         static void DisposeDrawCollapse()
         {
             InvalidateRecordedCollapse();
             HideDrawCollapse();
+            ClearImageArrayBanks();
             gpuSpanOfItem=null;gpuSpanVisible=null;gpuItemHiddenState=null;gpuSpanDirty.Clear();gpuSpanDirtyMark=null;
             gpuBarrierRowById=null;gpuBarrierWatch.Clear();gpuBarrierChecked.Clear();gpuWatchRows.Clear();gpuWatchSig=null;gpuSpansByBucket=null;gpuWatchActive=null;gpuWatchBucket=null;gpuWatchMat=null;gpuBucketMembers.Clear();gpuBucketDirty.Clear();gpuDynExcludedItems.Clear();gpuDynZero=null;gpuSpanExcluded=null;gpuCollapseMapCpu=null;gpuCollapseSlotOfItem=null;gpuCollapseIncludedSaved=null;gpuCollapseFallbackSaved=null;
             foreach(var s in gpuCollapseSpans)s.Dispose();gpuCollapseSpans.Clear();
@@ -188,6 +207,17 @@ namespace StutterFix
             if(GpuDecoPlayer.Product)Main.Entry.Logger.Log("[GPU 장식] 동점 묶음 사전 정리(원본 컬링 유지): 내린 장식 "+demoted.Count+"개");
         }
         static string CollapseTier(Texture2D t)=>CollapseSize(t)+"/"+t.graphicsFormat;
+        // The graphics format determines payload size. A texel is not always
+        // one byte (DXT1 = half a byte; RGBA32 = four bytes). This is allocation
+        // payload, not evidence that those bytes are physically resident.
+        static long CollapseArrayBytes(int width,int height,int slices,GraphicsFormat format)
+        {
+            int bw=(int)GraphicsFormatUtility.GetBlockWidth(format);
+            int bh=(int)GraphicsFormatUtility.GetBlockHeight(format);
+            int bytes=(int)GraphicsFormatUtility.GetBlockSize(format);
+            RequireLive(bw>0 && bh>0 && bytes>0 && slices>0,"drawcollapse unknown array payload");
+            return checked(DrawCollapsePolicy.TextureBytes(width,height,1,bw,bh,bytes)*slices);
+        }
         static void ValidateDrawCollapseItem(int item)
         {
             if(gpuCollapseIncluded!=null && !gpuCollapseIncluded[item] && !DrawCollapseTextureFallback(item))
@@ -306,22 +336,33 @@ namespace StutterFix
                 .OrderByDescending(t=>texUsage.TryGetValue(t.GetInstanceID(),out int u)?u:0)
                 .Take(DrawCollapsePolicy.DirectBindings).ToArray();
             int arrays=0;
+            var exactPlans=new Dictionary<Texture2D[],ImageArrayLeasePlan>();
+            foreach(var g in exactGroups)exactPlans[g]=PlanImageArray(g,source);
             foreach(var tier in small.GroupBy(CollapseTier))
             {
                 var group=tier.ToArray();
-                int maxW=group.Max(x=>x.width),maxH=group.Max(x=>x.height);
-                total=checked(total+(long)maxW*maxH*group.Length);
                 RequireLive(SystemInfo.maxTextureArraySlices>0,"drawcollapse texture array slices unavailable");
-                arrays+=(group.Length+SystemInfo.maxTextureArraySlices-1)/SystemInfo.maxTextureArraySlices;
+                for(int start=0;start<group.Length;start+=SystemInfo.maxTextureArraySlices)
+                {
+                    int depth=Math.Min(SystemInfo.maxTextureArraySlices,group.Length-start),maxW=0,maxH=0;
+                    for(int slice=0;slice<depth;slice++)
+                    {var tex=group[start+slice];maxW=Math.Max(maxW,tex.width);maxH=Math.Max(maxH,tex.height);}
+                    long payload=CollapseArrayBytes(maxW,maxH,depth,group[start].graphicsFormat);
+                    total=checked(total+payload);arrays++;
+                    GpuLog("DRAWCOLLAPSE_ARRAY_PLAN kind=tier width="+maxW+" height="+maxH+" slices="+depth+" format="+group[start].graphicsFormat+" bytes="+payload);
+                }
             }
             foreach(var exactGroup in exactGroups)
             {
-                arrays+=1;total=checked(total+(long)exactGroup[0].width*exactGroup[0].height*exactGroup.Length);
+                int depth=exactPlans[exactGroup]?.Slices??exactGroup.Length;
+                arrays+=1;long payload=CollapseArrayBytes(exactGroup[0].width,exactGroup[0].height,depth,exactGroup[0].graphicsFormat);
+                total=checked(total+payload);
                 GpuLog("DRAWCOLLAPSE_EXACT_ARRAY size="+exactGroup[0].width+"x"+exactGroup[0].height+" slices="+exactGroup.Length);
+                GpuLog("DRAWCOLLAPSE_ARRAY_PLAN kind=exact width="+exactGroup[0].width+" height="+exactGroup[0].height+" slices="+depth+" format="+exactGroup[0].graphicsFormat+" bytes="+payload);
             }
             GpuLog("DRAWCOLLAPSE_ARRAY_TOTAL layout=small_dxt5_tiers_plus_borrowed_2d bytes_known="+total+" total_mb="+(total/1048576.0).ToString("F6",Inv)
                 +" planned_arrays_known="+arrays+" direct_textures="+direct.Length+" active_texture_slots="+(arrays+direct.Length)
-                +" shader_declared_slots="+DrawCollapsePolicy.TextureBindings+" samplers=2 arrays_allocated=0 copy_calls=0 free_vram=UNVERIFIED");
+                +" shader_declared_slots="+DrawCollapsePolicy.TextureBindings+" samplers=2 arrays_allocated=0 copy_calls=0 free_vram=UNVERIFIED budget_scope=format_block_payload_not_residency");
             RequireLive(SystemInfo.graphicsMemorySize>0 && total<(long)SystemInfo.graphicsMemorySize*1048576,
                 "drawcollapse array budget exceeds total VRAM"); // Free VRAM still needs external measurement.
             RequireLive(arrays<=DrawCollapsePolicy.ArrayBindings && direct.Length<=DrawCollapsePolicy.DirectBindings,
@@ -350,10 +391,27 @@ namespace StutterFix
             {
                 RequireLive(gpuCollapseArrays.Count<DrawCollapsePolicy.ArrayBindings,"drawcollapse exact array exceeds array bindings");
                 var t0=exactGroup[0];int exArray=gpuCollapseArrays.Count;
-                var ea=new Texture2DArray(t0.width,t0.height,exactGroup.Length,t0.graphicsFormat,TextureCreationFlags.None,1)
+                var lease=exactPlans[exactGroup];
+                var ea=new Texture2DArray(t0.width,t0.height,lease?.Slices??exactGroup.Length,t0.graphicsFormat,TextureCreationFlags.None,1)
                     {name="GpuDeco collapse exact "+t0.width+"x"+t0.height,wrapMode=TextureWrapMode.Clamp,filterMode=FilterMode.Bilinear};
                 gpuCollapseArrays.Add(ea);
                 RequireLive(ea.graphicsFormat==t0.graphicsFormat,"drawcollapse exact array format conversion rejected");
+                if(lease!=null)
+                {
+                    // Apply BEFORE CopyTexture: applying after GPU copies could
+                    // upload stale CPU pixels over the correct GPU contents.
+                    // The array is only sampled/copied on the GPU thereafter.
+                    if(DrawCollapsePolicy.ImageArrayGpuOnly && ea.isReadable)ea.Apply(false,true);
+                    var bank=new ImageArrayBank{Plan=lease,Texture=ea,Array=exArray,Loaded=new int[lease.Slices],Originals=exactGroup};
+                    foreach(var tex in exactGroup)
+                    {
+                        // A negative slice is a virtual registry entry, never
+                        // sampled: each actual item resolves its private lease.
+                        addresses.Add(tex.GetInstanceID(),new Vector4(exArray,-1,1,1));
+                        gpuImageArrayBanks.Add(tex.GetInstanceID(),bank);
+                    }
+                    continue;
+                }
                 for(int slice=0;slice<exactGroup.Length;slice++)
                 {
                     var tex=exactGroup[slice];addresses.Add(tex.GetInstanceID(),new Vector4(exArray,slice,1f,1f));
@@ -371,6 +429,7 @@ namespace StutterFix
                     gpuCollapseTextureFallback[i]=true;gpuCollapseTextureFallbackCount++;gpuCollapseIncluded[i]=false;continue;
                 }
                 var t=textures[source.Data.Items[i].TextureId];
+                address=ResolveImageArrayAddress(i,t,address);
                 // Use the final address, not CollapseSize: exactGroup's large
                 // textures also live in _Tex arrays. Missing addresses stay false.
                 gpuCollapseArrayOnly[i]=address.x>=0 && address.x<gpuCollapseArrays.Count
@@ -415,6 +474,9 @@ namespace StutterFix
             gpuCollapseTexture=new ComputeBuffer(info.Length,16);gpuCollapseTexture.SetData(info);
 #if AUTOTEST || GPUDECO
             RememberGpuImageCollapseAddresses(addresses);
+#endif
+#if AUTOTEST
+            PrepareSingleArrayProof(source);
 #endif
             // Replace admitted overflow rows with the ACTUAL independent draw
             // key (including its material ID and sorting bounds), not the hidden
@@ -683,7 +745,12 @@ namespace StutterFix
                 gpuItemDepthNow[i]=-gpuLiveOwnedRenderers[master].sortingOrder;
                 if(gpuCollapseIncluded[i] && WriteItemSlots(i,!G1DrawHidden(master),false))dirty=true;
             }
-            if(dirty)gpuCollapseAllMap?.SetData(gpuCollapseMapCpu);
+            if(dirty)
+#if AUTOTEST
+                UploadCollapseMapAll();
+#else
+                gpuCollapseAllMap?.SetData(gpuCollapseMapCpu);
+#endif
         }
         // 게임 SetDepth: 깊이 >= 0 이면 Bg 층·레이어 9, 음수면 Default 층·레이어 7, 순서 -깊이
         static int DepthGameLayer(int depth)=>depth>=0?9:7;
@@ -711,7 +778,12 @@ namespace StutterFix
                     uint v=show && gpuSlotDepth[s]==now?((uint)item|(gpuSlotBits!=null?gpuSlotBits[s]:0u)):uint.MaxValue;
                     if(gpuCollapseMapCpu[s]==v)continue;
                     gpuCollapseMapCpu[s]=v;dirty=true;
-                    if(upload)gpuCollapseAllMap?.SetData(gpuCollapseMapCpu,s,s,1);
+                    if(upload)
+#if AUTOTEST
+                        UploadCollapseMapSlot(s);
+#else
+                        gpuCollapseAllMap?.SetData(gpuCollapseMapCpu,s,s,1);
+#endif
                 }
                 return dirty;
             }
@@ -720,7 +792,12 @@ namespace StutterFix
             uint value=show?((uint)item|(gpuSlotBits!=null?gpuSlotBits[slot]:0u)):uint.MaxValue;
             if(gpuCollapseMapCpu[slot]==value)return false;
             gpuCollapseMapCpu[slot]=value;
-            if(upload)gpuCollapseAllMap?.SetData(gpuCollapseMapCpu,slot,slot,1);
+            if(upload)
+#if AUTOTEST
+                UploadCollapseMapSlot(slot);
+#else
+                gpuCollapseAllMap?.SetData(gpuCollapseMapCpu,slot,slot,1);
+#endif
             return true;
         }
         // SetDepth 후크(제품): 소유 장식의 깊이가 바뀌었다. 독립 렌더러(텍스처 대체·동점 제외 등)는 원래와 같은 정렬로 두고,
@@ -968,7 +1045,12 @@ namespace StutterFix
                 if(gpuSpanOfItem!=null)gpuSpanOfItem[item]=-1;
                 slice.RefreshItem(item);
             }
-            if(mapDirty && gpuCollapseAllMap!=null)gpuCollapseAllMap.SetData(gpuCollapseMapCpu);
+            if(mapDirty && gpuCollapseAllMap!=null)
+#if AUTOTEST
+                UploadCollapseMapAll();
+#else
+                gpuCollapseAllMap.SetData(gpuCollapseMapCpu);
+#endif
             if(gpuSpanVisible!=null){gpuSpanVisible[k]=0;MarkSpanDirty(k);}
             Main.Entry.Logger.Log("[GPU 장식] 곡 중 깊이가 바뀐 장벽과 순서가 어긋나 구간 "+k+"(항목 "+sp.Items.Length+"개)를 독립 렌더러로 전환 (누적 "+gpuDynExcludedSpans+"개)");
         }
@@ -990,7 +1072,12 @@ namespace StutterFix
                 if(gpuSpanOfItem!=null){if(id==item)gpuSpanOfItem[item]=k;bool hid=slice.IsHiddenAlpha(item);gpuItemHiddenState[item]=hid;if(!hid)visible++;}
                 slice.RefreshItem(item);
             }
-            if(mapDirty && gpuCollapseAllMap!=null)gpuCollapseAllMap.SetData(gpuCollapseMapCpu);
+            if(mapDirty && gpuCollapseAllMap!=null)
+#if AUTOTEST
+                UploadCollapseMapAll();
+#else
+                gpuCollapseAllMap.SetData(gpuCollapseMapCpu);
+#endif
             if(gpuSpanHasInst!=null && gpuSpanHasInst[k])visible=sp.Items.Length;
             if(gpuSpanVisible!=null){gpuSpanVisible[k]=visible;MarkSpanDirty(k);}
             Main.Entry.Logger.Log("[GPU 장식] 어긋나게 하던 장벽이 숨어 구간 "+k+"(항목 "+sp.Items.Length+"개)를 다시 통합으로 되돌림");
@@ -1241,16 +1328,31 @@ namespace StutterFix
                 // 혼합 모드 항목이 있는 구간은 화면 복사(GrabPass)를 쓰는 셰이더로 그린다
                 bool grabSpan=gpuCollapseBlendShader && (items.Any(it=>GpuDecoBlend.NeedsGrab(source.Data.Items[CR(it)].BlendMode)) || grabBuckets.Contains((first.Key.Layer,first.Key.Order,first.Key.Queue,first.Key.Distance)));
                 string matKey=first.M.renderQueue+"/"+blend[0]+"/"+blend[1]+"/"+blend[2]+"/"+noDirect+(few!=null?"/f"+string.Join(",",few):"")+(grabSpan?"/grab":"");
+#if AUTOTEST
+                int singleBinding=SingleArrayForSpan(items,grabSpan);
+                if(singleBinding>=0)matKey+="/single"+singleBinding;
+#endif
                 if(!gpuCollapseSharedMats.TryGetValue(matKey,out var shared) || !shared)
                 {
                     shared=new Material(grabSpan?gpuCollapseBlendShader:gpuCollapseShader){name="GpuDeco collapse shared",renderQueue=first.M.renderQueue};
+#if AUTOTEST
+                    // One shader object for ALL plain spans: a per-span shader
+                    // object would change shader-before-material tie ordering.
+                    if(singleArrayShader&&!grabSpan)shared.shader=singleArrayShader;
+#endif
                     shared.SetFloat("_SrcBlend",blend[0]);shared.SetFloat("_DstBlend",blend[1]);shared.SetFloat("_BlendOp",blend[2]);
                     if(noDirect)shared.EnableKeyword(CollapseNoDirectKeyword);
                     if(few!=null)shared.EnableKeyword(CollapseFewKeyword);
                     BindCollapseTextures(shared,noDirect,few);
+#if AUTOTEST
+                    BindSingleArray(shared,singleBinding);
+#endif
                     gpuCollapseSharedMats[matKey]=shared;
                 }
                 s.Material=shared;s.SharedMat=true;s.NoDirect=noDirect;s.Few=few;
+#if AUTOTEST
+                s.SingleArray=singleBinding;
+#endif
                 if(noDirect)noDirectSpans++;
                 if(few!=null)fewSpans++;
                 dcMatMs+=DcMs(dcL0);long dcL1=Stopwatch.GetTimestamp();
@@ -1332,6 +1434,9 @@ namespace StutterFix
                 {var mi=gpuLiveSlices[0].MasterItems;for(int q=0;q<gpuCollapseSlotOfItem.Length;q++)if(gpuCollapseSlotOfItem[q]>=0 || (gpuItemSlots!=null && gpuItemSlots.ContainsKey(q)))WriteItemSlots(q,!G1DrawHidden(mi[q]),false);}
                 gpuCollapseAllVerts=new ComputeBuffer(Math.Max(1,baseRun*60),4,ComputeBufferType.Raw);
                 gpuCollapseAllMap=new ComputeBuffer(Math.Max(1,baseRun),4);gpuCollapseAllMap.SetData(allMap);
+#if AUTOTEST
+                NewMapUploadContext();
+#endif
                 Shader.SetGlobalBuffer("_CollapseVerts",gpuCollapseAllVerts);
             }
             // 같은 (층,순서,큐,거리) 묶음에서 이어지는 구간들이 재질을 공유하면 완전 동점이 되어 순서가 렌더러 ID(생성 순서의 역순)로 뒤집힌다.
@@ -1353,6 +1458,9 @@ namespace StutterFix
                             "drawcollapse ordered material lost texture variant");
                         // 재질 복사는 Properties 에 없는 텍스처·배열 값을 옮기지 않는다(Exit 에서 동점 구간 장식이 투명해짐). 다시 묶는다.
                         BindCollapseTextures(m,sp.NoDirect,sp.Few);
+#if AUTOTEST
+                        BindSingleArray(m,sp.SingleArray);
+#endif
                         sp.Material=m;sp.SharedMat=false;sp.Renderer.sharedMaterial=m;
                     }
                 }
@@ -1366,6 +1474,9 @@ namespace StutterFix
             GpuLog("DRAWCOLLAPSE_SAME_BUCKET_SPANS spans_in_multi_runs="+multiSpans+" nudged_spans="+nudgedSpans);
             if(GpuDecoPlayer.Product)Main.Entry.Logger.Log("[GPU 장식] 동점 묶음 구간 "+multiSpans+"개(재질 따로), 거리 보정 "+nudgedSpans+"개, 공유 재질 종류 "+gpuCollapseSharedMats.Count);
             GpuLog("DRAWCOLLAPSE_NODIRECT spans="+noDirectSpans+" of "+gpuCollapseSpans.Count);
+#if AUTOTEST
+            if(singleArrayShader)GpuLog("SINGLE_ARRAY_SPANS selected="+gpuCollapseSpans.Count(sp=>sp.SingleArray>=0)+" total="+gpuCollapseSpans.Count+" items="+gpuCollapseSpans.Where(sp=>sp.SingleArray>=0).Sum(sp=>sp.Items.Length)+" ordering_plan_unchanged=True");
+#endif
             if(GpuDecoPlayer.Product)Main.Entry.Logger.Log("[GPU 장식] 그리기 구간 "+gpuCollapseSpans.Count+"개 중 배열 텍스처만 쓰는 구간 "+noDirectSpans+"개, 직접 텍스처 적은 구간 "+fewSpans+"개, 화면 복사 구간 "+gpuCollapseSpans.Count(sp=>sp.Material && sp.Material.shader==gpuCollapseBlendShader)+"개 (모드별 항목: "+string.Join(",",gpuCollapseSpans.SelectMany(sp=>sp.Items).Select(id=>source.Data.Items[CR(id)].BlendMode).Where(b=>b>0).GroupBy(b=>b).OrderBy(g=>g.Key).Select(g=>g.Key+"="+g.Count()))+")");
         }
         // 텍스처 정보 앞쪽: x = 바인딩 + 점 샘플링 128 + U 랩 반복 256 + V 랩 반복 512 + 혼합 모드*1024, y = 배열 층,
@@ -1664,6 +1775,18 @@ namespace StutterFix
         }
         static void DispatchDrawCollapse(double time,Vector4 camera,float orthoSize)
         {
+#if AUTOTEST
+            // The map's only GPU consumers are the collapse dispatch backends
+            // below (including recorded commands); flush before every backend.
+            FlushCollapseMapUploads();
+#endif
+#if AUTOTEST
+            // Explicit paused ablation. Unlike the historical nocompute guard,
+            // readiness is not inferred from one possibly culled renderer.
+            if(collapseDiagFreeze && !GpuPlaybackState.Paused)collapseDiagFreeze=false;
+            if(collapseDiagFreeze && collapseDiagReady)
+            {if(collapseDiagCount)collapseDiagSkips++;return;}
+#endif
             if(DrawCollapsePolicy.SkipComputeForTest && gpuCollapseSpans.Count>0 && gpuCollapseSpans[0].Renderer.enabled && (Time.frameCount&63)!=0)return; // 측정 전용: 계산 건너뛰기(위치 멈춤)
             if(DrawCollapsePolicy.SkipPausedCompute && GpuPlaybackState.Paused && gpuCollapseSpans.Count>0 && gpuCollapseSpans[0].Renderer.enabled)return;
             var source=gpuLiveSlices[0];
@@ -1771,6 +1894,10 @@ namespace StutterFix
                 gpuCostFbEvalTicks+=fe1-fe0;gpuCostFbCopyTicks+=Stopwatch.GetTimestamp()-fe1;
 #endif
             }
+#if AUTOTEST
+            collapseDiagReady=true;
+            if(collapseDiagCount)collapseDiagDispatches++;
+#endif
         }
     }
 }

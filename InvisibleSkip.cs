@@ -199,6 +199,9 @@ namespace StutterFix
             public int GetHashCode(scrDecoration o) { return System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(o); }
         }
         private static readonly HashSet<scrDecoration> lazy = new HashSet<scrDecoration>(DecEq.Instance);   // 참조 비교 (유니티 객체 비교는 가상 호출이라 느리다)
+#if AUTOTEST
+        internal static bool ResearchPendingPosition(scrDecoration d)=>lazy.Contains(d);
+#endif
         private static readonly AccessTools.FieldRef<scrDecoration, Vector2> pivotPosRef = AccessTools.FieldRefAccess<scrDecoration, Vector2>("pivotPosVec");
         private static readonly AccessTools.FieldRef<scrDecoration, Vector2> pivotOffRef = AccessTools.FieldRefAccess<scrDecoration, Vector2>("pivotOffsetVec");
         private static readonly AccessTools.FieldRef<scrDecoration, scrParallax> parallaxRef = AccessTools.FieldRefAccess<scrDecoration, scrParallax>("parallax");

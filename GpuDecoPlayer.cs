@@ -209,11 +209,28 @@ namespace StutterFix
         }
         internal static void Shutdown()
         {
-            if (!Product) return;
+#if AUTOTEST
+            DecoBake.ResetMapUploadExperiment();
+#endif
+            DrawCollapsePolicy.ImageArrayReuse=false;
+            DrawCollapsePolicy.ImageArrayGpuOnly=false;
+            if (!Product)
+            {
+#if AUTOTEST
+                DecoBake.ResetSingleArrayExperiment();
+#endif
+                return;
+            }
             UnityEngine.SceneManagement.SceneManager.activeSceneChanged -= SceneChanged;
             hooks?.UnpatchAll(Owner); hooks = null;
             try { if (RuntimeInitialized) { DecoBake.ReleasePlayerLevel(); DecoBake.Shutdown(); } }
-            finally { Product = false; GpuDecoGpu.AlphaEarlyOut = 0; lifetime.Fail(); cleanupPending = false; }
+            finally
+            {
+#if AUTOTEST
+                DecoBake.ResetSingleArrayExperiment();
+#endif
+                Product = false; GpuDecoGpu.AlphaEarlyOut = 0; lifetime.Fail(); cleanupPending = false;
+            }
         }
     }
 

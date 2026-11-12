@@ -8,5 +8,8 @@
     <Compile Include="Program.cs" />
     <Compile Include="../../../DrawCollapsePolicy.cs" Link="DrawCollapsePolicy.cs" />
     <Compile Include="../../../SceneRenderOrder.cs" Link="SceneRenderOrder.cs" />
+    <Compile Include="../../../ImageArrayLeasePlan.cs" Link="ImageArrayLeasePlan.cs" />
+    <Compile Include="../../../MapUploadRange.cs" Link="MapUploadRange.cs" />
+    <Compile Include="../../../SingleArrayProof.cs" Link="SingleArrayProof.cs" />
   </ItemGroup>
 </Project>

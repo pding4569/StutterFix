@@ -85,4 +85,42 @@ Check(!Gate(valid:false).Passed,"ownership/environment failure cannot pass");
 Check(!Gate(fps:double.NaN).Passed && !Gate(fps:double.PositiveInfinity).Passed,"nonfinite measurement fails");
 var duplicate=Gate();duplicate.Pixel(0,0,true);Check(!duplicate.Passed,"duplicate evidence fails");
 var unrestored=Gate();unrestored.Restores[3]=false;Check(!unrestored.Passed,"missing restore evidence fails");
+// A long image sequence needs one slice per independent changing actor,
+// rather than one slice per future image. Static sharing is byte-identical.
+var lp=new ImageArrayLeasePlan(new[]{10,11,12},new[]{10,10,11,99},new[]{new[]{10,11,12},new[]{10,12},Array.Empty<int>(),new[]{99,11}});
+Check(lp.Slices==4 && lp.ActorSlots.Count==3 && lp.StaticSlots.Count==1,"capacity includes currently outside-bank actor");
+Check(lp.Resolve(0,10)!=lp.Resolve(1,10),"changing actors never alias even at the same initial image");
+Check(lp.Resolve(0,10)==lp.Resolve(0,12),"changing actor keeps its slice across future images");
+Check(lp.Resolve(2,11)!=lp.Resolve(3,11),"static image cannot be overwritten by changing actor");
+bool unplanned=false;try{lp.Resolve(1,11);}catch(InvalidOperationException){unplanned=true;}
+Check(unplanned,"undeclared actor transition rejected");
+bool staticChange=false;try{lp.Resolve(2,12);}catch(InvalidOperationException){staticChange=true;}
+Check(staticChange,"static item may not borrow a different image");
+var share=new ImageArrayLeasePlan(new[]{10,11},new[]{10,10},new[]{Array.Empty<int>(),Array.Empty<int>()});
+Check(share.Slices==1 && share.Resolve(0,10)==share.Resolve(1,10),"unchanging identical images share");
+var range=new MapUploadRange();Check(!range.Pending && range.Count==0,"new range is empty");
+range.Add(9,32);range.Add(3,32);range.Add(9,32);range.Add(31,32);
+Check(range.First==3 && range.Count==29,"sparse/repeated writes have exact enclosing range");
+range.Clear();Check(!range.Pending && range.Count==0,"reset cannot retain previous storage range");
+bool invalidSlot=false;try{range.Add(-1,32);}catch(ArgumentOutOfRangeException){invalidSlot=true;}
+Check(invalidSlot && !range.Pending,"invalid slot rejected without changing range");
+var random=new Random(117);var cpu=new uint[257];var immediate=new uint[257];var deferred=new uint[257];
+for(int operation=0;operation<12000;operation++)
+{
+    int at=random.Next(cpu.Length);uint value=(uint)random.Next();cpu[at]=value;immediate[at]=value;range.Add(at,cpu.Length);
+    if(operation%37==0 || operation==11999)
+    {
+        Array.Copy(cpu,range.First,deferred,range.First,range.Count);range.Clear();
+        bool same=true;for(int i=0;i<cpu.Length;i++)if(immediate[i]!=deferred[i])same=false;
+        Check(same,"consumer boundary preserves final ordered writes");
+    }
+}
+var single=new SingleArrayProof();Check(single.Binding==-1,"empty proof cannot select a shader");
+single.Observe(2,4);single.Observe(2,4);Check(single.Binding==2,"all future images in one array may specialize");
+single.Observe(1,4);single.Observe(2,4);Check(single.Binding==-1,"mixed future arrays cannot recover by returning to initial image");
+single=default;single.Unknown();single.Observe(0,4);Check(single.Binding==-1,"missing future metadata permanently rejects");
+single=default;single.Observe(4,4);Check(single.Binding==-1,"borrowed direct textures are not array bindings");
+single=default;single.Observe(-1,4);single.Observe(0,4);Check(single.Binding==-1,"unproven item rejects otherwise uniform span");
+single=default;single.Observe(7,52);single.Observe(7,52);Check(single.Binding==7,"registered identical Texture2D binding may specialize");
+single.Observe(8,52);Check(single.Binding==-1,"different future physical Texture2D rejects specialization");
 Console.WriteLine("DrawCollapseCheck checks="+checks+" errors=0 scope=offline_policy_only");

@@ -55,11 +55,20 @@ namespace StutterFix
             internal int StartFrame;
             internal double StartSong;
             internal float Dur;
+#if CLOCK_ARRAYS
+            // The same float words are read by CPU recovery and uploaded to the GPU.
+            internal ref float Pos => ref gpuSourceProgress[Slot];
+            internal ref float CurrentE => ref gpuSourceE[Slot];
+#else
             internal float Pos;
+            internal float CurrentE;
+#endif
             internal Ease Ease;
             internal float Over, Period;
-            internal float CurrentE;
             internal bool Active;
+#if DEV || AUTOTEST
+            internal ExactEaseCohorts.Lease ClockLease=ExactEaseCohorts.Lease.Invalid;
+#endif
             internal readonly List<int> MasterSlots = new List<int>(64);
         }
         sealed class GpuLiveSlice
@@ -252,6 +261,18 @@ namespace StutterFix
         static readonly List<int> gpuActiveSourceSlots = new List<int>(256);
         static readonly float[] gpuSourceE = new float[MaxLiveSources];
         static readonly float[] gpuSourceProgress = new float[MaxLiveSources];
+#if DEV || AUTOTEST
+        static ExactEaseMemo gpuClockMemo; // Null/default OFF. Explicit command only.
+        static bool gpuClockMemoVerify;
+        static long gpuClockMemoCompared,gpuClockMemoMismatch;
+        static ExactEaseCohorts gpuClockCohorts;
+        static bool gpuClockCohortVerify;
+        static long gpuClockCohortCompared,gpuClockCohortMismatch;
+        internal static void StopClockCohorts(){gpuClockCohorts=null;gpuClockCohortVerify=false;gpuClockCohortCompared=gpuClockCohortMismatch=0;}
+        internal static void StopClockMemo(){gpuClockMemo=null;gpuClockMemoVerify=false;gpuClockMemoCompared=gpuClockMemoMismatch=0;}
+        static float EvalMemoClock(int ease,float time,float duration,float over,float period)
+            =>ZeroTween.Eval((Ease)ease,time,duration,over,period);
+#endif
         static int gpuSourceHighWater = 1,gpuSourcePeakAllocated;
 
         // Current effect context during FastMove.Run
@@ -473,12 +494,18 @@ namespace StutterFix
 
         static void ResetGpuLiveSourcePool()
         {
+#if DEV || AUTOTEST
+            gpuClockCohorts?.Reset();
+#endif
             gpuActiveSourceSlots.Clear();
             gpuFreeSourceSlots.Clear();
             for (int i = MaxLiveSources - 1; i >= 0; i--)
             {
                 if (gpuSourcePool[i] == null) gpuSourcePool[i] = new GpuLiveSource { Slot = i };
                 else { gpuSourcePool[i].Active = false; gpuSourcePool[i].MasterSlots.Clear(); }
+#if DEV || AUTOTEST
+                gpuSourcePool[i].ClockLease=ExactEaseCohorts.Lease.Invalid;
+#endif
                 gpuFreeSourceSlots.Push(i);
                 gpuSourceE[i] = 0f;
                 gpuSourceProgress[i] = 0f;
@@ -516,13 +543,18 @@ namespace StutterFix
             s.Ease = ease;
             s.Over = over;
             s.Period = period;
+#if DEV || AUTOTEST
+            s.ClockLease=gpuClockCohorts!=null?gpuClockCohorts.Acquire(Time.frameCount,startFrame,initialPos,(int)ease,dur,over,period):ExactEaseCohorts.Lease.Invalid;
+#endif
             s.CurrentE = dur > 0f && initialPos > 0f
                 ? (initialPos >= dur ? 1f : ZeroTween.Eval(ease, initialPos, dur, over, period))
                 : 0f;
             s.Active = true;
             s.MasterSlots.Clear();
+#if !CLOCK_ARRAYS
             gpuSourceE[slot] = s.CurrentE;
             gpuSourceProgress[slot] = initialPos;
+#endif
             MarkGpuSourceDirty(slot);
             gpuActiveSourceSlots.Add(slot);
             gpuSourcePeakAllocated=Math.Max(gpuSourcePeakAllocated,gpuActiveSourceSlots.Count);
@@ -624,11 +656,17 @@ namespace StutterFix
         static void CompleteGpuLiveSource(GpuLiveSource src)
         {
             if (!src.Active) return;
+#if DEV || AUTOTEST
+            if(gpuClockCohorts!=null && src.ClockLease.Slot>=0)gpuClockCohorts.Release(src.ClockLease);
+            src.ClockLease=ExactEaseCohorts.Lease.Invalid;
+#endif
             src.Active = false;
             src.Pos = src.Dur;
             src.CurrentE = 1f;
+#if !CLOCK_ARRAYS
             gpuSourceE[src.Slot] = 1f;
             gpuSourceProgress[src.Slot] = src.Dur;
+#endif
             MarkGpuSourceDirty(src.Slot);
 #if DEV || AUTOTEST
             UpdatePacketClock(src);
@@ -664,6 +702,9 @@ namespace StutterFix
             float dt = (DOTween.useSmoothDeltaTime ? Time.smoothDeltaTime : Time.deltaTime) * DOTween.timeScale;
             if (dt < 1e-6f && dt > -1e-6f) return;
             if (!DecoBakeCore.Finite(dt) || dt <= 0f) return;
+#if DEV || AUTOTEST
+            gpuClockMemo?.BeginFrame();
+#endif
             for (int i = 0; i < gpuActiveSourceSlots.Count;)
             {
                 int slot = gpuActiveSourceSlots[i];
@@ -683,7 +724,12 @@ namespace StutterFix
                     i++;
                     continue;
                 }
+#if CLOCK_ARRAYS
+                ref float position = ref gpuSourceProgress[slot];
+                float nextPos = position + dt;
+#else
                 float nextPos = src.Pos + dt;
+#endif
                 if (nextPos >= src.Dur)
                 {
                     CompleteGpuLiveSource(src);
@@ -692,11 +738,43 @@ namespace StutterFix
                     gpuActiveSourceSlots.RemoveAt(last);
                     continue;
                 }
+#if CLOCK_ARRAYS
+                position = nextPos;
+#else
                 src.Pos = nextPos;
-                float e = ZeroTween.Eval(src.Ease, nextPos, src.Dur, src.Over, src.Period);
+#endif
+                float e;
+#if DEV || AUTOTEST
+                if(gpuClockCohorts!=null)
+                {
+                    if(!gpuClockCohorts.TryEvaluate(src.ClockLease,nextPos,out e))e=ZeroTween.Eval(src.Ease,nextPos,src.Dur,src.Over,src.Period);
+                    if(gpuClockCohortVerify)
+                    {
+                        float original=ZeroTween.Eval(src.Ease,nextPos,src.Dur,src.Over,src.Period);gpuClockCohortCompared++;
+                        if(BitConverter.SingleToInt32Bits(e)!=BitConverter.SingleToInt32Bits(original)){gpuClockCohortMismatch++;e=original;}
+                    }
+                }
+                else if(gpuClockMemo!=null)
+                {
+                    e=gpuClockMemo.Evaluate((int)src.Ease,nextPos,src.Dur,src.Over,src.Period);
+                    if(gpuClockMemoVerify)
+                    {
+                        float original=ZeroTween.Eval(src.Ease,nextPos,src.Dur,src.Over,src.Period);
+                        gpuClockMemoCompared++;
+                        if(BitConverter.SingleToInt32Bits(e)!=BitConverter.SingleToInt32Bits(original))
+                        {gpuClockMemoMismatch++;e=original;}
+                    }
+                }
+                else
+#endif
+                    e=ZeroTween.Eval(src.Ease,nextPos,src.Dur,src.Over,src.Period);
+#if !CLOCK_ARRAYS
                 src.CurrentE = e;
+#endif
                 gpuSourceE[slot] = e;
+#if !CLOCK_ARRAYS
                 gpuSourceProgress[slot] = nextPos;
+#endif
                 MarkGpuSourceDirty(slot);
                 i++;
             }
@@ -1494,6 +1572,7 @@ namespace StutterFix
                 long pf0=Stopwatch.GetTimestamp();
 #endif
                 CheckPlayerFrame();
+                DecoDetach.ActiveTick(manager ? manager.transform : null, GpuLiveOwned, baselineObjects != null ? baselineObjects.Length : 0);
 #if AUTOTEST
                 long pf1=Stopwatch.GetTimestamp();
 #endif
@@ -1797,6 +1876,7 @@ namespace StutterFix
             gpuLiveCurrentSlice = -1;
             if (!gpuLiveActive) return;
             gpuLiveActive = false;
+            DecoDetach.BeginReattach();   // GPU 장식이 꺼졌다: 떼어 둔 장식 루트를 다시 붙이기 시작(프레임마다 조금씩, ClearDecorations 직전엔 전부)
             TightLate.ClearGpuList();
 #if AUTOTEST || GPUDECO
             gpuImagePending.Clear();
@@ -2251,6 +2331,95 @@ namespace StutterFix
                 return true;
             }
             if (command == "cost") { LogGpuLiveCost("manual"); return true; }
+            if(command=="clockcohort on" || command=="clockcohort off" || command=="clockcohort verify")
+            {
+                RequireLive(!gpuLiveActive && !gpuLivePrepared,"configure clock cohorts before GPU preparation");
+                StopClockMemo();StopClockCohorts();
+                if(command!="clockcohort off")
+                {
+                    RequireLive(ZeroTween.CanEase,"original easing evaluator unavailable");
+                    var pool=new ExactEaseCohorts(EvalMemoClock,MaxLiveSources);
+                    var warm=pool.Acquire(0,0,0,(int)Ease.Linear,1,1.70158f,.3f);pool.TryEvaluate(warm,.25f,out _);pool.Release(warm);pool.Reset();
+                    gpuClockCohorts=pool;gpuClockCohortVerify=command=="clockcohort verify";
+                }
+                GpuLog("clockcohort enabled="+(gpuClockCohorts!=null)+" verify="+gpuClockCohortVerify+" default_off=True Player_included=False");return true;
+            }
+            if(command=="clockcohort state")
+            {
+                var p=gpuClockCohorts;
+                GpuLog("clockcohort enabled="+(p!=null)+" verify="+gpuClockCohortVerify+" hits="+(p?.Hits??0)+" misses="+(p?.Misses??0)
+                    +" groups="+(p?.LiveGroups??0)+" peak_groups="+(p?.PeakGroups??0)+" invalid_reads="+(p?.InvalidReads??0)
+                    +" invalid_releases="+(p?.InvalidReleases??0)+" capacity_fallbacks="+(p?.CapacityFallbacks??0)
+                    +" compared="+gpuClockCohortCompared+" mismatch="+gpuClockCohortMismatch+" gain=UNMEASURED");return true;
+            }
+            if (command == "clockmemo on" || command == "clockmemo off" || command=="clockmemo verify")
+            {
+                RequireLive(!gpuLiveActive,"change clock memo only before ownership or after disposal");
+                StopClockCohorts();
+                StopClockMemo();gpuClockMemo=command=="clockmemo off"?null:new ExactEaseMemo(EvalMemoClock);
+                gpuClockMemoVerify=command=="clockmemo verify";
+                GpuLog("clockmemo enabled="+(gpuClockMemo!=null)+" verify="+gpuClockMemoVerify+" default_off=True Player_included=False");return true;
+            }
+            if(command=="clockmemo state")
+            {
+                GpuLog("clockmemo enabled="+(gpuClockMemo!=null)+" hits="+(gpuClockMemo?.Hits??0)+" misses="+(gpuClockMemo?.Misses??0)
+                    +" compared="+gpuClockMemoCompared+" mismatch="+gpuClockMemoMismatch+" verify="+gpuClockMemoVerify
+                    +" scope=exact_input_per_frame_cache gain=UNMEASURED");return true;
+            }
+            if(command=="clockmemo reference")
+            {
+                RequireLive(gpuLiveActive && ADOBase.controller && ADOBase.controller.paused,
+                    "clock reference upload requires paused GPU ownership");
+                int compared=0,mismatch=0;
+                foreach(int slot in gpuActiveSourceSlots)
+                {
+                    var s=gpuSourcePool[slot];if(!s.Active || s.MasterSlots.Count==0)continue;
+                    float value=s.Pos<=0?0:s.Pos>=s.Dur?1:ZeroTween.Eval(s.Ease,s.Pos,s.Dur,s.Over,s.Period);
+                    compared++;if(BitConverter.SingleToInt32Bits(value)!=BitConverter.SingleToInt32Bits(s.CurrentE))mismatch++;
+                    s.CurrentE=value;gpuSourceE[slot]=value;MarkGpuSourceDirty(slot);
+                }
+                GpuLog("clockmemo reference_compared="+compared+" mismatch="+mismatch+" paused=True clocks_advanced=0");return true;
+            }
+            if (command == "clockarrays state")
+            {
+#if CLOCK_ARRAYS
+                const bool packed = true;
+#else
+                const bool packed = false;
+#endif
+                int active = 0, mismatch = 0;
+                foreach (int slot in gpuActiveSourceSlots)
+                {
+                    var source = gpuSourcePool[slot];
+                    if (!source.Active) continue;
+                    active++;
+                    if (BitConverter.SingleToInt32Bits(source.Pos) != BitConverter.SingleToInt32Bits(gpuSourceProgress[slot])
+                        || BitConverter.SingleToInt32Bits(source.CurrentE) != BitConverter.SingleToInt32Bits(gpuSourceE[slot]))
+                        mismatch++;
+                }
+                GpuLog("clockarrays enabled=" + packed + " active=" + active + " mirror_mismatch=" + mismatch);
+                RequireLive(mismatch == 0, "source clock and upload values differ");
+                return true;
+            }
+            if (command == "clockaudit")
+            {
+                // Explicit, bounded diagnostic only. Does not change clocks or run per frame.
+                var groups = new Dictionary<(int,int,int,int,int), (int Count,int Value)>();
+                int active=0,duplicates=0,valueMismatch=0,adjacent=0; (int,int,int,int,int) previous=default;
+                foreach(int slot in gpuActiveSourceSlots)
+                {
+                    var s=gpuSourcePool[slot];if(!s.Active || s.MasterSlots.Count==0)continue;
+                    var key=((int)s.Ease,BitConverter.SingleToInt32Bits(s.Pos),BitConverter.SingleToInt32Bits(s.Dur),
+                        BitConverter.SingleToInt32Bits(s.Over),BitConverter.SingleToInt32Bits(s.Period));
+                    int value=BitConverter.SingleToInt32Bits(s.CurrentE);
+                    if(active>0 && key==previous)adjacent++;previous=key;active++;
+                    if(groups.TryGetValue(key,out var old)){duplicates++;if(old.Value!=value)valueMismatch++;groups[key]=(old.Count+1,old.Value);}
+                    else groups.Add(key,(1,value));
+                }
+                GpuLog("clockaudit song="+BakeTime.ToString("R",Inv)+" active="+active+" exact_groups="+groups.Count
+                    +" duplicate_evals="+duplicates+" adjacent_duplicates="+adjacent+" current_e_mismatch="+valueMismatch
+                    +" scope=single_command_no_timing_evidence");return true;
+            }
             if (command == "cost reset") { gpuCostFrames = gpuCostProgressTicks = gpuCostUniformTicks = gpuCostDispatchTicks = gpuCostMiscTicks = gpuCostCheckTicks = gpuCostClockTicks = gpuCostWholeTicks = gpuCostValidateTicks = gpuCostExecTicks = gpuCostProxyTicks = gpuCostCamTicks = gpuCostDdTicks = gpuCostAfterTicks = gpuCostFbEvalTicks = gpuCostFbCopyTicks = 0; GpuDecoCopy.DbgSubmitTicks = GpuDecoCopy.DbgExecTicks = 0; gpuCostMaxMs = 0; return true; }
             if (command == "live prepare") { PrepareGpuLive(); return true; }
             if (command == "live scope song" || command == "live scope reference")

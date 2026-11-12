@@ -13,6 +13,63 @@ namespace StutterFix
         static int collapseWindow=-1,collapseFrame,collapseObserved=-1,collapseObservedCount,collapseSpikes;
         static int collapseWidth,collapseHeight;static double collapseHz;
         static long collapseTick;static ProfilerRecorder collapseDraws;
+        static bool collapseDiagReady,collapseDiagFreeze,collapseDiagCount;
+        static long collapseDiagDispatches,collapseDiagSkips;
+        static bool[] collapseDiagEnabled;
+        static bool? collapseDiagPreviousHide;
+        static Renderer[] collapseDiagSuppressed;
+        static bool[] collapseDiagSuppressedFlags;
+        static bool RestoreCollapseDiagSuppression()
+        {
+            if(collapseDiagSuppressed==null)return true;
+            bool restored=true;
+            for(int i=0;i<collapseDiagSuppressed.Length;i++)
+                try {var r=collapseDiagSuppressed[i];if(r)r.forceRenderingOff=collapseDiagSuppressedFlags[i];}
+                catch(Exception e){restored=false;GpuLog("COLLAPSE_DIAG suppression_restore_error="+e.GetType().Name);}
+            if(restored){collapseDiagSuppressed=null;collapseDiagSuppressedFlags=null;}
+            return restored;
+        }
+        static string CollapseTagCensus(string tag)
+        {
+            RequireLive(gpuLivePrepared && gpuLiveActive && g2Window==-1,"tag census needs active prepared GPU outside measurement");
+            // Explicit boundary diagnostic only; never admission or mutation.
+            var mgr=scrDecorationManager.instance;
+            var field=HarmonyLib.AccessTools.Field(typeof(scrDecorationManager),"taggedDecorations");
+            var dict=field?.GetValue(mgr) as System.Collections.Generic.Dictionary<string,System.Collections.Generic.List<scrDecoration>>;
+            RequireLive(dict!=null && dict.ContainsKey(tag),"tag census missing tag");
+            var entries=dict[tag];var index=new System.Collections.Generic.Dictionary<scrDecoration,int>();
+            for(int i=0;i<baselineObjects.Length;i++)if(baselineObjects[i])index[baselineObjects[i]]=i;
+            var reasons=new System.Collections.Generic.Dictionary<string,int>();
+            var types=new System.Collections.Generic.Dictionary<string,int>();
+            int owned=0,cpu=0,hidden=0,lazyImage=0,lazyPosition=0,nulls=0;
+            foreach(var d in entries)
+            {
+                if(!d){nulls++;continue;}
+                string type=d.GetType().Name;types.TryGetValue(type,out int nt);types[type]=nt+1;
+                if(InvisibleSkip.IsHidden(d))hidden++;
+                if(InvisibleSkip.ResearchPendingPosition(d))lazyPosition++;
+                if(d is scrVisualDecoration visual && LazySprite.ResearchPending(visual))lazyImage++;
+                if(gpuLiveOwnedSet.Contains(d) && gpuLiveMasterByDeco.TryGetValue(d,out int ownedMaster) && !GpuCpuFallback(ownedMaster)){owned++;continue;}cpu++;
+                string reason;
+                if(gpuLiveMasterByDeco.TryGetValue(d,out int master))reason=GpuCpuFallback(master)?"live_CPU_fallback":"allocated_not_owned";
+                else if(index.TryGetValue(d,out int b))reason=table.Decorations[b].Reasons.Count==0?"live_geometry_or_scope":string.Join("+",table.Decorations[b].Reasons.OrderBy(x=>x,StringComparer.Ordinal));
+                else reason="outside_baseline";
+                reasons.TryGetValue(reason,out int nr);reasons[reason]=nr+1;
+            }
+            return "TAG_CENSUS tag="+tag+" conductor_song="+scrConductor.instance.songposition_minusi.ToString("F6",Inv)
+                +" frame="+Time.frameCount+" count="+entries.Count+" owned="+owned+" cpu="+cpu+" nulls="+nulls+" hidden_original="+hidden
+                +" lazy_images="+lazyImage+" lazy_positions="+lazyPosition+" types="+string.Join(";",types.Select(k=>k.Key+":"+k.Value))
+                +" reasons="+string.Join(";",reasons.Select(k=>k.Key+":"+k.Value))+" diagnostic_only=True";
+        }
+        static string CollapseDiagState()
+        {
+            int enabled=0,visible=0,forced=0;
+            foreach(var s in gpuCollapseSpans)if(s.Renderer)
+            {if(s.Renderer.enabled)enabled++;if(s.Renderer.isVisible)visible++;if(s.Renderer.forceRenderingOff)forced++;}
+            return "active="+gpuLiveActive+" collapse="+gpuCollapseOn+" ready="+collapseDiagReady+" paused="+GpuPlaybackState.Paused
+                +" freeze="+collapseDiagFreeze+" hide="+DrawCollapsePolicy.HideProxies+" dispatches="+collapseDiagDispatches
+                +" skips="+collapseDiagSkips+" spans="+gpuCollapseSpans.Count+" enabled="+enabled+" visible="+visible+" forced="+forced;
+        }
         static void CollapseEnvironment()
         {
             double hz=Screen.currentResolution.refreshRateRatio.value;
@@ -35,6 +92,50 @@ namespace StutterFix
         static bool DrawCollapseGateCommand(string sub)
         {
             var args=sub.Split(' ');
+            if(sub.StartsWith("singlearray ",StringComparison.Ordinal)){GpuLog(SingleArrayCommand(sub.Substring(12)));return true;}
+            if(args.Length==2 && args[0]=="mapbatch"){GpuLog(MapBatchCommand(args[1]));return true;}
+            if(args.Length==2 && args[0]=="tagcensus"){GpuLog(CollapseTagCensus(args[1]));return true;}
+            if(args[0]=="diag")
+            {
+                RequireLive(args.Length>=2 && gpuLiveActive && gpuCollapseOn && GpuPlaybackState.Paused,"collapse diagnostic requires paused active GPU");
+                if(args[1]=="reset")
+                {collapseDiagDispatches=collapseDiagSkips=0;collapseDiagCount=true;}
+                else if(args[1]=="freeze")
+                {RequireLive(args.Length==3 && collapseDiagReady,"collapse diagnostic needs initialized vertices");collapseDiagFreeze=args[2]=="on";}
+                else if(args[1]=="suppress")
+                {
+                    RequireLive(args.Length==3 && (args[2]=="on" || args[2]=="off"),"collapse diagnostic suppress on|off");
+                    if(args[2]=="on")
+                    {
+                        RequireLive(collapseDiagSuppressed==null,"already suppressed");
+                        collapseDiagSuppressed=gpuCollapseSpans.Select(s=>(Renderer)s.Renderer).ToArray();
+                        collapseDiagSuppressedFlags=collapseDiagSuppressed.Select(r=>r && r.forceRenderingOff).ToArray();
+                        try{foreach(var r in collapseDiagSuppressed)if(r)r.forceRenderingOff=true;}
+                        catch{RestoreCollapseDiagSuppression();throw;}
+                    }
+                    else RequireLive(RestoreCollapseDiagSuppression(),"suppression flags not restored");
+                    GpuLog("COLLAPSE_DIAG suppression="+(collapseDiagSuppressed!=null)+" renderer_enabled_unchanged=True");
+                }
+                else if(args[1]=="draw")
+                {
+                    RequireLive(args.Length==3,"collapse diagnostic draw on|off");
+                    if(!collapseDiagPreviousHide.HasValue)collapseDiagPreviousHide=DrawCollapsePolicy.HideProxies;
+                    DrawCollapsePolicy.HideProxies=args[2]=="off";
+                    if(DrawCollapsePolicy.HideProxies)
+                    {
+                        if(collapseDiagEnabled==null)collapseDiagEnabled=gpuCollapseSpans.Select(s=>s.Renderer && s.Renderer.enabled).ToArray();
+                        foreach(var s in gpuCollapseSpans)if(s.Renderer)s.Renderer.enabled=false;
+                    }
+                    else if(collapseDiagEnabled!=null)
+                    {
+                        RequireLive(collapseDiagEnabled.Length==gpuCollapseSpans.Count,"collapse diagnostic plan changed");
+                        for(int k=0;k<gpuCollapseSpans.Count;k++)if(gpuCollapseSpans[k].Renderer)gpuCollapseSpans[k].Renderer.enabled=collapseDiagEnabled[k];
+                        collapseDiagEnabled=null;
+                    }
+                }
+                else RequireLive(args[1]=="state","collapse diagnostic reset|freeze|draw|state");
+                GpuLog("COLLAPSE_DIAG "+CollapseDiagState()+" diagnostic_only=True");return true;
+            }
             if(sub=="reset")
             {
                 RequireLive(!gpuLiveActive && collapseWindow<0,"drawcollapse reset requires inactive measurement");

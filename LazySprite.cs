@@ -31,6 +31,9 @@ namespace StutterFix
         private static readonly Dictionary<scrVisualDecoration, TextureManager.CustomSprite> pending = new Dictionary<scrVisualDecoration, TextureManager.CustomSprite>(new RefEq());
         private static bool flushing, installed;
         internal static int Count { get { return pending.Count; } }
+#if AUTOTEST
+        internal static bool ResearchPending(scrVisualDecoration v)=>pending.ContainsKey(v);
+#endif
 #if AUTOTEST || GPUDECO
         // Inspection must not call Flush or getters patched by OnePrefix.
         internal static bool GpuPeekPending(scrVisualDecoration d,out TextureManager.CustomSprite value)=>pending.TryGetValue(d,out value);

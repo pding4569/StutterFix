@@ -180,6 +180,36 @@ namespace StutterFix
             }
             // 진단: 장식 렌더러를 forceRenderingOff 가 아니라 enabled=false 로 씬 렌더러 목록에서 빼 본다(컬링·변환 처리 비용 측정).
             if (group == "deco:hold") { InvisibleSkip.HoldHidden = on; return "hold=" + on; }
+            // 진단: 그리기 순서(정렬층, 순서)가 아래쪽인 장식부터, 화면 넓이 합의 P% 만큼 숨긴다. 위에 겹친 층에 가려 안 보이는 아래층이 얼마나 되는지 본다.
+            if (on && group.StartsWith("deco-bottom:", StringComparison.Ordinal))
+            {
+                if (toggled.Count > 0) throw new InvalidOperationException("already hidden");
+                float pct = float.Parse(group.Substring(12), CultureInfo.InvariantCulture);
+                var cam0 = Camera.allCameras.FirstOrDefault(c => c.name == "Camera");
+                if (!cam0) return "no camera";
+                var vp0 = cam0.projectionMatrix * cam0.worldToCameraMatrix;
+                var list = new List<(Renderer r, long key, double area)>(); double total = 0;
+                foreach (var r in Resources.FindObjectsOfTypeAll<Renderer>())
+                {
+                    if (!r || !r.gameObject.scene.IsValid() || !r.enabled || !r.gameObject.activeInHierarchy || r.forceRenderingOff || !r.isVisible || !GpuCensus.IsDecoration(r) || r is SpriteMask) continue;
+                    // 화면에 걸친 경계 상자 넓이(화면 장 수). z 는 보지 않는다(직교 카메라)
+                    var bb = r.bounds; float bx0 = 1e9f, by0 = 1e9f, bx1 = -1e9f, by1 = -1e9f;
+                    for (int ci = 0; ci < 4; ci++) { var np = vp0.MultiplyPoint(new Vector3((ci & 1) == 0 ? bb.min.x : bb.max.x, (ci & 2) == 0 ? bb.min.y : bb.max.y, bb.center.z)); float sx = np.x * .5f + .5f, sy = np.y * .5f + .5f; bx0 = Mathf.Min(bx0, sx); bx1 = Mathf.Max(bx1, sx); by0 = Mathf.Min(by0, sy); by1 = Mathf.Max(by1, sy); }
+                    double ar = Mathf.Max(0, Mathf.Min(1, bx1) - Mathf.Max(0, bx0)) * Mathf.Max(0, Mathf.Min(1, by1) - Mathf.Max(0, by0));
+                    long key = ((long)(SortingLayer.GetLayerValueFromID(r.sortingLayerID) + 100000) << 32) | (uint)(r.sortingOrder + 1000000000);
+                    list.Add((r, key, ar)); total += ar;
+                }
+                list.Sort((x, y) => x.key.CompareTo(y.key));
+                double acc = 0; int n = 0; long lastKey = long.MinValue;
+                foreach (var it in list)
+                {
+                    // 같은 (층, 순서) 묶음은 끊지 않는다
+                    if (acc >= total * pct / 100.0 && it.key != lastKey) break;
+                    toggled.Add(new Saved { Renderer = it.r, Off = it.r.forceRenderingOff }); it.r.forceRenderingOff = true; acc += it.area; n++; lastKey = it.key;
+                }
+                return "deco-bottom " + pct + "% hidden=" + n + " of " + list.Count + " area_screens=" + acc.ToString("F1", CultureInfo.InvariantCulture) + " of " + total.ToString("F1", CultureInfo.InvariantCulture)
+                    + " up_to_layer=" + (n > 0 ? ((int)(lastKey >> 32) - 100000) + "/order=" + ((long)(uint)lastKey - 1000000000) : "-");
+            }
             if (group == "deco:disable")
             {
                 if (!on) { foreach (var kv in toggledEnabled) if (kv.Key) kv.Key.enabled = kv.Value; int m2 = toggledEnabled.Count; toggledEnabled.Clear(); return "enabled_restored=" + m2; }

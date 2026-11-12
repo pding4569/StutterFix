@@ -91,7 +91,13 @@ namespace StutterFix
             // (게임이 직접 임시 객체를 줄임). 옛 모양이 아니면 입력 쪽은 건드리지 않는다.
             if (gsi != null && gsi.ReturnType != typeof(List<AsyncKeyCode>)) { Main.Entry.Logger.Log("[쓰레기 줄이기] 비동기 키 입력: 게임 코드가 바뀌어(GetSpecialInput " + gsi.ReturnType.Name + ") 끔"); return; }
             if (main == null || gsc == null || gsi == null) { Main.Entry.Logger.Log("[쓰레기 줄이기] 비동기 키 입력: 게임 코드 모양이 달라 끔"); return; }
-            mainKeysRef = AccessTools.FieldRefAccess<RDInputType_AsyncKeyboard, SkyHook.KeyLabel[]>("mainKeys");
+            // Legacy input signatures are checked above. Resolve the field only
+            // for that supported path; newer games renamed it to _mainKeys.
+            var keysField = AccessTools.Field(typeof(RDInputType_AsyncKeyboard), "mainKeys")
+                ?? AccessTools.Field(typeof(RDInputType_AsyncKeyboard), "_mainKeys");
+            if (keysField == null || keysField.IsStatic || keysField.FieldType != typeof(SkyHook.KeyLabel[]))
+            { Main.Entry.Logger.Log("[쓰레기 줄이기] 비동기 키 입력: 키 목록 필드가 달라 끔"); return; }
+            mainKeysRef = AccessTools.FieldRefAccess<RDInputType_AsyncKeyboard, SkyHook.KeyLabel[]>(keysField);
             getStateCount = AccessTools.MethodDelegate<Func<RDInputType, ButtonState, RDInputType.MainStateCount>>(gsc);
             getSpecial = AccessTools.MethodDelegate<Func<RDInputType_AsyncKeyboard, List<AsyncKeyCode>>>(gsi);
             if (Edition.Dev) VerifyInput = System.IO.File.Exists(System.IO.Path.Combine(Main.Entry.Path, "input-verify"));

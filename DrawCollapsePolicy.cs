@@ -31,7 +31,11 @@ namespace StutterFix
         // 계획 직전에 채운다: 화면 복사(GrabPass)를 쓰는 소유 항목. 일반 항목 다음에 오면 구간을 끊어 복사 시점을 원래와 같게 한다.
         internal static bool[] GrabItems;
         // 화면 고정(Camera·CameraAspect 배치, clampToScreen) 장식을 맡는다. 측정: screenfixed on|off
+#if DRAWCOLLAPSE_CHECK
+        internal static bool ScreenFixed;
+#else
         internal static bool ScreenFixed { get => DecoBakeCore.ScreenFixedSupported; set => DecoBakeCore.ScreenFixedSupported = value; }
+#endif
         internal const int TextureBindings=ArrayBindings+DirectBindings;
         internal const int OwnedChecksPerFrame=4;
         // Orthographic camera translation changes every distance by this same
@@ -148,6 +152,8 @@ namespace StutterFix
         internal const float TightMaxAreaRatio=.8f;
         // 2048 을 넘는 같은 크기 DXT5(4K 프레임 계열 등)를 정확한 크기의 배열 하나로 묶는다. 3개 미만이면 직접 슬롯을 쓴다.
         internal const bool ExactBigArray=true;
+        internal static bool ImageArrayReuse=false; // Experimental; explicit AUTOTEST command only.
+        internal static bool ImageArrayGpuOnly=false; // Release the leased arrays' CPU shadows before the first GPU copy.
         internal const int ExactBigMin=3;
         // 프로토타입: 정렬 키 캐시(카메라 이동분 일괄 보정)와 전수 스캔 생략. 끄면 이전 방식으로 전부 다시 읽는다.
         internal const bool KeyCache=true;

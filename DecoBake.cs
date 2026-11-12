@@ -188,6 +188,9 @@ namespace StutterFix
 #endif
             gpuPrepareWatch = null;
             DisposeGpuLive();
+#if AUTOTEST
+            ResetSingleArrayExperiment();
+#endif
             if(nativeUpdateHooked)SetNativeAdoption(false);
 #if AUTOTEST || GPUDECO
             gpuImageCandidate=false;gpuImageUploadFault=false;gpuImageMatrix=false;

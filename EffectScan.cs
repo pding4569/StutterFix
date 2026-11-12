@@ -19,6 +19,52 @@ namespace StutterFix
     {
         internal static bool Enabled = Edition.Dev || Main.MeasureBuild;   // 통계/로그 (측정용 플레이어 빌드도). 효과 나누기는 이 값과 상관없이 돈다
         internal static float LogOverMs = 3f;
+#if AUTOTEST
+        struct SlowFxEntry { internal Type Type; internal int Frame,Tags,Targets; internal double Song,Ms; internal float Duration; internal uint Properties; internal string FirstTag; }
+        static SlowFxEntry[] slowFx;
+        static int slowFxCount,slowFxDropped;
+        static bool slowFxArmed;
+        static double slowFxFrom,slowFxTo,slowFxThreshold;
+        internal static void ClearSlowFx()
+        {slowFxArmed=false;slowFx=null;slowFxCount=slowFxDropped=0;}
+        internal static string SlowFxCommand(string arg)
+        {
+            var a=arg.Split(new[]{' '},StringSplitOptions.RemoveEmptyEntries);
+            var inv=System.Globalization.CultureInfo.InvariantCulture;
+            if(a.Length==4 && a[0]=="arm")
+            {
+                double from=double.Parse(a[1],inv),to=double.Parse(a[2],inv),threshold=double.Parse(a[3],inv);
+                if(!(from>=0 && to>from && to<=3600 && threshold>=0 && threshold<=1000))throw new ArgumentException("slowfx range/threshold");
+                ClearSlowFx();slowFx=new SlowFxEntry[512];slowFxFrom=from;slowFxTo=to;slowFxThreshold=threshold;slowFxArmed=true;
+                return "SLOWFX_ARM from="+from.ToString("R",inv)+" to="+to.ToString("R",inv)+" threshold_ms="+threshold.ToString("R",inv)
+                    +" capacity=512 extra_clock_reads=0 per_frame_hook=0 performance_acceptance=False";
+            }
+            if(arg=="off"){ClearSlowFx();return "SLOWFX_OFF";}
+            if(arg!="report")throw new ArgumentException("slowfx arm <from> <to> <ms>|report|off");
+            slowFxArmed=false;
+            var text=new System.Text.StringBuilder("SLOWFX_REPORT count="+slowFxCount+" dropped="+slowFxDropped+" scope=outer_StartEffect_elapsed_includes_waits");
+            for(int i=0;i<slowFxCount;i++)
+            {
+                var e=slowFx[i];text.Append("\nSLOWFX_SAMPLE song=").Append(e.Song.ToString("F6",inv)).Append(" frame=").Append(e.Frame)
+                    .Append(" ms=").Append(e.Ms.ToString("F6",inv)).Append(" type=").Append(e.Type?.FullName??"null")
+                    .Append(" duration=").Append(e.Duration.ToString("R",inv)).Append(" tags=").Append(e.Tags).Append(" targets=").Append(e.Targets)
+                    .Append(" properties=").Append(e.Properties.ToString("X",inv)).Append(" first_tag=").Append(e.FirstTag??"-");
+            }
+            return text.ToString();
+        }
+        static void CaptureSlowFx(object effect,double ms)
+        {
+            // Reuse the timing already needed by EffectBudget. No new timers,
+            // reflection scans, strings, effect-instance roots or file IO here.
+            if(!slowFxArmed || ms<slowFxThreshold)return;
+            var conductor=scrConductor.instance;if(!conductor)return;
+            double song=conductor.songposition_minusi;if(song<slowFxFrom || song>slowFxTo)return;
+            if(slowFxCount==slowFx.Length){slowFxDropped++;return;}
+            var entry=new SlowFxEntry{Type=effect?.GetType(),Frame=UnityEngine.Time.frameCount,Song=song,Ms=ms,Targets=-1};
+            if(effect is ffxMoveDecorationsPlus move)FastMove.SlowFxShape(move,out entry.FirstTag,out entry.Tags,out entry.Targets,out entry.Duration,out entry.Properties);
+            slowFx[slowFxCount++]=entry;
+        }
+#endif
 
         internal static int StartedThisFrame;
         internal static double MsThisFrame;
@@ -144,6 +190,10 @@ namespace StutterFix
             // 실시간 모니터가 "왜 끊겼는지"를 가리려면 플레이어용에서도 프레임마다 효과 시작 시간 합계가 필요하다.
             // 이미 잰 값을 더하기만 하므로 비용은 없다.
             if (EffectBudget.OuterCall) { FrameEffectMs += ms; FrameN++; var mv = __instance as ffxMoveDecorationsPlus; if ((object)mv != null) { FrameMoveMs += ms; if (durRef(mv) > 0f) FrameAnimMs += ms; } }
+#if AUTOTEST
+            if(slowFxArmed && EffectBudget.OuterCall)
+                try{CaptureSlowFx(__instance,ms);}catch{slowFxArmed=false;}
+#endif
             if (!Enabled) return;
             try { Record(__instance, ms); } catch { }   // finalizer 안이라 여기서 예외가 나면 안 된다
         }
