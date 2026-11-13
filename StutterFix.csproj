@@ -42,6 +42,7 @@
   <ItemGroup>
     <Compile Include="StutterFix.cs" />
     <Compile Include="ScriptPath.cs" Condition="'$(AutoTestBuild)' == '1'" />
+    <Compile Include="GpuExactCensus.cs" Condition="'$(AutoTestBuild)' == '1'" />
     <Compile Include="EngineKnob.cs" Condition="'$(AutoTestBuild)' == '1'" />
     <Compile Include="TileRender.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="ColdOpenProbe.cs" />

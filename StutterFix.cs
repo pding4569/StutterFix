@@ -1020,6 +1020,7 @@ ParticleTextWatch.Install(harmony);
 
             Try(LightProbe.Uninstall);
             Try(ScriptPath.Stop);
+            Try(GpuExactCensus.Stop);
             Try(EngineKnob.Stop);
 
 #endif

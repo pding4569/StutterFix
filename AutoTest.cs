@@ -927,6 +927,7 @@ namespace StutterFix
                 case "tilerender": return TileRender.Step(arg.Trim());
 #if AUTOTEST
                 case "scriptskip": return ScriptPath.Step(arg.Trim());
+                case "gpuexact": return GpuExactCensus.Step(arg.Trim());
                 case "engknob": return EngineKnob.Step(arg.Trim());
 #endif
                 case "fxslot": FxSlots.Command(arg); return true;
@@ -1927,6 +1928,7 @@ namespace StutterFix
         private static void EndBatch(string why)
         {
 #if AUTOTEST
+            GpuExactCensus.Stop();
             EngineKnob.Stop();
             ScriptPath.Stop();
 #endif

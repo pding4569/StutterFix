@@ -1,0 +1,261 @@
+adapter=NVIDIA GeForce RTX 4060 Ti vendor=4318 device=10243 feature=b000 RT=RGBA8_UNORM linear MSAA=1
+formula mode=0 special=0 alpha=0.500100017 cases=16777216 candidate=0 rgb_bad=4146696 rgb_first=65920 rgb_max=1 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=0 special=0 alpha=0.500100017 cases=16777216 candidate=1 rgb_bad=4146696 rgb_first=65920 rgb_max=1 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=0 special=0 alpha=0.500100017 cases=16777216 candidate=2 rgb_bad=527360 rgb_first=98304 rgb_max=1 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=0 special=0 alpha=0.500100017 cases=16777216 candidate=3 rgb_bad=5087806 rgb_first=65664 rgb_max=2 alpha_bad=2078720 alpha_first=131135 alpha_max=1
+formula mode=0 special=0 alpha=0.500100017 cases=16777216 candidate=4 rgb_bad=4531687 rgb_first=65664 rgb_max=1 alpha_bad=1008896 alpha_first=131135 alpha_max=1
+formula mode=0 special=0 alpha=0.500100017 cases=16777216 candidate=5 rgb_bad=4245822 rgb_first=65664 rgb_max=1 alpha_bad=491520 alpha_first=131135 alpha_max=1
+formula mode=0 special=0 alpha=0.500100017 cases=16777216 candidate=6 rgb_bad=527360 rgb_first=98304 rgb_max=1 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=0 special=0 alpha=0.500100017 cases=16777216 candidate=7 rgb_bad=2514421 rgb_first=65664 rgb_max=2 alpha_bad=2080768 alpha_first=65664 alpha_max=1
+formula mode=0 special=0 alpha=0.500100017 cases=16777216 candidate=8 rgb_bad=527360 rgb_first=98304 rgb_max=1 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=0 special=0 alpha=0.500100017 cases=16777216 candidate=9 rgb_bad=527360 rgb_first=98304 rgb_max=1 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=0 special=1 alpha=0.0199999996 cases=65536 candidate=0 rgb_bad=15748 rgb_first=76 rgb_max=1 alpha_bad=3584 alpha_first=26 alpha_max=1
+formula mode=0 special=1 alpha=0.0199999996 cases=65536 candidate=1 rgb_bad=15787 rgb_first=76 rgb_max=1 alpha_bad=3840 alpha_first=26 alpha_max=1
+formula mode=0 special=1 alpha=0.0199999996 cases=65536 candidate=2 rgb_bad=3328 rgb_first=6656 rgb_max=1 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=0 special=1 alpha=0.0199999996 cases=65536 candidate=3 rgb_bad=4402 rgb_first=128 rgb_max=2 alpha_bad=512 alpha_first=25 alpha_max=1
+formula mode=0 special=1 alpha=0.0199999996 cases=65536 candidate=4 rgb_bad=16047 rgb_first=128 rgb_max=1 alpha_bad=512 alpha_first=25 alpha_max=1
+formula mode=0 special=1 alpha=0.0199999996 cases=65536 candidate=5 rgb_bad=15968 rgb_first=128 rgb_max=1 alpha_bad=512 alpha_first=25 alpha_max=1
+formula mode=0 special=1 alpha=0.0199999996 cases=65536 candidate=6 rgb_bad=3328 rgb_first=6656 rgb_max=1 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=0 special=1 alpha=0.0199999996 cases=65536 candidate=7 rgb_bad=4057 rgb_first=128 rgb_max=2 alpha_bad=768 alpha_first=128 alpha_max=1
+formula mode=0 special=1 alpha=0.0199999996 cases=65536 candidate=8 rgb_bad=5628 rgb_first=76 rgb_max=1 alpha_bad=2560 alpha_first=76 alpha_max=1
+formula mode=0 special=1 alpha=0.0199999996 cases=65536 candidate=9 rgb_bad=3328 rgb_first=6656 rgb_max=1 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+repeat mode=0 special=1 k=1..255 cases=16711680 rgb_alpha_mismatches=0 source=measured_ROP_transition_LUT
+fixed mode=0 special=1 color=0 dst=0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,
+fixed mode=0 special=1 color=128 dst=128,129,130,131,132,133,134,135,136,137,138,139,140,141,142,143,144,145,146,147,148,149,150,151,152,153,154,155,156,157,158,159,160,161,162,163,164,165,166,167,168,169,170,171,172,173,174,175,176,177,178,
+fixed mode=0 special=1 color=255 dst=230,231,232,233,234,235,236,237,238,239,240,241,242,243,244,245,246,247,248,249,250,251,252,253,254,255,
+formula mode=0 special=2 alpha=0.123456702 cases=65536 candidate=0 rgb_bad=20038 rgb_first=37 rgb_max=1 alpha_bad=15360 alpha_first=5 alpha_max=1
+formula mode=0 special=2 alpha=0.123456702 cases=65536 candidate=1 rgb_bad=20038 rgb_first=37 rgb_max=1 alpha_bad=15360 alpha_first=5 alpha_max=1
+formula mode=0 special=2 alpha=0.123456702 cases=65536 candidate=2 rgb_bad=2048 rgb_first=15616 rgb_max=1 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=0 special=2 alpha=0.123456702 cases=65536 candidate=3 rgb_bad=32633 rgb_first=37 rgb_max=1 alpha_bad=31488 alpha_first=0 alpha_max=1
+formula mode=0 special=2 alpha=0.123456702 cases=65536 candidate=4 rgb_bad=21099 rgb_first=37 rgb_max=1 alpha_bad=12288 alpha_first=5 alpha_max=1
+formula mode=0 special=2 alpha=0.123456702 cases=65536 candidate=5 rgb_bad=18470 rgb_first=37 rgb_max=1 alpha_bad=12288 alpha_first=5 alpha_max=1
+formula mode=0 special=2 alpha=0.123456702 cases=65536 candidate=6 rgb_bad=2048 rgb_first=15616 rgb_max=1 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=0 special=2 alpha=0.123456702 cases=65536 candidate=7 rgb_bad=6016 rgb_first=70 rgb_max=2 alpha_bad=4096 alpha_first=70 alpha_max=1
+formula mode=0 special=2 alpha=0.123456702 cases=65536 candidate=8 rgb_bad=16448 rgb_first=37 rgb_max=1 alpha_bad=15360 alpha_first=37 alpha_max=1
+formula mode=0 special=2 alpha=0.123456702 cases=65536 candidate=9 rgb_bad=2048 rgb_first=15616 rgb_max=1 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+repeat mode=0 special=2 k=1..255 cases=16711680 rgb_alpha_mismatches=0 source=measured_ROP_transition_LUT
+fixed mode=0 special=2 color=0 dst=0,1,2,3,4,
+fixed mode=0 special=2 color=128 dst=128,129,130,131,132,133,134,135,
+fixed mode=0 special=2 color=255 dst=251,252,253,254,255,
+formula mode=0 special=3 alpha=0.500100017 cases=65536 candidate=0 rgb_bad=18998 rgb_first=1 rgb_max=1 alpha_bad=32768 alpha_first=0 alpha_max=1
+formula mode=0 special=3 alpha=0.500100017 cases=65536 candidate=1 rgb_bad=18998 rgb_first=1 rgb_max=1 alpha_bad=32768 alpha_first=0 alpha_max=1
+formula mode=0 special=3 alpha=0.500100017 cases=65536 candidate=2 rgb_bad=32768 rgb_first=1 rgb_max=1 alpha_bad=32768 alpha_first=0 alpha_max=1
+formula mode=0 special=3 alpha=0.500100017 cases=65536 candidate=3 rgb_bad=32623 rgb_first=1 rgb_max=1 alpha_bad=26368 alpha_first=0 alpha_max=1
+formula mode=0 special=3 alpha=0.500100017 cases=65536 candidate=4 rgb_bad=17800 rgb_first=1 rgb_max=1 alpha_bad=26368 alpha_first=0 alpha_max=1
+formula mode=0 special=3 alpha=0.500100017 cases=65536 candidate=5 rgb_bad=17672 rgb_first=1 rgb_max=1 alpha_bad=26368 alpha_first=0 alpha_max=1
+formula mode=0 special=3 alpha=0.500100017 cases=65536 candidate=6 rgb_bad=32768 rgb_first=1 rgb_max=1 alpha_bad=32768 alpha_first=0 alpha_max=1
+formula mode=0 special=3 alpha=0.500100017 cases=65536 candidate=7 rgb_bad=36548 rgb_first=1 rgb_max=1 alpha_bad=16640 alpha_first=0 alpha_max=1
+formula mode=0 special=3 alpha=0.500100017 cases=65536 candidate=8 rgb_bad=32768 rgb_first=1 rgb_max=1 alpha_bad=32768 alpha_first=0 alpha_max=1
+formula mode=0 special=3 alpha=0.500100017 cases=65536 candidate=9 rgb_bad=32768 rgb_first=1 rgb_max=1 alpha_bad=32768 alpha_first=0 alpha_max=1
+repeat mode=0 special=3 k=1..255 cases=16711680 rgb_alpha_mismatches=0 source=measured_ROP_transition_LUT
+fixed mode=0 special=3 color=0 dst=0,1,
+fixed mode=0 special=3 color=128 dst=128,129,
+fixed mode=0 special=3 color=255 dst=254,255,
+formula mode=1 special=0 alpha=0.500100017 cases=16777216 candidate=0 rgb_bad=0 rgb_first=4294967295 rgb_max=0 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=1 special=0 alpha=0.500100017 cases=16777216 candidate=1 rgb_bad=0 rgb_first=4294967295 rgb_max=0 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=1 special=0 alpha=0.500100017 cases=16777216 candidate=2 rgb_bad=0 rgb_first=4294967295 rgb_max=0 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=1 special=0 alpha=0.500100017 cases=16777216 candidate=3 rgb_bad=2759725 rgb_first=65664 rgb_max=1 alpha_bad=2410496 alpha_first=196824 alpha_max=1
+formula mode=1 special=0 alpha=0.500100017 cases=16777216 candidate=4 rgb_bad=1322005 rgb_first=65664 rgb_max=1 alpha_bad=1318656 alpha_first=196824 alpha_max=1
+formula mode=1 special=0 alpha=0.500100017 cases=16777216 candidate=5 rgb_bad=641014 rgb_first=65664 rgb_max=1 alpha_bad=656640 alpha_first=196824 alpha_max=1
+formula mode=1 special=0 alpha=0.500100017 cases=16777216 candidate=6 rgb_bad=0 rgb_first=4294967295 rgb_max=0 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=1 special=0 alpha=0.500100017 cases=16777216 candidate=7 rgb_bad=1383412 rgb_first=65664 rgb_max=1 alpha_bad=1247744 alpha_first=65665 alpha_max=1
+formula mode=1 special=0 alpha=0.500100017 cases=16777216 candidate=8 rgb_bad=4121020 rgb_first=65920 rgb_max=1 alpha_bad=4111872 alpha_first=65664 alpha_max=1
+formula mode=1 special=0 alpha=0.500100017 cases=16777216 candidate=9 rgb_bad=4121020 rgb_first=65920 rgb_max=1 alpha_bad=4111872 alpha_first=65664 alpha_max=1
+formula mode=1 special=1 alpha=0.0199999996 cases=65536 candidate=0 rgb_bad=2168 rgb_first=76 rgb_max=1 alpha_bad=2560 alpha_first=81 alpha_max=1
+formula mode=1 special=1 alpha=0.0199999996 cases=65536 candidate=1 rgb_bad=2235 rgb_first=76 rgb_max=1 alpha_bad=2560 alpha_first=81 alpha_max=1
+formula mode=1 special=1 alpha=0.0199999996 cases=65536 candidate=2 rgb_bad=0 rgb_first=4294967295 rgb_max=0 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=1 special=1 alpha=0.0199999996 cases=65536 candidate=3 rgb_bad=309 rgb_first=128 rgb_max=1 alpha_bad=512 alpha_first=184 alpha_max=1
+formula mode=1 special=1 alpha=0.0199999996 cases=65536 candidate=4 rgb_bad=337 rgb_first=128 rgb_max=1 alpha_bad=512 alpha_first=184 alpha_max=1
+formula mode=1 special=1 alpha=0.0199999996 cases=65536 candidate=5 rgb_bad=336 rgb_first=128 rgb_max=1 alpha_bad=512 alpha_first=184 alpha_max=1
+formula mode=1 special=1 alpha=0.0199999996 cases=65536 candidate=6 rgb_bad=0 rgb_first=4294967295 rgb_max=0 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=1 special=1 alpha=0.0199999996 cases=65536 candidate=7 rgb_bad=334 rgb_first=128 rgb_max=1 alpha_bad=768 alpha_first=133 alpha_max=1
+formula mode=1 special=1 alpha=0.0199999996 cases=65536 candidate=8 rgb_bad=16382 rgb_first=76 rgb_max=1 alpha_bad=8960 alpha_first=26 alpha_max=1
+formula mode=1 special=1 alpha=0.0199999996 cases=65536 candidate=9 rgb_bad=16250 rgb_first=282 rgb_max=1 alpha_bad=6400 alpha_first=26 alpha_max=1
+repeat mode=1 special=1 k=1..255 cases=16711680 rgb_alpha_mismatches=0 source=measured_ROP_transition_LUT
+fixed mode=1 special=1 color=0 dst=0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,
+fixed mode=1 special=1 color=128 dst=103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,121,122,123,124,125,126,127,128,129,130,131,132,133,134,135,136,137,138,139,140,141,142,143,144,145,146,147,148,149,150,151,152,153,
+fixed mode=1 special=1 color=255 dst=230,231,232,233,234,235,236,237,238,239,240,241,242,243,244,245,246,247,248,249,250,251,252,253,254,255,
+formula mode=1 special=2 alpha=0.123456702 cases=65536 candidate=0 rgb_bad=10480 rgb_first=37 rgb_max=1 alpha_bad=9728 alpha_first=3 alpha_max=1
+formula mode=1 special=2 alpha=0.123456702 cases=65536 candidate=1 rgb_bad=10480 rgb_first=37 rgb_max=1 alpha_bad=9728 alpha_first=3 alpha_max=1
+formula mode=1 special=2 alpha=0.123456702 cases=65536 candidate=2 rgb_bad=0 rgb_first=4294967295 rgb_max=0 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=1 special=2 alpha=0.123456702 cases=65536 candidate=3 rgb_bad=21545 rgb_first=37 rgb_max=1 alpha_bad=19712 alpha_first=3 alpha_max=1
+formula mode=1 special=2 alpha=0.123456702 cases=65536 candidate=4 rgb_bad=8660 rgb_first=37 rgb_max=1 alpha_bad=7936 alpha_first=11 alpha_max=1
+formula mode=1 special=2 alpha=0.123456702 cases=65536 candidate=5 rgb_bad=8379 rgb_first=37 rgb_max=1 alpha_bad=7936 alpha_first=11 alpha_max=1
+formula mode=1 special=2 alpha=0.123456702 cases=65536 candidate=6 rgb_bad=0 rgb_first=4294967295 rgb_max=0 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=1 special=2 alpha=0.123456702 cases=65536 candidate=7 rgb_bad=2328 rgb_first=70 rgb_max=1 alpha_bad=3072 alpha_first=101 alpha_max=1
+formula mode=1 special=2 alpha=0.123456702 cases=65536 candidate=8 rgb_bad=19096 rgb_first=37 rgb_max=1 alpha_bad=7936 alpha_first=3 alpha_max=1
+formula mode=1 special=2 alpha=0.123456702 cases=65536 candidate=9 rgb_bad=16256 rgb_first=261 rgb_max=1 alpha_bad=15104 alpha_first=3 alpha_max=1
+repeat mode=1 special=2 k=1..255 cases=16711680 rgb_alpha_mismatches=0 source=measured_ROP_transition_LUT
+fixed mode=1 special=2 color=0 dst=0,1,2,3,4,
+fixed mode=1 special=2 color=128 dst=124,125,126,127,128,129,130,131,132,
+fixed mode=1 special=2 color=255 dst=251,252,253,254,255,
+formula mode=1 special=3 alpha=0.500100017 cases=65536 candidate=0 rgb_bad=32768 rgb_first=1 rgb_max=1 alpha_bad=16384 alpha_first=0 alpha_max=1
+formula mode=1 special=3 alpha=0.500100017 cases=65536 candidate=1 rgb_bad=32768 rgb_first=1 rgb_max=1 alpha_bad=16384 alpha_first=0 alpha_max=1
+formula mode=1 special=3 alpha=0.500100017 cases=65536 candidate=2 rgb_bad=32768 rgb_first=1 rgb_max=1 alpha_bad=32768 alpha_first=0 alpha_max=1
+formula mode=1 special=3 alpha=0.500100017 cases=65536 candidate=3 rgb_bad=24456 rgb_first=1 rgb_max=1 alpha_bad=16384 alpha_first=0 alpha_max=1
+formula mode=1 special=3 alpha=0.500100017 cases=65536 candidate=4 rgb_bad=20360 rgb_first=1 rgb_max=1 alpha_bad=16384 alpha_first=0 alpha_max=1
+formula mode=1 special=3 alpha=0.500100017 cases=65536 candidate=5 rgb_bad=18312 rgb_first=1 rgb_max=1 alpha_bad=16384 alpha_first=0 alpha_max=1
+formula mode=1 special=3 alpha=0.500100017 cases=65536 candidate=6 rgb_bad=32768 rgb_first=1 rgb_max=1 alpha_bad=32768 alpha_first=0 alpha_max=1
+formula mode=1 special=3 alpha=0.500100017 cases=65536 candidate=7 rgb_bad=40960 rgb_first=1 rgb_max=1 alpha_bad=32768 alpha_first=0 alpha_max=2
+formula mode=1 special=3 alpha=0.500100017 cases=65536 candidate=8 rgb_bad=16512 rgb_first=1 rgb_max=1 alpha_bad=16384 alpha_first=0 alpha_max=1
+formula mode=1 special=3 alpha=0.500100017 cases=65536 candidate=9 rgb_bad=16512 rgb_first=1 rgb_max=1 alpha_bad=16384 alpha_first=0 alpha_max=1
+repeat mode=1 special=3 k=1..255 cases=16711680 rgb_alpha_mismatches=0 source=measured_ROP_transition_LUT
+fixed mode=1 special=3 color=0 dst=0,1,
+fixed mode=1 special=3 color=128 dst=127,128,129,
+fixed mode=1 special=3 color=255 dst=254,255,
+formula mode=2 special=0 alpha=0.500100017 cases=16777216 candidate=0 rgb_bad=0 rgb_first=4294967295 rgb_max=0 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=2 special=0 alpha=0.500100017 cases=16777216 candidate=1 rgb_bad=0 rgb_first=4294967295 rgb_max=0 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=2 special=0 alpha=0.500100017 cases=16777216 candidate=2 rgb_bad=0 rgb_first=4294967295 rgb_max=0 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=2 special=0 alpha=0.500100017 cases=16777216 candidate=3 rgb_bad=1951026 rgb_first=147456 rgb_max=1 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=2 special=0 alpha=0.500100017 cases=16777216 candidate=4 rgb_bad=1034800 rgb_first=98304 rgb_max=1 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=2 special=0 alpha=0.500100017 cases=16777216 candidate=5 rgb_bad=510762 rgb_first=98304 rgb_max=1 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=2 special=0 alpha=0.500100017 cases=16777216 candidate=6 rgb_bad=0 rgb_first=4294967295 rgb_max=0 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=2 special=0 alpha=0.500100017 cases=16777216 candidate=7 rgb_bad=1367837 rgb_first=251136 rgb_max=1 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=2 special=0 alpha=0.500100017 cases=16777216 candidate=8 rgb_bad=0 rgb_first=4294967295 rgb_max=0 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=2 special=0 alpha=0.500100017 cases=16777216 candidate=9 rgb_bad=0 rgb_first=4294967295 rgb_max=0 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=2 special=1 alpha=0.0199999996 cases=65536 candidate=0 rgb_bad=3604 rgb_first=6401 rgb_max=1 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=2 special=1 alpha=0.0199999996 cases=65536 candidate=1 rgb_bad=3785 rgb_first=6400 rgb_max=1 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=2 special=1 alpha=0.0199999996 cases=65536 candidate=2 rgb_bad=0 rgb_first=4294967295 rgb_max=0 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=2 special=1 alpha=0.0199999996 cases=65536 candidate=3 rgb_bad=505 rgb_first=19712 rgb_max=1 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=2 special=1 alpha=0.0199999996 cases=65536 candidate=4 rgb_bad=756 rgb_first=32768 rgb_max=1 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=2 special=1 alpha=0.0199999996 cases=65536 candidate=5 rgb_bad=756 rgb_first=32768 rgb_max=1 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=2 special=1 alpha=0.0199999996 cases=65536 candidate=6 rgb_bad=0 rgb_first=4294967295 rgb_max=0 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=2 special=1 alpha=0.0199999996 cases=65536 candidate=7 rgb_bad=503 rgb_first=45824 rgb_max=1 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=2 special=1 alpha=0.0199999996 cases=65536 candidate=8 rgb_bad=3026 rgb_first=19200 rgb_max=1 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=2 special=1 alpha=0.0199999996 cases=65536 candidate=9 rgb_bad=0 rgb_first=4294967295 rgb_max=0 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+repeat mode=2 special=1 k=1..255 cases=16711680 rgb_alpha_mismatches=0 source=measured_ROP_transition_LUT
+fixed mode=2 special=1 color=0 dst=0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,121,122,123,124,125,126,127,128,129,130,131,132,133,134,135,136,137,138,139,140,141,142,143,144,145,146,147,148,149,150,151,152,153,154,155,156,157,158,159,160,161,162,163,164,165,166,167,168,169,170,171,172,173,174,175,176,177,178,179,180,181,182,183,184,185,186,187,188,189,190,191,192,193,194,195,196,197,198,199,200,201,202,203,204,205,206,207,208,209,210,211,212,213,214,215,216,217,218,219,220,221,222,223,224,225,226,227,228,229,230,231,232,233,234,235,236,237,238,239,240,241,242,243,244,245,246,247,248,249,250,251,252,253,254,255,
+fixed mode=2 special=1 color=128 dst=255,
+fixed mode=2 special=1 color=255 dst=255,
+formula mode=2 special=2 alpha=0.123456702 cases=65536 candidate=0 rgb_bad=14090 rgb_first=9472 rgb_max=1 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=2 special=2 alpha=0.123456702 cases=65536 candidate=1 rgb_bad=14090 rgb_first=9472 rgb_max=1 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=2 special=2 alpha=0.123456702 cases=65536 candidate=2 rgb_bad=0 rgb_first=4294967295 rgb_max=0 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=2 special=2 alpha=0.123456702 cases=65536 candidate=3 rgb_bad=26156 rgb_first=9472 rgb_max=1 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=2 special=2 alpha=0.123456702 cases=65536 candidate=4 rgb_bad=10792 rgb_first=9472 rgb_max=1 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=2 special=2 alpha=0.123456702 cases=65536 candidate=5 rgb_bad=11276 rgb_first=9472 rgb_max=1 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=2 special=2 alpha=0.123456702 cases=65536 candidate=6 rgb_bad=0 rgb_first=4294967295 rgb_max=0 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=2 special=2 alpha=0.123456702 cases=65536 candidate=7 rgb_bad=3500 rgb_first=17920 rgb_max=1 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=2 special=2 alpha=0.123456702 cases=65536 candidate=8 rgb_bad=14090 rgb_first=9472 rgb_max=1 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=2 special=2 alpha=0.123456702 cases=65536 candidate=9 rgb_bad=0 rgb_first=4294967295 rgb_max=0 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+repeat mode=2 special=2 k=1..255 cases=16711680 rgb_alpha_mismatches=0 source=measured_ROP_transition_LUT
+fixed mode=2 special=2 color=0 dst=0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,121,122,123,124,125,126,127,128,129,130,131,132,133,134,135,136,137,138,139,140,141,142,143,144,145,146,147,148,149,150,151,152,153,154,155,156,157,158,159,160,161,162,163,164,165,166,167,168,169,170,171,172,173,174,175,176,177,178,179,180,181,182,183,184,185,186,187,188,189,190,191,192,193,194,195,196,197,198,199,200,201,202,203,204,205,206,207,208,209,210,211,212,213,214,215,216,217,218,219,220,221,222,223,224,225,226,227,228,229,230,231,232,233,234,235,236,237,238,239,240,241,242,243,244,245,246,247,248,249,250,251,252,253,254,255,
+fixed mode=2 special=2 color=128 dst=255,
+fixed mode=2 special=2 color=255 dst=255,
+formula mode=2 special=3 alpha=0.500100017 cases=65536 candidate=0 rgb_bad=24512 rgb_first=256 rgb_max=1 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=2 special=3 alpha=0.500100017 cases=65536 candidate=1 rgb_bad=24512 rgb_first=256 rgb_max=1 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=2 special=3 alpha=0.500100017 cases=65536 candidate=2 rgb_bad=24512 rgb_first=256 rgb_max=1 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=2 special=3 alpha=0.500100017 cases=65536 candidate=3 rgb_bad=10183 rgb_first=33024 rgb_max=1 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=2 special=3 alpha=0.500100017 cases=65536 candidate=4 rgb_bad=11207 rgb_first=16640 rgb_max=1 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=2 special=3 alpha=0.500100017 cases=65536 candidate=5 rgb_bad=11719 rgb_first=8448 rgb_max=1 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=2 special=3 alpha=0.500100017 cases=65536 candidate=6 rgb_bad=24512 rgb_first=256 rgb_max=1 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=2 special=3 alpha=0.500100017 cases=65536 candidate=7 rgb_bad=34720 rgb_first=256 rgb_max=1 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=2 special=3 alpha=0.500100017 cases=65536 candidate=8 rgb_bad=24512 rgb_first=256 rgb_max=1 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=2 special=3 alpha=0.500100017 cases=65536 candidate=9 rgb_bad=24512 rgb_first=256 rgb_max=1 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+repeat mode=2 special=3 k=1..255 cases=16711680 rgb_alpha_mismatches=0 source=measured_ROP_transition_LUT
+fixed mode=2 special=3 color=0 dst=0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,121,122,123,124,125,126,127,128,129,130,131,132,133,134,135,136,137,138,139,140,141,142,143,144,145,146,147,148,149,150,151,152,153,154,155,156,157,158,159,160,161,162,163,164,165,166,167,168,169,170,171,172,173,174,175,176,177,178,179,180,181,182,183,184,185,186,187,188,189,190,191,192,193,194,195,196,197,198,199,200,201,202,203,204,205,206,207,208,209,210,211,212,213,214,215,216,217,218,219,220,221,222,223,224,225,226,227,228,229,230,231,232,233,234,235,236,237,238,239,240,241,242,243,244,245,246,247,248,249,250,251,252,253,254,255,
+fixed mode=2 special=3 color=128 dst=255,
+fixed mode=2 special=3 color=255 dst=255,
+formula mode=3 special=0 alpha=0.500100017 cases=16777216 candidate=0 rgb_bad=397084 rgb_first=98304 rgb_max=1 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=3 special=0 alpha=0.500100017 cases=16777216 candidate=1 rgb_bad=397084 rgb_first=98304 rgb_max=1 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=3 special=0 alpha=0.500100017 cases=16777216 candidate=2 rgb_bad=397084 rgb_first=98304 rgb_max=1 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=3 special=0 alpha=0.500100017 cases=16777216 candidate=3 rgb_bad=2408260 rgb_first=98304 rgb_max=1 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=3 special=0 alpha=0.500100017 cases=16777216 candidate=4 rgb_bad=1559459 rgb_first=102144 rgb_max=1 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=3 special=0 alpha=0.500100017 cases=16777216 candidate=5 rgb_bad=679922 rgb_first=102144 rgb_max=1 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=3 special=0 alpha=0.500100017 cases=16777216 candidate=6 rgb_bad=397084 rgb_first=98304 rgb_max=1 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=3 special=0 alpha=0.500100017 cases=16777216 candidate=7 rgb_bad=397084 rgb_first=98304 rgb_max=1 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=3 special=0 alpha=0.500100017 cases=16777216 candidate=8 rgb_bad=397084 rgb_first=98304 rgb_max=1 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=3 special=0 alpha=0.500100017 cases=16777216 candidate=9 rgb_bad=397084 rgb_first=98304 rgb_max=1 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=3 special=1 alpha=0.0199999996 cases=65536 candidate=0 rgb_bad=3869 rgb_first=6401 rgb_max=1 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=3 special=1 alpha=0.0199999996 cases=65536 candidate=1 rgb_bad=4050 rgb_first=6400 rgb_max=1 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=3 special=1 alpha=0.0199999996 cases=65536 candidate=2 rgb_bad=3291 rgb_first=6656 rgb_max=1 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=3 special=1 alpha=0.0199999996 cases=65536 candidate=3 rgb_bad=4050 rgb_first=6400 rgb_max=1 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=3 special=1 alpha=0.0199999996 cases=65536 candidate=4 rgb_bad=11639 rgb_first=7424 rgb_max=1 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=3 special=1 alpha=0.0199999996 cases=65536 candidate=5 rgb_bad=3795 rgb_first=7424 rgb_max=1 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=3 special=1 alpha=0.0199999996 cases=65536 candidate=6 rgb_bad=3291 rgb_first=6656 rgb_max=1 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=3 special=1 alpha=0.0199999996 cases=65536 candidate=7 rgb_bad=3291 rgb_first=6656 rgb_max=1 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=3 special=1 alpha=0.0199999996 cases=65536 candidate=8 rgb_bad=3291 rgb_first=6656 rgb_max=1 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=3 special=1 alpha=0.0199999996 cases=65536 candidate=9 rgb_bad=3291 rgb_first=6656 rgb_max=1 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+repeat mode=3 special=1 k=1..255 cases=16711680 rgb_alpha_mismatches=0 source=measured_ROP_transition_LUT
+fixed mode=3 special=1 color=0 dst=0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,121,122,123,124,125,126,127,128,129,130,131,132,133,134,135,136,137,138,139,140,141,142,143,144,145,146,147,148,149,150,151,152,153,154,155,156,157,158,159,160,161,162,163,164,165,166,167,168,169,170,171,172,173,174,175,176,177,178,179,180,181,182,183,184,185,186,187,188,189,190,191,192,193,194,195,196,197,198,199,200,201,202,203,204,205,206,207,208,209,210,211,212,213,214,215,216,217,218,219,220,221,222,223,224,225,226,227,228,229,230,231,232,233,234,235,236,237,238,239,240,241,242,243,244,245,246,247,248,249,250,251,252,253,254,255,
+fixed mode=3 special=1 color=128 dst=255,
+fixed mode=3 special=1 color=255 dst=255,
+formula mode=3 special=2 alpha=0.123456702 cases=65536 candidate=0 rgb_bad=1917 rgb_first=15616 rgb_max=1 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=3 special=2 alpha=0.123456702 cases=65536 candidate=1 rgb_bad=1917 rgb_first=15616 rgb_max=1 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=3 special=2 alpha=0.123456702 cases=65536 candidate=2 rgb_bad=1917 rgb_first=15616 rgb_max=1 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=3 special=2 alpha=0.123456702 cases=65536 candidate=3 rgb_bad=5660 rgb_first=15616 rgb_max=1 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=3 special=2 alpha=0.123456702 cases=65536 candidate=4 rgb_bad=9685 rgb_first=1280 rgb_max=1 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=3 special=2 alpha=0.123456702 cases=65536 candidate=5 rgb_bad=2004 rgb_first=1280 rgb_max=1 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=3 special=2 alpha=0.123456702 cases=65536 candidate=6 rgb_bad=1917 rgb_first=15616 rgb_max=1 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=3 special=2 alpha=0.123456702 cases=65536 candidate=7 rgb_bad=1917 rgb_first=15616 rgb_max=1 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=3 special=2 alpha=0.123456702 cases=65536 candidate=8 rgb_bad=1917 rgb_first=15616 rgb_max=1 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=3 special=2 alpha=0.123456702 cases=65536 candidate=9 rgb_bad=1917 rgb_first=15616 rgb_max=1 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+repeat mode=3 special=2 k=1..255 cases=16711680 rgb_alpha_mismatches=0 source=measured_ROP_transition_LUT
+fixed mode=3 special=2 color=0 dst=0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,121,122,123,124,125,126,127,128,129,130,131,132,133,134,135,136,137,138,139,140,141,142,143,144,145,146,147,148,149,150,151,152,153,154,155,156,157,158,159,160,161,162,163,164,165,166,167,168,169,170,171,172,173,174,175,176,177,178,179,180,181,182,183,184,185,186,187,188,189,190,191,192,193,194,195,196,197,198,199,200,201,202,203,204,205,206,207,208,209,210,211,212,213,214,215,216,217,218,219,220,221,222,223,224,225,226,227,228,229,230,231,232,233,234,235,236,237,238,239,240,241,242,243,244,245,246,247,248,249,250,251,252,253,254,255,
+fixed mode=3 special=2 color=128 dst=255,
+fixed mode=3 special=2 color=255 dst=255,
+formula mode=3 special=3 alpha=0.500100017 cases=65536 candidate=0 rgb_bad=19429 rgb_first=256 rgb_max=1 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=3 special=3 alpha=0.500100017 cases=65536 candidate=1 rgb_bad=19429 rgb_first=256 rgb_max=1 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=3 special=3 alpha=0.500100017 cases=65536 candidate=2 rgb_bad=19429 rgb_first=256 rgb_max=1 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=3 special=3 alpha=0.500100017 cases=65536 candidate=3 rgb_bad=20162 rgb_first=256 rgb_max=1 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=3 special=3 alpha=0.500100017 cases=65536 candidate=4 rgb_bad=8311 rgb_first=7936 rgb_max=1 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=3 special=3 alpha=0.500100017 cases=65536 candidate=5 rgb_bad=9283 rgb_first=7936 rgb_max=1 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=3 special=3 alpha=0.500100017 cases=65536 candidate=6 rgb_bad=19429 rgb_first=256 rgb_max=1 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=3 special=3 alpha=0.500100017 cases=65536 candidate=7 rgb_bad=19429 rgb_first=256 rgb_max=1 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=3 special=3 alpha=0.500100017 cases=65536 candidate=8 rgb_bad=19429 rgb_first=256 rgb_max=1 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=3 special=3 alpha=0.500100017 cases=65536 candidate=9 rgb_bad=19429 rgb_first=256 rgb_max=1 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+repeat mode=3 special=3 k=1..255 cases=16711680 rgb_alpha_mismatches=0 source=measured_ROP_transition_LUT
+fixed mode=3 special=3 color=0 dst=0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,121,122,123,124,125,126,127,128,129,130,131,132,133,134,135,136,137,138,139,140,141,142,143,144,145,146,147,148,149,150,151,152,153,154,155,156,157,158,159,160,161,162,163,164,165,166,167,168,169,170,171,172,173,174,175,176,177,178,179,180,181,182,183,184,185,186,187,188,189,190,191,192,193,194,195,196,197,198,199,200,201,202,203,204,205,206,207,208,209,210,211,212,213,214,215,216,217,218,219,220,221,222,223,224,225,226,227,228,229,230,231,232,233,234,235,236,237,238,239,240,241,242,243,244,245,246,247,248,249,250,251,252,253,254,255,
+fixed mode=3 special=3 color=128 dst=255,
+fixed mode=3 special=3 color=255 dst=255,
+formula mode=4 special=0 alpha=0.500100017 cases=16777216 candidate=0 rgb_bad=0 rgb_first=4294967295 rgb_max=0 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=4 special=0 alpha=0.500100017 cases=16777216 candidate=1 rgb_bad=0 rgb_first=4294967295 rgb_max=0 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=4 special=0 alpha=0.500100017 cases=16777216 candidate=2 rgb_bad=0 rgb_first=4294967295 rgb_max=0 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=4 special=0 alpha=0.500100017 cases=16777216 candidate=3 rgb_bad=0 rgb_first=4294967295 rgb_max=0 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=4 special=0 alpha=0.500100017 cases=16777216 candidate=4 rgb_bad=0 rgb_first=4294967295 rgb_max=0 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=4 special=0 alpha=0.500100017 cases=16777216 candidate=5 rgb_bad=0 rgb_first=4294967295 rgb_max=0 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=4 special=0 alpha=0.500100017 cases=16777216 candidate=6 rgb_bad=0 rgb_first=4294967295 rgb_max=0 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=4 special=0 alpha=0.500100017 cases=16777216 candidate=7 rgb_bad=0 rgb_first=4294967295 rgb_max=0 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=4 special=0 alpha=0.500100017 cases=16777216 candidate=8 rgb_bad=0 rgb_first=4294967295 rgb_max=0 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=4 special=0 alpha=0.500100017 cases=16777216 candidate=9 rgb_bad=0 rgb_first=4294967295 rgb_max=0 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=4 special=1 alpha=0.0199999996 cases=65536 candidate=0 rgb_bad=0 rgb_first=4294967295 rgb_max=0 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=4 special=1 alpha=0.0199999996 cases=65536 candidate=1 rgb_bad=0 rgb_first=4294967295 rgb_max=0 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=4 special=1 alpha=0.0199999996 cases=65536 candidate=2 rgb_bad=0 rgb_first=4294967295 rgb_max=0 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=4 special=1 alpha=0.0199999996 cases=65536 candidate=3 rgb_bad=0 rgb_first=4294967295 rgb_max=0 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=4 special=1 alpha=0.0199999996 cases=65536 candidate=4 rgb_bad=0 rgb_first=4294967295 rgb_max=0 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=4 special=1 alpha=0.0199999996 cases=65536 candidate=5 rgb_bad=0 rgb_first=4294967295 rgb_max=0 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=4 special=1 alpha=0.0199999996 cases=65536 candidate=6 rgb_bad=0 rgb_first=4294967295 rgb_max=0 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=4 special=1 alpha=0.0199999996 cases=65536 candidate=7 rgb_bad=0 rgb_first=4294967295 rgb_max=0 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=4 special=1 alpha=0.0199999996 cases=65536 candidate=8 rgb_bad=0 rgb_first=4294967295 rgb_max=0 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=4 special=1 alpha=0.0199999996 cases=65536 candidate=9 rgb_bad=0 rgb_first=4294967295 rgb_max=0 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+repeat mode=4 special=1 k=1..255 cases=16711680 rgb_alpha_mismatches=0 source=measured_ROP_transition_LUT
+fixed mode=4 special=1 color=0 dst=0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,121,122,123,124,125,126,127,128,129,130,131,132,133,134,135,136,137,138,139,140,141,142,143,144,145,146,147,148,149,150,151,152,153,154,155,156,157,158,159,160,161,162,163,164,165,166,167,168,169,170,171,172,173,174,175,176,177,178,179,180,181,182,183,184,185,186,187,188,189,190,191,192,193,194,195,196,197,198,199,200,201,202,203,204,205,206,207,208,209,210,211,212,213,214,215,216,217,218,219,220,221,222,223,224,225,226,227,228,229,230,231,232,233,234,235,236,237,238,239,240,241,242,243,244,245,246,247,248,249,250,251,252,253,254,255,
+fixed mode=4 special=1 color=128 dst=255,
+fixed mode=4 special=1 color=255 dst=255,
+formula mode=4 special=2 alpha=0.123456702 cases=65536 candidate=0 rgb_bad=0 rgb_first=4294967295 rgb_max=0 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=4 special=2 alpha=0.123456702 cases=65536 candidate=1 rgb_bad=0 rgb_first=4294967295 rgb_max=0 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=4 special=2 alpha=0.123456702 cases=65536 candidate=2 rgb_bad=0 rgb_first=4294967295 rgb_max=0 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=4 special=2 alpha=0.123456702 cases=65536 candidate=3 rgb_bad=0 rgb_first=4294967295 rgb_max=0 alpha_bad=57344 alpha_first=0 alpha_max=1
+formula mode=4 special=2 alpha=0.123456702 cases=65536 candidate=4 rgb_bad=0 rgb_first=4294967295 rgb_max=0 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=4 special=2 alpha=0.123456702 cases=65536 candidate=5 rgb_bad=0 rgb_first=4294967295 rgb_max=0 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=4 special=2 alpha=0.123456702 cases=65536 candidate=6 rgb_bad=0 rgb_first=4294967295 rgb_max=0 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=4 special=2 alpha=0.123456702 cases=65536 candidate=7 rgb_bad=0 rgb_first=4294967295 rgb_max=0 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=4 special=2 alpha=0.123456702 cases=65536 candidate=8 rgb_bad=0 rgb_first=4294967295 rgb_max=0 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+formula mode=4 special=2 alpha=0.123456702 cases=65536 candidate=9 rgb_bad=0 rgb_first=4294967295 rgb_max=0 alpha_bad=0 alpha_first=4294967295 alpha_max=0
+repeat mode=4 special=2 k=1..255 cases=16711680 rgb_alpha_mismatches=0 source=measured_ROP_transition_LUT
+fixed mode=4 special=2 color=0 dst=0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,121,122,123,124,125,126,127,128,129,130,131,132,133,134,135,136,137,138,139,140,141,142,143,144,145,146,147,148,149,150,151,152,153,154,155,156,157,158,159,160,161,162,163,164,165,166,167,168,169,170,171,172,173,174,175,176,177,178,179,180,181,182,183,184,185,186,187,188,189,190,191,192,193,194,195,196,197,198,199,200,201,202,203,204,205,206,207,208,209,210,211,212,213,214,215,216,217,218,219,220,221,222,223,224,225,226,227,228,229,230,231,232,233,234,235,236,237,238,239,240,241,242,243,244,245,246,247,248,249,250,251,252,253,254,255,
+fixed mode=4 special=2 color=128 dst=255,
+fixed mode=4 special=2 color=255 dst=255,
+formula mode=4 special=3 alpha=0.500100017 cases=65536 candidate=0 rgb_bad=0 rgb_first=4294967295 rgb_max=0 alpha_bad=32768 alpha_first=0 alpha_max=1
+formula mode=4 special=3 alpha=0.500100017 cases=65536 candidate=1 rgb_bad=0 rgb_first=4294967295 rgb_max=0 alpha_bad=32768 alpha_first=0 alpha_max=1
+formula mode=4 special=3 alpha=0.500100017 cases=65536 candidate=2 rgb_bad=0 rgb_first=4294967295 rgb_max=0 alpha_bad=32768 alpha_first=0 alpha_max=1
+formula mode=4 special=3 alpha=0.500100017 cases=65536 candidate=3 rgb_bad=0 rgb_first=4294967295 rgb_max=0 alpha_bad=26368 alpha_first=0 alpha_max=1
+formula mode=4 special=3 alpha=0.500100017 cases=65536 candidate=4 rgb_bad=0 rgb_first=4294967295 rgb_max=0 alpha_bad=26368 alpha_first=0 alpha_max=1
+formula mode=4 special=3 alpha=0.500100017 cases=65536 candidate=5 rgb_bad=0 rgb_first=4294967295 rgb_max=0 alpha_bad=26368 alpha_first=0 alpha_max=1
+formula mode=4 special=3 alpha=0.500100017 cases=65536 candidate=6 rgb_bad=0 rgb_first=4294967295 rgb_max=0 alpha_bad=32768 alpha_first=0 alpha_max=1
+formula mode=4 special=3 alpha=0.500100017 cases=65536 candidate=7 rgb_bad=0 rgb_first=4294967295 rgb_max=0 alpha_bad=32768 alpha_first=0 alpha_max=1
+formula mode=4 special=3 alpha=0.500100017 cases=65536 candidate=8 rgb_bad=0 rgb_first=4294967295 rgb_max=0 alpha_bad=32768 alpha_first=0 alpha_max=1
+formula mode=4 special=3 alpha=0.500100017 cases=65536 candidate=9 rgb_bad=0 rgb_first=4294967295 rgb_max=0 alpha_bad=32768 alpha_first=0 alpha_max=1
+repeat mode=4 special=3 k=1..255 cases=16711680 rgb_alpha_mismatches=0 source=measured_ROP_transition_LUT
+fixed mode=4 special=3 color=0 dst=0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,121,122,123,124,125,126,127,128,129,130,131,132,133,134,135,136,137,138,139,140,141,142,143,144,145,146,147,148,149,150,151,152,153,154,155,156,157,158,159,160,161,162,163,164,165,166,167,168,169,170,171,172,173,174,175,176,177,178,179,180,181,182,183,184,185,186,187,188,189,190,191,192,193,194,195,196,197,198,199,200,201,202,203,204,205,206,207,208,209,210,211,212,213,214,215,216,217,218,219,220,221,222,223,224,225,226,227,228,229,230,231,232,233,234,235,236,237,238,239,240,241,242,243,244,245,246,247,248,249,250,251,252,253,254,255,
+fixed mode=4 special=3 color=128 dst=255,
+fixed mode=4 special=3 color=255 dst=255,

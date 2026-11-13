@@ -35,6 +35,7 @@ namespace StutterFix
 #if AUTOTEST
             EngineKnob.Stop();
             ScriptPath.Stop();
+            GpuExactCensus.Stop();
 #endif
             Count++;
             DecoDetach.OnTransition();

@@ -86,7 +86,7 @@ namespace StutterFix
         static string Bits(float x) => BitConverter.SingleToInt32Bits(x).ToString("X8", Inv);
         static void Vector(StringBuilder b, Vector4 v)
         { b.Append(Bits(v.x)).Append(',').Append(Bits(v.y)).Append(',').Append(Bits(v.z)).Append(',').Append(Bits(v.w)); }
-        static string Content(Material m)
+        internal static string Content(Material m)
         {
             if (!m || !m.shader) return "missing";
             var s = m.shader;
