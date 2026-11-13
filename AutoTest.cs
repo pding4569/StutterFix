@@ -1006,6 +1006,7 @@ namespace StutterFix
                         Log("[flashcolor] " + col + " renderers=" + cn); return true;
                     }
                 case "decodetach": Log("[decodetach] " + DecoDetach.Command(arg)); return true;
+                case "fillcensus": return FillCensus.Step(arg);
                 case "zcull": return ZCull.Step(arg);
                 case "occlude": if (arg.Trim() == "collect") { ShapeCellsCpu.CollectOpaque = true; Log("[occlude] 다음 맵 열기부터 불투명 정보 수집"); return true; } Occlude.Command(arg); return true;
                 case "gpuhide": GpuHide.Command(arg); return true;

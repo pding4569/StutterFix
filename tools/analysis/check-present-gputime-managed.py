@@ -32,6 +32,7 @@ namespace UnityEngine {
         public void AddCommandBuffer(CameraEvent e,CommandBuffer c){Attached++;}
         public void RemoveCommandBuffer(CameraEvent e,CommandBuffer c){Attached--;}
         public object targetTexture;
+        public int pixelWidth=100,pixelHeight=50;
         public static int Subscribers=>onPreRender?.GetInvocationList().Length??0;
         public static int CullSubscribers=>onPreCull?.GetInvocationList().Length??0;
         public static void Render(Camera c){onPreCull?.Invoke(c);onPreRender?.Invoke(c);}
@@ -56,6 +57,7 @@ namespace UnityEngine.Rendering {
     }
 }
 static class SfNative {internal static bool Ready=true;}
+static class GpuDecoScene {internal static UnityEngine.Camera MainCamera=new UnityEngine.Camera{name="Camera"};internal static UnityEngine.Camera FindMain()=>MainCamera;}
 class Test {
     static IntPtr callback,captured;
     static bool stopping,assertPending,statePending;
@@ -65,6 +67,9 @@ class Test {
     static CommandBuffer gpuBegin;
     static CommandBuffer gpuFrameBegin;
     static bool gpuCameraTiming;
+    static bool gpuPipeTiming;
+    static Camera gpuPipeCamera;
+    static CommandBuffer gpuPipeStart,gpuPipeEnd;
     static readonly Camera[] gpuCameras=new Camera[8];
     static readonly CommandBuffer[] gpuCameraStarts=new CommandBuffer[8],gpuCameraEnds=new CommandBuffer[8];
     static readonly CommandBuffer[] gpuFilterStarts=new CommandBuffer[8],gpuFilterEnds=new CommandBuffer[8];
@@ -72,7 +77,7 @@ class Test {
     static readonly Camera.CameraCallback gpuCameraCallback=GpuCamera;
     static readonly Camera.CameraCallback gpuPreCullCallback=GpuPreCull;
     static readonly FrameTiming[] timing=new FrameTiming[1];
-    static long[] stats=new long[100];
+    static long[] stats=new long[112];
     static long status,mode;
     static BufferResize resize;
     static string log="";
@@ -93,7 +98,10 @@ class Test {
         if(id==4){stats[18]++;return;}
         if(id==10){stats[36]++;return;}
         if(id==11){stats[61]++;return;}
+        if(id==300){stats[101]=stats[109];return;}
+        if(id==302){stats[109]=(long)p;return;}
         if(id>=100 && id<116)return;
+        if(id==14){stats[100]=1;id=9;}
         if(id==13)id=9;
         mode=id;status=1;stats[7]=1;stats[19]=1;stats[60]=id==9?1:0;
     }
@@ -126,6 +134,15 @@ suffix = r'''
         Step("state");Step("state");
         Expect(log.Contains("gpuCamera index=") && log.Contains("meanPerFrameUs="),"named camera stats");
         Step("off");Expect(camera.Attached==0 && CommandBuffer.Created==CommandBuffer.Released,"camera detach/release");
+        Step("on gputime pipestats");
+        Camera.Render(GpuDecoScene.MainCamera);
+        Expect(gpuPipeCamera.Attached==4 && stats[101]>0,"main camera pipeline attached");
+        Step("state");Step("state");Expect(log.Contains("PSInvocationsMean="),"pipeline output");
+        Time.frameCount++;AssertLease();
+        stats[104]=1;Expect(!Step("assert"),"pipeline failure refresh");bool pipeRejected=false;
+        try{Step("assert");}catch(Exception){pipeRejected=true;}
+        Expect(pipeRejected,"pipeline failures rejected");stats[104]=0;
+        Step("off");Expect(GpuDecoScene.MainCamera.Attached==0 && CommandBuffer.Created==CommandBuffer.Released,"pipeline detach/release");
         Step("on gputime");Time.frameCount++;stats[53]=1;
         Expect(!Step("assert"),"failure refresh");bool rejected=false;
         try {Step("assert");}catch(Exception){rejected=true;}

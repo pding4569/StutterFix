@@ -33,6 +33,9 @@ namespace StutterFix
         static CommandBuffer gpuBegin;
         static CommandBuffer gpuFrameBegin;
         static bool gpuCameraTiming;
+        static bool gpuPipeTiming;
+        static Camera gpuPipeCamera;
+        static CommandBuffer gpuPipeStart,gpuPipeEnd;
         static readonly Camera[] gpuCameras=new Camera[8];
         static readonly CommandBuffer[] gpuCameraStarts=new CommandBuffer[8],gpuCameraEnds=new CommandBuffer[8];
         static readonly CommandBuffer[] gpuFilterStarts=new CommandBuffer[8],gpuFilterEnds=new CommandBuffer[8];
@@ -45,6 +48,7 @@ namespace StutterFix
             // Immediate render event precedes this camera's culling/render work,
             // even when Unity renders camRT before the first screen camera.
             Graphics.ExecuteCommandBuffer(gpuFrameBegin);
+            if(gpuPipeTiming && camera==gpuPipeCamera)Graphics.ExecuteCommandBuffer(gpuPipeStart);
             if(!gpuCameraTiming)return;
             for(int i=0;i<gpuCameraCount;i++)if(gpuCameras[i]==camera)
             {
@@ -77,6 +81,10 @@ namespace StutterFix
         }
         static void StopGpuCamera()
         {
+            if(gpuPipeCamera!=null && gpuPipeEnd!=null)gpuPipeCamera.RemoveCommandBuffer(CameraEvent.AfterEverything,gpuPipeEnd);
+            if(gpuPipeStart!=null)gpuPipeStart.Release();
+            if(gpuPipeEnd!=null)gpuPipeEnd.Release();
+            gpuPipeStart=gpuPipeEnd=null;gpuPipeCamera=null;gpuPipeTiming=false;
             Camera.onPreRender-=gpuCameraCallback;
             Camera.onPreCull-=gpuPreCullCallback;
             if(gpuBegin!=null) {gpuBegin.Release();gpuBegin=null;}
@@ -171,21 +179,34 @@ namespace StutterFix
                 statePending=true;
                 return false; // wait for render-thread snapshot ACK before logging actual state
             }
-            if((a.Length==2 || (a.Length==3 && a[1]=="gputime" && a[2]=="cameras")) && a[0]=="on")
+            if((a.Length==2 || (a.Length==3 && a[1]=="gputime" && (a[2]=="cameras" || a[2]=="pipestats")) || (a.Length==4 && a[1]=="gputime" && a[2]=="pipestats")) && a[0]=="on")
             {
                 int id=a[1]=="observe"?1:a[1]=="tearing"?2:a[1]=="latency4"?3:a[1]=="buffers3"?6:a[1]=="resizeprobe"?7:a[1]=="gputime"?9:0;
                 if(id==0) throw new Exception("presentpath: unknown candidate");
                 if(requested!=null || stopping) throw new Exception("presentpath: finish off before on");
                 if(!SfNative.Ready || sf_framegen_installed()!=0) throw new Exception("presentpath: native unavailable or framegen installed");
+                Camera pipeCamera=id==9 && a.Length==3 && a[2]=="pipestats"?GpuDecoScene.FindMain():null;
+                if(a.Length==4)pipeCamera=GpuDecoScene.FindMain();
+                int pipeFrames=30;if(a.Length==4 && (!int.TryParse(a[3],out pipeFrames)||pipeFrames<1||pipeFrames>300))throw new Exception("pipestats frames 1..300");
                 VerifyBinary();captured=Resolve();callback=sf_presentpath_event_ptr();
                 if(callback==IntPtr.Zero) throw new Exception("presentpath: missing native event");
                 if(id==6 || id==7) resize=new BufferResize(id==7);
                 else resize=null;
                 requested=a[1];startFrame=Time.frameCount;
                 FrameTimingManager.CaptureFrameTimings();
-                gpuCameraTiming=id==9 && a.Length==3;
+                gpuCameraTiming=id==9 && a.Length>=3;
+                gpuPipeTiming=pipeCamera!=null;gpuPipeCamera=pipeCamera;
+                if(gpuPipeTiming)
+                {
+                    gpuPipeStart=new CommandBuffer{name="PresentPath.PipelineBegin"};
+                    gpuPipeEnd=new CommandBuffer{name="PresentPath.PipelineEnd"};
+                    gpuPipeStart.IssuePluginEventAndData(callback,300,IntPtr.Zero);
+                    gpuPipeEnd.IssuePluginEventAndData(callback,301,IntPtr.Zero);
+                    gpuPipeCamera.AddCommandBuffer(CameraEvent.AfterEverything,gpuPipeEnd);
+                }
                 sf_presentpath_pin(captured);sf_presentpath_pending();
-                Log("queued "+requested+"; verify with assert after elapsed frames");Issue(gpuCameraTiming?13:id,captured);
+                Log("queued "+requested+"; verify with assert after elapsed frames");Issue(gpuPipeTiming?14:gpuCameraTiming?13:id,captured);
+                if(gpuPipeTiming)Issue(302,(IntPtr)pipeFrames);
                 if(id==9)
                 {
                     gpuBegin=new CommandBuffer {name="PresentPath.GpuBegin"};
@@ -211,6 +232,8 @@ namespace StutterFix
                 if(Stat(19)!=1) throw new Exception("presentpath INVALID: overlay replaced instance vtable");
                 if(requested=="gputime" && (Stat(61)==0 || Stat(53)!=0 || Stat(60)!=1))
                     throw new Exception("presentpath INVALID: no recovered GPU samples/query failure/not ready");
+                if(gpuPipeTiming && (Stat(100)!=1 || Stat(101)!=Stat(109) || Stat(104)!=0 || Stat(107)!=0 || Stat(108)!=0))
+                    throw new Exception("presentpath INVALID: pipeline unavailable/no samples/failure/missing camera end");
                 if(requested=="tearing" && Stat(14)==0) throw new Exception("presentpath INVALID: tearing no-op (already enabled or ineligible)");
                 if(requested=="latency4" && Stat(6)!=4) throw new Exception("presentpath INVALID: latency target not observed");
                 if(requested=="buffers3" && (Stat(2)!=3 || Stat(20)==0 || Stat(25)!=0 || Stat(27)==0 || Stat(17)<0))
@@ -219,7 +242,7 @@ namespace StutterFix
                     throw new Exception("presentpath INVALID: resizeprobe count/resize failed");
                 State();Log("accepted "+requested);return true;
             }
-            throw new Exception("presentpath state|on observe|on tearing|on latency4|on buffers3|on resizeprobe|on gputime [cameras]|assert|off");
+            throw new Exception("presentpath state|on observe|on tearing|on latency4|on buffers3|on resizeprobe|on gputime [cameras|pipestats [1..300]]|assert|off");
         }
         internal static void Stop()
         {
@@ -259,6 +282,15 @@ namespace StutterFix
                     " gpuFrameSamples="+Stat(61)+" gpuFrameMeanUs="+Stat(62)+" gpuFrameP50Us="+Stat(63)+" gpuFrameP95Us="+Stat(64)+" gpuFrameMaxUs="+Stat(65)+
                     " cameraTiming="+Stat(66)+" cameraRepeatedMarkersSkipped="+Stat(67)+" gpuFrameScope=first_any_camera_preCull_event_to_prePresent_including_offscreen"+
                     " scope=first_screen_camera_event_to_prePresent percentile=8us_upper_bound_overflow_max eventScope=after_return_nonblocking_observation bbScope=every_other_adjacent_interval_within_one_disjoint_epoch");
+            if(gpuPipeTiming)
+            {
+                double pipeSamples=Stat(101),pixels=gpuPipeCamera!=null?(double)gpuPipeCamera.pixelWidth*gpuPipeCamera.pixelHeight:0;
+                Log("pipeline camera="+(gpuPipeCamera!=null?gpuPipeCamera.name:"destroyed")+" ready="+Stat(100)+" samples="+Stat(101)+
+                    " PSInvocationsSum="+Stat(102)+" CPrimitivesSum="+Stat(103)+" PSInvocationsMean="+(pipeSamples>0?Stat(102)/pipeSamples:0)+
+                    " CPrimitivesMean="+(pipeSamples>0?Stat(103)/pipeSamples:0)+" screenPixels="+pixels+" PSLayers="+(pipeSamples>0&&pixels>0?Stat(102)/pipeSamples/pixels:0)+
+                    " queryFailures="+Stat(104)+" ringDrops="+Stat(105)+" pending="+Stat(106)+" missingEnd="+Stat(107)+" repeatedBegin="+Stat(108)+" targetSamples="+Stat(109)+" submitted="+Stat(110)+
+                    " scope=main_camera_preCull_to_AfterEverything_including_effects;PSInvocations-is-shader-invocations-not-blend-writes");
+            }
             if(gpuCameraTiming)
             {
                 // Bounded insertion sort by mean per recovered frame; allocate only on state.
