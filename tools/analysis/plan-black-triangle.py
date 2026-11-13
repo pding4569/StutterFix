@@ -41,11 +41,12 @@ def write(name, steps, settings):
 
 
 def capture(label):
-    return [f'framecmp grab bt_{label}', f'framecmp save bt_{label}', 'framecmp clear']
+    return [f'framecmp grab bt_{label}', f'framecmp save bt_{label}']
 
 
 common = dict(GpuDeco=0, RunLod=False, GpuDecoDetach=False, DecoDetachCpu=False,
-              SkipInvisible=True, SkipSame=True)
+              SkipInvisible=True, SkipSame=True, DefaultsGen=5, NoFx=False,
+              EffectsOff='', FiltersOff='', LowRenderScale=100, FrameGenOutside=0)
 # Diagnostic pause uses Config.RunLod=false intentionally, so SongEnded cannot
 # cancel a manual on/off comparison of the same frozen frame.
 steps = [f'open {fixture.as_posix()}', 'auto on', 'play', 'waitsongpos 5 120',
@@ -53,6 +54,8 @@ steps = [f'open {fixture.as_posix()}', 'auto on', 'play', 'waitsongpos 5 120',
 steps += capture('base') + capture('noise')
 steps += ['runlod force on', 'runlod on', 'wait 2', 'runlod state'] + capture('lod')
 steps += ['runlod off', 'wait 2', 'runlod state'] + capture('restore')
+steps += ['framecmp assertzero bt_base bt_noise png', 'framecmp diff bt_base bt_lod 0 png',
+          'framecmp assertzero bt_base bt_restore png', 'framecmp clear']
 steps += ['resume', 'stop', 'wait 2', 'runlod state', 'shot bt_editor_manual_off', 'wait 1', 'quit']
 write('runlod-frozen', steps, common)
 
@@ -76,14 +79,28 @@ for label, settings in rows.items():
              'waitsongpos 70 120', 'pause', 'wait 2', 'framecmp filters on',
              'framecmp mask none', 'decodetach state', 'runlod state']
     steps += capture(label) + capture(label + '_noise')
+    steps += [f'framecmp assertzero bt_{label} bt_{label}_noise png', 'framecmp clear']
     steps += ['resume', 'stop', 'wait 2', 'decodetach state', 'runlod state',
               f'shot bt_editor_{label}', 'wait 1', 'quit']
     write('sample-' + label, steps, dict(common, **settings))
+
+windflower = Path('D:/얼불춤 맵 파일/Windflower/Windflower.adofai')
+assert windflower.is_file()
+for enabled in (False, True):
+    label = 'detach-on' if enabled else 'detach-off'
+    steps = [f'open {windflower.as_posix()}', 'auto on', 'seek 258 8',
+             'waitsongpos 258 120', 'decodetach state',
+             'pause', 'wait 2', 'decodetach state', 'framecmp filters on', 'framecmp mask none']
+    steps += capture('wf_' + label) + capture('wf_' + label + '_noise')
+    steps += [f'framecmp assertzero bt_wf_{label} bt_wf_{label}_noise png', 'framecmp clear']
+    steps += ['resume', 'stop', 'wait 2', 'decodetach state',
+              f'shot bt_editor_wf_{label}', 'wait 1', 'quit']
+    write('windflower-' + label, steps, dict(common, GpuDecoDetach=enabled, DecoDetachCpu=enabled))
 summary = dict(original=str(original), original_sha256=before,
                original_image_decorations=len(data['decorations']) - len(added),
                original_BG_is_custom_background=True, fixture=str(fixture),
                added_rotations=[d['rotation'] for d in added],
-               generated_plans=sorted(p.name for p in out.glob('*.json') if p.name.startswith(('runlod-', 'sample-'))),
+               generated_plans=sorted(p.name for p in out.glob('*.json') if p.name.startswith(('runlod-', 'sample-', 'windflower-'))),
                execution='NOT_RUN', note='Require nonzero RunLod runs/members and visible GPU ownership/detach counts; otherwise intervention not exercised.')
 (out / 'plans-summary.json').write_text(json.dumps(summary, ensure_ascii=False, indent=2), encoding='utf-8')
 print(json.dumps(summary, ensure_ascii=False, indent=2))
