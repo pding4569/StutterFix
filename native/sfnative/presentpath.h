@@ -19,7 +19,58 @@ static std::atomic<int> mode{0}, status{0};
 // status: 0 off, 1 installed, -1 rejected, -2 restore failure, -3 overlay owns vptr.
 // Append-only indices: 20 resize calls, 21 HRESULT, 22 input count, 23 output count,
 // 24 flags, 25 resize failures/guard refusals, 26 saved count, 27 successful rewrites.
-static std::array<std::atomic<long long>,28> stats{};
+// 28 fallback HRESULT, 29 fallback calls, 30 engine trigger calls,
+// 31 Adjust result, 32 trigger phase (1 entered, 2 returned).
+// 33/34 Adjust guard A/B; 35 OnAfterPresent callbacks.
+static std::array<std::atomic<long long>,36> stats{};
+using AdjustFn=bool (*)(void*,const void*,int,int,int,int,unsigned long long,bool,int);
+using AfterFn=void (*)(void*);
+static void* afterDevice=nullptr;
+static void** afterBefore=nullptr;
+// Exact pinned GfxDeviceD3D11 primary vtable: 0xBE0 bytes; include RTTI[-1].
+static std::array<void*,381> afterTable{};
+static AfterFn afterNext=nullptr;
+static std::atomic<bool> triggerArmed{false};
+static void runTrigger(void* expectedDevice);
+static bool detachAfter() {
+    triggerArmed=false;
+    if(!afterDevice)return true;
+    auto cell=reinterpret_cast<void**>(afterDevice);
+    InterlockedCompareExchangePointer(cell,afterBefore,afterTable.data()+1);
+    if(*cell!=afterBefore)return false; // retain storage/next for an overlay chain
+    afterDevice=nullptr;return true;
+}
+static void afterPresent(void* self) {
+    afterNext(self); // Unity increments B and performs its event-query bookkeeping first.
+    ++stats[35];
+    const bool armed=triggerArmed.exchange(false);
+    if(!detachAfter()) {stats[31]=-1;stats[32]=2;status=-3;return;}
+    if(armed)runTrigger(self);
+    else {stats[31]=-1;stats[32]=2;}
+}
+static bool armAfter(void* device,void** expected) {
+    if(!device || afterDevice || *reinterpret_cast<void***>(device)!=expected)return false;
+    std::copy_n(expected-1,afterTable.size(),afterTable.begin());
+    afterNext=reinterpret_cast<AfterFn>(expected[0xbd8/8]);
+    afterTable[1+0xbd8/8]=reinterpret_cast<void*>(afterPresent);
+    afterBefore=expected;afterDevice=device;triggerArmed=true;
+    if(InterlockedCompareExchangePointer(reinterpret_cast<void**>(device),afterTable.data()+1,expected)!=expected) {
+        triggerArmed=false;afterDevice=nullptr;return false;
+    }
+    return true;
+}
+static void triggerAdjust(unsigned char* settings,AdjustFn adjust) {
+    if(!chain || !settings || !adjust ||
+       *reinterpret_cast<IDXGISwapChain**>(settings+0x320)!=chain.Get() ||
+       *reinterpret_cast<void***>(chain.Get())!=table.data()) return;
+    alignas(16) std::array<unsigned char,16> viewport{};
+    std::copy_n(settings+0x388,16,viewport.begin());
+    int w=static_cast<int>(stats[0].load()),h=static_cast<int>(stats[1].load());
+    if(w<2 || h<2)return;
+    // Non-exclusive only; refresh 0/1 matches HandleWindowResize.
+    stats[31]=adjust(settings,viewport.data(),w,h,w,h,1ull<<32,false,
+        *reinterpret_cast<int*>(settings+0x338))?1:0;
+}
 static void describe() {
     if(!chain) return;
     DXGI_SWAP_CHAIN_DESC d{};
@@ -61,15 +112,23 @@ static HRESULT STDMETHODCALLTYPE resize(IDXGISwapChain* self,UINT count,UINT w,U
     const bool guarded=target && ((flags ^ savedFlags) & DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING);
     const UINT output=target && !guarded ? target : count;
     // Unity owns release/unbind/rebind. Never invoke ResizeBuffers ourselves or modify flags.
+    ++stats[20];stats[22]=count;stats[23]=output;stats[24]=flags;
     HRESULT hr=nextResize(self,output,w,h,format,flags);
-    ++stats[20];stats[21]=hr;stats[22]=count;stats[23]=output;stats[24]=flags;
+    stats[21]=hr; // publish before any retry or descriptor/latency query
     if(FAILED(hr) || guarded) ++stats[25];
     if(SUCCEEDED(hr) && output!=count) ++stats[27];
+    if(FAILED(hr) && output!=count) {
+        ++stats[29];
+        hr=nextResize(self,count,w,h,format,flags);
+        stats[28]=hr; // return real recovery HRESULT; never fabricate success
+        bufferTarget=savedBuffers; // failed candidate cannot rewrite again
+    }
     describe();
     return hr;
 }
 static void stop() {
     mode=0;
+    if(!detachAfter()) {status=-3;return;}
     if(!chain) {status=0;return;}
     if(bufferLease) {
         bufferTarget=savedBuffers;
@@ -93,11 +152,54 @@ static void stop() {
     describe();bufferTarget=0;bufferLease=false;
     chain.Reset();chain2.Reset();device1.Reset();before=nullptr;status=0;
 }
+static void runTrigger(void* expectedDevice) {
+        // Managed Resolve pins the exact PE SHA256. No ScreenManager/window API,
+        // no synthetic WM_SIZE, and no direct DXGI resize from our own resources.
+        // A false Adjust result is diagnostic, never routed to Unity's fatal UI.
+#ifndef SF_PRESENTPATH_FIXTURE
+        auto module=reinterpret_cast<unsigned char*>(GetModuleHandleW(L"UnityPlayer.dll"));
+        if(chain && module && *reinterpret_cast<void**>(module+0x221eb10)) {
+            auto device=*reinterpret_cast<unsigned char**>(module+0x22736c0);
+            if(!device || device!=expectedDevice) {stats[32]=2;return;}
+            stats[33]=*reinterpret_cast<volatile long long*>(device+0x5e68);
+            stats[34]=*reinterpret_cast<volatile long long*>(device+0x5e70);
+            if(stats[33]!=stats[34]) {stats[32]=2;return;}
+            auto settings=*reinterpret_cast<unsigned char**>(module+0x221eb10);
+            const unsigned char guard[]={0x48,0x89,0x5c,0x24,0x08};
+            DXGI_SWAP_CHAIN_DESC d{};BOOL full=TRUE;RECT client{};
+            if(SUCCEEDED(chain->GetDesc(&d)) && d.Windowed &&
+               SUCCEEDED(chain->GetFullscreenState(&full,nullptr)) && !full &&
+               GetClientRect(d.OutputWindow,&client) &&
+               client.right-client.left==stats[0] && client.bottom-client.top==stats[1] &&
+               d.BufferDesc.Width==stats[0] && d.BufferDesc.Height==stats[1] &&
+               std::equal(std::begin(guard),std::end(guard),module+0x947b80))
+                triggerAdjust(settings,reinterpret_cast<AdjustFn>(module+0x947b80));
+        }
+#else
+        (void)expectedDevice;
+        fixtureTrigger();
+#endif
+        stats[32]=2;describe();return;
+}
 static void __stdcall event(int id,void* ptr) {
     ComPtr<IDXGISwapChain> pinned;
-    if((id>=1 && id<=3) || id==5 || id==6) pinned.Attach(static_cast<IDXGISwapChain*>(ptr));
+    if((id>=1 && id<=3) || id==5 || id==6 || id==7) pinned.Attach(static_cast<IDXGISwapChain*>(ptr));
     if(id==0) {stop();return;}
     if(id==4) {describe();return;}
+    if(id==8) {
+        ++stats[30];stats[32]=1;stats[31]=-1;
+#ifndef SF_PRESENTPATH_FIXTURE
+        auto module=reinterpret_cast<unsigned char*>(GetModuleHandleW(L"UnityPlayer.dll"));
+        auto device=module?*reinterpret_cast<void**>(module+0x22736c0):nullptr;
+        // Only the pinned concrete device, never a shared table or code-page patch.
+        if(chain && (mode==6 || mode==7 || status==2) && module &&
+           *reinterpret_cast<void**>(module+0x1e3bcd0+0xbd8)==module+0x930dc0 &&
+           armAfter(device,reinterpret_cast<void**>(module+0x1e3bcd0)))return;
+#else
+        if(fixtureArmAfter())return;
+#endif
+        stats[32]=2;return;
+    }
     if(id==5) {
         if(chain) {describe();return;}
         if(!pinned) return;
@@ -109,7 +211,7 @@ static void __stdcall event(int id,void* ptr) {
         }
         describe();chain.Reset();chain2.Reset();device1.Reset();return;
     }
-    if(chain || id<1 || (id>3 && id!=6) || !ptr) {status=-1;return;}
+    if(chain || id<1 || (id>3 && id!=6 && id!=7) || !ptr) {status=-1;return;}
     auto* sc=static_cast<IDXGISwapChain*>(ptr);
     DXGI_SWAP_CHAIN_DESC desc{};
     if(FAILED(sc->GetDesc(&desc))) {status=-1;return;}
@@ -125,7 +227,7 @@ static void __stdcall event(int id,void* ptr) {
     if(desc.Flags & DXGI_SWAP_CHAIN_FLAG_FRAME_LATENCY_WAITABLE_OBJECT) sc->QueryInterface(IID_PPV_ARGS(&chain2));
     if(!chain2) sc->GetDevice(IID_PPV_ARGS(&device1));
     describe();
-    if(id==6) {
+    if(id==6 || id==7) {
         BOOL full=TRUE;
         if(FAILED(static_cast<HRESULT>(stats[17].load())) || desc.BufferCount!=2 || !desc.Windowed ||
            FAILED(sc->GetFullscreenState(&full,nullptr)) || full ||
@@ -133,7 +235,7 @@ static void __stdcall event(int id,void* ptr) {
             chain.Reset();chain2.Reset();device1.Reset();status=-1;return;
         }
         savedBuffers=desc.BufferCount;savedFlags=desc.Flags;stats[26]=savedBuffers;
-        bufferLease=true;bufferTarget=3;
+        bufferLease=id==6;bufferTarget=id==6?3:0;
     }
     if(id==2 && (!(desc.Flags & DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING) || !desc.Windowed)) {
         chain.Reset();chain2.Reset();device1.Reset();status=-1;return; // cannot retrofit creation flags
@@ -151,7 +253,7 @@ static void __stdcall event(int id,void* ptr) {
     std::copy_n(before,size,table.begin());next=reinterpret_cast<Fn>(before[8]);
     table[8]=reinterpret_cast<void*>(present);
     nextResize=reinterpret_cast<ResizeFn>(before[13]);
-    if(id==6) table[13]=reinterpret_cast<void*>(resize);
+    if(id==6 || id==7) table[13]=reinterpret_cast<void*>(resize);
     mode=id; // 1 observe, 2 tearing, 3 latency4, 6 buffers3
     if(InterlockedCompareExchangePointer(reinterpret_cast<void**>(sc),table.data(),before)!=before) {
         // No hook was installed. Temporarily point stop at the table only if ours; retain state on conflict.
@@ -163,6 +265,7 @@ static void __stdcall event(int id,void* ptr) {
 API void* sf_presentpath_event_ptr() {return reinterpret_cast<void*>(sf_presentpath::event);}
 API void sf_presentpath_pin(void* ptr) {if(ptr) static_cast<IDXGISwapChain*>(ptr)->AddRef();}
 API void sf_presentpath_disable() {
+    sf_presentpath::triggerArmed=false;
     sf_presentpath::mode=0;
     if(sf_presentpath::bufferTarget.load()) sf_presentpath::bufferTarget=sf_presentpath::savedBuffers;
 }
@@ -170,5 +273,5 @@ API void sf_presentpath_pending() {sf_presentpath::status=2;}
 API long long sf_presentpath_stat(int i) {
     if(i==-1) return sf_presentpath::status;
     if(i==-2) return sf_presentpath::mode;
-    return i>=0 && i<28?sf_presentpath::stats[i].load():-1;
+    return i>=0 && i<36?sf_presentpath::stats[i].load():-1;
 }

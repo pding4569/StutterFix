@@ -1,4 +1,4 @@
-#if AUTOTEST
+﻿#if AUTOTEST
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -64,7 +64,8 @@ namespace StutterFix
                 cb.IssuePluginEventAndData(callback,id,ptr);
                 Graphics.ExecuteCommandBuffer(cb);
             }
-            GL.Flush();
+            // ExecuteCommandBuffer queues the event. GL.Flush can disturb Unity's
+            // Wait/Present pairing; observe the render ACK on later frames instead.
         }
         internal static bool Step(string arg)
         {
@@ -101,17 +102,18 @@ namespace StutterFix
             }
             if(a.Length==2 && a[0]=="on")
             {
-                int id=a[1]=="observe"?1:a[1]=="tearing"?2:a[1]=="latency4"?3:a[1]=="buffers3"?6:0;
+                int id=a[1]=="observe"?1:a[1]=="tearing"?2:a[1]=="latency4"?3:a[1]=="buffers3"?6:a[1]=="resizeprobe"?7:0;
                 if(id==0) throw new Exception("presentpath: unknown candidate");
                 if(requested!=null || stopping) throw new Exception("presentpath: finish off before on");
                 if(!SfNative.Ready || sf_framegen_installed()!=0) throw new Exception("presentpath: native unavailable or framegen installed");
                 captured=Resolve();callback=sf_presentpath_event_ptr();
                 if(callback==IntPtr.Zero) throw new Exception("presentpath: missing native event");
-                if(id==6) resize=new BufferResize(); // snapshot before any resolution request
+                if(id==6 || id==7) resize=new BufferResize(id==7);
                 else resize=null;
                 requested=a[1];startFrame=Time.frameCount;
                 FrameTimingManager.CaptureFrameTimings();
-                sf_presentpath_pin(captured);sf_presentpath_pending();Issue(id,captured);Log("queued "+requested+"; verify with assert after elapsed frames");return true;
+                sf_presentpath_pin(captured);sf_presentpath_pending();
+                Log("queued "+requested+"; verify with assert after elapsed frames");Issue(id,captured);return true;
             }
             if(a.Length==1 && a[0]=="assert")
             {
@@ -129,17 +131,20 @@ namespace StutterFix
                 if(requested=="latency4" && Stat(6)!=4) throw new Exception("presentpath INVALID: latency target not observed");
                 if(requested=="buffers3" && (Stat(2)!=3 || Stat(20)==0 || Stat(25)!=0 || Stat(27)==0 || Stat(17)<0))
                     throw new Exception("presentpath INVALID: buffers3 resize/count/desc verification failed");
+                if(requested=="resizeprobe" && (Stat(2)!=Stat(26) || Stat(20)==0 || Stat(25)!=0 || Stat(27)!=0 || Stat(21)<0))
+                    throw new Exception("presentpath INVALID: resizeprobe count/resize failed");
                 State();Log("accepted "+requested);return true;
             }
-            throw new Exception("presentpath state|on observe|on tearing|on latency4|on buffers3|assert|off");
+            throw new Exception("presentpath state|on observe|on tearing|on latency4|on buffers3|on resizeprobe|assert|off");
         }
         internal static void Stop()
         {
             if(callback==IntPtr.Zero || requested==null || stopping) return;
             // Immediately stops flag changes; render event restores COM latency and vptr, with ACK.
-            sf_presentpath_disable();sf_presentpath_pending();stopping=true;assertPending=statePending=false;Issue(0,IntPtr.Zero);
+            sf_presentpath_disable();sf_presentpath_pending();stopping=true;assertPending=statePending=false;
             if(resize!=null) resize.Restore();
             Log("off queued; status=0 is restoration ACK");
+            Issue(0,IntPtr.Zero);
         }
         static void State()
         {
@@ -154,6 +159,8 @@ namespace StutterFix
                 " refresh="+Stat(18)+" ownsVtable="+Stat(19)+" currentWaitSamples="+samples+" currentWaitMs="+(samples>0?timing[0].cpuMainThreadPresentWaitTime:-1)+
                 " resizeCalls="+Stat(20)+" resizeHR="+Stat(21)+" resizeInputCount="+Stat(22)+" resizeOutputCount="+Stat(23)+
                 " resizeFlags="+Stat(24)+" resizeFailures="+Stat(25)+" originalBuffers="+Stat(26)+" resizeRewrites="+Stat(27)+
+                " fallbackHR="+Stat(28)+" fallbackCalls="+Stat(29)+" triggerCalls="+Stat(30)+" adjustResult="+Stat(31)+" triggerPhase="+Stat(32)+
+                " adjGuardA="+Stat(33)+" adjGuardB="+Stat(34)+" afterPresentCalls="+Stat(35)+
                 " resizeReady="+(resize!=null && resize.Ready)+" resizeDone="+(resize!=null && resize.Done)+
                 " resizeError="+(resize==null?"none":resize.Error)+
                 " waitScope=latest_FrameTiming_not_exclusive_CPU_time");
@@ -169,33 +176,69 @@ namespace StutterFix
             readonly int w=Screen.width, h=Screen.height;
             readonly FullScreenMode screenMode=Screen.fullScreenMode;
             readonly ScreenPrefs prefs;
+            readonly bool probe;
             GameObject driver;
             int phase=1, frame;
-            float deadline=Time.realtimeSinceStartup+15;
-            long calls;
+            long calls, triggers, presents;
             bool restore;
-            string error;
+            volatile string error;
+            readonly System.Diagnostics.Stopwatch clock=System.Diagnostics.Stopwatch.StartNew();
+            long deadline=15000;
+            System.Threading.Timer watchdog;
+            readonly object watchGate=new object();
+            bool watchArmed;
+            readonly string watchdogPath=Path.Combine(Main.Entry.Path,"presentpath-watchdog.txt");
             internal bool Ready, Done;
             internal string Error {get {return error??"none";}}
-            internal BufferResize()
+            internal BufferResize(bool diagnostic=false)
             {
+                probe=diagnostic;
                 if(screenMode!=FullScreenMode.FullScreenWindow && screenMode!=FullScreenMode.Windowed)
-                    throw new Exception("presentpath buffers3: requires windowed or FullScreenWindow");
-                if(w<2 || h<2) throw new Exception("presentpath buffers3: invalid screen size");
+                    throw new Exception("presentpath: requires windowed or FullScreenWindow");
+                if(w<2 || h<2)throw new Exception("presentpath: invalid screen size");
                 prefs=new ScreenPrefs();
-                StartDriver();
-                Log("buffers3 screen snapshot="+w+"x"+h+" mode="+screenMode+" registryValues="+prefs.Count);
+                StartDriver();Arm();
+                Log("resize snapshot="+w+"x"+h+" mode="+screenMode+" probe="+probe+" registryValues="+prefs.Count);
+            }
+            void Arm()
+            {
+                lock(watchGate)
+                {
+                    System.Threading.Interlocked.Exchange(ref deadline,clock.ElapsedMilliseconds+15000);
+                    watchArmed=true;
+                    if(watchdog==null)watchdog=new System.Threading.Timer(Watchdog,null,1000,1000);
+                }
+            }
+            internal void Disarm()
+            {
+                lock(watchGate) {watchArmed=false;var timer=watchdog;watchdog=null;if(timer!=null)timer.Dispose();}
+            }
+            internal void Watchdog(object unused)
+            {
+                string line;
+                lock(watchGate)
+                {
+                    if(!watchArmed || clock.ElapsedMilliseconds<=System.Threading.Interlocked.Read(ref deadline))return;
+                    // No Unity/COM/registry APIs on this thread. Only atomic cancellation.
+                    sf_presentpath_disable();
+                    error="watchdog ACK timeout; main/render progress unavailable; restoration pending";
+                    Disarm();
+                    line="status=-1 failed "+error+" resizeHR="+Stat(21)+" triggerPhase="+Stat(32);
+                    try {File.AppendAllText(watchdogPath,"[presentpath] "+line+Environment.NewLine);}catch { }
+                }
+                // UMM logging also exposes failure to the existing bench log monitor.
+                try {Log(line);}catch { }
             }
             internal void Check()
             {
-                if(error!=null)throw new Exception("presentpath buffers3 INVALID: "+error);
+                if(error!=null)throw new Exception("presentpath status=-1 failed: "+error);
                 if((Ready || Done) && (Screen.width!=w || Screen.height!=h || Screen.fullScreenMode!=screenMode))
-                    throw new Exception("presentpath buffers3 INVALID: screen changed after resize ACK");
+                    throw new Exception("presentpath status=-1 failed: screen changed after ACK");
             }
             internal void Restore()
             {
                 if(restore || Done)return;
-                restore=true;Ready=false;phase=1;deadline=Time.realtimeSinceStartup+15;
+                restore=true;Ready=false;phase=1;Arm();
                 if(driver==null)StartDriver();
             }
             void StartDriver()
@@ -203,54 +246,57 @@ namespace StutterFix
                 driver=new GameObject("StutterFix.PresentBuffersRestore");
                 UnityEngine.Object.DontDestroyOnLoad(driver);driver.AddComponent<ResizePump>();
             }
-            void DestroyDriver() {UnityEngine.Object.Destroy(driver);driver=null;}
-            void Request(int width)
+            void DestroyDriver() {Disarm();UnityEngine.Object.Destroy(driver);driver=null;}
+            void Restored(string message)
             {
-                calls=Stat(20);frame=Time.frameCount;deadline=Time.realtimeSinceStartup+15;
-                Screen.SetResolution(width,h,screenMode);
+                Done=true;DestroyDriver();Log(message);
+                if(error!=null)Log("status=-1 failed: "+error+"; rollback ACK received; preferences restored");
             }
             internal void Pump()
             {
                 if(Done || (phase==0 && !restore))return;
                 try
                 {
-                    if(Time.realtimeSinceStartup>deadline)throw new Exception("resize ACK timeout phase="+phase);
+                    if(clock.ElapsedMilliseconds>System.Threading.Interlocked.Read(ref deadline))throw new Exception("resize ACK timeout phase="+phase);
                     if(phase==1)
                     {
                         if(!restore && Stat(-1)==2)return;
                         if(Stat(-1)<0)throw new Exception("native status="+Stat(-1));
-                        // Off may beat the very first engine resize; there is then no count
-                        // change to undo and native stop can already have detached safely.
-                        if(restore && Stat(-1)==0) {Request(w);phase=5;return;}
-                        Request(w-1);phase=2;return;
-                    }
-                    if(phase==2 || phase==3)
-                    {
-                        if(Time.frameCount<=frame+2)return;
-                        if(Screen.fullScreenMode!=screenMode)throw new Exception("screen mode changed");
-                        int targetWidth=phase==2?w-1:w;
-                        if(Screen.width!=targetWidth || Screen.height!=h || Stat(20)<=calls)return;
-                        if((!restore && Stat(25)!=0) || Stat(21)<0 || Stat(17)<0 || Stat(2)!=(restore?Stat(26):3))
-                            throw new Exception("resize failed or target count not observed");
+                        if(restore && Stat(-1)==0) {prefs.Restore();Restored("off ACK; count unchanged; preferences restored");return;}
                         if(Resolve()!=captured || Stat(19)!=1)throw new Exception("swapchain/vtable replaced");
-                        if(phase==2) {Request(w);phase=3;return;}
+                        if(Screen.width!=w || Screen.height!=h || Screen.fullScreenMode!=screenMode || Stat(0)!=w || Stat(1)!=h)
+                            throw new Exception("screen/backbuffer dimensions differ; exact-size trigger refused");
+                        calls=Stat(20);triggers=Stat(30);presents=Stat(7);frame=Time.frameCount;Arm();
+                        phase=2;
+                        Log("resize trigger queued phase="+(restore?"restore":"apply")+" exactSize="+w+"x"+h+" callsBefore="+calls);
+                        Issue(8,IntPtr.Zero);return;
+                    }
+                    if(phase==2)
+                    {
+                        if(Time.frameCount<=frame+2 || Stat(30)<=triggers || Stat(32)!=2)return;
+                        Log("resize trigger returned adjust="+Stat(31)+" calls="+Stat(20)+" hr="+Stat(21)+" fallbackHR="+Stat(28)+" presents="+Stat(7)+
+                            " adjGuardA="+Stat(33)+" adjGuardB="+Stat(34)+" afterPresentCalls="+Stat(35));
+                        if(Stat(31)!=1 || Stat(20)<=calls || Stat(21)<0 || (!restore && Stat(25)!=0) || Stat(17)<0 || Stat(2)!=(restore || probe?Stat(26):3))
+                            throw new Exception("engine Adjust/resize/count verification failed");
+                        if(Resolve()!=captured || Stat(19)!=1)throw new Exception("swapchain/vtable replaced");
+                        presents=Stat(7);phase=3;return;
+                    }
+                    if(phase==3)
+                    {
+                        if(Stat(7)<=presents)return;
+                        if(Stat(15)!=0)throw new Exception("Present failed after resize");
+                        if(Resolve()!=captured || Stat(19)!=1 || Screen.width!=w || Screen.height!=h || Screen.fullScreenMode!=screenMode)
+                            throw new Exception("identity/screen changed after resize");
                         prefs.Restore();
-                        if(!restore) {Ready=true;phase=0;DestroyDriver();Log("buffers3 ready; screen and preferences restored");return;}
-                        Issue(0,IntPtr.Zero);phase=4;return;
+                        if(!restore) {Ready=true;phase=0;DestroyDriver();Log("resize ready; Present advanced; screen/preferences preserved");return;}
+                        Log("resize restored count; detach queued");Issue(0,IntPtr.Zero);phase=4;return;
                     }
                     if(phase==4)
                     {
                         if(Stat(-1)==2)return;
                         if(Stat(-1)!=0 || Stat(2)!=Stat(26) || Resolve()!=captured || Screen.width!=w || Screen.height!=h || Screen.fullScreenMode!=screenMode)
                             throw new Exception("off restoration rejected");
-                        prefs.Restore();Done=true;DestroyDriver();
-                        Log("buffers3 off ACK; buffers/screen/preferences restored");
-                    }
-                    if(phase==5 && Time.frameCount>frame+2 && Screen.width==w && Screen.height==h && Screen.fullScreenMode==screenMode)
-                    {
-                        if(Resolve()!=captured || Stat(-1)!=0 || Stat(2)!=Stat(26))throw new Exception("early off identity/count mismatch");
-                        prefs.Restore();Done=true;DestroyDriver();
-                        Log("buffers3 early off ACK; screen/preferences restored; count unchanged");
+                        prefs.Restore();Restored("off ACK; buffers/screen/preferences restored");
                     }
                 }
                 catch(Exception ex)
@@ -259,17 +305,13 @@ namespace StutterFix
                     sf_presentpath_disable();
                     if(!restore)
                     {
-                        // One bounded cleanup attempt also covers an apply failure. The
-                        // original error remains visible to assertions and the off command.
-                        Restore();sf_presentpath_pending();Issue(0,IntPtr.Zero);
-                        Log("buffers3 failed; restoring: "+error);return;
+                        Restore();sf_presentpath_pending();
+                        Log("resize failed; rollback queued: "+error);Issue(0,IntPtr.Zero);return;
                     }
-                    // A failed pulse is never accepted. Make a best-effort engine-owned
-                    // return to the original dimensions, retain native refs until count ACK.
-                    Screen.SetResolution(w,h,screenMode);
                     try {prefs.Restore();}catch(Exception e) {error+="; preferences: "+e.Message;}
-                    Issue(0,IntPtr.Zero);Done=true;DestroyDriver();
-                    Log("buffers3 FAILED: "+error+"; native status must be checked; restoration not certified");
+                    // Keep callback/ref ownership if the engine cannot restore the count.
+                    Done=true;DestroyDriver();
+                    Log("status=-1 failed: "+error+" nativeStatus="+Stat(-1)+" restoration not certified");
                 }
             }
         }

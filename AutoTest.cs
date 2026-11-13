@@ -1024,6 +1024,15 @@ namespace StutterFix
                 case "hidegroup": { var q = arg.Split(' '); Log("[hidegroup] " + q[0] + " " + GpuHide.Toggle(q[0], q.Length > 1 && q[1] == "on")); return true; }
                 case "holdskip": HoldFix.Command(arg); return true;
                 case "waitskip": EnginePatch.WaitSkip(arg != "off"); return true;
+                case "screenres":
+                    {
+                        // 해상도 변경 재현: screenres <w> <h> [fsw|win|excl]
+                        var q = arg.Split(' ');
+                        var m = q.Length > 2 && q[2] == "win" ? FullScreenMode.Windowed : q.Length > 2 && q[2] == "excl" ? FullScreenMode.ExclusiveFullScreen : FullScreenMode.FullScreenWindow;
+                        Log("[screenres] 요청 " + q[0] + "x" + q[1] + " " + m + " (지금 " + Screen.width + "x" + Screen.height + " " + Screen.fullScreenMode + ")");
+                        Screen.SetResolution(int.Parse(q[0]), int.Parse(q[1]), m);
+                        return true;
+                    }
                 case "maskgrow": EnginePatch.MaskGrow(arg != "off"); return true;
                 case "latprobe": EnginePatch.LatencyCommand(arg); return true;
                 case "turbo": EnginePatch.TurboCommand(arg); return true;
