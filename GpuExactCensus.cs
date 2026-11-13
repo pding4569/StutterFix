@@ -30,6 +30,7 @@ namespace StutterFix
         readonly Dictionary<string, double> histogram = new Dictionary<string, double>();
         double totalFragments;
         int barriers, unknownHistograms;
+        static readonly Dictionary<string,int> Why=new Dictionary<string,int>();
         static string Bits(float x) => BitConverter.SingleToInt32Bits(x).ToString("X8", CultureInfo.InvariantCulture);
         static string Vec(Vector4 v) => Bits(v.x)+","+Bits(v.y)+","+Bits(v.z)+","+Bits(v.w);
         static string Matrix(Matrix4x4 m) { var b = new StringBuilder(); for (int i=0;i<16;i++) b.Append(Bits(m[i])).Append(','); return b.ToString(); }
@@ -128,13 +129,14 @@ namespace StutterFix
                         var axis=c.transparencySortMode==TransparencySortMode.Default?GraphicsSettings.transparencySortAxis:c.transparencySortAxis;
                         float distance=sortMode==TransparencySortMode.CustomAxis?Vector3.Dot(group.transform.position,axis):Vector3.Dot(group.transform.position-c.transform.position,c.transform.forward);
                         key=new SceneRenderOrder.Key(SortingLayer.GetLayerValueFromID(group.sortingLayerID),group.sortingOrder,m.renderQueue,distance,m.GetInstanceID(),r.GetInstanceID(),slot,SceneRenderOrder.ShaderRank(m)); }
-                    bool safe=sr && sr.sprite && !group && mats.Length==1 && m.passCount==1 && !r.HasPropertyBlock()
+                    bool safe=sr && sr.sprite && !group && mats.Length==1 && m.passCount==1
                         && sr.maskInteraction==SpriteMaskInteraction.None && sr.drawMode==SpriteDrawMode.Simple
                         && !sr.sprite.packed && !sr.sprite.associatedAlphaSplitTexture
                         && (m.shader.name=="Sprites/Default" || m.shader.name=="Sprites/Tile")
                         && m.shaderKeywords.Length==0;
                     var deco=r.GetComponentInParent<scrVisualDecoration>();
                     if(deco && deco.blendModeEffect && deco.blendModeEffect.enabled)safe=false;
+                    if(!safe){ string why=!sr?"notSprite:"+r.GetType().Name:(group?"group":(m.shader.name!="Sprites/Default"&&m.shader.name!="Sprites/Tile"?"shader:"+m.shader.name:(sr.maskInteraction!=SpriteMaskInteraction.None?"mask":(m.shaderKeywords.Length!=0?"kw":"other")))); Why.TryGetValue(why,out var wc); Why[why]=wc+1; }
                     var block=new MaterialPropertyBlock();r.GetPropertyBlock(block,slot);
                     string content=TileRender.Content(m);
                     string color=sr?Vec(sr.color):"none";
@@ -154,9 +156,7 @@ namespace StutterFix
                 }
             }
             list.Sort((a,b)=>a.Key.CompareTo(b.Key));
-            var unsafeBuckets=new HashSet<(int,int,int)>(list.Where(x=>!x.Safe).Select(x=>(x.Key.Layer,x.Key.Order,x.Key.Queue)));
-            foreach(var d in list)if(unsafeBuckets.Contains((d.Key.Layer,d.Key.Order,d.Key.Queue)))d.Safe=false;
-            for(int i=0;i<list.Count;i++)if((i>0&&list[i].Key.SameMaterialTie(list[i-1].Key)) || (i+1<list.Count&&list[i].Key.SameMaterialTie(list[i+1].Key)))list[i].Safe=false;
+            // 11-13 Claude: 같은 버킷 오염·같은 재질 동점 장벽 제거(장식마다 재질 복제·MPB 사용이라 전부 장벽이 됨). 상한 추정용.
             return list;
         }
         void Capture(Camera c)
@@ -193,7 +193,7 @@ namespace StutterFix
                     Log("frames="+requested+" transitions="+prefix.Count+" estimator=clipped_projected_AABB_area not_hardware_fragments=True first_frame_excluded_from_temporal=True"
                         +" prefix="+Distribution(prefix)+" unchanged_all="+Distribution(unchanged)+" runs="+Distribution(runs)+" runs_texel_alpha1_estimate="+Distribution(interiors)
                         +" fragments_estimated_sum="+totalFragments.ToString("F0",CultureInfo.InvariantCulture)+" barriers_sum="+barriers+" histogram_unknown="+unknownHistograms
-                        +" histogram_cache=texture_updateCount_sampler_key MPB_unknown_group_particle_mask_tie=barrier sample_not_for_FPS=True");
+                        +" histogram_cache=texture_updateCount_sampler_key MPB_unknown_group_particle_mask_tie=barrier sample_not_for_FPS=True unsafe_why="+string.Join(";",Why.OrderByDescending(x=>x.Value).Take(12).Select(x=>x.Key+"="+x.Value)));
                     Stop();ready=true;
                 }
             }
