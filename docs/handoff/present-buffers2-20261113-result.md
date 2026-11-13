@@ -1,6 +1,6 @@
 # Present buffers3 실패 경로 수정 결과 (2026-11-13)
 
-**최신 상태(2026-11-14 추가 2 수행): 문서 마지막의 「WaitSkip v6 이후 공식 Screen.SetResolution 경로 복귀」가 현재 구현이다.** buffers3/resizeprobe는 1px 왕복을 사용하며, 관리 코드에서 내부 Adjust/OnAfterPresent 예약 이벤트를 호출하지 않는다. 아래 직접 Adjust 실험과 이전 해시는 과거 기록이다. 기존 수정에서 이어서 작업했으며 게임 실행·설치 DLL 교체·커밋은 하지 않았다.
+**최신 상태(2026-11-14 추가 3 수행): 문서 마지막의 「resize 후 반복 파일 해시 제거와 FSW ACK 수정」이 현재 구현이다.** buffers3/resizeprobe는 공식 Screen.SetResolution 1px 왕복을 유지한다. ACK의 반복 UnityPlayer 파일 해시를 제거하고 FSW의 물리 크기 유지 ACK를 허용했다. 아래 직접 Adjust 실험과 이전 해시는 과거 기록이다. 기존 수정에서 이어서 작업했으며 게임 실행·설치 DLL 교체·커밋은 하지 않았다. 실제 500ms 프레임 해소와 FPS는 Claude의 재측정이 필요하다.
 
 2026-11-14 이어서 검토·검증했다. 기존 구현을 보존하고, 적용 실패 뒤 자동 원복이 성공한 경우에도 후속 assert/off 없이 `status=-1 failed`를 출력하도록 보완했다. 두 복원 완료 경로에 공통 완료 처리를 적용하고, HRESULT 실패 및 무응답 timeout 후 원복 fixture에서 실패 줄 출력을 확인했다. native 및 관리 3종을 다시 빌드했고, COM/pump/prefs fixture·export/내장 리소스 검사·설치본 PE/PDB 정적 분석을 다시 통과했다. 아래 로그와 해시는 이번 최종 산출물로 갱신했다. 게임 실행·설치 DLL 교체·커밋은 이번에도 하지 않았다.
 
@@ -254,3 +254,62 @@ bin/Release/StutterFix.dll     550610e21beb77157dae184a5bbd011c1bfc6b31929a5ca0f
 1. `resize Screen.SetResolution queued/returned`가 두 크기에 각각 출력되고, `resize screen ACK`가 두 번 나온다. 각 ACK에서 호출 수가 직전 요청 기준보다 증가하고 `hr>=0`이다.
 2. `resize ready; Present advanced` 뒤 state/assert에서 원래 크기·버퍼 2·resizeFailures=0·resizeRewrites=0·후속 Present와 정상 off를 확인한다. 내부 trigger 통계 0은 정상이다.
 3. ppProbe 통과 뒤 buffers3에서 count=3·rewrite 증가·실패 0과 off 후 원래 count=2·크기·설정 복원을 확인한다. 이후에만 ppObs/ppBuf3 ABBA와 픽셀·tail 검증을 진행한다. timeout/sidecar 실패·복원 미완료는 성능 표본에서 제외한다.
+
+## resize 후 반복 파일 해시 제거와 FSW ACK 수정 (2026-11-14 추가 3)
+
+HEAD `408f443`에서 이어서 추가 3을 수행했다. 게임 실행·설치 DLL 교체·커밋·공용 벤치 수정은 하지 않았다. 제품 기본값과 WaitSkip v6, native 후크 구현은 그대로다. 변경은 AUTOTEST PresentPath와 오프라인 검증 도구, 이 결과 문서에 한정된다.
+
+### 500ms 프레임의 원인 분석
+
+**확인한 결함은 ACK Update마다 실행되는 전체 파일 SHA256이다.** 기존 `BufferResize.Pump`의 phase 1/2/6/3 등은 객체 동일성을 확인할 때 `Resolve()`를 호출한다. 기존 Resolve는 호출마다 UnityPlayer.dll을 File.OpenRead하고 SHA256.ComputeHash로 전부 읽었다. 1px FSW 요청 후 desc가 물리 크기로 유지되면 이전 ACK 조건은 영원히 만족하지 않아, timeout까지 매 Update 이 작업을 반복한다. native PresentMeanUs에는 메인 스레드의 이 파일 해시 시간이 포함되지 않는다. 따라서 짧은 Present 시간과 큰 cpuFrameTime이 함께 나오는 현상과도 맞는다.
+
+설치 파일 36,824,488바이트를 Windows PowerShell의 `SHA256.Create()` → `File.OpenRead()` → `ComputeHash()`로 5회 오프라인 측정했다. 구현은 `System.Security.Cryptography.SHA256Managed`, 시간은 **188.5202 / 182.0473 / 184.6168 / 181.9231 / 182.3815ms**다. [원본 JSON](../../out/present-buffers2/identity-cost.json). 앞선 탐색 5회도 182.0~195.1ms였다. **Unity Mono 실행에서 측정한 값이 아니며, 인계의 약 500ms 전체를 수치로 재현한 것은 아니다.** 반복 해시의 실제 비용과 반복 호출 결함은 확인했지만, 해당 실게임의 모든 지연을 이 한 원인으로 확정하거나 FPS 정상화를 선언하지 않는다.
+
+설치본 PE/PDB identity를 다시 확인하고 [분석기](../../tools/analysis/present-buffers-disasm.py)에 waitable/Vulkan/message-pump 함수를 추가했다. 아래는 새 [역어셈블 결과](../../out/present-buffers2/disasm.txt)의 RVA다.
+
+| 주소 | 확인 내용 |
+|---|---|
+| `0x948089`, `0x948095..0x9480AA` | ResizeBuffers가 반환한 뒤 waitable 플래그가 있으면 설정 객체 `+0x348`의 WaitingContext와 chain2 `+0x328`을 SetMaximumFrameLatencyForWaitableObject에 전달한다. |
+| `0x9BF316..0x9BF3F8` | WaitingContext의 기존 체인과 입력 체인의 IUnknown identity를 비교한다. 같은 체인이면 핸들을 다시 얻는 구간을 건너뛴다. 따라서 resize마다 무조건 핸들을 재취득하는 구현은 아니다. |
+| `0x9BF3FD`, `0x9BF425..0x9BF44B` | 체인이 달라져 문맥을 다시 만들 때 기존 핸들을 닫고, GetFrameLatencyWaitableObject(vtable `+0x108`)와 CreateEventExW로 핸들을 얻는다. |
+| `0x9BF47A`, `0x9BF48C`, `0x9BF4B2..0x9BF4CD` | Get/SetMaximumFrameLatency 후 기존 latency보다 낮아지면 두 핸들을 WaitForMultipleObjectsEx로 기다린다. timeout 인자는 `0xFFFFFFFF`(무한), 500ms가 아니다. |
+| `0x9BF50A..0x9BF51A`, `0x9BF530..0x9BF54B` | WaitOnSwapChain의 message-pump 경로와 직접 wait 경로도 무한 timeout이다. `0x9BED3E..0x9BED41`, `0x9BED90..0x9BEDA3`은 입력 timeout이 무한이면 그대로 MsgWaitForMultipleObjects에 전달한다. |
+| `0x9308B0..0x9308CB` | 원래 D3D11 WaitForLastPresentationAndGetTimestamp의 waitable 대기도 무한 timeout이다. WaitSkip v6의 해당 TimeUpdate 호출 우회는 기존 그대로다. |
+| `0x8E815F`, `0x8E8176` | 이 두 지점은 **GfxDeviceVK::WaitForPresentationImpl**이다. 후자는 원본에서 `edx=0xC8`(200)을 넣는다. 현재 WaitSkip v6는 이 두 바이트를 패치하지 않는다. D3D11의 resize 후 500ms 폴링 지점으로 볼 근거가 없다. |
+
+native `present`/`resize`/렌더 `event`에는 mutex/조건변수/Sleep/500ms wait가 없다. 통계는 atomic이고 COM 호출은 동기 전달한다. 관리 watchdog의 `watchGate`는 Arm/Disarm/timeout bookkeeping이며 COM 호출이나 반복 해시를 잠금 안에서 실행하지 않는다. COM/드라이버 내부 대기 가능성까지 정적 분석으로 배제하는 것은 아니다. **현재 증거로 엔진의 고정 500ms 대기를 찾아냈다고 보고하지 않는다.**
+
+### 수정 동작
+
+- 전체 바이너리 검사를 `VerifyBinary()`로 분리했다. 매 `on` 진입과 비활성 상태의 단독 `state` 조회에서 버전·D3D11·전체 SHA256을 검사한다. 영구적으로 검사를 생략하는 캐시는 없다. 파일 검사는 lease 준비 단계이고 Pump deadline을 시작하기 전이다.
+- 이후 ACK/assert/off의 `Resolve()`는 GetModuleHandleW, ReadProcessMemory의 **명령 가드·설정 객체 포인터·체인 포인터**만 확인한다. 객체 교체 확인과 native vtable 소유 확인은 유지하며, Update에서 파일을 열거나 해시를 계산하지 않는다.
+- FSW outbound phase 2는 요청 너비 `w-1` 또는 캡처한 물리 너비 `w`를 Screen/desc 각각에 허용한다. 높이와 모드는 그대로여야 하며, 실제 ResizeBuffers 호출 증가·성공 HRESULT·count·후크 소유권을 계속 요구한다. 임의의 다른 너비는 허용하지 않는다. Windowed는 요청 크기를 요구한다.
+- phase 6의 원래 크기 복귀는 Screen과 desc 모두 원래 크기를 요구한다. 요청 직후 바로 ready가 되지 않으며, 마지막 ACK 뒤 추가 Present 증가를 요구한다. ACK 로그에 `actualScreen`과 `desc`를 추가했다.
+- 15초 ACK/watchdog, `status=-1` 실패 줄, HRESULT fallback, 원래 count 복원, 레지스트리/PlayerPrefs 복원은 유지한다. 실제 반환 요청에서 ResizeBuffers가 오지 않거나 원래 크기로 복귀하지 않으면 기존처럼 timeout/rollback으로 실패 처리한다.
+
+### 검증 및 최종 산출물
+
+| 항목 | 결과 |
+|---|---|
+| native / AUTOTEST / Player / DEV 빌드 | 모두 성공·오류 0. native `/W4 /WX` 통과(기존 ISPC 경고 유지). 관리 경고는 63 / 63 / 84. [native](../../out/present-buffers2/build-native.txt), [AUTOTEST](../../out/present-buffers2/build-autotest.txt), [Player](../../out/present-buffers2/build-player.txt), [DEV](../../out/present-buffers2/build-dev.txt) |
+| 실제 Resolve와 BufferResize 추출 fixture | PASS. Resolve 100회/메모리 읽기 300회·바이트 가드 실패 거부. 파일/해시 API 대역 없이 컴파일·실행한다. FSW의 desc만 물리 크기 유지, Screen/desc 모두 유지, probe/buffers3 왕복·off를 추가했다. 임의 FSW 너비 및 Windowed의 미변경 desc는 거부한다. 기존 timeout·watchdog·HRESULT·후속 Present·조기 off·체인 교체 검사도 유지. [로그](../../out/present-buffers2/pump-fixture.txt) |
+| native COM / prefs fixture | 모두 PASS. [native](../../out/present-buffers2/fixture.txt), [prefs](../../out/present-buffers2/prefs-fixture.txt) |
+| export / 내장 native / 빌드 격리 | HEAD의 60개 이름·ordinal 보존. 3종 DLL 모두 현재 native 내장. PresentPath/BufferResize/ScreenPrefs는 AUTOTEST만 포함. [JSON](../../out/present-buffers2/artifact-check.json) |
+| 정적 분석 / diff | 설치본 PE/PDB 대조·추가 wait 함수 역어셈블·기존 vtable/counter 검증·`git diff --check` 통과 |
+
+[최종 해시](../../out/present-buffers2/hashes.json):
+
+```text
+native/sfnative.dll            f35ec5c6970b96fe141aeba45c29f15c402d19e2991dc3075b69d8c877d1b145
+bin/PlayerAuto/StutterFix.dll  10ddec6ee583cafadaa858d825a5f8ef12819a7af158a82bcddddfe1be1532cb
+bin/Player/StutterFix.dll      9794d16a1a5912d67856f9e5aaa8a1f8777695a77e2e42a1ede688426e0c7176
+bin/Release/StutterFix.dll     550610e21beb77157dae184a5bbd011c1bfc6b31929a5ca0f33468c678b5ebba
+```
+
+Player/DEV/native의 최종 해시는 이전 결과와 같다. AUTOTEST만 변경됐다. 빌드·fixture 재현 명령은 앞 절과 같다. 새 wait 함수는 `py -3.12 tools/analysis/present-buffers-disasm.py`로 재생성한다.
+
+### Claude 재측정
+
+앞 절의 `CFG2["ppProbe"]`, `CFG_MID`, `CFG_POST` 예시를 사용한다. 새 프로세스·동일 HELLO 50초·FSW 조건에서 먼저 resizeprobe를 실행한다. `actualScreen`/`desc`가 중간에 물리 너비를 유지해도 ACK가 나와야 한다. **최종 ready와 assert에서 원래 크기·count=2·실패/rewrite=0·계속 증가하는 Present**, off에서 화면/count/prefs 복원을 확인한다. resize 전후 cpuFrameTime/FPS를 별도로 기록해 약 500ms 반복이 사라졌는지 확인한다. 이 작업에서 실제 게임·FPS·픽셀·tail·실제 복원은 미측정이다.
+
+그 다음에만 buffers3 적용/off와 성능 비교를 진행한다. 여전히 500ms가 반복되면 파일 해시를 더 이상 원인으로 재추정하지 말고 메인 스레드 스택 또는 ETW CPU 표본으로 남은 대기/실행 지점을 확인한다. 실제 FPS 정상화는 이 재측정 전까지 미확인으로 남긴다.

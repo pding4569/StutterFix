@@ -40,7 +40,7 @@ namespace StutterFix
                 throw new Exception("presentpath: unreadable address");
             return b;
         }
-        static IntPtr Resolve()
+        static void VerifyBinary()
         {
             if(Application.unityVersion!="6000.3.25f1" || SystemInfo.graphicsDeviceType!=GraphicsDeviceType.Direct3D11)
                 throw new Exception("presentpath: requires pinned Unity 6000.3.25f1 D3D11");
@@ -48,6 +48,11 @@ namespace StutterFix
             using(var hash=SHA256.Create()) using(var f=File.OpenRead(path))
                 if(BitConverter.ToString(hash.ComputeHash(f)).Replace("-", "").ToLowerInvariant()!="7e362b4c6ecee6fb493b1872cda5a5a0caf44f3b131b3c4bad132f0d1309f436")
                     throw new Exception("presentpath: UnityPlayer SHA256 mismatch");
+        }
+        static IntPtr Resolve()
+        {
+            // The lease entry verifies the full file. ACK polling must only read memory:
+            // hashing UnityPlayer on every Update can itself stall each frame.
             long module=(long)GetModuleHandleW("UnityPlayer.dll");
             // PresentFrame loads settings from this RIP-relative global, then chain at +0x320.
             var guard=Read(module+0x930c84, 7);
@@ -92,7 +97,7 @@ namespace StutterFix
                 else
                 {
                     if(!SfNative.Ready) throw new Exception("presentpath: native unavailable");
-                    var sc=Resolve();callback=sf_presentpath_event_ptr();
+                    VerifyBinary();var sc=Resolve();callback=sf_presentpath_event_ptr();
                     if(callback==IntPtr.Zero) throw new Exception("presentpath: missing native event");
                     stateRefreshBefore=Stat(18);
                     sf_presentpath_pin(sc);Issue(5,sc); // read-only snapshot; no instance hook
@@ -106,7 +111,7 @@ namespace StutterFix
                 if(id==0) throw new Exception("presentpath: unknown candidate");
                 if(requested!=null || stopping) throw new Exception("presentpath: finish off before on");
                 if(!SfNative.Ready || sf_framegen_installed()!=0) throw new Exception("presentpath: native unavailable or framegen installed");
-                captured=Resolve();callback=sf_presentpath_event_ptr();
+                VerifyBinary();captured=Resolve();callback=sf_presentpath_event_ptr();
                 if(callback==IntPtr.Zero) throw new Exception("presentpath: missing native event");
                 if(id==6 || id==7) resize=new BufferResize(id==7);
                 else resize=null;
@@ -290,8 +295,14 @@ namespace StutterFix
                         if(Stat(20)>calls && (Stat(21)<0 || (!restore && Stat(25)!=0)))
                             throw new Exception("Screen.SetResolution resize HRESULT/rewrite failed");
                         int targetWidth=phase==2?w-1:w;
-                        if(Screen.width!=targetWidth || Screen.height!=h || Stat(20)<=calls || Stat(0)!=targetWidth || Stat(1)!=h)return;
-                        Log("resize screen ACK size="+targetWidth+"x"+h+" calls="+Stat(20)+" hr="+Stat(21)+" fallbackHR="+Stat(28)+" presents="+Stat(7));
+                        // FSW can keep the physical monitor size despite the 1px request.
+                        // Only the outbound pulse may retain the captured size; never
+                        // accept arbitrary dimensions or a request without ResizeBuffers.
+                        bool fswPulse=phase==2 && screenMode==FullScreenMode.FullScreenWindow;
+                        if((Screen.width!=targetWidth && !(fswPulse && Screen.width==w)) || Screen.height!=h || Stat(20)<=calls ||
+                           (Stat(0)!=targetWidth && !(fswPulse && Stat(0)==w)) || Stat(1)!=h)return;
+                        Log("resize screen ACK size="+targetWidth+"x"+h+" actualScreen="+Screen.width+"x"+Screen.height+
+                            " desc="+Stat(0)+"x"+Stat(1)+" calls="+Stat(20)+" hr="+Stat(21)+" fallbackHR="+Stat(28)+" presents="+Stat(7));
                         if(Stat(17)<0 || Stat(2)!=(restore || probe?Stat(26):3))
                             throw new Exception("Screen.SetResolution resize/count verification failed");
                         if(phase==2) {Request(w,6);return;}
@@ -301,7 +312,7 @@ namespace StutterFix
                     {
                         if(Stat(7)<=presents)return;
                         if(Stat(15)!=0)throw new Exception("Present failed after resize");
-                        if(Resolve()!=captured || Stat(19)!=1 || Screen.width!=w || Screen.height!=h || Screen.fullScreenMode!=screenMode)
+                        if(Resolve()!=captured || Stat(19)!=1 || Screen.width!=w || Screen.height!=h || Stat(0)!=w || Stat(1)!=h || Screen.fullScreenMode!=screenMode)
                             throw new Exception("identity/screen changed after resize");
                         prefs.Restore();
                         if(!restore) {Ready=true;phase=0;DestroyDriver();Log("resize ready; Present advanced; screen/preferences preserved");return;}
