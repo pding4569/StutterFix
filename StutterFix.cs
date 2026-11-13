@@ -1040,6 +1040,7 @@ ParticleTextWatch.Install(harmony);
             Try(GpuPriority.Restore);
 
             Try(Occlude.Stop);
+            Try(ZCull.Stop);
             Try(GpuSplit.Stop);
 
 #if DEV || AUTOTEST

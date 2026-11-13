@@ -1,0 +1,15 @@
+#pragma kernel Reduce
+Texture2D<float> Coverage;
+RWStructuredBuffer<uint> Counts;
+int Width, Height, Slot;
+groupshared uint sums[64];
+[numthreads(8,8,1)]
+void Reduce(uint3 id:SV_DispatchThreadID,uint lane:SV_GroupIndex) {
+    sums[lane]=id.x<(uint)Width && id.y<(uint)Height ? (uint)Coverage.Load(int3(id.xy,0)) : 0;
+    GroupMemoryBarrierWithGroupSync();
+    for(uint n=32;n>0;n>>=1) {
+        if(lane<n)sums[lane]+=sums[lane+n];
+        GroupMemoryBarrierWithGroupSync();
+    }
+    if(lane==0)InterlockedAdd(Counts[Slot],sums[0]);
+}

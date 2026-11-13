@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework><OutputType>Exe</OutputType>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <DefineConstants>ZCULL_CHECK;DRAWCOLLAPSE_CHECK</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../../ZCullPolicy.cs" Link="ZCullPolicy.cs" />
+    <Compile Include="../../SceneRenderOrder.cs" Link="SceneRenderOrder.cs" />
+    <Compile Include="Program.cs" />
+  </ItemGroup>
+</Project>
