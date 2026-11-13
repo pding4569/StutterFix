@@ -925,6 +925,10 @@ namespace StutterFix
                 case "tilesim": TileSim.Command(arg); return true;
                 case "tilecost": TileCost.Command(arg); return true;
                 case "tilerender": return TileRender.Step(arg.Trim());
+#if AUTOTEST
+                case "scriptskip": return ScriptPath.Step(arg.Trim());
+                case "engknob": return EngineKnob.Step(arg.Trim());
+#endif
                 case "fxslot": FxSlots.Command(arg); return true;
                 case "filterhalfperf": FilterHalfPerf.Command(arg); return true;
                 case "filterhalf": FilterHalfProbe.Command(arg); return true;
@@ -1922,6 +1926,10 @@ namespace StutterFix
 #endif
         private static void EndBatch(string why)
         {
+#if AUTOTEST
+            EngineKnob.Stop();
+            ScriptPath.Stop();
+#endif
             Occlude.Stop();
 #if AUTOTEST
             DecoBake.FinishGpuMergeTest(why);
@@ -1953,6 +1961,10 @@ namespace StutterFix
 
         private static void Finish(string why)
         {
+#if AUTOTEST
+            EngineKnob.Stop();
+            ScriptPath.Stop();
+#endif
             Occlude.Stop();
 #if AUTOTEST
             DecoBake.FinishGpuMergeTest(why);

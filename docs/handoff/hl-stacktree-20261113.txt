@@ -1,0 +1,73 @@
+## HL: 표본 12025
+
+== 1) PlayerLoop 단계별 (메인 스레드 표본 %)
+   31.0%  PlayerRender
+   29.8%  BaseBehaviourManager::CommonUpdate<BehaviourManager>
+   16.2%  BaseBehaviourManager::CommonUpdate<LateBehaviourManager>
+    5.5%  UI::CanvasManager::WillRenderCanvases
+    4.5%  RenderManager::UpdateAllRenderers
+    2.7%  AudioModule::Update
+    2.1%  [mono-2.0-bdwgc.dll+0x1C8A70]
+    1.2%  `InitPlayerLoopCallbacks'::`2'::PostLateUpdatePlayerEmitCanvasGeometryRegistrator::Forward
+    0.8%  (루프 밖)
+    0.7%  ParticleSystem::BeginUpdateAll
+    0.6%  `InitPlayerLoopCallbacks'::`2'::PostLateUpdatePlayerUpdateCanvasesRegistrator::Forward
+    0.6%  GfxDevice::EndAsyncJobFrame
+    0.4%  `UI::InitializeCanvasManager'::`2'::UIEventsUpdateCanvasRectTransformRegistrator::Forward
+    0.3%  `InitPlayerLoopCallbacks'::`2'::EarlyUpdateRendererNotifyInvisibleRegistrator::Forward
+
+== 2) 스크립트 진입점 (엔진이 직접 부르는 메서드)
+  스크립트 안 표본 54.3% (엔진 호출 비용 포함)
+   7.34%  PATCHED:scrDecorationManager.LateUpdate_Patch8   [StutterFix 99%, 게임/기타 76%, Unity/BCL 관리 코드 54%]
+   5.34%  PATCHED:scrFloor.Update_Patch1   [게임/기타 79%, Unity/BCL 관리 코드 70%, StutterFix 8%, DOTween 1%]
+   5.01%  PATCHED:DG.Tweening.Core.DOTweenComponent.Update_Patch8   [게임/기타 80%, StutterFix 73%, DOTween 38%, Unity/BCL 관리 코드 35%]
+   5.01%  UnityEngine.Camera:FireOnPreCull   [게임/기타 100%, StutterFix 99%, Unity/BCL 관리 코드 51%]
+   4.17%  PATCHED:scrConductor.Update_Patch2   [게임/기타 97%, Unity/BCL 관리 코드 55%, DOTween 10%, StutterFix 9%]
+   3.43%  UnityEngine.Canvas:SendWillRenderCanvases   [게임/기타 100%, Unity/BCL 관리 코드 93%, TMP 29%, StutterFix 0%]
+   2.67%  PATCHED:scrFloor.LateUpdate_Patch1   [Unity/BCL 관리 코드 50%, 게임/기타 45%, StutterFix 3%]
+   1.83%  PATCHED:scrVfxPlus.Update_Patch3   [게임/기타 94%, StutterFix 78%, Unity/BCL 관리 코드 45%, DOTween 5%]
+   1.20%  Rewired.InputManager_Base:Update   [Rewired 99%, 게임/기타 88%, Unity/BCL 관리 코드 14%]
+   1.16%  UnityModManagerNet.UnityModManager/UI:Update   [게임/기타 68%, StutterFix 54%, Quartz 39%, Unity/BCL 관리 코드 32%]
+   1.12%  UnityEngine.EventSystems.EventSystem:Update   [Unity/BCL 관리 코드 100%, 게임/기타 54%]
+   1.04%  PATCHED:scrParticleDecoration.Update_Patch3   [게임/기타 75%, StutterFix 71%, Unity/BCL 관리 코드 34%]
+   0.86%  StutterFix.TileCull:Step   [StutterFix 95%, 게임/기타 83%, Unity/BCL 관리 코드 78%, DOTween 5%]
+   0.81%  PATCHED:PlanetRenderer.LateUpdate_Patch2   [Quartz 98%, Unity/BCL 관리 코드 71%, 게임/기타 53%]
+   0.81%  PATCHED:VideoBloom.OnRenderImage_Patch2   [게임/기타 97%, Unity/BCL 관리 코드 97%]
+   0.78%  PATCHED:scrHUDText.Update_Patch1   [Unity/BCL 관리 코드 90%, 게임/기타 89%, Quartz 13%]
+   0.76%  PlanetSprite:LateUpdate   [Unity/BCL 관리 코드 91%, 게임/기타 85%]
+   0.66%  ADOFAI.SteamIntegration.SteamController:Update   [게임/기타 100%]
+   0.62%  StutterFix.PerfOverlay:LateUpdate   [StutterFix 91%, Unity/BCL 관리 코드 45%, 게임/기타 41%]
+   0.62%  scnEditor:Update   [게임/기타 93%, Unity/BCL 관리 코드 69%, Quartz 7%, StutterFix 1%]
+   0.61%  PATCHED:scrPlanet.Update_Patch0   [게임/기타 77%, Unity/BCL 관리 코드 29%, StutterFix 4%]
+   0.48%  CameraFilterPack_Atmosphere_Rain_Pro:OnRenderImage   [Unity/BCL 관리 코드 98%, 게임/기타 91%]
+
+== 3) 스크립트 밖 엔진 함수 (포함 %, 제너릭한 뿌리 제외)
+  스크립트 밖 표본 45.0%
+  22.17%  PlayerRender
+  18.62%  RenderManager::RenderOffscreenCameras
+  15.73%  Camera::CustomRender
+  10.89%  ujob_wait_for
+   8.27%  ujob_execute_job
+   7.43%  DoRenderLoop
+   6.61%  DoForwardShaderRenderLoop
+   5.56%  ForwardShaderRenderLoop::PerformRendering
+   5.10%  MonoBehaviour::CallUpdateMethod
+   5.10%  RenderEventsContext::ExecuteCommandBuffers
+   4.80%  CullResults::GetOrCreateSharedRendererScene
+   4.65%  ExtractSceneRenderNodeQueue
+   4.57%  RendererUpdateManager::UpdateAll
+   4.52%  RenderManager::UpdateAllRenderers
+   3.65%  TransformChangeDispatch::ScanAndHandleChangesJob
+   3.50%  Camera::CustomCull
+   3.34%  ExecuteRenderQueue
+   3.20%  RenderingCommandBuffer::ExecuteCommandBufferWithState
+   2.91%  ExecuteDrawRendererCommand
+   2.67%  AudioModule::Update
+   2.65%  AudioManager::Update
+   2.63%  lane_guts
+   2.25%  ShaderLab::Pass::ApplyPass
+   2.20%  ShaderLab::ShaderState::ApplyShaderState
+   2.04%  MeshRenderer::FinalizeUpdate
+   2.04%  SyncFence
+   1.90%  UI::CanvasManager::RenderOverlays
+   1.89%  PrepareMeshRenderNodes<1>

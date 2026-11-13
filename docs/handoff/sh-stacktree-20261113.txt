@@ -1,0 +1,73 @@
+## Exit: 표본 12021
+
+== 1) PlayerLoop 단계별 (메인 스레드 표본 %)
+   33.4%  BaseBehaviourManager::CommonUpdate<BehaviourManager>
+   27.7%  PlayerRender
+   15.1%  BaseBehaviourManager::CommonUpdate<LateBehaviourManager>
+    5.5%  UI::CanvasManager::WillRenderCanvases
+    5.4%  AudioModule::Update
+    2.6%  RenderManager::UpdateAllRenderers
+    2.1%  [mono-2.0-bdwgc.dll+0x1C8A70]
+    0.9%  `InitPlayerLoopCallbacks'::`2'::PostLateUpdatePlayerUpdateCanvasesRegistrator::Forward
+    0.7%  ParticleSystem::BeginUpdateAll
+    0.7%  (루프 밖)
+    0.5%  `UI::InitializeCanvasManager'::`2'::UIEventsUpdateCanvasRectTransformRegistrator::Forward
+    0.5%  InputManager::ProcessInput
+    0.4%  `InitPlayerLoopCallbacks'::`2'::EarlyUpdateRendererNotifyInvisibleRegistrator::Forward
+    0.4%  (루프 직속)
+
+== 2) 스크립트 진입점 (엔진이 직접 부르는 메서드)
+  스크립트 안 표본 51.9% (엔진 호출 비용 포함)
+   6.14%  PATCHED:scrFloor.Update_Patch1   [게임/기타 70%, Unity/BCL 관리 코드 59%, StutterFix 11%, DOTween 0%]
+   5.63%  PATCHED:DG.Tweening.Core.DOTweenComponent.Update_Patch8   [게임/기타 78%, StutterFix 68%, DOTween 48%, Unity/BCL 관리 코드 36%]
+   5.05%  PATCHED:scrDecorationManager.LateUpdate_Patch8   [StutterFix 92%, 게임/기타 75%, Unity/BCL 관리 코드 57%, TMP 1%]
+   3.45%  UnityEngine.Canvas:SendWillRenderCanvases   [게임/기타 100%, Unity/BCL 관리 코드 87%, TMP 40%]
+   2.51%  PATCHED:scrFloor.LateUpdate_Patch1   [Unity/BCL 관리 코드 39%, 게임/기타 31%, StutterFix 3%]
+   2.25%  PATCHED:scrConductor.Update_Patch2   [게임/기타 89%, Unity/BCL 관리 코드 39%, StutterFix 10%, Quartz 4%]
+   1.98%  Rewired.InputManager_Base:Update   [Rewired 99%, 게임/기타 87%, Unity/BCL 관리 코드 18%]
+   1.53%  UnityModManagerNet.UnityModManager/UI:Update   [게임/기타 70%, StutterFix 49%, Quartz 43%, Unity/BCL 관리 코드 15%]
+   1.53%  UnityStandardAssets.ImageEffects.CameraMotionBlur:OnRenderImage   [Unity/BCL 관리 코드 96%, 게임/기타 92%]
+   1.44%  PATCHED:scrHoldRenderer.Update_Patch3   [StutterFix 100%, Unity/BCL 관리 코드 72%, 게임/기타 56%]
+   1.08%  UnityEngine.EventSystems.EventSystem:Update   [Unity/BCL 관리 코드 100%, 게임/기타 39%]
+   1.07%  PATCHED:VideoBloom.OnRenderImage_Patch2   [게임/기타 95%, Unity/BCL 관리 코드 93%]
+   1.06%  PATCHED:scrHUDText.Update_Patch1   [Unity/BCL 관리 코드 91%, 게임/기타 87%, Quartz 27%, StutterFix 2%]
+   1.06%  ADOFAI.SteamIntegration.SteamController:Update   [게임/기타 100%]
+   0.94%  StutterFix.PerfOverlay:LateUpdate   [StutterFix 94%, Unity/BCL 관리 코드 49%, 게임/기타 36%]
+   0.92%  scnEditor:Update   [게임/기타 95%, Unity/BCL 관리 코드 56%, Quartz 3%]
+   0.82%  PATCHED:scrVfxPlus.Update_Patch3   [게임/기타 86%, StutterFix 73%, Unity/BCL 관리 코드 66%, DOTween 1%]
+   0.78%  PATCHED:scrPlanet.Update_Patch0   [게임/기타 83%, Unity/BCL 관리 코드 43%, StutterFix 1%]
+   0.70%  PATCHED:PlanetRenderer.LateUpdate_Patch2   [Quartz 98%, Unity/BCL 관리 코드 83%, 게임/기타 63%]
+   0.57%  CameraFilterPackLegacy_TV_CompressionFX:OnRenderImage   [Unity/BCL 관리 코드 100%, 게임/기타 94%]
+   0.52%  UnityEngine.GUIUtility:BeginGUI   [Unity/BCL 관리 코드 100%, 게임/기타 79%]
+   0.49%  UnityEngine.Camera:FireOnPreCull   [게임/기타 98%, StutterFix 90%, Unity/BCL 관리 코드 66%]
+
+== 3) 스크립트 밖 엔진 함수 (포함 %, 제너릭한 뿌리 제외)
+  스크립트 밖 표본 46.9%
+  21.05%  PlayerRender
+  15.17%  RenderManager::RenderOffscreenCameras
+  11.61%  Camera::CustomRender
+   9.18%  ujob_wait_for
+   7.45%  ujob_execute_job
+   6.60%  MonoBehaviour::CallUpdateMethod
+   5.37%  AudioModule::Update
+   5.37%  AudioManager::Update
+   5.20%  CullResults::GetOrCreateSharedRendererScene
+   5.05%  ExtractSceneRenderNodeQueue
+   4.92%  Camera::CustomCull
+   3.85%  CullScene
+   3.60%  ExecuteRenderQueue
+   3.43%  PrepareMeshRenderNodes<1>
+   3.11%  UI::CanvasManager::RenderOverlays
+   3.06%  UI::Canvas::RenderOverlays
+   2.78%  UI::Canvas::DrawRawMesh
+   2.78%  DoRenderLoop
+   2.60%  RenderManager::UpdateAllRenderers
+   2.56%  RendererUpdateManager::UpdateAll
+   2.10%  BaseRenderer::CanFlattenSharedMaterialData<1>
+   2.01%  AudioSource::DoUpdate
+   1.98%  RenderManager::RenderCameras
+   1.83%  lane_guts
+   1.81%  DoForwardShaderRenderLoop
+   1.67%  TransformChangeDispatch::ScanAndHandleChangesJob
+   1.63%  CullDynamicObjectsJob
+   1.61%  Material::SetPassFast

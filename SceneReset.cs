@@ -32,6 +32,10 @@ namespace StutterFix
 
         public static void Prefix()
         {
+#if AUTOTEST
+            EngineKnob.Stop();
+            ScriptPath.Stop();
+#endif
             Count++;
             DecoDetach.OnTransition();
 #if DEV || AUTOTEST

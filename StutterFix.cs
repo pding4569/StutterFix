@@ -303,6 +303,10 @@ AllocProbe.Install(new HarmonyLib.Harmony("StutterFix.allocprobe"));
         private static bool OnToggle(UnityModManager.ModEntry modEntry, bool value)
 
         {
+#if AUTOTEST
+            if (!value) ScriptPath.Stop();
+            if (!value) EngineKnob.Stop();
+#endif
 #if DEV || AUTOTEST
             if (!value) TileRender.Shutdown();
 #endif
@@ -1015,6 +1019,8 @@ ParticleTextWatch.Install(harmony);
 #if AUTOTEST
 
             Try(LightProbe.Uninstall);
+            Try(ScriptPath.Stop);
+            Try(EngineKnob.Stop);
 
 #endif
 
