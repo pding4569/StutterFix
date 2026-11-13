@@ -303,6 +303,9 @@ AllocProbe.Install(new HarmonyLib.Harmony("StutterFix.allocprobe"));
         private static bool OnToggle(UnityModManager.ModEntry modEntry, bool value)
 
         {
+#if DEV || AUTOTEST
+            if (!value) TileRender.Shutdown();
+#endif
 
             if (value) { Resilience.Init(); ApplyExperimentalOptions(); InstallAll(); } else UninstallAll();
 
@@ -1026,6 +1029,7 @@ ParticleTextWatch.Install(harmony);
             Try(DecoSim.Shutdown);
 
             Try(TileCost.Shutdown);
+            Try(TileRender.Shutdown);
 
             Try(DecoGpu.Stop);
 

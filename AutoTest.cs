@@ -924,6 +924,7 @@ namespace StutterFix
                     Log("[beatsettled] " + BeatFix.NoChangeStatus); return true;
                 case "tilesim": TileSim.Command(arg); return true;
                 case "tilecost": TileCost.Command(arg); return true;
+                case "tilerender": return TileRender.Step(arg.Trim());
                 case "fxslot": FxSlots.Command(arg); return true;
                 case "filterhalfperf": FilterHalfPerf.Command(arg); return true;
                 case "filterhalf": FilterHalfProbe.Command(arg); return true;
@@ -1930,6 +1931,7 @@ namespace StutterFix
             LiveDecoGate2.Abort(why);
             LiveDeco.Stop();
             TightSpriteProbe.Stop();
+            TileRender.Shutdown();
             FrameCompare.Stop();
 #endif
             if (finished) return;
@@ -1959,6 +1961,7 @@ namespace StutterFix
             HiddenDecoSynergy.Reset();
             LiveDecoGate2.Abort(why);
             TightSpriteProbe.Stop();
+            TileRender.Shutdown();
             FrameCompare.Stop();
             MatShare.Stop();
             LiveDeco.Stop();
