@@ -959,7 +959,9 @@ namespace StutterFix
                         if (ui) { ui.enabled = a0 != "ummoff"; Log("[guiprobe] UMM UI enabled=" + ui.enabled); } else Log("[guiprobe] UMM UI 없음");
                         return true;
                     }
+#if AUTOTEST
                 case "srcdebug": if (arg.Trim() == "phases") { Log("[srcdebug] phases " + DecoBake.PhReport()); return true; } if (arg.Trim() == "check") { Log("[srcdebug] check " + DecoBake.SrcCheck()); return true; } DecoBake.SrcDebug = int.Parse(arg.Trim()); Log("[srcdebug] " + DecoBake.SrcDebug + " avg_active=" + (DecoBake.SrcFrames > 0 ? (DecoBake.SrcActiveSum / (double)DecoBake.SrcFrames).ToString("F1") : "0")); DecoBake.SrcActiveSum = 0; DecoBake.SrcFrames = 0; return true;
+#endif
                 case "layercensus":
                     {
                         var counts = new System.Collections.Generic.Dictionary<string, int>();

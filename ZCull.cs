@@ -21,6 +21,9 @@ namespace StutterFix
             internal int Slot, Segment;
             internal bool Safe, Cover, Tie;
             internal uint Total, Alive, Pixels;
+            internal Texture StackTexture;
+            internal Color StackColor;
+            internal Vector3 StackSize;
         }
         static readonly AccessTools.FieldRef<scrVisualDecoration, DecorationBlendMode> Blend =
             AccessTools.FieldRefAccess<scrVisualDecoration, DecorationBlendMode>("blendMode");
@@ -104,6 +107,15 @@ namespace StutterFix
                 reduce = bundle.LoadAsset<ComputeShader>("Assets/ZCullReduce.compute");
                 if (!shader || !shader.isSupported || !reduce) throw new InvalidOperationException("diagnostic shaders unavailable");
                 kernel = reduce.FindKernel("Reduce");
+                var cameraRT = c.targetTexture;
+                Main.Entry.Logger.Log("[stack] camera_target=" + (cameraRT
+                    ? "format=" + cameraRT.format + " graphicsFormat=" + cameraRT.graphicsFormat + " sRGB=" + cameraRT.sRGB
+                    : "backbuffer") + " allowHDR=" + c.allowHDR);
+                var gameCamera = scrCamera.instance;
+                var gameRT = gameCamera == null ? null : AccessTools.Field(typeof(scrCamera), "camRT").GetValue(gameCamera) as RenderTexture;
+                Main.Entry.Logger.Log("[stack] game_camRT=" + (gameRT
+                    ? "format=" + gameRT.format + " graphicsFormat=" + gameRT.graphicsFormat + " sRGB=" + gameRT.sRGB
+                    : "null"));
                 Discover(c);
                 if (draws.Count == 0 || draws.Count > 200000) throw new InvalidOperationException("invalid draw count " + draws.Count);
                 int w = c.pixelWidth, h = c.pixelHeight;
@@ -181,6 +193,60 @@ namespace StutterFix
                 d.Segment = segment;
                 if (!d.Safe) segment++;
             }
+            foreach (var d in draws)
+            {
+                var sr = d.R as SpriteRenderer;
+                // A census candidate, not approval to replace a renderer. Unknown overrides,
+                // sorting ties and non-normal blend paths break adjacency conservatively.
+                if (!d.Safe || d.Tie || !sr || !sr.sprite || d.Slot != 0
+                    || sr.sharedMaterials.Length != 1
+                    || sr.sprite.associatedAlphaSplitTexture || sr.sprite.packed
+                    || !SafeSprite(sr, d.Source)) continue;
+                d.StackTexture = sr.sprite.texture;
+                d.StackColor = sr.color;
+                d.StackSize = sr.bounds.size;
+                if (!Finite(d.StackColor.r) || !Finite(d.StackColor.g) || !Finite(d.StackColor.b)
+                    || !Finite(d.StackColor.a) || d.StackColor.a < 0 || d.StackColor.a > 1)
+                    d.StackTexture = null;
+            }
+        }
+        static bool Finite(float x) => !float.IsNaN(x) && !float.IsInfinity(x);
+        static bool SameStack(Draw a, Draw b) => a.StackTexture && b.StackTexture
+            && a.Source.shader == b.Source.shader && a.StackTexture == b.StackTexture && a.Segment == b.Segment
+            && a.StackColor.r == b.StackColor.r && a.StackColor.g == b.StackColor.g && a.StackColor.b == b.StackColor.b;
+        void StackCensus(double total)
+        {
+            var stacks = new List<List<Draw>>();
+            for (int i = 0; i < draws.Count;)
+            {
+                int end = i + 1;
+                while (end < draws.Count && SameStack(draws[end - 1], draws[end])) end++;
+                if (draws[i].StackTexture && end - i >= 2) stacks.Add(draws.GetRange(i, end - i));
+                i = end;
+            }
+            stacks = stacks.OrderByDescending(g => g.Sum(d => (double)d.Total)).ToList();
+            var qualifying = stacks.Where(g => g.Count >= 4).ToList();
+            double sum = qualifying.Sum(g => g.Sum(d => (double)d.Total));
+            string top = qualifying.Count == 0 ? "none" : "tex=" + Clean(qualifying[0][0].StackTexture.name)
+                + " layers=" + qualifying[0].Count + " frags=" + F(qualifying[0].Sum(d => (double)d.Total));
+            Main.Entry.Logger.Log("[stack] fragments_total=" + F(total) + " in_stacks=" + F(sum)
+                + " (" + F(total == 0 ? 0 : 100 * sum / total) + "%) stacks=" + qualifying.Count + " top: " + top);
+            for (int n = 0; n < stacks.Count; n++)
+            {
+                var g = stacks[n]; var first = g[0]; double fragments = g.Sum(d => (double)d.Total);
+                Main.Entry.Logger.Log("[stack] id=" + n + " tex=" + Clean(first.StackTexture.name)
+                    + " texture_id=" + first.StackTexture.GetInstanceID() + " material_id=" + first.Source.GetInstanceID()
+                    + " shader=" + Clean(first.Source.shader.name) + " layers=" + g.Count + " frags=" + F(fragments)
+                    + " share_percent=" + F(total == 0 ? 0 : 100 * fragments / total)
+                    + " rgb=" + F(first.StackColor.r) + "," + F(first.StackColor.g) + "," + F(first.StackColor.b)
+                    + " alpha_hist=" + string.Join(",", g.GroupBy(d => d.StackColor.a).OrderBy(a => a.Key)
+                        .Select(a => a.Key.ToString("R", CultureInfo.InvariantCulture) + ":" + a.Count()))
+                    + " bounds_width=" + F(g.Min(d => d.StackSize.x)) + ".." + F(g.Max(d => d.StackSize.x))
+                    + " bounds_height=" + F(g.Min(d => d.StackSize.y)) + ".." + F(g.Max(d => d.StackSize.y))
+                    + " order=" + first.Key.Order + ".." + g[g.Count - 1].Key.Order);
+            }
+            Main.Entry.Logger.Log("[stack] scope=consecutive-compatible-draws summary_layers_min=4 detail_layers_min=2 metric=geometry-fragments;"
+                + "not-overlap-proof;property-blocks-and-ambiguous-order-excluded;not-GPU-time-or-FPS");
         }
         internal static readonly System.Collections.Generic.Dictionary<string, int> Reasons = new System.Collections.Generic.Dictionary<string, int>();
         internal static bool LastBarrier; internal static readonly System.Text.StringBuilder Faint = new System.Text.StringBuilder(); internal static int FaintN;
@@ -299,6 +365,7 @@ namespace StutterFix
                 }
                 Log("renderers=" + rendererCount + " occluders=" + draws.Count(d => d.Cover)
                     + " fragments_total=" + F(total) + " fragments_alive=" + F(alive) + " culled=" + F(total == 0 ? 0 : 100 * (total - alive) / total) + "%");
+                StackCensus(total);
                 foreach (var g in draws.GroupBy(d => d.R).OrderByDescending(g => g.Sum(d => (double)d.Total - d.Alive)).Take(20))
                     Log("renderer name=" + Clean(g.Key.name) + " id=" + g.Key.GetInstanceID() + " layer=" + g.First().Key.Layer + " order=" + g.First().Key.Order
                         + " distance=" + F(g.First().Key.Distance) + " total=" + F(g.Sum(d => (double)d.Total)) + " culled=" + F(g.Sum(d => (double)d.Total - d.Alive)));
