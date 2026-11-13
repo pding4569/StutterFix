@@ -929,6 +929,7 @@ namespace StutterFix
                 case "scriptskip": return ScriptPath.Step(arg.Trim());
                 case "gpuexact": return GpuExactCensus.Step(arg.Trim());
                 case "engknob": return EngineKnob.Step(arg.Trim());
+                case "presentpath": return PresentPath.Step(arg.Trim());
 #endif
                 case "fxslot": FxSlots.Command(arg); return true;
                 case "filterhalfperf": FilterHalfPerf.Command(arg); return true;
@@ -1930,6 +1931,7 @@ namespace StutterFix
 #if AUTOTEST
             GpuExactCensus.Stop();
             EngineKnob.Stop();
+            PresentPath.Stop();
             ScriptPath.Stop();
 #endif
             Occlude.Stop();
@@ -1965,6 +1967,7 @@ namespace StutterFix
         {
 #if AUTOTEST
             EngineKnob.Stop();
+            PresentPath.Stop();
             ScriptPath.Stop();
 #endif
             Occlude.Stop();

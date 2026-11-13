@@ -306,6 +306,7 @@ AllocProbe.Install(new HarmonyLib.Harmony("StutterFix.allocprobe"));
 #if AUTOTEST
             if (!value) ScriptPath.Stop();
             if (!value) EngineKnob.Stop();
+            if (!value) PresentPath.Stop();
 #endif
 #if DEV || AUTOTEST
             if (!value) TileRender.Shutdown();
@@ -1022,6 +1023,7 @@ ParticleTextWatch.Install(harmony);
             Try(ScriptPath.Stop);
             Try(GpuExactCensus.Stop);
             Try(EngineKnob.Stop);
+            Try(PresentPath.Stop);
 
 #endif
 

@@ -3,6 +3,7 @@
 #include <memory>
 using namespace outside;
 #define API extern "C" __declspec(dllexport)
+#include "presentpath.h"
 #include "effects_gpu.h"
 #include "gpudeco_copy.h"
 using PresentFn=HRESULT(__stdcall*)(IDXGISwapChain*,UINT,UINT);
@@ -159,7 +160,7 @@ static void __stdcall event(int id,void* data) {
         }
     } catch(const std::exception& ex) { failure=1; status=-1; if(engine) { engine->trace(ex.what()); engine->endFrame(); } }
 }
-API int sf_framegen_setup(const wchar_t* path,int collect) { if(installed.exchange(1)) return 0; sf_buffers::gameCounters.reset();directory=path; diagnostics=collect!=0; sourcePresents=generatedPresents=0; syncRequested=syncPreserved=syncForcedZero=0; failure=stopped=status=0; return 1; }
+API int sf_framegen_setup(const wchar_t* path,int collect) { if(sf_presentpath::status!=0 || installed.exchange(1)) return 0; sf_buffers::gameCounters.reset();directory=path; diagnostics=collect!=0; sourcePresents=generatedPresents=0; syncRequested=syncPreserved=syncForcedZero=0; failure=stopped=status=0; return 1; }
 API void* sf_framegen_event_ptr() { return reinterpret_cast<void*>(event); }
 API int sf_framegen_status() { return status; }
 API int sf_framegen_error() { return failure; }
