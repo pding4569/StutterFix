@@ -42,24 +42,33 @@ template<class Backend> struct Tracker {
     Backend api;
     struct Slot {
         typename Backend::Query disjoint;
-        std::array<typename Backend::Query,2> a,b,c,done;
+        std::array<typename Backend::Query,2> f,a,b,c,done;
+        std::array<std::array<typename Backend::Query,32>,2> cameras;
+        std::array<bool,2> rendered{};
+        std::array<unsigned,2> cameraStarts{},cameraEnds{};
         bool pending=false;
         unsigned used=0;
         std::array<unsigned long long,2> serial{};
     };
     std::array<Slot,16> slots{};
-    Distribution render, interval, after, wall;
+    Distribution render, interval, after, wall, frame;
+    std::array<double,16> cameraSum{};
+    std::array<unsigned long long,16> cameraSamples{};
+    unsigned long long cameraSkipped=0;
+    bool cameraMode=false;
     unsigned head=0,tail=0,queued=0;
     int active=-1;
     bool ready=false, frameOpen=false;
     unsigned long long serial=0,checked=0,unobserved=0,disjoints=0,failures=0,drops=0,missing=0,discarded=0;
-    bool initialize(IDXGISwapChain* swapchain) {
+    bool initialize(IDXGISwapChain* swapchain,bool cameras=false) {
+        cameraMode=cameras;
         if(!api.initialize(swapchain)) {++failures;stop();return false;}
         for(auto& s:slots) {
             bool ok=api.create(s.disjoint,D3D11_QUERY_TIMESTAMP_DISJOINT);
             for(unsigned i=0;i<2 && ok;++i)
-                ok=api.create(s.a[i],D3D11_QUERY_TIMESTAMP) && api.create(s.b[i],D3D11_QUERY_TIMESTAMP) &&
+                ok=api.create(s.f[i],D3D11_QUERY_TIMESTAMP) && api.create(s.a[i],D3D11_QUERY_TIMESTAMP) && api.create(s.b[i],D3D11_QUERY_TIMESTAMP) &&
                    api.create(s.c[i],D3D11_QUERY_TIMESTAMP) && api.create(s.done[i],D3D11_QUERY_EVENT);
+            if(cameraMode)for(auto& row:s.cameras)for(auto& q:row)if(ok)ok=api.create(q,D3D11_QUERY_TIMESTAMP);
             if(!ok) {
                 ++failures;stop();return false;
             }
@@ -82,20 +91,34 @@ template<class Backend> struct Tracker {
         // Ordered retirement preserves adjacent-frame identity even if readiness differs.
         for(unsigned n=0;n<slots.size() && queued;++n) {
             auto& s=slots[tail];D3D11_QUERY_DATA_TIMESTAMP_DISJOINT d{};
-            std::array<UINT64,2> a{},b{},c{};
+            std::array<UINT64,2> f{},a{},b{},c{};
+            std::array<std::array<UINT64,32>,2> cams{};
             HRESULT hr=get(s.disjoint,&d,sizeof(d));
             if(hr==S_FALSE)break;
             if(hr==S_OK && !d.Disjoint && d.Frequency) {
                 for(unsigned i=0;i<2 && hr==S_OK;++i) {
-                    hr=get(s.a[i],&a[i],sizeof(UINT64));
+                    hr=get(s.f[i],&f[i],sizeof(UINT64));
+                    if(hr==S_OK && s.rendered[i])hr=get(s.a[i],&a[i],sizeof(UINT64));
                     if(hr==S_OK)hr=get(s.b[i],&b[i],sizeof(UINT64));
                     if(hr==S_OK)hr=get(s.c[i],&c[i],sizeof(UINT64));
+                    for(unsigned k=0;k<16 && hr==S_OK;++k)if((s.cameraStarts[i]&s.cameraEnds[i])&(1u<<k)) {
+                        hr=get(s.cameras[i][2*k],&cams[i][2*k],sizeof(UINT64));
+                        if(hr==S_OK)hr=get(s.cameras[i][2*k+1],&cams[i][2*k+1],sizeof(UINT64));
+                    }
                 }
                 if(hr==S_FALSE)break;
-                if(hr==S_OK && a[0]<=b[0] && b[0]<=c[0] && c[0]<=a[1] && a[1]<=b[1] && b[1]<=c[1]) {
+                if(hr==S_OK && f[0]<=b[0] && b[0]<=c[0] && c[0]<=f[1] && f[1]<=b[1] && b[1]<=c[1]) {
                     const double scale=1000000.0/static_cast<double>(d.Frequency);
                     for(unsigned i=0;i<2;++i) {
-                        render.add(static_cast<double>(b[i]-a[i])*scale);after.add(static_cast<double>(c[i]-b[i])*scale);
+                        frame.add(static_cast<double>(b[i]-f[i])*scale);
+                        if(s.rendered[i] && f[i]<=a[i] && a[i]<=b[i])render.add(static_cast<double>(b[i]-a[i])*scale);
+                        else if(s.rendered[i])++failures;
+                        after.add(static_cast<double>(c[i]-b[i])*scale);
+                        for(unsigned k=0;k<16;++k)if((s.cameraStarts[i]&s.cameraEnds[i])&(1u<<k)) {
+                            const auto x=cams[i][2*k],y=cams[i][2*k+1];
+                            if(f[i]<=x && x<=y && y<=b[i]) {cameraSum[k]+=static_cast<double>(y-x)*scale;++cameraSamples[k];}
+                            else ++failures;
+                        }
                     }
                     // Both b timestamps are inside ONE disjoint epoch. Sample every
                     // other adjacent interval rather than assuming cross-epoch continuity.
@@ -105,14 +128,29 @@ template<class Backend> struct Tracker {
             s.pending=false;tail=(tail+1)%static_cast<unsigned>(slots.size());--queued;
         }
     }
-    void begin() {
-        if(!ready || frameOpen)return; // first screen-camera render event per Present
+    void beginFrame() {
+        if(!ready || frameOpen)return; // first camera, including offscreen, per Present
         collect();
         if(active<0) {
             if(queued==slots.size())return;
             active=static_cast<int>(head);slots[head].used=0;api.begin(slots[head].disjoint);
         }
-        auto& s=slots[static_cast<size_t>(active)];api.end(s.a[s.used]);frameOpen=true;
+        auto& s=slots[static_cast<size_t>(active)];
+        s.rendered[s.used]=false;s.cameraStarts[s.used]=s.cameraEnds[s.used]=0;
+        api.end(s.f[s.used]);frameOpen=true;
+    }
+    void begin() {
+        if(!frameOpen)return;
+        auto& s=slots[static_cast<size_t>(active)];
+        if(!s.rendered[s.used]) {api.end(s.a[s.used]);s.rendered[s.used]=true;}
+    }
+    void camera(unsigned index,bool end) {
+        if(!ready || !cameraMode || !frameOpen || index>=16)return;
+        auto& s=slots[static_cast<size_t>(active)];const auto bit=1u<<index;
+        auto& mask=end?s.cameraEnds[s.used]:s.cameraStarts[s.used];
+        if(mask&bit) {++cameraSkipped;return;} // never overwrite a query on repeated Camera.Render
+        if(end && !(s.cameraStarts[s.used]&bit))return;
+        api.end(s.cameras[s.used][2*index+(end?1:0)]);mask|=bit;
     }
     bool beforePresent() {
         ++serial;
@@ -146,6 +184,13 @@ template<class Backend> struct Tracker {
         stats[52]=static_cast<long long>(disjoints);stats[53]=static_cast<long long>(failures);stats[54]=static_cast<long long>(drops);stats[55]=queued*2+(active>=0?slots[static_cast<size_t>(active)].used:0);
         stats[56]=static_cast<long long>(missing);stats[57]=static_cast<long long>(discarded);
         stats[58]=after.mean();stats[59]=after.percentile(95);stats[60]=ready?1:0;
+        stats[61]=static_cast<long long>(frame.count);stats[62]=frame.mean();stats[63]=frame.percentile(50);
+        stats[64]=frame.percentile(95);stats[65]=static_cast<long long>(frame.maximum+0.5);
+        stats[66]=cameraMode?1:0;stats[67]=static_cast<long long>(cameraSkipped);
+        for(unsigned k=0;k<16;++k) {
+            stats[68+2*k]=static_cast<long long>(cameraSamples[k]);
+            stats[69+2*k]=frame.count?static_cast<long long>(cameraSum[k]/static_cast<double>(frame.count)+0.5):0;
+        }
     }
 };
 }

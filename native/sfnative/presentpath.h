@@ -23,8 +23,9 @@ static std::atomic<int> mode{0}, status{0};
 // 28 fallback HRESULT, 29 fallback calls, 30 engine trigger calls,
 // 31 Adjust result, 32 trigger phase (1 entered, 2 returned).
 // 33/34 Adjust guard A/B; 35 OnAfterPresent callbacks.
-// 36..60: gputime snapshot, append-only. Published by the render-thread state ACK.
-static std::array<std::atomic<long long>,61> stats{};
+// 36..60 legacy GPU; 61..67 frame; 68..99 camera and image-effect pairs.
+// Append-only, published by the render-thread state ACK.
+static std::array<std::atomic<long long>,100> stats{};
 static sf_ppgpu::Tracker<sf_ppgpu::D3D> gpu;
 using AdjustFn=bool (*)(void*,const void*,int,int,int,int,unsigned long long,bool,int);
 using AfterFn=void (*)(void*);
@@ -190,10 +191,15 @@ static void runTrigger(void* expectedDevice) {
         stats[32]=2;describe();return;
 }
 static void __stdcall event(int id,void* ptr) {
+    const bool cameraTiming=id==13;
+    if(cameraTiming)id=9;
     ComPtr<IDXGISwapChain> pinned;
     if((id>=1 && id<=3) || id==5 || id==6 || id==7 || id==9) pinned.Attach(static_cast<IDXGISwapChain*>(ptr));
     if(id==0) {stop();return;}
     if(id==10) {if(mode==9)gpu.begin();return;}
+    if(id==11) {if(mode==9)gpu.beginFrame();return;}
+    if(id>=100 && id<116) {if(mode==9)gpu.camera(static_cast<unsigned>(id-100),false);return;}
+    if(id>=200 && id<216) {if(mode==9)gpu.camera(static_cast<unsigned>(id-200),true);return;}
     if(id==4) {describe();return;}
     if(id==8) {
         ++stats[30];stats[32]=1;stats[31]=-1;
@@ -259,7 +265,7 @@ static void __stdcall event(int id,void* ptr) {
         if(FAILED(hr)) {chain.Reset();chain2.Reset();device1.Reset();status=-1;return;}
         changedLatency=true;
     }
-    if(id==9 && !gpu.initialize(sc)) {
+    if(id==9 && !gpu.initialize(sc,cameraTiming)) {
         gpu.publish(stats);chain.Reset();chain2.Reset();device1.Reset();status=-1;return;
     }
     before=*reinterpret_cast<void***>(sc);
@@ -286,5 +292,5 @@ API void sf_presentpath_pending() {sf_presentpath::status=2;}
 API long long sf_presentpath_stat(int i) {
     if(i==-1) return sf_presentpath::status;
     if(i==-2) return sf_presentpath::mode;
-    return i>=0 && i<61?sf_presentpath::stats[i].load():-1;
+    return i>=0 && i<100?sf_presentpath::stats[i].load():-1;
 }

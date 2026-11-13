@@ -1,5 +1,7 @@
 # Present GPU 시간 계측 구현 결과 — 2026-11-14
 
+> 아래 최초 결과는 이력으로 보존했다. **추가 요청을 반영한 현재 구현·검증·사용법은 맨 아래 「추가 요청 완료」 절을 따른다.**
+
 요청한 `presentpath on gputime`을 구현하고 오프라인 검증을 완료했다. **게임 실행·설치 DLL 교체·커밋은 하지 않았다. 실게임 GPU 시간, Present 지연 원인, FPS 이득은 아직 미측정이다.** 원래 인계문의 2.83ms 등은 Claude의 선행 측정이며 이번 작업의 측정값이 아니다.
 
 - 작업 위치: `E:\StutterFixWork\wt-v14prod`
@@ -121,3 +123,63 @@ git diff --check
 ```
 
 작업 절차 관찰: 기존 관찰 목록을 확인했고, 이번 세션에서 새로 기록할 일반화 항목은 없었다. 위 결과는 이 체크아웃의 빌드/오프라인 증거에 한정한다.
+
+## 추가 요청 완료 — 오프스크린 포함 gpuFrame 및 카메라/필터 분해
+
+기준 HEAD `dddde60`의 기존 구현을 이어서 수정했다. 시작 시 이미 수정되어 있던 원본 인계문과 기존 untracked 연구 산출물은 보존했다. 이번 작업에서도 게임 실행·설치 DLL 교체·커밋은 하지 않았다. 아래 구현 검증은 오프라인 결과이며, 추가 인계문의 HELLO/DD/Exit 수치는 Claude의 선행 실측이다. 새 GPU 성능 수치는 측정하지 않았다.
+
+### 구간과 출력
+
+- `presentpath on gputime`: 모든 카메라의 `Camera.onPreCull`에서 재사용 CommandBuffer의 native 이벤트 11을 실행한다. native가 실제 Present 사이 첫 이벤트에만 f timestamp를 찍으므로 camRT 등 오프스크린 카메라도 시작점에 포함한다. 기존 화면 카메라 `onPreRender`의 a 이벤트와 `render*` 통계는 별도로 유지한다.
+- 새 `gpuFrameSamples`, `gpuFrameMeanUs`, `gpuFrameP50Us`, `gpuFrameP95Us`, `gpuFrameMaxUs`는 **f→Present 직전 b**다. `assert`는 이 회수 표본이 존재하고 queryFailures=0, ready=1인지를 확인한다. 화면 카메라 이벤트가 없는 프레임도 f가 있으면 gpuFrame 표본으로 회수할 수 있다. f가 없을 때 화면 카메라 시작점을 대신 사용하지 않는다.
+- f/a/b/c는 기존과 같은 두 프레임 disjoint epoch 안에 있다. disjoint·frequency=0·비정상 timestamp 순서는 제외하고, 16칸/32프레임 링과 DONOTFLUSH 회수, 포화 시 건너뛰기, 기존 wall/EVENT/b→b 통계는 유지한다. 기존 stat 0..60과 모든 export 이름/ordinal은 보존하고 61..99만 추가했다.
+- 기본 모드는 timestamp 4개(f/a/b/c), EVENT 1개, 두 프레임당 disjoint 1개다. 초기화 시 쿼리 객체 176개를 만들고 재사용한다. 기본 모드에는 카메라별 쿼리 발행이 없다. 화면 a 이벤트가 없는 프레임에는 a를 발행하지 않는다. native 자체의 프레임당 힙 할당과 GPU 완료 대기는 없다.
+
+`presentpath on gputime cameras`를 선택하면 카메라별 분해도 켠다. 카메라별 쿼리 비용을 기본 모드에 더하지 않기 위한 별도 옵션이다.
+
+| 출력 | 범위/분모 |
+|---|---|
+| `gpuCamera name=... target=RT/screen samples=... meanPerFrameUs=...` | 해당 카메라의 preCull 렌더 이벤트→AfterEverything. 유효 구간 합계 / 전체 `gpuFrameSamples` |
+| 같은 줄 `filterSamples`, `filterMeanPerFrameUs` | 해당 카메라의 BeforeImageEffects→AfterImageEffects 합계 / 전체 `gpuFrameSamples` |
+| `cameraRepeatedMarkersSkipped` | 같은 Present 안 같은 카메라/필터를 다시 렌더하여 쿼리 재발행을 생략한 마커 수 |
+
+처음 관측한 최대 8개 카메라를 추적하고, 상태 출력 시 카메라 평균 내림차순으로 이름과 함께 최대 8줄을 표시한다. 카메라가 더 많으면 전체 카메라 중 상위 8개를 보장하지 않는다. 장면/곡 로딩이 끝난 뒤 켜야 로딩용 카메라가 슬롯을 차지하지 않는다. 슬롯은 off/on에서 초기화하며, 실행 중 소멸한 카메라 슬롯은 재사용하지 않는다.
+
+카메라마다 시작 버퍼 1개와 부착 버퍼 3개(AfterEverything, BeforeImageEffects, AfterImageEffects)를 최초 관측 때만 만들고 재사용한다. 선택 모드는 초기화 때 쿼리 객체 1,200개를 만들며, 카메라당 프레임 최대 timestamp 4개가 추가된다. 8개 모두 렌더하면 기본 5개 쿼리 마커 외 최대 32개의 timestamp가 더 발행되므로, FPS 비교는 기본 `ppGpu`와 분해 모드를 구분한다. 실제 비용은 미측정이다. off/Unload에서 두 전역 카메라 콜백을 해제하고, 살아 있는 카메라의 부착 버퍼 제거 및 모든 자체 버퍼 Release 후 기존 native 정리를 요청한다.
+
+인계문의 예시 `CameraEvent.BeforeEverything`은 프로젝트가 참조하는 Unity API에 존재하지 않아, 실제 빌드가 지원하는 **onPreCull 시작 이벤트**를 사용했다. [Unity onPreCull 문서](https://docs.unity3d.com/6000.0/Documentation/ScriptReference/Camera-onPreCull.html)는 카메라 culling 전 호출임을 설명한다. [카메라 이벤트 순서](https://docs.unity3d.com/6000.0/Documentation/Manual/GraphicsCommandBuffers-order.html)에 따라 이미지 효과 구간은 BeforeImageEffects/AfterImageEffects로 분리했다.
+
+### 해석 제한과 bench GPU 열
+
+**bench의 GPU 열은 `fpsmark end`→`PerfOverlay.FpsWinEnd()`의 평균이며, `FrameTimingManager.GetLatestTimings(...).gpuFrameTime`(표본이 없으면 `ProfilerRecorder("GPU Frame Time").LastValue / 1e6`)에서 온다. 0.26ms는 이 Unity 계측값이며 Present wall이나 이번 f→b와 동일 범위가 보장되지 않으므로, 작게 나오는 정확한 엔진 내부 원인은 현재 증거만으로 확정할 수 없다.** 해당 경로는 [AutoTest.cs](../../AutoTest.cs)와 [PerfOverlay.cs](../../PerfOverlay.cs)에서 확인했다. RunLod 켰을 때 2.99ms로 바뀐 사실만으로 원인을 정하지 않는다.
+
+f는 **첫 카메라 preCull 이벤트**다. 그 전 BeginFrame, compute, 업로드, 다른 콜백이 먼저 제출한 GPU 명령까지 포괄한다고 보장하지 않는다. 또한 timestamp 차이는 두 마커 사이의 경과 시간이어서 GPU가 CPU 제출을 기다린 유휴 간격도 포함할 수 있다. gpuFrame은 GPU busy의 직접 측정이 아니다.
+
+필터 통계는 카메라의 이미지 효과 구간 합계이며 개별 OnRenderImage 컴포넌트/각 blit별 시간은 아니다. opaque 전용 이미지 효과는 별도 BeforeImageEffectsOpaque 구간이라 필터 통계에 포함되지 않을 수 있다. 카메라 시간에는 필터 시간이 포함되므로 둘을 더하지 않는다. 중첩 렌더도 카메라 간 포함 관계가 생길 수 있다. `samples=0`인 카메라/필터는 해당 이벤트 쌍을 회수하지 못한 상태이며 0us 성능으로 해석하지 않는다. 같은 카메라의 한 프레임 내 반복 렌더는 첫 쌍만 측정하므로 skipped가 있으면 분해 결과를 전체 카메라 비용으로 사용하지 않는다.
+
+기존 `eventNotObserved=100%`는 Present 반환 직후의 비차단 GetData에서 완료를 관측하지 못한 비율이다. 드라이버 보고 지연도 있어 GPU busy 100%나 DWM 배제의 증거가 아니다. HELLO/DD의 큰 Present wall은 드라이버 큐 대기 가설을 지지하는 선행 관측이지만, 이번 gpuFrame 실측으로 범위를 넓힌 뒤 비교해야 한다. gpuFrame이 크면 같은 프레임 GPU 작업 및 필터 구간 축소를, 작으면 카메라 전 작업·backlog·드라이버/OS pacing을 다음 조사 후보로 삼는다.
+
+### 추가 측정 설정 — 미실행
+
+기존 `ppGpu` 예시는 그대로 사용한다. 분해 모드는 별도 CFG로 추가한다. 공용 bench 파일은 수정하지 않았다.
+
+```python
+CFG2["ppGpuCam"] = (dict(CFG2["rlNR"][0]), list(CFG2["rlNR"][1]))
+CFG_MID["ppGpuCam"] = ["presentpath on gputime cameras", "wait 1",
+                       "presentpath state", "presentpath assert"]
+CFG_POST["ppGpuCam"] = ["presentpath state", "presentpath assert",
+                        "presentpath off", "presentpath state"]
+```
+
+기존 HELLO50/DD/Exit 조건에서 먼저 `ppGpu`로 gpuFrame과 render의 차이를 확인하고, 별도 `ppGpuCam` 실행에서 이름/RT 여부/필터 분해를 확인한다. 측정 전후 ACK 상태의 gpuFrameSamples 증가, queryFailures=0, ringDrops=0, disjoint, 실패 Present=0을 확인한다. 분해에서는 cameraTiming=1, 해당 카메라/필터 samples 증가와 skipped=0도 확인한다. 누적 평균이므로 정확한 벤치 창만 계산하려면 시작/끝 snapshot의 표본 수와 누적값을 구분해야 한다. 현재 출력은 개별 평균 µs가 정수로 반올림되어 있어 차분 계산도 반올림 오차가 있다.
+
+### 현재 검증
+
+- 네이티브 / AUTOTEST / Player / DEV **모두 빌드 오류 0개**. managed 경고는 각각 63 / 63 / 84개로 남아 있다. 로그는 [기존 검증 폴더](../../out/present-gputime/)의 build-native/autotest/player/dev.txt를 갱신했다.
+- native fixture PASS: 오프스크린 f와 화면 a 범위 분리, 화면 없는 프레임 회수, 필터 쌍과 전체 프레임 분모, 필터 포함 disjoint 제외, 반복 마커 덮어쓰기 방지, 기존 포화/실패/정리 검증. [로그](../../out/present-gputime/fixture.txt)
+- 실제 managed 메서드 fixture PASS: 3회 재시작, 두 카메라 콜백, 오프스크린 포함/기존 화면 범위 유지, 재사용, 8개 제한, 이름 출력, 카메라 버퍼 제거/해제, off/Unload 진입점, query 실패 거부, observe 격리. [로그](../../out/present-gputime/managed-fixture.txt)
+- 기존 COM/버퍼 fixture, BufferResize pump, ScreenPrefs fixture PASS. 게임을 실행하지 않는 검사다.
+- HEAD의 export **60개 이름·ordinal 전부 보존**. 새 export 없음. PresentPath/BufferResize/ScreenPrefs는 AUTOTEST에만 존재하고 세 managed DLL 모두 최신 native를 내장한다. [검사 JSON](../../out/present-gputime/artifact-check.json)
+- 현재 빌드 SHA256은 [hashes.json](../../out/present-gputime/hashes.json)을 따른다. 위 최초 결과 절의 해시는 이전 빌드 이력이다.
+
+실제 D3D 드라이버 쿼리 진행, 게임 내 camRT/필터 이벤트 순서, 픽셀/계측 비용, 실게임 off/Unload 원복은 Claude의 다음 실행에서 확인해야 한다. 이번 구현/오프라인 검증만으로 새 GPU 시간·FPS 이득·병목 원인을 확정하지 않는다.

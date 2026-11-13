@@ -16,3 +16,15 @@
 6. bench_v14 용 CFG2 `ppGpu` 예시(ppObs 와 같은 패턴). 4종 빌드 오류 0, export 보존.
 
 결과: `docs/handoff/present-gputime-20261114-result.md`. 커밋·게임 실행·설치 DLL 교체 금지. 잰 것만 숫자로.
+
+## 추가 (2026-11-14 실게임 결과, Claude)
+HELLO50 / DD / Exit(sh), 3440 렌더, 2560x1440 FSW, rlNR:
+- `renderMeanUs` 135/134/162 (첫 **화면** 카메라 이벤트→Present 직전: camRT 오프스크린 카메라가 빠져 있어 전체가 아님)
+- `bbMeanUs`(Present 직전 GPU 시각 간격) 5356/4401/3099 = 프레임 간격과 같음
+- Present wall 2861/2309/**93** µs, eventNotObserved 100%(셋 다)
+→ HL/DD 는 Present 가 드라이버 큐에서 막힘 = GPU 병목으로 해석. Exit 는 안 막힘.
+### 할 일
+1. GPU 구간 시작을 **프레임의 가장 첫 GPU 작업**(모든 카메라 중 첫 렌더 — 오프스크린 camRT 카메라 포함, 예: 첫 카메라 onPreCull/CommandBuffer BeforeEverything 또는 BeginFrame 직후 렌더 이벤트)으로 옮긴 `gpuFrame*`(시작→Present 직전) 통계를 추가. 기존 render 통계는 유지.
+2. 가능하면 카메라별(camRT 카메라, 화면 카메라, 필터 OnRenderImage 블릿 구간) GPU 시간을 나눠 프레임 평균 µs 로(이름 포함, 상위 8개).
+3. bench 의 "GPU" 열 출처(FrameTiming?)와 왜 0.26ms 인지 한 줄 설명.
+4. 4종 빌드 오류 0. 결과 문서에 이어 쓰기. 게임 실행·커밋 금지.

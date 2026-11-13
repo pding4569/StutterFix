@@ -16,7 +16,7 @@ def method(marker):
     return source[start:end]
 
 methods = '\n'.join(method(m) for m in [
-    'static void GpuCamera(', 'static void StopGpuCamera(',
+    'static void GpuCamera(', 'static void GpuPreCull(', 'static void StopGpuCamera(',
     'internal static bool Step(', 'internal static void Stop(', 'static void State()'])
 prefix = r'''
 using System;
@@ -26,9 +26,15 @@ namespace UnityEngine {
     class Camera {
         public delegate void CameraCallback(Camera c);
         public static event CameraCallback onPreRender;
+        public static event CameraCallback onPreCull;
+        public string name="fixture";
+        public int Attached;
+        public void AddCommandBuffer(CameraEvent e,CommandBuffer c){Attached++;}
+        public void RemoveCommandBuffer(CameraEvent e,CommandBuffer c){Attached--;}
         public object targetTexture;
         public static int Subscribers=>onPreRender?.GetInvocationList().Length??0;
-        public static void Render(Camera c)=>onPreRender?.Invoke(c);
+        public static int CullSubscribers=>onPreCull?.GetInvocationList().Length??0;
+        public static void Render(Camera c){onPreCull?.Invoke(c);onPreRender?.Invoke(c);}
     }
     static class Graphics { public static void ExecuteCommandBuffer(CommandBuffer c){Test.Issue(c.id,IntPtr.Zero);} }
     static class Time { public static int frameCount=10; }
@@ -39,6 +45,7 @@ namespace UnityEngine {
     }
 }
 namespace UnityEngine.Rendering {
+    enum CameraEvent {AfterEverything,BeforeImageEffects,AfterImageEffects}
     class CommandBuffer : IDisposable {
         public string name;public int id;
         public static int Created,Released;
@@ -56,9 +63,16 @@ class Test {
     static int startFrame;
     static long refreshBefore,stateRefreshBefore;
     static CommandBuffer gpuBegin;
+    static CommandBuffer gpuFrameBegin;
+    static bool gpuCameraTiming;
+    static readonly Camera[] gpuCameras=new Camera[8];
+    static readonly CommandBuffer[] gpuCameraStarts=new CommandBuffer[8],gpuCameraEnds=new CommandBuffer[8];
+    static readonly CommandBuffer[] gpuFilterStarts=new CommandBuffer[8],gpuFilterEnds=new CommandBuffer[8];
+    static int gpuCameraCount;
     static readonly Camera.CameraCallback gpuCameraCallback=GpuCamera;
+    static readonly Camera.CameraCallback gpuPreCullCallback=GpuPreCull;
     static readonly FrameTiming[] timing=new FrameTiming[1];
-    static long[] stats=new long[61];
+    static long[] stats=new long[100];
     static long status,mode;
     static BufferResize resize;
     static string log="";
@@ -78,6 +92,9 @@ class Test {
         if(id==0){status=0;stats[60]=0;return;}
         if(id==4){stats[18]++;return;}
         if(id==10){stats[36]++;return;}
+        if(id==11){stats[61]++;return;}
+        if(id>=100 && id<116)return;
+        if(id==13)id=9;
         mode=id;status=1;stats[7]=1;stats[19]=1;stats[60]=id==9?1:0;
     }
     static void Log(string s){log+=s+"\n";}
@@ -87,25 +104,36 @@ suffix = r'''
     static void AssertLease(){Expect(!Step("assert"),"assert queues refresh");Expect(Step("assert"),"assert ACK");}
     static void Main(){
         for(int cycle=0;cycle<3;cycle++) {
-            Expect(Step("on gputime") && mode==9 && Camera.Subscribers==1,"start");
+            Expect(Step("on gputime") && mode==9 && Camera.Subscribers==1 && Camera.CullSubscribers==1,"start");
             int created=CommandBuffer.Created;
             long before=stats[36];
-            Camera.Render(new Camera{targetTexture=new object()});Expect(stats[36]==before,"offscreen excluded");
+            long frames=stats[61];
+            Camera.Render(new Camera{targetTexture=new object()});Expect(stats[36]==before && stats[61]==frames+1,"offscreen frame included; legacy screen scope preserved");
             for(int i=0;i<100;i++)Camera.Render(new Camera());
             Expect(CommandBuffer.Created==created && stats[36]==before+100,"reused command buffer");
             Time.frameCount++;AssertLease();
-            Expect(Step("off") && status==0 && mode==0 && Camera.Subscribers==0,"off ACK removes callback");
+            Expect(Step("off") && status==0 && mode==0 && Camera.Subscribers==0 && Camera.CullSubscribers==0,"off ACK removes callbacks");
             Expect(CommandBuffer.Created==CommandBuffer.Released,"released once");
             Camera.Render(new Camera());Expect(stats[36]==before+100,"no callback after off");
         }
+        Step("on gputime cameras");
+        var camera=new Camera{targetTexture=new object()};Camera.Render(camera);
+        int buffers=CommandBuffer.Created;
+        for(int i=0;i<100;i++)Camera.Render(camera);
+        Expect(camera.Attached==3 && gpuCameraCount==1 && buffers==CommandBuffer.Created,"camera/filter buffers reused");
+        for(int i=0;i<10;i++)Camera.Render(new Camera());
+        Expect(gpuCameraCount==8,"bounded cameras");
+        Step("state");Step("state");
+        Expect(log.Contains("gpuCamera index=") && log.Contains("meanPerFrameUs="),"named camera stats");
+        Step("off");Expect(camera.Attached==0 && CommandBuffer.Created==CommandBuffer.Released,"camera detach/release");
         Step("on gputime");Time.frameCount++;stats[53]=1;
         Expect(!Step("assert"),"failure refresh");bool rejected=false;
         try {Step("assert");}catch(Exception){rejected=true;}
         Expect(rejected,"query failure rejected");Stop(); // same entry point as Unload
-        Expect(Camera.Subscribers==0 && gpuBegin==null,"Unload cleanup");Step("off");stats[53]=0;
+        Expect(Camera.Subscribers==0 && Camera.CullSubscribers==0 && gpuBegin==null && gpuFrameBegin==null,"Unload cleanup");Step("off");stats[53]=0;
         Step("on observe");Expect(Camera.Subscribers==0,"observe dormant GPU callback");Step("off");
-        Expect(log.Contains("renderMeanUs=") && log.Contains("queryFailures="),"GPU state fields");
-        Console.WriteLine("PASS actual Step/Stop/State/GpuCamera: mode9, 3 restart cycles, offscreen exclusion, 100 callbacks reuse one buffer, ACK, query failure refusal, Unload entry cleanup, observe isolation");
+        Expect(log.Contains("renderMeanUs=") && log.Contains("gpuFrameMeanUs=") && log.Contains("queryFailures="),"GPU state fields");
+        Console.WriteLine("PASS actual managed methods: 3 restart cycles, offscreen frame inclusion / legacy screen scope, buffer reuse, optional 8 camera cap and named stats, camera detach/release, ACK, query failure refusal, Unload cleanup, observe isolation");
     }
 }
 '''

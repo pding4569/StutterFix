@@ -31,7 +31,43 @@ namespace StutterFix
         static bool statePending;
         static long stateRefreshBefore;
         static CommandBuffer gpuBegin;
+        static CommandBuffer gpuFrameBegin;
+        static bool gpuCameraTiming;
+        static readonly Camera[] gpuCameras=new Camera[8];
+        static readonly CommandBuffer[] gpuCameraStarts=new CommandBuffer[8],gpuCameraEnds=new CommandBuffer[8];
+        static readonly CommandBuffer[] gpuFilterStarts=new CommandBuffer[8],gpuFilterEnds=new CommandBuffer[8];
+        static int gpuCameraCount;
         static readonly Camera.CameraCallback gpuCameraCallback=GpuCamera;
+        static readonly Camera.CameraCallback gpuPreCullCallback=GpuPreCull;
+        static void GpuPreCull(Camera camera)
+        {
+            if(gpuFrameBegin==null || stopping)return;
+            // Immediate render event precedes this camera's culling/render work,
+            // even when Unity renders camRT before the first screen camera.
+            Graphics.ExecuteCommandBuffer(gpuFrameBegin);
+            if(!gpuCameraTiming)return;
+            for(int i=0;i<gpuCameraCount;i++)if(gpuCameras[i]==camera)
+            {
+                Graphics.ExecuteCommandBuffer(gpuCameraStarts[i]);return;
+            }
+            if(gpuCameraCount==8)return;
+            int k=gpuCameraCount++;
+            gpuCameras[k]=camera;
+            var first=new CommandBuffer {name="PresentPath.CameraBegin"};
+            var last=new CommandBuffer {name="PresentPath.CameraEnd"};
+            first.IssuePluginEventAndData(callback,100+k,IntPtr.Zero);
+            last.IssuePluginEventAndData(callback,200+k,IntPtr.Zero);
+            gpuCameraStarts[k]=first;gpuCameraEnds[k]=last;
+            camera.AddCommandBuffer(CameraEvent.AfterEverything,last);
+            var fxFirst=new CommandBuffer {name="PresentPath.ImageEffectsBegin"};
+            var fxLast=new CommandBuffer {name="PresentPath.ImageEffectsEnd"};
+            fxFirst.IssuePluginEventAndData(callback,108+k,IntPtr.Zero);
+            fxLast.IssuePluginEventAndData(callback,208+k,IntPtr.Zero);
+            gpuFilterStarts[k]=fxFirst;gpuFilterEnds[k]=fxLast;
+            camera.AddCommandBuffer(CameraEvent.BeforeImageEffects,fxFirst);
+            camera.AddCommandBuffer(CameraEvent.AfterImageEffects,fxLast);
+            Graphics.ExecuteCommandBuffer(first);
+        }
         static void GpuCamera(Camera camera)
         {
             // Unity invokes this before rendering the camera; native deduplicates
@@ -42,7 +78,23 @@ namespace StutterFix
         static void StopGpuCamera()
         {
             Camera.onPreRender-=gpuCameraCallback;
+            Camera.onPreCull-=gpuPreCullCallback;
             if(gpuBegin!=null) {gpuBegin.Release();gpuBegin=null;}
+            if(gpuFrameBegin!=null) {gpuFrameBegin.Release();gpuFrameBegin=null;}
+            for(int i=0;i<gpuCameraCount;i++)
+            {
+                if(gpuCameras[i]!=null)
+                {
+                    gpuCameras[i].RemoveCommandBuffer(CameraEvent.AfterEverything,gpuCameraEnds[i]);
+                    gpuCameras[i].RemoveCommandBuffer(CameraEvent.BeforeImageEffects,gpuFilterStarts[i]);
+                    gpuCameras[i].RemoveCommandBuffer(CameraEvent.AfterImageEffects,gpuFilterEnds[i]);
+                }
+                gpuCameraStarts[i].Release();gpuCameraEnds[i].Release();
+                gpuCameraStarts[i]=gpuCameraEnds[i]=null;gpuCameras[i]=null;
+                gpuFilterStarts[i].Release();gpuFilterEnds[i].Release();
+                gpuFilterStarts[i]=gpuFilterEnds[i]=null;
+            }
+            gpuCameraCount=0;gpuCameraTiming=false;
         }
         static BufferResize resize;
         static readonly FrameTiming[] timing=new FrameTiming[1];
@@ -119,7 +171,7 @@ namespace StutterFix
                 statePending=true;
                 return false; // wait for render-thread snapshot ACK before logging actual state
             }
-            if(a.Length==2 && a[0]=="on")
+            if((a.Length==2 || (a.Length==3 && a[1]=="gputime" && a[2]=="cameras")) && a[0]=="on")
             {
                 int id=a[1]=="observe"?1:a[1]=="tearing"?2:a[1]=="latency4"?3:a[1]=="buffers3"?6:a[1]=="resizeprobe"?7:a[1]=="gputime"?9:0;
                 if(id==0) throw new Exception("presentpath: unknown candidate");
@@ -131,13 +183,17 @@ namespace StutterFix
                 else resize=null;
                 requested=a[1];startFrame=Time.frameCount;
                 FrameTimingManager.CaptureFrameTimings();
+                gpuCameraTiming=id==9 && a.Length==3;
                 sf_presentpath_pin(captured);sf_presentpath_pending();
-                Log("queued "+requested+"; verify with assert after elapsed frames");Issue(id,captured);
+                Log("queued "+requested+"; verify with assert after elapsed frames");Issue(gpuCameraTiming?13:id,captured);
                 if(id==9)
                 {
                     gpuBegin=new CommandBuffer {name="PresentPath.GpuBegin"};
                     gpuBegin.IssuePluginEventAndData(callback,10,IntPtr.Zero);
+                    gpuFrameBegin=new CommandBuffer {name="PresentPath.GpuFrameBegin"};
+                    gpuFrameBegin.IssuePluginEventAndData(callback,11,IntPtr.Zero);
                     Camera.onPreRender+=gpuCameraCallback;
+                    Camera.onPreCull+=gpuPreCullCallback;
                 }
                 return true;
             }
@@ -153,7 +209,7 @@ namespace StutterFix
                 if(requested==null || stopping || Stat(-1)!=1 || Time.frameCount<=startFrame || Stat(7)==0 || Resolve()!=captured || Stat(15)!=0)
                     throw new Exception("presentpath INVALID: inactive/recreated/failed/no observed Present");
                 if(Stat(19)!=1) throw new Exception("presentpath INVALID: overlay replaced instance vtable");
-                if(requested=="gputime" && (Stat(36)==0 || Stat(53)!=0 || Stat(60)!=1))
+                if(requested=="gputime" && (Stat(61)==0 || Stat(53)!=0 || Stat(60)!=1))
                     throw new Exception("presentpath INVALID: no recovered GPU samples/query failure/not ready");
                 if(requested=="tearing" && Stat(14)==0) throw new Exception("presentpath INVALID: tearing no-op (already enabled or ineligible)");
                 if(requested=="latency4" && Stat(6)!=4) throw new Exception("presentpath INVALID: latency target not observed");
@@ -163,7 +219,7 @@ namespace StutterFix
                     throw new Exception("presentpath INVALID: resizeprobe count/resize failed");
                 State();Log("accepted "+requested);return true;
             }
-            throw new Exception("presentpath state|on observe|on tearing|on latency4|on buffers3|on resizeprobe|on gputime|assert|off");
+            throw new Exception("presentpath state|on observe|on tearing|on latency4|on buffers3|on resizeprobe|on gputime [cameras]|assert|off");
         }
         internal static void Stop()
         {
@@ -200,7 +256,20 @@ namespace StutterFix
                     " eventChecks="+Stat(49)+" eventNotObserved="+Stat(50)+" eventNotObservedPct="+(Stat(51)/10000.0)+
                     " disjoint="+Stat(52)+" queryFailures="+Stat(53)+" ringDrops="+Stat(54)+" pending="+Stat(55)+" missingBegin="+Stat(56)+" discardedOnStop="+Stat(57)+
                     " bcMeanUs="+Stat(58)+" bcP95Us="+Stat(59)+" ready="+Stat(60)+
+                    " gpuFrameSamples="+Stat(61)+" gpuFrameMeanUs="+Stat(62)+" gpuFrameP50Us="+Stat(63)+" gpuFrameP95Us="+Stat(64)+" gpuFrameMaxUs="+Stat(65)+
+                    " cameraTiming="+Stat(66)+" cameraRepeatedMarkersSkipped="+Stat(67)+" gpuFrameScope=first_any_camera_preCull_event_to_prePresent_including_offscreen"+
                     " scope=first_screen_camera_event_to_prePresent percentile=8us_upper_bound_overflow_max eventScope=after_return_nonblocking_observation bbScope=every_other_adjacent_interval_within_one_disjoint_epoch");
+            if(gpuCameraTiming)
+            {
+                // Bounded insertion sort by mean per recovered frame; allocate only on state.
+                var order=new int[gpuCameraCount];
+                for(int i=0;i<order.Length;i++) {int j=i;while(j>0 && Stat(69+2*order[j-1])<Stat(69+2*i)) {order[j]=order[j-1];j--;}order[j]=i;}
+                foreach(int k in order)Log("gpuCamera index="+k+" name="+(gpuCameras[k]!=null?gpuCameras[k].name:"destroyed")+
+                    " target="+(gpuCameras[k]!=null && gpuCameras[k].targetTexture!=null?"RT":"screen")+
+                    " samples="+Stat(68+2*k)+" meanPerFrameUs="+Stat(69+2*k)+" denominator="+Stat(61)+
+                    " filterSamples="+Stat(84+2*k)+" filterMeanPerFrameUs="+Stat(85+2*k)+
+                    " scope=preCull_event_to_AfterEverything_inclusive filterScope=BeforeImageEffects_to_AfterImageEffects_aggregate");
+            }
         }
         // An independent Unity Update survives EndBatch/Stop and a mod disable long enough
         // to finish restoration. Screen.SetResolution queues Unity's normal resize path.
