@@ -1023,7 +1023,11 @@ namespace StutterFix
                 case "decotexmin": GpuHide.DecoTexMin = int.Parse(arg.Trim()); Log("[decotexmin] " + GpuHide.DecoTexMin); return true;
                 case "hidegroup": { var q = arg.Split(' '); Log("[hidegroup] " + q[0] + " " + GpuHide.Toggle(q[0], q.Length > 1 && q[1] == "on")); return true; }
                 case "holdskip": HoldFix.Command(arg); return true;
-                case "waitskip": EnginePatch.WaitSkip(arg != "off"); return true;
+                case "waitskip":
+#if AUTOTEST
+                    if (arg.Trim().Equals("state", StringComparison.OrdinalIgnoreCase)) { EnginePatch.WaitSkipState(); return true; }
+#endif
+                    EnginePatch.WaitSkip(arg != "off"); return true;
                 case "screenres":
                     {
                         // 해상도 변경 재현: screenres <w> <h> [fsw|win|excl]
