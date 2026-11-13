@@ -166,7 +166,7 @@ namespace StutterFix
                 " waitScope=latest_FrameTiming_not_exclusive_CPU_time");
         }
         // An independent Unity Update survives EndBatch/Stop and a mod disable long enough
-        // to finish restoration. No game swapchain API is called from this main-thread pump.
+        // to finish restoration. Screen.SetResolution queues Unity's normal resize path.
         sealed class ResizePump : MonoBehaviour
         {
             void Update() {if(resize!=null) resize.Pump();}
@@ -179,7 +179,7 @@ namespace StutterFix
             readonly bool probe;
             GameObject driver;
             int phase=1, frame;
-            long calls, triggers, presents;
+            long calls, presents;
             bool restore;
             volatile string error;
             readonly System.Diagnostics.Stopwatch clock=System.Diagnostics.Stopwatch.StartNew();
@@ -252,6 +252,14 @@ namespace StutterFix
                 Done=true;DestroyDriver();Log(message);
                 if(error!=null)Log("status=-1 failed: "+error+"; rollback ACK received; preferences restored");
             }
+            void Request(int width, int nextPhase)
+            {
+                calls=Stat(20);frame=Time.frameCount;phase=nextPhase;Arm();
+                Log("resize Screen.SetResolution queued phase="+(restore?"restore":"apply")+
+                    " size="+width+"x"+h+" mode="+screenMode+" callsBefore="+calls);
+                Screen.SetResolution(width,h,screenMode);
+                Log("resize Screen.SetResolution returned; awaiting resize/screen ACK");
+            }
             internal void Pump()
             {
                 if(Done || (phase==0 && !restore))return;
@@ -262,23 +270,31 @@ namespace StutterFix
                     {
                         if(!restore && Stat(-1)==2)return;
                         if(Stat(-1)<0)throw new Exception("native status="+Stat(-1));
-                        if(restore && Stat(-1)==0) {prefs.Restore();Restored("off ACK; count unchanged; preferences restored");return;}
+                        // Even an early/probe off can leave a deferred 1px request. Queue
+                        // the original size after it and wait before restoring preferences.
+                        if(restore && Stat(-1)==0) {Request(w,5);return;}
                         if(Resolve()!=captured || Stat(19)!=1)throw new Exception("swapchain/vtable replaced");
-                        if(Screen.width!=w || Screen.height!=h || Screen.fullScreenMode!=screenMode || Stat(0)!=w || Stat(1)!=h)
+                        if(!restore && (Screen.width!=w || Screen.height!=h || Screen.fullScreenMode!=screenMode || Stat(0)!=w || Stat(1)!=h))
                             throw new Exception("screen/backbuffer dimensions differ; exact-size trigger refused");
-                        calls=Stat(20);triggers=Stat(30);presents=Stat(7);frame=Time.frameCount;Arm();
-                        phase=2;
-                        Log("resize trigger queued phase="+(restore?"restore":"apply")+" exactSize="+w+"x"+h+" callsBefore="+calls);
-                        Issue(8,IntPtr.Zero);return;
+                        // A width change forces Unity to release/recreate its backbuffer.
+                        // Do not call internal Adjust or hook the device OnAfterPresent.
+                        // Rollback may start at w-1 already, so return to w first.
+                        Request(restore && Screen.width!=w?w:w-1,restore && Screen.width!=w?6:2);return;
                     }
-                    if(phase==2)
+                    if(phase==2 || phase==6)
                     {
-                        if(Time.frameCount<=frame+2 || Stat(30)<=triggers || Stat(32)!=2)return;
-                        Log("resize trigger returned adjust="+Stat(31)+" calls="+Stat(20)+" hr="+Stat(21)+" fallbackHR="+Stat(28)+" presents="+Stat(7)+
-                            " adjGuardA="+Stat(33)+" adjGuardB="+Stat(34)+" afterPresentCalls="+Stat(35));
-                        if(Stat(31)!=1 || Stat(20)<=calls || Stat(21)<0 || (!restore && Stat(25)!=0) || Stat(17)<0 || Stat(2)!=(restore || probe?Stat(26):3))
-                            throw new Exception("engine Adjust/resize/count verification failed");
+                        if(Time.frameCount<=frame+2)return;
+                        if(Stat(-1)<0)throw new Exception("native status="+Stat(-1));
+                        if(Screen.fullScreenMode!=screenMode)throw new Exception("screen mode changed");
                         if(Resolve()!=captured || Stat(19)!=1)throw new Exception("swapchain/vtable replaced");
+                        if(Stat(20)>calls && (Stat(21)<0 || (!restore && Stat(25)!=0)))
+                            throw new Exception("Screen.SetResolution resize HRESULT/rewrite failed");
+                        int targetWidth=phase==2?w-1:w;
+                        if(Screen.width!=targetWidth || Screen.height!=h || Stat(20)<=calls || Stat(0)!=targetWidth || Stat(1)!=h)return;
+                        Log("resize screen ACK size="+targetWidth+"x"+h+" calls="+Stat(20)+" hr="+Stat(21)+" fallbackHR="+Stat(28)+" presents="+Stat(7));
+                        if(Stat(17)<0 || Stat(2)!=(restore || probe?Stat(26):3))
+                            throw new Exception("Screen.SetResolution resize/count verification failed");
+                        if(phase==2) {Request(w,6);return;}
                         presents=Stat(7);phase=3;return;
                     }
                     if(phase==3)
@@ -298,6 +314,11 @@ namespace StutterFix
                             throw new Exception("off restoration rejected");
                         prefs.Restore();Restored("off ACK; buffers/screen/preferences restored");
                     }
+                    if(phase==5 && Time.frameCount>frame+2 && Screen.width==w && Screen.height==h && Screen.fullScreenMode==screenMode)
+                    {
+                        if(Resolve()!=captured || Stat(-1)!=0 || Stat(2)!=Stat(26))throw new Exception("early off identity/count mismatch");
+                        prefs.Restore();Restored("off ACK; count unchanged; screen/preferences restored");
+                    }
                 }
                 catch(Exception ex)
                 {
@@ -308,6 +329,7 @@ namespace StutterFix
                         Restore();sf_presentpath_pending();
                         Log("resize failed; rollback queued: "+error);Issue(0,IntPtr.Zero);return;
                     }
+                    try {Request(w,5);}catch(Exception e) {error+="; screen restore request: "+e.Message;}
                     try {prefs.Restore();}catch(Exception e) {error+="; preferences: "+e.Message;}
                     // Keep callback/ref ownership if the engine cannot restore the count.
                     Done=true;DestroyDriver();
