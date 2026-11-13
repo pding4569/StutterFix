@@ -47,13 +47,13 @@ namespace StutterFix
                 {
                     var c=GpuDecoScene.FindMain();if(!c)throw new InvalidOperationException("main camera missing");
                     active=new GameObject("StutterFix.FillCensus").AddComponent<FillCensus>();DontDestroyOnLoad(active.gameObject);
-                    active.camera=c;active.target=n;active.deadline=Time.realtimeSinceStartup+20;
+                    active.camera=c;active.target=n;active.deadline=Time.realtimeSinceStartup+600;
                     active.path=Path.Combine(Main.Entry.Path,"fillcensus-"+DateTime.UtcNow.ToString("yyyyMMdd-HHmmss-fff"));
                     active.detail=new StreamWriter(active.path+"-frames.tsv");
                     active.detail.WriteLine("frame\tid\tname\tstate\tareaPx\talphaPositiveEstimatePx\tcolorAlpha\tgeometry\tshader\tblend\ttexture\tsort\tdecoration\tparents");
                     // All diagnostic blits/readbacks precede the camera query Begin.
                     // Never issue our own draws while the main-camera pipeline scope is open.
-                    active.LoadShaderMetadata();active.DecorationIdentities();active.PrewarmAlpha();active.deadline=Time.realtimeSinceStartup+20;
+                    active.LoadShaderMetadata();active.DecorationIdentities();active.PrewarmAlpha();active.deadline=Time.realtimeSinceStartup+600;
                     Camera.onPreRender+=active.Capture;
                     Log("started frames="+n+" camera="+c.name+" target="+(c.targetTexture?c.targetTexture.name:"screen")+" diagnostics perturb CPU/GPU; exclude this window from FPS comparisons");
                 }
