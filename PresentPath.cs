@@ -30,6 +30,20 @@ namespace StutterFix
         static long refreshBefore;
         static bool statePending;
         static long stateRefreshBefore;
+        static CommandBuffer gpuBegin;
+        static readonly Camera.CameraCallback gpuCameraCallback=GpuCamera;
+        static void GpuCamera(Camera camera)
+        {
+            // Unity invokes this before rendering the camera; native deduplicates
+            // multiple screen cameras until the next real Present. No per-frame allocation.
+            if(gpuBegin!=null && !stopping && camera.targetTexture==null)
+                Graphics.ExecuteCommandBuffer(gpuBegin);
+        }
+        static void StopGpuCamera()
+        {
+            Camera.onPreRender-=gpuCameraCallback;
+            if(gpuBegin!=null) {gpuBegin.Release();gpuBegin=null;}
+        }
         static BufferResize resize;
         static readonly FrameTiming[] timing=new FrameTiming[1];
         static long Stat(int i) { return callback==IntPtr.Zero ? 0 : sf_presentpath_stat(i); }
@@ -107,7 +121,7 @@ namespace StutterFix
             }
             if(a.Length==2 && a[0]=="on")
             {
-                int id=a[1]=="observe"?1:a[1]=="tearing"?2:a[1]=="latency4"?3:a[1]=="buffers3"?6:a[1]=="resizeprobe"?7:0;
+                int id=a[1]=="observe"?1:a[1]=="tearing"?2:a[1]=="latency4"?3:a[1]=="buffers3"?6:a[1]=="resizeprobe"?7:a[1]=="gputime"?9:0;
                 if(id==0) throw new Exception("presentpath: unknown candidate");
                 if(requested!=null || stopping) throw new Exception("presentpath: finish off before on");
                 if(!SfNative.Ready || sf_framegen_installed()!=0) throw new Exception("presentpath: native unavailable or framegen installed");
@@ -118,7 +132,14 @@ namespace StutterFix
                 requested=a[1];startFrame=Time.frameCount;
                 FrameTimingManager.CaptureFrameTimings();
                 sf_presentpath_pin(captured);sf_presentpath_pending();
-                Log("queued "+requested+"; verify with assert after elapsed frames");Issue(id,captured);return true;
+                Log("queued "+requested+"; verify with assert after elapsed frames");Issue(id,captured);
+                if(id==9)
+                {
+                    gpuBegin=new CommandBuffer {name="PresentPath.GpuBegin"};
+                    gpuBegin.IssuePluginEventAndData(callback,10,IntPtr.Zero);
+                    Camera.onPreRender+=gpuCameraCallback;
+                }
+                return true;
             }
             if(a.Length==1 && a[0]=="assert")
             {
@@ -132,6 +153,8 @@ namespace StutterFix
                 if(requested==null || stopping || Stat(-1)!=1 || Time.frameCount<=startFrame || Stat(7)==0 || Resolve()!=captured || Stat(15)!=0)
                     throw new Exception("presentpath INVALID: inactive/recreated/failed/no observed Present");
                 if(Stat(19)!=1) throw new Exception("presentpath INVALID: overlay replaced instance vtable");
+                if(requested=="gputime" && (Stat(36)==0 || Stat(53)!=0 || Stat(60)!=1))
+                    throw new Exception("presentpath INVALID: no recovered GPU samples/query failure/not ready");
                 if(requested=="tearing" && Stat(14)==0) throw new Exception("presentpath INVALID: tearing no-op (already enabled or ineligible)");
                 if(requested=="latency4" && Stat(6)!=4) throw new Exception("presentpath INVALID: latency target not observed");
                 if(requested=="buffers3" && (Stat(2)!=3 || Stat(20)==0 || Stat(25)!=0 || Stat(27)==0 || Stat(17)<0))
@@ -140,10 +163,11 @@ namespace StutterFix
                     throw new Exception("presentpath INVALID: resizeprobe count/resize failed");
                 State();Log("accepted "+requested);return true;
             }
-            throw new Exception("presentpath state|on observe|on tearing|on latency4|on buffers3|on resizeprobe|assert|off");
+            throw new Exception("presentpath state|on observe|on tearing|on latency4|on buffers3|on resizeprobe|on gputime|assert|off");
         }
         internal static void Stop()
         {
+            StopGpuCamera();
             if(callback==IntPtr.Zero || requested==null || stopping) return;
             // Immediately stops flag changes; render event restores COM latency and vptr, with ACK.
             sf_presentpath_disable();sf_presentpath_pending();stopping=true;assertPending=statePending=false;
@@ -169,6 +193,14 @@ namespace StutterFix
                 " resizeReady="+(resize!=null && resize.Ready)+" resizeDone="+(resize!=null && resize.Done)+
                 " resizeError="+(resize==null?"none":resize.Error)+
                 " waitScope=latest_FrameTiming_not_exclusive_CPU_time");
+            if(requested=="gputime" || Stat(46)>0 || Stat(53)>0)
+                Log("gpu recovered="+Stat(36)+" renderMeanUs="+Stat(37)+" renderP50Us="+Stat(38)+" renderP95Us="+Stat(39)+" renderMaxUs="+Stat(40)+
+                    " bbSamples="+Stat(41)+" bbMeanUs="+Stat(42)+" bbP50Us="+Stat(43)+" bbP95Us="+Stat(44)+" bbMaxUs="+Stat(45)+
+                    " presentSamples="+Stat(46)+" presentMeanUs="+Stat(47)+" presentP95Us="+Stat(48)+
+                    " eventChecks="+Stat(49)+" eventNotObserved="+Stat(50)+" eventNotObservedPct="+(Stat(51)/10000.0)+
+                    " disjoint="+Stat(52)+" queryFailures="+Stat(53)+" ringDrops="+Stat(54)+" pending="+Stat(55)+" missingBegin="+Stat(56)+" discardedOnStop="+Stat(57)+
+                    " bcMeanUs="+Stat(58)+" bcP95Us="+Stat(59)+" ready="+Stat(60)+
+                    " scope=first_screen_camera_event_to_prePresent percentile=8us_upper_bound_overflow_max eventScope=after_return_nonblocking_observation bbScope=every_other_adjacent_interval_within_one_disjoint_epoch");
         }
         // An independent Unity Update survives EndBatch/Stop and a mod disable long enough
         // to finish restoration. Screen.SetResolution queues Unity's normal resize path.
