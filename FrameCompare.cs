@@ -167,6 +167,7 @@ namespace StutterFix
         }
         internal static void Resume()
         {
+            TileRender.Stop();
 #if AUTOTEST
             GpuDecoSnapshot.Stop();
 #endif
@@ -220,6 +221,16 @@ namespace StutterFix
                 p.LogDelta("negative-control", p.shots[a[1]].State, p.shots[a[2]].State, delta);
                 if (a.Length == 4) { p.Save(a[1]); p.Save(a[2]); }
                 if (r.Changed != 0 || delta.Changed != 0) throw new InvalidOperationException("negative control requires zero pixels and stable capture state");
+                return true;
+            }
+            // Renderer replacement deliberately changes forceRenderingOff. Keep
+            // assertzero strict for noise/restoration; candidate admission is
+            // checked separately and only the candidate's pixels are asserted here.
+            if (a.Length == 3 && a[0] == "assertpixels")
+            {
+                var r = p.Diff(a[1], a[2], 0);
+                if (r.Changed != 0) throw new InvalidOperationException("candidate requires zero differing pixels");
+                Log("assertpixels passed; cross-shot renderer state equality not asserted");
                 return true;
             }
             if (a.Length >= 3 && a[0] == "diff")

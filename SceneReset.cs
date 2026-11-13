@@ -35,6 +35,7 @@ namespace StutterFix
             Count++;
             DecoDetach.OnTransition();
 #if DEV || AUTOTEST
+            TileRender.Shutdown();
             MatShare.Stop();
             LiveDecoGate2.RestoreProfile();
             LiveDeco.Stop();
