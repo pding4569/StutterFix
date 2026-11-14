@@ -371,6 +371,9 @@
     <Compile Include="TightLate.cs" />
     <Compile Include="DirectDeco.cs" />
     <Compile Include="DirectDeco.M2.cs" />
+    <Compile Include="DirectDeco.M3.cs" />
+    <Compile Include="DirectProxyPolicy.cs" />
+    <EmbeddedResource Include="effects/direct-deco/stutterfix_directdeco" LogicalName="StutterFix.directdeco" />
     <Compile Include="DirectSequenceChanges.cs" />
     <Compile Include="MoveDeltaPolicy.cs" />
     <Compile Include="NativeMotion.cs" />

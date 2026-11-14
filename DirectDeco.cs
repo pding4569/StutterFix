@@ -70,6 +70,8 @@ namespace StutterFix
             public int Slot, Tex = -1, Geom, Placement, Layer, Order; public uint Flags; public SceneRenderOrder.Key Key;
             public bool Ok, Drawable, StructDirty, IsMask, Released, BackForceR, BackForceM;
             public int BackLayer, BackOrder, FrontLayer, FrontOrder;
+            public bool ProxyBoundsQueued, ProxyStaticQueued;
+            public DirectDecoLifetime ProxyLifetime;
             public readonly Entry First = new Entry(), Second = new Entry();
         }
         sealed class Leftover
@@ -267,16 +269,20 @@ namespace StutterFix
             var d = it.D; float* c = pChannels + it.Slot * ChannelFloats;
             Vector2 pos = d.pivotPosVec, piv = d.pivotOffsetVec, sc = d.scaleVec, po = d.parallaxOffset; Color col = d.color; var p = it.P;
             float rot = d.rotAngle, op = d.opacity, px = p.multiplier_x, py = p.multiplier_y;
+            bool proxyPoseChanged = ProxyMode && (c[0] != pos.x || c[1] != pos.y || c[2] != piv.x || c[3] != piv.y || c[4] != rot || c[5] != sc.x || c[6] != sc.y
+                || c[12] != px || c[13] != py || c[14] != po.x || c[15] != po.y);
             if (c[0] != pos.x || c[1] != pos.y || c[2] != piv.x || c[3] != piv.y || c[4] != rot || c[5] != sc.x || c[6] != sc.y
                 || c[7] != col.r || c[8] != col.g || c[9] != col.b || c[10] != col.a || c[11] != op || c[12] != px || c[13] != py || c[14] != po.x || c[15] != po.y)
             {
                 c[0] = pos.x; c[1] = pos.y; c[2] = piv.x; c[3] = piv.y; c[4] = rot; c[5] = sc.x; c[6] = sc.y;
                 c[7] = col.r; c[8] = col.g; c[9] = col.b; c[10] = col.a; c[11] = op; c[12] = px; c[13] = py; c[14] = po.x; c[15] = po.y;
                 MarkDirty(it.Slot); pollDirty++;
+                if (proxyPoseChanged) QueueProxyBounds(it);
             }
             if ((int)d.placementType != it.Placement) QueueStruct(it);
             bool drawable = it.Ok && rendererOn(d) && d.gameObject.activeInHierarchy && (it.IsMask || rendererColor(d).a != 0f);
             if (drawable != it.Drawable) { it.Drawable = drawable; listDirty = true; }
+            if (ProxyMode) ProxyVisibility(it);
             if (timing) pollTicks += System.Diagnostics.Stopwatch.GetTimestamp() - t0;
         }
 
@@ -289,6 +295,9 @@ namespace StutterFix
             if (!r) return "렌더러 없음";
             if (d.hitbox != 0) return "히트박스";
             bool mask = v.isMask();
+            // SpriteMask itself remains an engine renderer so unrelated Unity targets keep working.
+            if (ProxyMode && mask) return "M3 Unity 원래 SpriteMask";
+            if (ProxyMode && r.GetComponentInParent<SortingGroup>()) return "M3 SortingGroup";
             if (mask) { if (!Masks) return "마스크"; if (!v.spriteMask) return "마스크 없음"; }
             if (r.maskInteraction != SpriteMaskInteraction.None && !Masks) return "마스크 대상";
             if (meshOn(v)) return "메시 렌더러";
@@ -363,6 +372,7 @@ namespace StutterFix
         // 이 장식 자리(정렬 키)가 끼울 수 없는 남는 것들과 순서가 얽히지 않는가
         static bool WithinLimits(bool bg, SceneRenderOrder.Key key)
         {
+            if (ProxyMode) return true;
             if (Force) return true;
             if (bg) return (!bgLimit || key.CompareTo(bgMin) < 0) && (key.Layer < bgCanvasLayer || (key.Layer == bgCanvasLayer && key.Order < bgCanvasOrder));
             return (!fgLimit || key.CompareTo(fgMax) > 0) && (key.Layer > fgCanvasLayer || (key.Layer == fgCanvasLayer && key.Order > fgCanvasOrder));
@@ -381,6 +391,7 @@ namespace StutterFix
         static void Refresh(Item it)
         {
             structRefresh++;
+            if (ProxyMode) orderDirty = true;
             it.StructDirty = false;
             if (it.Released) return;
             var d = it.D; var r = it.R; float* s = pStatics + it.Slot * StaticFloats;
@@ -470,7 +481,8 @@ namespace StutterFix
                     }
                 }
             }
-            if (sf_dr2_statics(token, (uint)it.Slot, 1, s) == 0) { it.Ok = false; failure = "native.statics=0"; }
+            if (ProxyMode) QueueProxyStatic(it);
+            else if (sf_dr2_statics(token, (uint)it.Slot, 1, s) == 0) { it.Ok = false; failure = "native.statics=0"; }
             // 유효하지 않은 도형을 숨긴 채 남겨 두지 않는다. 마스크/순서도 다음 렌더 전에 다시 만든다.
             if (!it.Ok)
             {
@@ -478,7 +490,7 @@ namespace StutterFix
                 if (failureLogs++ < 10) Log("정적 실패 top" + failureLogs + " name=" + d.name + " slot=" + it.Slot + " field/value=" + failure);
                 ReleaseItem(it, "정적 값/도형/텍스처"); return;
             }
-            if (it.Ok != okBefore || it.Tex != texBefore || it.Geom != geomBefore || it.Flags != flagsBefore) listDirty = true;
+            if (it.Ok != okBefore || it.Tex != texBefore || it.Geom != geomBefore || it.Flags != flagsBefore) { listDirty = true; if (ProxyMode) orderDirty = true; }
             IndexNativeMaterial(it);
         }
         // 더는 맡을 수 없는 장식: 원래 렌더러로 돌려보낸다(그 장식만 순서가 어긋날 수 있다).
@@ -495,6 +507,12 @@ namespace StutterFix
                 it.D.SetOpacity(it.D.opacity); if (it.D.GetVisible()) it.D.UpdatePosition();
             }
             catch { }
+            if (ProxyMode)
+            {
+                if (it.ProxyLifetime) { it.ProxyLifetime.Changed = null; UnityEngine.Object.Destroy(it.ProxyLifetime); }
+                if (it.R) { var returned = MakeLeftover(it.R); returned.Seq = false; leftovers.Add(returned); RefreshProxyLeftover(returned); IndexRenderer(returned); }
+                QueueProxyBounds(it); return;
+            }
             // 같은 슬롯의 원래 렌더러를 끼워 그린다. 불가능할 때만 이 키를 경계로 추가한다.
             var lf = MakeLeftover(it.R);
             if (it.IsMask) { lf.Seq = false; lf.Why = "returned-mask"; }
@@ -506,6 +524,7 @@ namespace StutterFix
         {
             if (texSlot.TryGetValue(tex, out int slot)) return slot;
             slot = texSlot.Count;
+            if (ProxyMode) { texSlot[tex] = slot; return slot; }
             int aniso = QualitySettings.anisotropicFiltering == AnisotropicFiltering.Disable ? 1 : tex.anisoLevel;
             IntPtr ptr = tex.GetNativeTexturePtr();
             int filter = (int)tex.filterMode;
@@ -516,6 +535,7 @@ namespace StutterFix
         // 텍스처의 빈 칸(알파 0)을 뺀 도형. 형태 칸 정보가 없으면 0(사각형 전체).
         static int GeometryFor(Texture2D tex)
         {
+            if (ProxyMode) return 0; // Proxy quads; native tight geometry is only used by the legacy diagnostic path.
             if (texGeom.TryGetValue(tex, out int g)) return g;
             g = 0;
             try { g = BuildTight(tex); } catch { g = 0; }
@@ -734,6 +754,7 @@ namespace StutterFix
         static void Count(string why) { rejectWhy.TryGetValue(why, out int n); rejectWhy[why] = n + 1; }
         static void Activate()
         {
+            if (ProxyMode) { ActivateProxy(); return; }
             if (Active) return;
             if (SystemInfo.graphicsDeviceType != GraphicsDeviceType.Direct3D11) { Log("건너뜀: D3D11 아님"); return; }
             if (Main.Config.GpuDeco == 1 && GpuDecoPlayer.Available) { Log("건너뜀: GPU 장식 처리(GpuDeco)가 켜져 있음"); return; }
@@ -1009,6 +1030,7 @@ namespace StutterFix
         }
         static void Commit()
         {
+            if (ProxyMode) { CommitProxy(); return; }
             if (!main || !manager || !ReferenceEquals(level, ADOBase.customLevel != null ? ADOBase.customLevel.levelData : null)) { Deactivate("맵 바뀜"); return; }
             RefreshChangedRenderers();
             if (boundaryDirty) ApplyBoundaries();
@@ -1061,6 +1083,7 @@ namespace StutterFix
         // ---------------------------------------------------------------- 끄기
         static void Release()
         {
+            if (ProxyMode) ReleaseProxy();
             foreach (var lf in sequenced)
             {
                 lf.Suppressed = false;
@@ -1076,7 +1099,7 @@ namespace StutterFix
         }
         internal static void Deactivate(string reason)
         {
-            if (!Active && token == 0) return;
+            if (!Active && token == 0 && proxyChannels == null && !proxyBundle) return;
             bool was = Active; Active = false;
             try
             {
@@ -1102,6 +1125,11 @@ namespace StutterFix
         // dr2.hlsl VS의 복제. 셰이더 변경 때 이 식과 오프라인 fixture를 함께 바꾼다.
         static Vector3 ShaderCorner(Item it, Vector2 st)
         {
+            ShaderBasis(it, out var origin, out var x, out var y);
+            return (x * st.x + y * st.y) + origin;
+        }
+        static void ShaderBasis(Item it, out Vector3 basisOrigin, out Vector3 basisX, out Vector3 basisY)
+        {
             float* c = pChannels + it.Slot * ChannelFloats, s = pStatics + it.Slot * StaticFloats;
             uint flags = (uint)s[18];
             Vector2 world;
@@ -1125,8 +1153,7 @@ namespace StutterFix
             Vector2 col0 = new Vector2(csr * sx, snr * sx), col1 = new Vector2(-snr * sy, csr * sy);
             Vector2 x = col0 * s[0] + col1 * s[4], y = col0 * s[1] + col1 * s[5];
             Vector2 origin = col0 * ((c[2] + s[10]) / ts.x + s[2]) + col1 * ((c[3] + s[11]) / ts.y + s[6]) + world;
-            Vector2 p = (x * st.x + y * st.y) + origin;
-            return new Vector3(p.x, p.y, s[13]);
+            basisOrigin = new Vector3(origin.x, origin.y, s[13]); basisX = new Vector3(x.x, x.y, 0); basisY = new Vector3(y.x, y.y, 0);
         }
         sealed class VerifyRow { public float World, Uv, Color; public bool Texture; public string Detail; }
         internal static string Verify()
@@ -1168,7 +1195,8 @@ namespace StutterFix
                             Vector2 predicted = new Vector2((s[20] + st.x * s[22] + st.y * s[3]) * s[16], (s[21] + st.x * s[7] + st.y * s[23]) * s[17]);
                             if (k < uv.Length) row.Uv = Mathf.Max(row.Uv, Vector2.Distance(predicted, Vector2.Scale(uv[k], repeat)));
                         }
-                        Color expected = it.R.color; float[] actual = { c[7], c[8], c[9], c[10] * c[11] * s[28] };
+                        Color expected = it.R.color; if (ProxyMode) expected.a *= s[28];
+                        float[] actual = { c[7], c[8], c[9], c[10] * c[11] * s[28] };
                         for (int k = 0; k < 4; k++) row.Color = Mathf.Max(row.Color, Mathf.Abs(((Color32)expected)[k] / 255f - Mathf.Floor(Mathf.Clamp01(actual[k]) * 255f + .5f) / 255f));
                         Color tint = Color.white;
                         if (add && mat.HasProperty(pTintColor)) tint = mat.GetColor(pTintColor) * 2f;
@@ -1193,6 +1221,7 @@ namespace StutterFix
         }
         internal static string State()
         {
+            if (ProxyMode) return ProxyState();
             if (token == 0) return "active=0 enabled=" + Enabled;
             double tick = 1e6 / System.Diagnostics.Stopwatch.Frequency; double fr = Math.Max(1, sf_dr2_stat(token, 0));
             RecountOwned();

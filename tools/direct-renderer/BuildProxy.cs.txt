@@ -1,0 +1,24 @@
+using System;
+using System.IO;
+using UnityEditor;
+using UnityEngine;
+public static class BuildProxy
+{
+ public static void Build()
+ {
+  PlayerSettings.SetUseDefaultGraphicsAPIs(BuildTarget.StandaloneWindows64,false);
+  PlayerSettings.SetGraphicsAPIs(BuildTarget.StandaloneWindows64,new[]{UnityEngine.Rendering.GraphicsDeviceType.Direct3D11});
+  PlayerSettings.stripUnusedMeshComponents=false;
+  AssetDatabase.Refresh(ImportAssetOptions.ForceSynchronousImport);
+  var names=new[]{"Assets/DirectDeco/DirectDeco.shader","Assets/DirectDeco/DirectDecoGrab.shader"};
+  foreach(var n in names) {
+   var shader=AssetDatabase.LoadAssetAtPath<Shader>(n);
+   if(!shader || ShaderUtil.ShaderHasError(shader))throw new Exception("proxy shader error: "+n);
+  }
+  Directory.CreateDirectory("ProxyOutput");
+  var build=new AssetBundleBuild{assetBundleName="stutterfix_directdeco",assetNames=names};
+  if(!BuildPipeline.BuildAssetBundles("ProxyOutput",new[]{build},BuildAssetBundleOptions.ChunkBasedCompression|BuildAssetBundleOptions.ForceRebuildAssetBundle,BuildTarget.StandaloneWindows64))throw new Exception("bundle failed");
+  foreach(var n in names) if(ShaderUtil.ShaderHasError(AssetDatabase.LoadAssetAtPath<Shader>(n)))throw new Exception("compiled shader error: "+n);
+  File.WriteAllText("ProxyOutput/build.txt","OK Unity "+Application.unityVersion);
+ }
+}

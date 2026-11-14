@@ -70,6 +70,7 @@ namespace StutterFix
                 && typeof(UnityEngine.Object).IsAssignableFrom(m.ReturnType)) return Hierarchy;
             if (m.IsStatic || m.ReturnType != typeof(void)) return -1;
             if (t == typeof(Behaviour) && n == "set_enabled") return Script;
+            if (t == typeof(UnityEngine.Rendering.SortingGroup) && n.StartsWith("set_", StringComparison.Ordinal)) return Script;
             if ((typeof(UnityEngine.UI.Graphic).IsAssignableFrom(t) || t == typeof(CanvasRenderer) || t == typeof(CanvasGroup) || t == typeof(Canvas))
                 && (n.StartsWith("set_", StringComparison.Ordinal) || n.StartsWith("Set", StringComparison.Ordinal))) return Script;
             if (typeof(Renderer).IsAssignableFrom(t))

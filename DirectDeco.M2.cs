@@ -218,6 +218,10 @@ namespace StutterFix
         static void TransformChanged(Transform t)
         {
             if (!Active || !t) return;
+            if (ProxyMode)
+            {
+                if (proxyTransformIndex.TryGetValue(t, out var owned)) foreach (var it in owned) if (!it.Released) QueueStruct(it);
+            }
             if (transformIndex.TryGetValue(t, out var ls)) foreach (var lf in ls) MarkChanged(lf);
         }
         static void RefreshChangedRenderers()
@@ -282,7 +286,14 @@ namespace StutterFix
             foreach (var lf in changedRenderers) lf.M2Dirty = false;
             changedRenderers.Clear();
         }
-        internal static void BeforeSequenceWrite(UnityEngine.Object obj, int kind) { }
+        internal static void BeforeSequenceWrite(UnityEngine.Object obj, int kind)
+        {
+            // DestroyImmediate can make the post-write argument compare equal to null.
+            if (!Active || !ProxyMode || !obj || kind != DirectSequenceChanges.Hierarchy) return;
+            var go = obj as GameObject; if (!go && obj is Component component) go = component.gameObject;
+            if (!go) return;
+            TransformChanged(go.transform); createdObjects.Add(go);
+        }
         internal static void AfterSequenceWrite(UnityEngine.Object obj, int kind, string writer = null)
         {
             if (!Active || !obj) return;
@@ -299,7 +310,7 @@ namespace StutterFix
                 }
                 if (r is SpriteMask mask) { ReserveChangedMask(mask); return; }
                 RendererChanged(r);
-                if (kind == DirectSequenceChanges.Hierarchy && !rendererIndex.ContainsKey(r)) createdObjects.Add(r.gameObject);
+                if ((ProxyMode || kind == DirectSequenceChanges.Hierarchy) && !rendererIndex.ContainsKey(r)) createdObjects.Add(r.gameObject);
                 return;
             }
             if (obj is Material mat)
@@ -317,11 +328,12 @@ namespace StutterFix
             if (obj is GameObject go)
             {
                 TransformChanged(go.transform);
-                if (kind == DirectSequenceChanges.Hierarchy) createdObjects.Add(go);
+                if (kind == DirectSequenceChanges.Hierarchy || ProxyMode && writer == "set_layer") createdObjects.Add(go);
                 MarkCanvases(go); return;
             }
             if (obj is Component c)
             {
+                if (ProxyMode && (c is Canvas || c is CanvasGroup || c is CanvasRenderer || c is Graphic || c is SortingGroup)) orderDirty = true;
                 if (kind == DirectSequenceChanges.Hierarchy) createdObjects.Add(c.gameObject);
                 if (c is Graphic || c is Canvas || c is CanvasGroup || c is CanvasRenderer) MarkCanvases(c.gameObject);
             }
@@ -383,6 +395,7 @@ namespace StutterFix
         }
         static void ReserveChangedMask(SpriteMask mask)
         {
+            if (ProxyMode) return; // Engine retains every mask; M3 never reserves whole layer boundaries.
             if (nativeRendererIndex.TryGetValue(mask, out var owner) && !owner.Released) { QueueStruct(owner); return; }
             int backLayer = mask.isCustomRangeActive ? SortingLayer.GetLayerValueFromID(mask.backSortingLayerID) : int.MinValue;
             int backOrder = mask.isCustomRangeActive ? mask.backSortingOrder : int.MinValue;
@@ -441,6 +454,7 @@ namespace StutterFix
             + " sequenceGrab=" + grabCommands + " mutationMethods=" + mutationMethods + " mutationFailures=" + mutationFailures;
         static string SequenceCheck()
         {
+            if (ProxyMode) return ProxySequenceCheck();
             if (!Active) return "seqcheck inactive";
             // Diagnostic only: refresh all cached keys independently of the dirty hooks.
             int stale = 0, missing = 0, ordering = 0, ties = 0, count = 0;

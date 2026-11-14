@@ -1,0 +1,90 @@
+using System;
+using System.IO;
+using UnityEngine;
+using UnityEngine.Rendering;
+using UnityEditor;
+public static class ProxyFixture
+{
+ static Color32[] Read(Camera cam, RenderTexture rt) {
+  cam.Render(); var old=RenderTexture.active; RenderTexture.active=rt;
+  var image=new Texture2D(rt.width,rt.height,TextureFormat.RGBA32,false,true);
+  image.ReadPixels(new Rect(0,0,rt.width,rt.height),0,0); image.Apply();
+  var data=image.GetPixels32(); UnityEngine.Object.DestroyImmediate(image); RenderTexture.active=old; return data;
+ }
+ static int Diff(Color32[] a,Color32[] b) {int n=0;for(int k=0;k<a.Length;k++)if(!a[k].Equals(b[k]))n++;return n;}
+ static int MaxDelta(Color32[] a,Color32[] b) {int n=0;for(int k=0;k<a.Length;k++)for(int c=0;c<4;c++)n=Math.Max(n,Math.Abs(a[k][c]-b[k][c]));return n;}
+ static float Blend(float b,float s,int mode) {
+  switch(mode) {
+   case 1:return Math.Min(b,s);case 2:return b*s;case 4:return b+s-1;case 6:return Math.Max(b,s);
+   case 7:return 1-(1-b)*(1-s);case 9:return b+s;case 11:return b>.5f?1-2*(1-b)*(1-s):2*b*s;
+   case 12:return b*(1-b)*s+(1-(1-b)*(1-s))*b;case 18:return Math.Abs(b-s);case 19:return b+s-2*b*s;
+   case 20:return b-s;case 21:return Mathf.Clamp01(b/s);default:return s;
+  }
+ }
+ static void Require(bool b,string text) {if(!b)throw new Exception(text);}
+ public static void Run() {
+  var scene=UnityEditor.SceneManagement.EditorSceneManager.NewScene(UnityEditor.SceneManagement.NewSceneSetup.EmptyScene);
+  var cam=new GameObject("camera").AddComponent<Camera>(); cam.orthographic=true;cam.orthographicSize=1;cam.transform.position=new Vector3(0,0,-10);cam.clearFlags=CameraClearFlags.SolidColor;cam.backgroundColor=Color.black;cam.allowHDR=false;cam.allowMSAA=false;
+  var rt=new RenderTexture(64,64,24,RenderTextureFormat.ARGB32,RenderTextureReadWrite.Linear);rt.Create();cam.targetTexture=rt;
+  var tex=new Texture2D(2,2,TextureFormat.RGBA32,false,true);tex.SetPixels(new[]{Color.red,Color.green,Color.blue,Color.white});tex.Apply();tex.filterMode=FilterMode.Point;
+  var sprite=Sprite.Create(tex,new Rect(0,0,2,2),new Vector2(.5f,.5f),1,0,SpriteMeshType.FullRect);
+  var source=new GameObject("source").AddComponent<SpriteRenderer>();source.sprite=sprite;source.sortingOrder=0;
+  var expected=Read(cam,rt);source.forceRenderingOff=true;
+  var channels=new Vector4[]{Vector4.zero,new Vector4(0,1,1,1),Vector4.one,Vector4.zero};
+  var statics=new Vector4[]{new Vector4(2,0,-1,0),new Vector4(0,2,-1,0),new Vector4(1,1,0,0),new Vector4(0,0,1,1),new Vector4(1,1,0,0),new Vector4(0,0,1,1),Vector4.one,new Vector4(1,0,2,2)};
+  var cb=new ComputeBuffer(4,16);cb.SetData(channels);var sb=new ComputeBuffer(8,16);sb.SetData(statics);var slots=new ComputeBuffer(1,4);slots.SetData(new uint[]{0});
+  var sh=AssetDatabase.LoadAssetAtPath<Shader>("Assets/DirectDeco/DirectDeco.shader");Require(sh && sh.isSupported,"proxy shader unsupported");
+  var mat=new Material(sh);mat.SetTexture("image",tex);mat.SetBuffer("channels",cb);mat.SetBuffer("statics",sb);mat.SetBuffer("_Slots",slots);Shader.SetGlobalMatrix("_SFDr2VP",GL.GetGPUProjectionMatrix(cam.projectionMatrix,true)*cam.worldToCameraMatrix);Shader.SetGlobalVector("_SFDr2Cam",Vector4.zero);Shader.SetGlobalVector("_SFDr2Ortho",new Vector4(1,1,1,0));
+  var go=new GameObject("proxy");var mesh=new Mesh();mesh.vertices=new Vector3[4];mesh.uv=new[]{Vector2.zero,Vector2.right,Vector2.up,Vector2.one};mesh.triangles=new[]{0,2,1,1,2,3};mesh.bounds=new Bounds(Vector3.zero,new Vector3(2,2,1));go.AddComponent<MeshFilter>().sharedMesh=mesh;var renderer=go.AddComponent<MeshRenderer>();renderer.sharedMaterial=mat;renderer.bounds=mesh.bounds;
+  int baseline=Diff(expected,Read(cam,rt));Require(baseline==0,"proxy baseline pixels differ "+baseline);
+  // Exercise partial uploads rather than accidentally testing initial SetData only.
+  channels[2]=new Vector4(1,1,0,1);cb.SetData(channels,2,2,1);var invisible=Read(cam,rt);Require(Array.TrueForAll(invisible,c=>c.r==0&&c.g==0&&c.b==0),"partial opacity upload failed");channels[2]=Vector4.one;cb.SetData(channels,2,2,1);
+  var mask=new GameObject("mask").AddComponent<SpriteMask>();mask.sprite=sprite;mask.transform.localScale=Vector3.one*.5f;mask.alphaCutoff=.1f;mask.isCustomRangeActive=true;mask.backSortingOrder=-1;mask.frontSortingOrder=1;
+  string results="baseline_diff="+baseline+"\npartial_upload=PASS\n";
+  foreach(var interaction in new[]{SpriteMaskInteraction.VisibleInsideMask,SpriteMaskInteraction.VisibleOutsideMask}) {
+   renderer.enabled=false;source.forceRenderingOff=false;source.maskInteraction=interaction;var reference=Read(cam,rt);
+   source.forceRenderingOff=true;renderer.enabled=true;mat.SetInt("_StencilRef",0);mat.SetInt("_StencilComp",(int)(interaction==SpriteMaskInteraction.VisibleInsideMask?CompareFunction.NotEqual:CompareFunction.Equal));
+   int lit=Array.FindAll(reference,c=>c.r!=0||c.g!=0||c.b!=0).Length;
+   Require(lit==(interaction==SpriteMaskInteraction.VisibleInsideMask?1024:3072),"vacuous mask reference: "+interaction+" lit="+lit);
+   int delta=Diff(reference,Read(cam,rt));Require(delta==0,"mask mismatch "+interaction+" diff="+delta);results+="mask_"+interaction+"_diff="+delta+" reference_lit="+lit+"\n";
+  }
+  // A proxy must not extend a mask's custom sorting range.
+  source.sortingOrder=2;renderer.sortingOrder=2;renderer.enabled=false;source.forceRenderingOff=false;
+  var outOfRange=Read(cam,rt);source.forceRenderingOff=true;renderer.enabled=true;
+  int rangeDiff=Diff(outOfRange,Read(cam,rt));Require(rangeDiff==0,"mask sorting range mismatch");results+="mask_out_of_range_diff="+rangeDiff+"\n";
+  mask.enabled=false;source.maskInteraction=SpriteMaskInteraction.None;mat.SetInt("_StencilComp",8);
+  renderer.enabled=false;source.forceRenderingOff=false;source.sortingOrder=0;
+  var background=Read(cam,rt);renderer.enabled=true;renderer.sortingOrder=2;
+  var grabShader=AssetDatabase.LoadAssetAtPath<Shader>("Assets/DirectDeco/DirectDecoGrab.shader");Require(grabShader&&grabShader.isSupported,"Grab shader unsupported");
+  var grab=new Material(grabShader);grab.SetTexture("image",Texture2D.whiteTexture);grab.SetBuffer("channels",cb);grab.SetBuffer("statics",sb);grab.SetBuffer("_Slots",slots);renderer.sharedMaterial=grab;
+  var tint=new Color32(153,77,204,102);channels[1].w=tint.r/255f;channels[2]=new Vector4(tint.g/255f,tint.b/255f,tint.a/255f,1);cb.SetData(channels);
+  int grabMax=0;
+  foreach(int mode in new[]{1,2,4,6,7,9,11,12,18,19,20,21}) {
+   statics[4].w=mode;sb.SetData(statics,4,4,1);
+   var actual=Read(cam,rt);var oracle=new Color32[actual.Length];
+   for(int p=0;p<oracle.Length;p++) {
+    Color bkg=background[p],src=tint,outc=Color.white;
+    for(int c=0;c<3;c++)outc[c]=Blend(bkg[c],src[c],mode)*src.a+bkg[c]*(1-src.a);
+    oracle[p]=outc;
+   }
+   int delta=MaxDelta(oracle,actual);grabMax=Math.Max(grabMax,delta);Require(delta<=3,"Grab mode="+mode+" delta="+delta);
+  }
+  results+="grab_modes=12 max_channel_delta="+grabMax+"\n";
+  UnityEngine.Object.DestroyImmediate(grab);renderer.sharedMaterial=mat;source.forceRenderingOff=true;
+  // Two quads use the indexed SV_VertexID / 4 slot map, including a reverse permutation.
+  cb.Dispose();sb.Dispose();slots.Dispose();
+  var multiChannels=new Vector4[8];Array.Copy(channels,0,multiChannels,0,4);Array.Copy(channels,0,multiChannels,4,4);
+  multiChannels[1].w=1;multiChannels[2]=Vector4.one;multiChannels[5].w=1;multiChannels[6]=new Vector4(0,0,128/255f,1);
+  var multiStatics=new Vector4[16];statics[4].w=0;Array.Copy(statics,multiStatics,8);Array.Copy(statics,0,multiStatics,8,8);
+  cb=new ComputeBuffer(8,16);cb.SetData(multiChannels);sb=new ComputeBuffer(16,16);sb.SetData(multiStatics);slots=new ComputeBuffer(2,4);slots.SetData(new uint[]{0,1});mat.SetBuffer("channels",cb);mat.SetBuffer("statics",sb);mat.SetBuffer("_Slots",slots);
+  mesh.Clear();mesh.vertices=new Vector3[8];mesh.uv=new[]{Vector2.zero,Vector2.right,Vector2.up,Vector2.one,Vector2.zero,Vector2.right,Vector2.up,Vector2.one};mesh.triangles=new[]{0,2,1,1,2,3,4,6,5,5,6,7};renderer.bounds=new Bounds(Vector3.zero,new Vector3(2,2,1));
+  var overlay=new GameObject("overlay").AddComponent<SpriteRenderer>();overlay.sprite=sprite;overlay.sortingOrder=1;overlay.color=new Color32(255,0,0,128);
+  renderer.enabled=false;source.forceRenderingOff=false;var twoReference=Read(cam,rt);source.forceRenderingOff=true;overlay.forceRenderingOff=true;renderer.enabled=true;
+  int multiDiff=MaxDelta(twoReference,Read(cam,rt));Require(multiDiff<=1,"two-slot mapping mismatch="+multiDiff);
+  slots.SetData(new uint[]{1,0});int reverseDiff=Diff(background,Read(cam,rt));Require(reverseDiff==0,"reverse slot map mismatch="+reverseDiff);
+  results+="multi_slot_max_delta="+multiDiff+" reverse_slot_diff="+reverseDiff+"\n";
+  Directory.CreateDirectory("ProxyOutput");File.WriteAllText("ProxyOutput/fixture.txt",results);Debug.Log(results);
+  cb.Dispose();sb.Dispose();slots.Dispose();
+  cam.targetTexture=null;UnityEngine.Object.DestroyImmediate(go);UnityEngine.Object.DestroyImmediate(mesh);UnityEngine.Object.DestroyImmediate(mat);UnityEngine.Object.DestroyImmediate(rt);
+ }
+}
