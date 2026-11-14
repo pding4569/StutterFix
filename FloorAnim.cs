@@ -250,6 +250,10 @@ namespace StutterFix
             if (c.OpaOnly) { OpaOnly(target, ref c); return; }
             long a = Prof ? TS() : 0, b;
             Tiles++;
+            // 화면 밖 타일 끄기(TileCull)는 게임의 TweenFloor 를 후크해 "움직이는 타일"을 관리에서 뺀다. 여기는 그 함수를 거치지 않으므로
+            // 직접 알린다. 안 알리면 화면 밖이라 꺼 둔 타일이 효과로 옮겨지거나 커져 화면에 들어와도 꺼진 채 남는다
+            // (2026-11-15 제보: Silentroom - 1KXYZØ 5225 타일 근처 큰 타일이 투명해짐, 편집기 재생에서 재현·확인).
+            TileCull.PinArg(target);
             Transform tt = target.transform;
             _ = target.floorRenderer.material;   // 원래 코드도 읽는다 (floorRenderer 가 없으면 같은 자리에서 예외)
             var mt = target.moveTweens;
