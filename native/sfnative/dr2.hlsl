@@ -9,7 +9,8 @@ cbuffer Frame : register(b0)
 Buffer<float4> channels : register(t0);   // 항목당 4개: (pos.xy, pivot.xy) (rot, scale.xy, r) (g, b, a, opacity) (parallax.xy, parallaxOffset.xy)
 Buffer<float4> statics : register(t1);    // 항목당 8개
 struct VIn { float2 st : POSITION; uint item : ITEM; };
-struct VOut { float4 pos : SV_Position; float4 color : COLOR0; float2 uv : TEXCOORD0; float3 texel : TEXCOORD1; };
+struct VOut { float4 pos : SV_Position; float4 color : COLOR0; float2 uv : TEXCOORD0; float3 texel : TEXCOORD1; nointerpolation uint mode : TEXCOORD2; };
+#include "dr2_math.hlsli"
 
 float2 ParallaxWorld(float2 position, float2 pivot, float2 parallax, uint flags)
 {
@@ -35,20 +36,24 @@ VOut VS(VIn i)
     precise float2 trueScale = k0.xy;
     precise float2 camScale = ((flags & 1u) != 0 ? cam.w : 1.0) * trueScale;
     precise float2 world = ParallaxWorld(c0.xy, c0.zw, c3.xy, flags);
-    world += c3.zw * camScale / k1.zw;
+    world += float2(CpuQuotient(c3.z * camScale.x, k1.z), CpuQuotient(c3.w * camScale.y, k1.w));
     precise float angle = k1.x + c1.x + ((flags & 2u) != 0 ? cam.z : 0.0);
-    float sn, cs; sincos(radians(angle), sn, cs);
+    precise float4 rotation = ImageRotation(angle);
+    precise float sn = rotation.z, cs = rotation.w;
     precise float2 scale = c1.yz * camScale;
-    precise float2 local = (c0.zw + k0.zw) / trueScale + float2(dot(ux.xyz, float3(i.st, 1)), dot(uy.xyz, float3(i.st, 1)));
-    local *= scale;
-    precise float2 p = world + float2(cs * local.x - sn * local.y, sn * local.x + cs * local.y);
+    precise float2 p0 = float2(cs * scale.x, sn * scale.x), p1 = float2(-sn * scale.y, cs * scale.y);
+    precise float2 q0 = p0 * ux.x + p1 * uy.x, q1 = p0 * ux.y + p1 * uy.y;
+    precise float2 offset = float2(CpuQuotient(c0.z + k0.z, trueScale.x), CpuQuotient(c0.w + k0.w, trueScale.y));
+    precise float2 q3 = (p0 * (offset.x + ux.z) + p1 * (offset.y + uy.z)) + world;
+    precise float2 p = (q0 * i.st.x + q1 * i.st.y) + q3;
     VOut o;
     o.pos = mul(vp, float4(p, k1.y, 1));
     // SpriteRenderer 의 그리기 색은 UNorm8 로 반올림된다. 그 뒤 재질 색을 곱한다.
     float4 color = float4(c1.w, c2.x, c2.y, c2.z * c2.w * k3.x);
     color = floor(saturate(color) * 255.0 + 0.5) / 255.0;
     o.color = color * tint;
-    o.uv = (uvr.xy + i.st * uvr.zw) * k2.xy;
+    o.uv = (uvr.xy + float2(i.st.x * uvr.z + i.st.y * ux.w, i.st.x * uy.w + i.st.y * uvr.w)) * k2.xy;
+    o.mode = (uint)k2.w;
     o.texel = float3(k3.zw, k3.y);   // 텍스처 크기(점 샘플링 변형용), 마스크 알파 기준
     return o;
 }
@@ -75,3 +80,28 @@ float4 PSAddPoint(VOut i) : SV_Target { float2 uv = (floor(i.uv * i.texel.xy) + 
 // 스프라이트 마스크(Sprites/Mask): 알파가 기준보다 작으면 버린다. 색은 쓰지 않고 스텐실만 바꾼다.
 float4 PSMask(VOut i) : SV_Target { clip(image.Sample(imageSampler, i.uv).a - i.texel.z); return 0; }
 float4 PSMaskPoint(VOut i) : SV_Target { float2 uv = (floor(i.uv * i.texel.xy) + 0.5) / i.texel.xy; clip(image.Sample(imageSampler, uv).a - i.texel.z); return 0; }
+
+// 직전 화면의 해당 장식 사각형만 복사한 동일 크기 텍스처. SV_Position은 RT 픽셀 좌표다.
+Texture2D background : register(t1);
+float4 BlendGrab(VOut i, bool usePoint)
+{
+    float2 uv = usePoint ? (floor(i.uv * i.texel.xy) + 0.5) / i.texel.xy : i.uv;
+    float4 c = image.Sample(imageSampler, uv) * i.color;
+    float3 b = background.Load(int3(int2(i.pos.xy), 0)).rgb, sc = c.rgb, r = sc;
+    uint bm = i.mode;
+    if (bm == 1) r = min(b, sc);
+    else if (bm == 2) r = b * sc;
+    else if (bm == 4) r = b + sc - 1.0;
+    else if (bm == 6) r = max(b, sc);
+    else if (bm == 7) r = 1.0 - (1.0 - b) * (1.0 - sc);
+    else if (bm == 9) r = b + sc;
+    else if (bm == 11) r = (b > .5) ? (1.0 - 2.0 * (1.0 - b) * (1.0 - sc)) : (2.0 * b * sc);
+    else if (bm == 12) r = (b * (1.0 - b)) * sc + (1.0 - (1.0 - b) * (1.0 - sc)) * b;
+    else if (bm == 18) r = abs(b - sc);
+    else if (bm == 19) r = b + sc - 2.0 * b * sc;
+    else if (bm == 20) r = b - sc;
+    else if (bm == 21) r = saturate(b / sc);
+    return float4(r * c.a, c.a);
+}
+float4 PSGrab(VOut i) : SV_Target { return BlendGrab(i, false); }
+float4 PSGrabPoint(VOut i) : SV_Target { return BlendGrab(i, true); }

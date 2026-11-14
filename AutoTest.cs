@@ -693,6 +693,7 @@ namespace StutterFix
                         return true;
                     }
                 case "floorpin": FloorAnim.PinTileCull = arg.Trim() != "off"; Log("[floorpin] " + FloorAnim.PinTileCull); return true;
+                case "floorstate": Log(TileSig.State(arg)); return true;
                 case "culltest":
                     Log("화면 밖 타일 비교: " + TileCull.RenderCompare()); return true;
                 case "framescan":

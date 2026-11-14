@@ -49,7 +49,9 @@ struct Renderer {
     ComPtr<ID3D11Device> device; ComPtr<ID3D11DeviceContext> context, deferred;
     ComPtr<ID3D11Buffer> channelBuffer, staticBuffer, frameBuffer, listBuffer, vertexBuffer, indexBuffer;
     ComPtr<ID3D11ShaderResourceView> channelView, staticView;
-    ComPtr<ID3D11VertexShader> vs; ComPtr<ID3D11PixelShader> ps[6]; ComPtr<ID3D11InputLayout> layout;
+    ComPtr<ID3D11VertexShader> vs; ComPtr<ID3D11PixelShader> ps[8]; ComPtr<ID3D11InputLayout> layout;
+    ComPtr<ID3D11Texture2D> grabTexture; ComPtr<ID3D11ShaderResourceView> grabView;
+    D3D11_TEXTURE2D_DESC grabDesc{}; DXGI_FORMAT grabFormat = DXGI_FORMAT_UNKNOWN;
     ComPtr<ID3D11BlendState> blend[3]; ComPtr<ID3D11DepthStencilState> depth[5]; ComPtr<ID3D11RasterizerState> raster;
     std::vector<float> channelShadow, staticShadow;
     // 메인 -> 렌더 큐
@@ -62,10 +64,12 @@ struct Renderer {
     // 렌더 스레드 상태
     float vp[16]{}, cam[4]{}, ortho[4]{}; bool clearStencil = false;
     std::vector<Run> runs; std::vector<uint32_t> segs; uint32_t listCount = 0, listCapacity = 0;
+    std::vector<uint32_t> drawList;
     std::vector<Texture> texCopy; std::vector<Geometry> geomCopy;
     bool haveFrame = false;
     // 통계
     std::atomic<uint64_t> frames{0}, draws{0}, instances{0}, dropped{0}, errors{0}, uploadedBytes{0}, renderCalls{0}, commits{0};
+    std::atomic<uint64_t> grabCopies{0}, grabPixels{0};
     double renderUsSum = 0, commitUsSum = 0;
 
     static void check(HRESULT hr) { if (FAILED(hr)) throw hr; }
@@ -86,6 +90,8 @@ struct Renderer {
         check(device->CreatePixelShader(dr2_psaddpoint, sizeof(dr2_psaddpoint), nullptr, &ps[3]));
         check(device->CreatePixelShader(dr2_psmask, sizeof(dr2_psmask), nullptr, &ps[4]));
         check(device->CreatePixelShader(dr2_psmaskpoint, sizeof(dr2_psmaskpoint), nullptr, &ps[5]));
+        check(device->CreatePixelShader(dr2_psgrab, sizeof(dr2_psgrab), nullptr, &ps[6]));
+        check(device->CreatePixelShader(dr2_psgrabpoint, sizeof(dr2_psgrabpoint), nullptr, &ps[7]));
         D3D11_INPUT_ELEMENT_DESC el[2] = {
             { "POSITION", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
             { "ITEM", 0, DXGI_FORMAT_R32_UINT, 1, 0, D3D11_INPUT_PER_INSTANCE_DATA, 1 } };
@@ -115,7 +121,18 @@ struct Renderer {
         if (slot < 0 || slot > 65535 || !tex) return false;
         ComPtr<ID3D11Device> owner; tex->GetDevice(&owner); if (owner != device) return false;
         D3D11_TEXTURE2D_DESC td{}; tex->GetDesc(&td); if (td.SampleDesc.Count != 1 || !(td.BindFlags & D3D11_BIND_SHADER_RESOURCE)) return false;
-        Texture t; D3D11_SHADER_RESOURCE_VIEW_DESC sv{}; sv.Format = viewFormat(td.Format); sv.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D; sv.Texture2D.MipLevels = td.MipLevels;
+        Texture t; D3D11_SHADER_RESOURCE_VIEW_DESC sv{}; sv.Format = viewFormat(td.Format);
+        if (filter & 256) switch (td.Format) {
+            case DXGI_FORMAT_R8G8B8A8_TYPELESS: sv.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB; break;
+            case DXGI_FORMAT_B8G8R8A8_TYPELESS: sv.Format = DXGI_FORMAT_B8G8R8A8_UNORM_SRGB; break;
+            case DXGI_FORMAT_BC1_TYPELESS: sv.Format = DXGI_FORMAT_BC1_UNORM_SRGB; break;
+            case DXGI_FORMAT_BC2_TYPELESS: sv.Format = DXGI_FORMAT_BC2_UNORM_SRGB; break;
+            case DXGI_FORMAT_BC3_TYPELESS: sv.Format = DXGI_FORMAT_BC3_UNORM_SRGB; break;
+            case DXGI_FORMAT_BC7_TYPELESS: sv.Format = DXGI_FORMAT_BC7_UNORM_SRGB; break;
+            default: break;
+        }
+        filter &= 255;
+        sv.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D; sv.Texture2D.MipLevels = td.MipLevels;
         if (FAILED(device->CreateShaderResourceView(tex, &sv, &t.view))) return false;
         D3D11_SAMPLER_DESC sd{}; sd.Filter = filter == 0 ? D3D11_FILTER_MIN_MAG_MIP_POINT : filter == 2 ? D3D11_FILTER_MIN_MAG_MIP_LINEAR : D3D11_FILTER_MIN_MAG_LINEAR_MIP_POINT;
         if (aniso > 1 && filter != 0) { sd.Filter = D3D11_FILTER_ANISOTROPIC; sd.MaxAnisotropy = (UINT)std::min(aniso, 16); } else sd.MaxAnisotropy = 1;
@@ -175,8 +192,51 @@ struct Renderer {
                 listBuffer.Reset(); check(device->CreateBuffer(&d, nullptr, &listBuffer));
             }
             if (n) { D3D11_BOX box{ 0, 0, 0, n * 4, 1, 1 }; context->UpdateSubresource(listBuffer.Get(), 0, &box, p.list.data(), 0, 0); uploadedBytes += n * 4; }
-            listCount = n; runs.swap(p.runs); segs.swap(p.segs);
+            listCount = n; drawList = p.list; runs.swap(p.runs); segs.swap(p.segs);
         }
+    }
+    void prepareGrab(ID3D11Texture2D* source, DXGI_FORMAT format) {
+        D3D11_TEXTURE2D_DESC td{}; source->GetDesc(&td);
+        if (td.SampleDesc.Count != 1 || td.ArraySize != 1) throw E_INVALIDARG;
+        if (grabTexture && grabDesc.Width == td.Width && grabDesc.Height == td.Height && grabDesc.Format == td.Format && grabFormat == format) return;
+        grabView.Reset(); grabTexture.Reset();
+        td.MipLevels = 1; td.ArraySize = 1; td.Usage = D3D11_USAGE_DEFAULT; td.BindFlags = D3D11_BIND_SHADER_RESOURCE; td.CPUAccessFlags = 0; td.MiscFlags = 0;
+        check(device->CreateTexture2D(&td, nullptr, &grabTexture));
+        D3D11_SHADER_RESOURCE_VIEW_DESC sv{}; sv.Format = format; sv.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D; sv.Texture2D.MipLevels = 1;
+        check(device->CreateShaderResourceView(grabTexture.Get(), &sv, &grabView)); grabDesc = td; grabFormat = format;
+    }
+    // VS와 같은 식으로 사각형만 계산한다. 여백 2px로 GPU/CPU 마지막 자리 오차를 덮는다.
+    D3D11_BOX grabBox(uint32_t slot, const D3D11_VIEWPORT& viewport) const {
+        const float* c = channelShadow.data() + size_t(slot) * kChannelFloats;
+        const float* s = staticShadow.data() + size_t(slot) * kStaticFloats; uint32_t f = uint32_t(s[18]);
+        float wx, wy;
+        if (f & 128u) {
+            float x = c[0] + c[2], y = c[1] + c[3]; if (f & 256u) x *= ortho[2];
+            x = (2.f * (x / 20.f + .5f) - 1.f) * ortho[0] * ortho[1]; y = (2.f * (y / 20.f + .5f) - 1.f) * ortho[0];
+            float sn = std::sin(cam[2] * 0.01745329238474369f), cs = std::cos(cam[2] * 0.01745329238474369f);
+            wx = cam[0] + (cs * x - sn * y); wy = cam[1] + (sn * x + cs * y);
+        } else { wx = (cam[0] - c[0]) * c[12] + c[0]; wy = (cam[1] - c[1]) * c[13] + c[1]; }
+        float mx = ((f & 1u) ? cam[3] : 1.f) * s[8], my = ((f & 1u) ? cam[3] : 1.f) * s[9];
+        wx += c[14] * mx / s[14]; wy += c[15] * my / s[15];
+        float half = (s[12] + c[4] + ((f & 2u) ? cam[2] : 0.f)) * 0.01745329238474369f * .5f;
+        float qz = std::sin(half), qw = std::cos(half), norm = std::sqrt(qz * qz + qw * qw); qz /= norm; qw /= norm;
+        float sn = qw * (qz * 2.f), cs = 1.f - qz * (qz * 2.f), sx = c[5] * mx, sy = c[6] * my;
+        float p0x = cs * sx, p0y = sn * sx, p1x = -sn * sy, p1y = cs * sy;
+        float q0x = p0x * s[0] + p1x * s[4], q0y = p0y * s[0] + p1y * s[4];
+        float q1x = p0x * s[1] + p1x * s[5], q1y = p0y * s[1] + p1y * s[5];
+        float ox = (c[2] + s[10]) / s[8] + s[2], oy = (c[3] + s[11]) / s[9] + s[6];
+        float q3x = (p0x * ox + p1x * oy) + wx, q3y = (p0y * ox + p1y * oy) + wy;
+        float loX = float(grabDesc.Width), loY = float(grabDesc.Height), hiX = 0, hiY = 0;
+        for (unsigned k = 0; k < 4; k++) {
+            float px = (q0x * float(k & 1u) + q1x * float(k >> 1)) + q3x, py = (q0y * float(k & 1u) + q1y * float(k >> 1)) + q3y;
+            float cx = ((vp[0] * px + vp[4] * py) + vp[8] * s[13]) + vp[12], cy = ((vp[1] * px + vp[5] * py) + vp[9] * s[13]) + vp[13];
+            float cw = ((vp[3] * px + vp[7] * py) + vp[11] * s[13]) + vp[15];
+            float tx = viewport.TopLeftX + (cx / cw + 1.f) * .5f * viewport.Width, ty = viewport.TopLeftY + (1.f - cy / cw) * .5f * viewport.Height;
+            if (!std::isfinite(tx) || !std::isfinite(ty)) return D3D11_BOX{ 0, 0, 0, grabDesc.Width, grabDesc.Height, 1 };
+            loX = std::min(loX, tx); loY = std::min(loY, ty); hiX = std::max(hiX, tx); hiY = std::max(hiY, ty);
+        }
+        auto clamp = [](float v, UINT limit) { return UINT(std::max(0.f, std::min(float(limit), v))); };
+        return D3D11_BOX{ clamp(std::floor(loX) - 2, grabDesc.Width), clamp(std::floor(loY) - 2, grabDesc.Height), 0, clamp(std::ceil(hiX) + 2, grabDesc.Width), clamp(std::ceil(hiY) + 2, grabDesc.Height), 1 };
     }
     // 렌더 스레드. 구간 0 이 프레임의 첫 이벤트: 큐에 쌓인 묶음을 모두 적용한다.
     void render(unsigned seg) {
@@ -209,12 +269,23 @@ struct Renderer {
                 }
                 if (any) { float fb[24]; std::memcpy(fb, vp, 64); std::memcpy(fb + 16, cam, 16); std::memcpy(fb + 20, ortho, 16); context->UpdateSubresource(frameBuffer.Get(), 0, nullptr, fb, 0, 0); frames++; }
             }
+            // 배경 구간이 비어도 앞 구간의 마스크가 쓰는 스텐실은 매 프레임 초기화한다.
+            if (seg == 0 && haveFrame && clearStencil) {
+                ComPtr<ID3D11DepthStencilView> stencil; context->OMGetRenderTargets(0, nullptr, &stencil);
+                if (stencil) context->ClearDepthStencilView(stencil.Get(), D3D11_CLEAR_STENCIL, 1.0f, 0);
+            }
             if (!haveFrame || listCount == 0 || size_t(seg) * 2 + 1 >= segs.size() || segs[size_t(seg) * 2 + 1] == 0 || !vertexBuffer || !indexBuffer || !listBuffer || geomCopy.empty()) { finish(t0); return; }
             uint32_t firstRun = segs[size_t(seg) * 2], runN = segs[size_t(seg) * 2 + 1];
             if (firstRun >= runs.size() || runN > runs.size() - firstRun) { errors++; finish(t0); return; }
             ComPtr<ID3D11RenderTargetView> rtv; ComPtr<ID3D11DepthStencilView> dsv; context->OMGetRenderTargets(1, &rtv, &dsv);
             if (!rtv) { errors++; finish(t0); return; }
-            if (seg == 0 && clearStencil && dsv) context->ClearDepthStencilView(dsv.Get(), D3D11_CLEAR_STENCIL, 1.0f, 0);
+            ComPtr<ID3D11Texture2D> source;
+            for (uint32_t ri = firstRun; ri < firstRun + runN; ri++) if (runs[ri].flags >> 8) {
+                ComPtr<ID3D11Resource> resource; rtv->GetResource(&resource); check(resource.As(&source));
+                D3D11_RENDER_TARGET_VIEW_DESC vd{}; rtv->GetDesc(&vd);
+                if (vd.ViewDimension != D3D11_RTV_DIMENSION_TEXTURE2D || vd.Texture2D.MipSlice != 0) throw E_INVALIDARG;
+                prepareGrab(source.Get(), vd.Format); break;
+            }
             UINT vpCount = 1; D3D11_VIEWPORT viewport{}; context->RSGetViewports(&vpCount, &viewport); if (vpCount == 0) { errors++; finish(t0); return; }
             auto* d = deferred.Get();
             ID3D11RenderTargetView* rt = rtv.Get(); d->OMSetRenderTargets(1, &rt, dsv.Get()); d->RSSetViewports(1, &viewport);
@@ -231,13 +302,28 @@ struct Renderer {
                 if (r.texture < 0 || size_t(r.texture) >= texCopy.size() || !texCopy[r.texture].view) continue;
                 const Geometry& g = (r.geometry > 0 && size_t(r.geometry) < geomCopy.size() && geomCopy[r.geometry].indexCount) ? geomCopy[r.geometry] : geomCopy[0];
                 bool mask = (r.flags & 12u) != 0;
-                int wantPs = (mask ? 4 : (r.flags & 2u) ? 2 : 0) + ((r.flags & 1u) ? 1 : 0), wantBlend = mask ? 2 : (r.flags & 2u) ? 1 : 0;
+                bool grab = (r.flags >> 8) != 0;
+                int wantPs = (mask ? 4 : grab ? 6 : (r.flags & 2u) ? 2 : 0) + ((r.flags & 1u) ? 1 : 0), wantBlend = mask ? 2 : (r.flags & 2u) ? 1 : 0;
                 int wantDepth = (r.flags & 4u) ? 1 : (r.flags & 8u) ? 2 : (r.flags & 16u) ? 3 : (r.flags & 32u) ? 4 : 0;
                 if (wantPs != lastPs) { d->PSSetShader(ps[wantPs].Get(), nullptr, 0); lastPs = wantPs; }
                 if (wantBlend != lastBlend) { d->OMSetBlendState(blend[wantBlend].Get(), nullptr, ~0u); lastBlend = wantBlend; }
                 if (wantDepth != lastDepth) { d->OMSetDepthStencilState(depth[wantDepth].Get(), 1); lastDepth = wantDepth; }
                 if (r.texture != lastTexture) { ID3D11ShaderResourceView* v = texCopy[r.texture].view.Get(); ID3D11SamplerState* sm = texCopy[r.texture].sampler.Get(); d->PSSetShaderResources(0, 1, &v); d->PSSetSamplers(0, 1, &sm); lastTexture = r.texture; }
-                d->DrawIndexedInstanced(g.indexCount, r.count, g.indexStart, g.baseVertex, r.start); drawCount++; instanceCount += r.count;
+                if (grab) {
+                    // 각 장식은 직전 장식까지 그려진 화면을 읽는다. 스냅샷을 여러 인스턴스가 공유하지 않는다.
+                    for (uint32_t k = 0; k < r.count; k++) {
+                        uint32_t slot = 0;
+                        // 목록의 CPU 사본은 applyPacket에서 유지한다.
+                        if (r.start + k >= drawList.size()) throw E_INVALIDARG;
+                        slot = drawList[r.start + k]; if (slot >= maxItems) throw E_INVALIDARG;
+                        D3D11_BOX box = grabBox(slot, viewport); if (box.right <= box.left || box.bottom <= box.top) continue;
+                        ID3D11ShaderResourceView* nil = nullptr; d->PSSetShaderResources(1, 1, &nil); d->OMSetRenderTargets(0, nullptr, nullptr);
+                        d->CopySubresourceRegion(grabTexture.Get(), 0, box.left, box.top, 0, source.Get(), 0, &box);
+                        d->OMSetRenderTargets(1, &rt, dsv.Get()); ID3D11ShaderResourceView* bg = grabView.Get(); d->PSSetShaderResources(1, 1, &bg);
+                        d->DrawIndexedInstanced(g.indexCount, 1, g.indexStart, g.baseVertex, r.start + k); drawCount++; instanceCount++;
+                        grabCopies++; grabPixels += uint64_t(box.right - box.left) * (box.bottom - box.top);
+                    }
+                } else { d->DrawIndexedInstanced(g.indexCount, r.count, g.indexStart, g.baseVertex, r.start); drawCount++; instanceCount += r.count; }
             }
             ComPtr<ID3D11CommandList> commands; check(d->FinishCommandList(FALSE, &commands));
             context->ExecuteCommandList(commands.Get(), TRUE);   // Unity 의 즉시 컨텍스트 상태를 그대로 되돌린다
@@ -268,4 +354,4 @@ DR2_API double sf_dr2_stat(int token, int index) noexcept { try { auto r = get(t
     case 0: return double(r->frames.load()); case 1: return double(r->draws.load()); case 2: return double(r->instances.load()); case 3: return double(r->dropped.load());
     case 4: return double(r->errors.load()); case 5: return double(r->uploadedBytes.load());
     case 6: return r->renderCalls.load() ? r->renderUsSum / double(r->renderCalls.load()) : 0; case 7: return r->commits.load() ? r->commitUsSum / double(r->commits.load()) : 0;
-    case 8: return double(r->renderCalls.load()); default: return -1; } } catch (...) { return -1; } }
+    case 8: return double(r->renderCalls.load()); case 9: return double(r->grabCopies.load()); case 10: return double(r->grabPixels.load()); default: return -1; } } catch (...) { return -1; } }

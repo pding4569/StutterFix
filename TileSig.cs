@@ -65,6 +65,47 @@ namespace StutterFix
         private static string C(Color c) { return F(c.r) + "," + F(c.g) + "," + F(c.b) + "," + F(c.a); }
         private static string Tex(Texture t) { return t == null ? "null" : t.name + ":" + t.width + "x" + t.height; }
 
+        // Read-only snapshot: unlike tilesig, do not flush deferred color/mesh
+        // work here. That would hide the very ordering problem being observed.
+        internal static string State(string arg)
+        {
+            var ids = arg.Split(new[] { ' ', ',' }, StringSplitOptions.RemoveEmptyEntries);
+            if (ids.Length == 0 || ids.Length > 32) throw new ArgumentException("floorstate: give 1..32 tile IDs");
+            var list = ADOBase.lm == null ? null : ADOBase.lm.listFloors;
+            if (list == null) throw new InvalidOperationException("floorstate: no level");
+            var selected = new int[ids.Length];
+            for (int i = 0; i < ids.Length; i++)
+                if (!int.TryParse(ids[i], NumberStyles.Integer, CultureInfo.InvariantCulture, out selected[i]) || selected[i] < 0 || selected[i] >= list.Count)
+                    throw new ArgumentException("floorstate: invalid tile ID " + ids[i]);
+            var cond = scrConductor.instance;
+            var sb = new StringBuilder("[floorstate] frame=" + Time.frameCount + " song_s=" +
+                (cond == null ? "null" : cond.songposition_minusi.ToString("R", CultureInfo.InvariantCulture)) +
+                " catchup=" + EffectBudget.InCatchUp + " effect_pending=" + EffectBudget.QueueLength + " recolor_pending=" + RecolorSplit.Pending);
+            foreach (int id in selected)
+            {
+                var floor = list[id];
+                if (floor == null) { sb.Append("\n tile=").Append(id).Append(" null"); continue; }
+                var tr = floor.transform;
+                var fr = floor.floorRenderer;
+                var r = fr == null ? null : fr.renderer;
+                // FloorRenderer.material is the game's cached material field.
+                // Do not read Renderer.material (it could instantiate a copy).
+                var mat = fr == null ? null : fr.material;
+                sb.Append("\n tile=").Append(id).Append(" script=").Append(floor.enabled)
+                  .Append(" active=").Append(floor.gameObject.activeInHierarchy).Append(" culled=").Append(TileCull.IsCulled(floor))
+                  .Append(" opacity=").Append(F(floor.opacity)).Append(" opacityVal=").Append(F(floor.opacityVal))
+                  .Append(" dontChangeMySprite=").Append(floor.dontChangeMySprite)
+                  .Append(" pos=").Append(tr.position.ToString("R")).Append(" scale=").Append(tr.localScale.ToString("R"))
+                  .Append(" startScale=").Append(floor.startScale.ToString("R")).Append(" style=").Append(floor.styleNum)
+                  .Append(" renderer=").Append(r == null ? "null" : r.enabled.ToString())
+                  .Append(" visible=").Append(r == null ? "null" : r.isVisible.ToString())
+                  .Append(" material=").Append(mat == null ? "null" : mat.name)
+                  .Append(" alpha=").Append(mat != null && mat.HasProperty("_Alpha") ? F(mat.GetFloat("_Alpha")) : "NA")
+                  .Append(" color=").Append(mat != null && mat.HasProperty("_Color") ? C(mat.GetColor("_Color")) : "NA");
+            }
+            return sb.ToString();
+        }
+
         internal static string Run(string dir, string name)
         {
             RecolorDefer.FlushAll();
