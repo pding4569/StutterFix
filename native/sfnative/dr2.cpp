@@ -76,6 +76,12 @@ struct Renderer {
     Renderer(ID3D11Device* dev, uint32_t n) : token(0), maxItems(n), device(dev) {
         device->GetImmediateContext(&context); check(device->CreateDeferredContext(0, &deferred));
         channelShadow.assign(size_t(n) * kChannelFloats, 0.f); staticShadow.assign(size_t(n) * kStaticFloats, 0.f); staticPending.assign(size_t(n) * kStaticFloats, 0.f);
+        // PrepVfx의 create에서 8개 패킷을 모두 확보한다. 첫 8프레임에 분산된 최초 할당도 없앤다.
+        for (auto& p : ring) {
+            p.dirtySlots.reserve(n); p.dirtyValues.reserve(size_t(n) * kChannelFloats);
+            p.list.reserve(size_t(n) * 2); p.runs.reserve(size_t(n) * 2); p.segs.reserve(8000);
+        }
+        drawList.reserve(size_t(n) * 2); runs.reserve(size_t(n) * 2); segs.reserve(8000);
         D3D11_BUFFER_DESC b{}; b.Usage = D3D11_USAGE_DEFAULT; b.BindFlags = D3D11_BIND_SHADER_RESOURCE;
         b.ByteWidth = n * kChannelFloats * 4; check(device->CreateBuffer(&b, nullptr, &channelBuffer));
         b.ByteWidth = n * kStaticFloats * 4; check(device->CreateBuffer(&b, nullptr, &staticBuffer));
@@ -83,6 +89,8 @@ struct Renderer {
         sv.Buffer.NumElements = n * kChannelFloats / 4; check(device->CreateShaderResourceView(channelBuffer.Get(), &sv, &channelView));
         sv.Buffer.NumElements = n * kStaticFloats / 4; check(device->CreateShaderResourceView(staticBuffer.Get(), &sv, &staticView));
         b = {}; b.ByteWidth = 96; b.Usage = D3D11_USAGE_DEFAULT; b.BindFlags = D3D11_BIND_CONSTANT_BUFFER; check(device->CreateBuffer(&b, nullptr, &frameBuffer));
+        listCapacity = std::max<uint32_t>(1024, n * 2);
+        b.ByteWidth = listCapacity * 4; b.BindFlags = D3D11_BIND_VERTEX_BUFFER; check(device->CreateBuffer(&b, nullptr, &listBuffer));
         check(device->CreateVertexShader(dr2_vs, sizeof(dr2_vs), nullptr, &vs));
         check(device->CreatePixelShader(dr2_ps, sizeof(dr2_ps), nullptr, &ps[0]));
         check(device->CreatePixelShader(dr2_pspoint, sizeof(dr2_pspoint), nullptr, &ps[1]));
@@ -153,6 +161,8 @@ struct Renderer {
     bool setStatics(uint32_t first, uint32_t count, const float* data) {
         if (!data || first >= maxItems || count == 0 || count > maxItems - first) return false;
         std::lock_guard<std::mutex> lock(mutex);
+        // 관리 쪽의 준비 마지막 전체 statics 업로드가 도형 준비 완료 경계다. export/ABI는 그대로다.
+        if (first == 0 && count == maxItems) { prepareGeometryBuffers(); texCopy.reserve(textures.size()); geomCopy.reserve(geometries.size()); }
         std::memcpy(staticPending.data() + size_t(first) * kStaticFloats, data, size_t(count) * kStaticFloats * 4);
         staticDirtyLo = std::min(staticDirtyLo, first); staticDirtyHi = std::max(staticDirtyHi, first + count); staticPendingAny = true; return true;
     }
@@ -178,6 +188,11 @@ struct Renderer {
         if (!full) writeIndex++;
         commits++; commitUsSum += nowUs() - t0;
         return true;
+    }
+    void prepareGeometryBuffers() {
+        uint32_t vb = uint32_t(geomVertices.size() * 4), ib = uint32_t(geomIndices.size() * 4);
+        if (vb > vbCapacity || !vertexBuffer) { vbCapacity = std::max<uint32_t>(4096, vb + vb / 2); D3D11_BUFFER_DESC d{}; d.ByteWidth = vbCapacity; d.Usage = D3D11_USAGE_DEFAULT; d.BindFlags = D3D11_BIND_VERTEX_BUFFER; vertexBuffer.Reset(); check(device->CreateBuffer(&d, nullptr, &vertexBuffer)); }
+        if (ib > ibCapacity || !indexBuffer) { ibCapacity = std::max<uint32_t>(4096, ib + ib / 2); D3D11_BUFFER_DESC d{}; d.ByteWidth = ibCapacity; d.Usage = D3D11_USAGE_DEFAULT; d.BindFlags = D3D11_BIND_INDEX_BUFFER; indexBuffer.Reset(); check(device->CreateBuffer(&d, nullptr, &indexBuffer)); }
     }
     void applyPacket(Packet& p, uint32_t& lo, uint32_t& hi) {
         std::memcpy(vp, p.vp, sizeof vp); std::memcpy(cam, p.cam, sizeof cam); std::memcpy(ortho, p.ortho, sizeof ortho); clearStencil = p.clearStencil != 0;
@@ -255,8 +270,7 @@ struct Renderer {
                     }
                     if (geomDirty) {
                         uint32_t vb = uint32_t(geomVertices.size() * 4), ib = uint32_t(geomIndices.size() * 4);
-                        if (vb > vbCapacity || !vertexBuffer) { vbCapacity = std::max<uint32_t>(4096, vb + vb / 2); D3D11_BUFFER_DESC d{}; d.ByteWidth = vbCapacity; d.Usage = D3D11_USAGE_DEFAULT; d.BindFlags = D3D11_BIND_VERTEX_BUFFER; vertexBuffer.Reset(); check(device->CreateBuffer(&d, nullptr, &vertexBuffer)); }
-                        if (ib > ibCapacity || !indexBuffer) { ibCapacity = std::max<uint32_t>(4096, ib + ib / 2); D3D11_BUFFER_DESC d{}; d.ByteWidth = ibCapacity; d.Usage = D3D11_USAGE_DEFAULT; d.BindFlags = D3D11_BIND_INDEX_BUFFER; indexBuffer.Reset(); check(device->CreateBuffer(&d, nullptr, &indexBuffer)); }
+                        prepareGeometryBuffers();
                         D3D11_BOX box{ 0, 0, 0, vb, 1, 1 }; context->UpdateSubresource(vertexBuffer.Get(), 0, &box, geomVertices.data(), 0, 0);
                         box.right = ib; context->UpdateSubresource(indexBuffer.Get(), 0, &box, geomIndices.data(), 0, 0); geomDirty = false;
                     }

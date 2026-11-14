@@ -1,7 +1,7 @@
-param([switch]$NativeBuild, [switch]$SkipFixture)
+param([switch]$NativeBuild, [switch]$SkipFixture, [string]$OutputDirectory = 'out/direct-renderer/m1b')
 $ErrorActionPreference = 'Stop'
 $repo = (Resolve-Path "$PSScriptRoot/../..").Path
-$out = Join-Path $repo 'out/direct-renderer/m1b'
+$out = Join-Path $repo $OutputDirectory
 New-Item -ItemType Directory -Force $out | Out-Null
 $vs = & "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
 $msvc = (Get-ChildItem "$vs/VC/Tools/MSVC" -Directory | Sort-Object Name -Descending | Select-Object -First 1).FullName

@@ -143,4 +143,16 @@ static void maskCheck(){
     onEvent((f.id<<12)|2);require(changedPixels()==1024,"leave decrements stencil; outside mask covers remainder");require(sf_dr2_stat(f.id,4)==0,"mask native errors");
     std::puts("WARP stencil: empty background clears stale stencil; enter/inside/leave/outside preserve 64/1024 pixels");
 }
-int main(){try{blendCheck();uvCheck();regionAndSrgbCheck();vertexCheck();maskCheck();std::puts("M1b offline PASS (not in-game framecmp/performance)");return 0;}catch(const std::exception& e){std::printf("FAIL: %s\n",e.what());return 1;}catch(...){std::puts("FAIL: native exception");return 1;}}
+static void preparationCheck(){
+    Fixture f; auto r=get(f.id); require(bool(r),"prepared renderer");
+    require(r->listBuffer && r->listCapacity>=4,"list buffer prepared before first render");
+    require(sf_dr2_statics(f.id,0,2,f.statics)==1,"final prepared statics");
+    auto vb=r->vertexBuffer.Get();auto ib=r->indexBuffer.Get();auto lb=r->listBuffer.Get();
+    require(vb&&ib,"geometry buffers prepared before first render");
+    for(auto& p:r->ring){require(p.dirtySlots.capacity()>=2&&p.dirtyValues.capacity()>=32,"all eight dirty packets reserved");require(p.list.capacity()>=4&&p.runs.capacity()>=4&&p.segs.capacity()>=8000,"all eight list packets reserved");}
+    f.image({0xffffffff},1,1);
+    for(unsigned i=0;i<24;i++){f.channels[0]=float(i%2)*.01f;f.draw();require(r->vertexBuffer.Get()==vb&&r->indexBuffer.Get()==ib&&r->listBuffer.Get()==lb,"no first-frame/repeated buffer replacement");}
+    require(sf_dr2_stat(f.id,4)==0,"prepared renderer errors");
+    std::puts("M1c preparation: all 8 packet capacities and geometry/list GPU buffers ready before first render; 24 frames retain buffers");
+}
+int main(){try{blendCheck();uvCheck();regionAndSrgbCheck();vertexCheck();maskCheck();preparationCheck();std::puts("M1b/M1c offline PASS (not in-game framecmp/performance)");return 0;}catch(const std::exception& e){std::printf("FAIL: %s\n",e.what());return 1;}catch(...){std::puts("FAIL: native exception");return 1;}}

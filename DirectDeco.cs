@@ -21,6 +21,15 @@ namespace StutterFix
     //   - 스프라이트 마스크: 마스크 장식은 스텐실을 +1/-1 하는 두 번의 그리기(범위 시작·끝)로, 마스크 대상은 스텐실 시험으로 그린다(Unity 와 같은 규칙).
     //   - 더하기 블렌드(모드의 FastBlend 가 바꿔 끼운 Particles/Additive 재질)도 맡는다.
     // 기본 꺼짐. AUTOTEST `dr2 on` 뒤 다음 재생 준비(PrepVfx)부터 켜진다.
+    // GO 풀의 켜짐/꺼짐만 통지한다. 비활성 수천 개에 Update/Poll을 돌리지 않는다.
+    internal sealed class DirectDecoLifetime : MonoBehaviour
+    {
+        internal Action<bool> Changed;
+        void OnEnable() { Changed?.Invoke(true); }
+        void OnDisable() { Changed?.Invoke(false); }
+        void OnDestroy() { Changed?.Invoke(false); Changed = null; }
+    }
+
     internal static unsafe class DirectDeco
     {
         [DllImport("sfnative", CallingConvention = CallingConvention.Cdecl)] static extern int sf_dr2_create(IntPtr anyResource, uint maxItems);
@@ -54,18 +63,21 @@ namespace StutterFix
         internal static bool SeqTest;          // 진단: 장식은 맡지 않고 남는 렌더러 끼워 그리기만 한다
         static Harmony hooks; static bool hooked;
         const string Owner = "StutterFix.DirectDeco";
-        const int ChannelFloats = 16, StaticFloats = 32, MaxSegs = 4000, HiddenLayer = 31, MaxPolled = 256;
+        const int ChannelFloats = 16, StaticFloats = 32, MaxSegs = 4000, HiddenLayer = 31;
 
         sealed class Item
         {
             public scrVisualDecoration D; public SpriteRenderer R; public SpriteMask M; public scrParallax P; public Transform Child;
             public int Slot, Tex = -1, Geom, Placement, Layer, Order; public uint Flags; public SceneRenderOrder.Key Key;
-            public bool Ok, Drawable, StructDirty, IsMask, Released;
+            public bool Ok, Drawable, StructDirty, IsMask, Released, BackForceR, BackForceM;
             public int BackLayer, BackOrder, FrontLayer, FrontOrder;
+            public readonly Entry First = new Entry(), Second = new Entry();
         }
         sealed class Leftover
         {
-            public Renderer R; public GameObject Go; public scrDecoration Deco; public SceneRenderOrder.Key Key; public bool Seq, Bg, Suppressed, On, Masked; public int GoLayer; public string Why;
+            public Renderer R; public GameObject Go; public scrDecoration Deco; public SceneRenderOrder.Key Key; public bool Seq, Bg, Suppressed, On, Masked; public int GoLayer, PollIndex = -1, EntryIndex = -1; public string Why; public Material[] Materials; public DirectDecoLifetime Lifetime;
+            public readonly Entry DrawEntry = new Entry();
+            public List<Material> MaterialScratch;
         }
         // 그리기 차례의 한 칸: 장식 그리기(Kind 0), 마스크 들어감(1)/나옴(2), 끼운 렌더러(Left != null)
         sealed class Entry
@@ -81,7 +93,9 @@ namespace StutterFix
         static readonly Dictionary<scrDecoration, List<Leftover>> leftoverOf = new Dictionary<scrDecoration, List<Leftover>>(new RefEq());
         static Item[] items = new Item[0];
         static readonly List<Entry> entries = new List<Entry>();
-        static readonly List<Leftover> sequenced = new List<Leftover>(); static readonly List<Leftover> polled = new List<Leftover>(); static int pollCursor;
+        static readonly List<Entry> nativeEntries = new List<Entry>();
+        static readonly DirectRenderVisibilityIndex commandEntries = new DirectRenderVisibilityIndex();
+        static readonly List<Leftover> sequenced = new List<Leftover>(); static readonly List<Leftover> polled = new List<Leftover>();
         static readonly Dictionary<GameObject, int> movedLayers = new Dictionary<GameObject, int>();
         static int totalSegs, bgValue, fgValue;
         static int token; static Camera main; static scrDecorationManager manager; static Transform managerTransform; static object level;
@@ -93,7 +107,13 @@ namespace StutterFix
         static readonly HashSet<scrDecoration> boundaryWatch = new HashSet<scrDecoration>(new RefEq());
         static readonly Dictionary<scrDecoration, bool> boundaryVisible = new Dictionary<scrDecoration, bool>(new RefEq());
         static readonly Dictionary<scrDecoration, List<Canvas>> boundaryCanvases = new Dictionary<scrDecoration, List<Canvas>>(new RefEq());
-        static bool boundaryDirty, rebuilding, verifying;
+        static bool boundaryDirty, verifying;
+        static readonly List<Leftover> leftovers = new List<Leftover>();
+        static readonly List<Canvas> canvasBounds = new List<Canvas>();
+        static readonly Dictionary<string, int> unseqReasons = new Dictionary<string, int>();
+        static int generation, activationOwned, staticFailures, failureLogs;
+        static long boundaryChanges, pollTicks, commitMaxTicks, prepTicks;
+        static bool timing;
         static readonly Dictionary<Texture2D, int> texSlot = new Dictionary<Texture2D, int>();
         static readonly Dictionary<Texture2D, int> texGeom = new Dictionary<Texture2D, int>();
         static int nextGeom = 1;
@@ -170,6 +190,7 @@ namespace StutterFix
         static void Prepared()
         {
             if (!Enabled) return;
+            if (Active && ReferenceEquals(level, ADOBase.customLevel?.levelData)) return;
             try { Deactivate("재생 준비"); Activate(); }
             catch (Exception e) { Log("켜기 실패: " + e); try { Deactivate("켜기 실패"); } catch { } }
         }
@@ -191,9 +212,9 @@ namespace StutterFix
         static void StructPostfix(scrDecoration __instance)
         {
             if (!Active) return;
-            if (boundaryWatch.Contains(__instance)) boundaryDirty = true;
             if (itemOf.TryGetValue(__instance, out var it)) QueueStruct(it);
             else if (leftoverOf.TryGetValue(__instance, out var ls)) LeftoverStruct(ls);
+            else if (boundaryWatch.Contains(__instance)) boundaryDirty = true;
         }
         static void QueueStruct(Item it) { if (!it.StructDirty) { it.StructDirty = true; structQueue.Add(it); } }
         // FastBlend 가 재질을 바꿔 끼웠다(화면 복사 블렌드 <-> 더하기).
@@ -240,6 +261,7 @@ namespace StutterFix
         }
         static void Poll(Item it)
         {
+            long t0 = timing ? System.Diagnostics.Stopwatch.GetTimestamp() : 0;
             polls++;
             var d = it.D; float* c = pChannels + it.Slot * ChannelFloats;
             Vector2 pos = d.pivotPosVec, piv = d.pivotOffsetVec, sc = d.scaleVec, po = d.parallaxOffset; Color col = d.color; var p = it.P;
@@ -254,6 +276,7 @@ namespace StutterFix
             if ((int)d.placementType != it.Placement) QueueStruct(it);
             bool drawable = it.Ok && rendererOn(d) && d.gameObject.activeInHierarchy && (it.IsMask || rendererColor(d).a != 0f);
             if (drawable != it.Drawable) { it.Drawable = drawable; listDirty = true; }
+            if (timing) pollTicks += System.Diagnostics.Stopwatch.GetTimestamp() - t0;
         }
 
         // ---------------------------------------------------------------- 분류와 정적 값
@@ -289,7 +312,8 @@ namespace StutterFix
             if (m.IsKeywordEnabled("PIXELSNAP_ON")) return "픽셀 맞춤";
             string layer = r.sortingLayerName;
             if (layer != "Bg" && layer != "Default") return "정렬 층 " + layer;
-            if ((main.cullingMask & (1 << r.gameObject.layer)) == 0) return "카메라 층";
+            int sourceLayer = movedLayers.TryGetValue(r.gameObject, out int savedLayer) ? savedLayer : r.gameObject.layer;
+            if ((main.cullingMask & (1 << sourceLayer)) == 0) return "카메라 층";
             return null;
         }
         static int GrabMode(scrVisualDecoration d)
@@ -314,9 +338,7 @@ namespace StutterFix
         }
         static void NoteBoundary(scrDecoration d)
         {
-            if (!boundaryVisible.TryGetValue(d, out bool before)) return;
-            bool now = BoundaryVisible(d);
-            if (before != now) { boundaryVisible[d] = now; boundaryDirty = true; }
+            // 비활성 상태까지 준비 때 경계에 넣는다. 켜짐 변경은 재검색할 필요가 없다.
         }
         // 사각형 꼭짓점인지도 검사한다. Tight Sprite의 삼각형을 임의 사각형으로 넓히지 않는다.
         internal static bool TryUv(Vector2[] vertices, Vector2[] uv, Bounds b, out Vector2 origin, out Vector2 x, out Vector2 y)
@@ -349,7 +371,6 @@ namespace StutterFix
             if (it.R.maskInteraction == SpriteMaskInteraction.None || it.IsMask) return;
             WatchBoundary(it.D);
             // Unity로 돌린 마스크 대상은 끼워 그릴 수 없는 렌더러다. 후보에서만 빼면 순서 경계가 사라진다.
-            if (!it.R.enabled || it.R.forceRenderingOff || !it.R.gameObject.activeInHierarchy) return;
             var key = it.Key;
             if (it.Layer <= bgValue) { if (!bgLimit || key.CompareTo(bgMin) < 0) { bgMin = key; bgLimit = true; } }
             else { if (!fgLimit || key.CompareTo(fgMax) > 0) { fgMax = key; fgLimit = true; } }
@@ -384,6 +405,7 @@ namespace StutterFix
             if (it.IsMask != maskBefore) orderDirty = true;
             Transform rt = it.IsMask ? it.M.transform : r.transform;
             var sp = it.IsMask ? it.M.sprite : r.sprite;
+            string failure = !sp ? "sprite=null" : sp.packed ? "sprite.packed=true" : "texture=null";
             var tex = sp ? sp.texture : null;
             var mat = r.sharedMaterial;
             // LazySprite가 아직 만들지 않은 투명 장식은 다음 SetSprite까지 빈 슬롯으로 둔다.
@@ -393,6 +415,7 @@ namespace StutterFix
                 // 스프라이트 지역 좌표 -> 피벗 지역 좌표(자식의 위치는 채널에서 온다)
                 Matrix4x4 M = Matrix4x4.identity; Transform t = rt; var child = it.Child; bool chain = true;
                 while (!ReferenceEquals(t, child)) { M = Matrix4x4.TRS(t.localPosition, t.localRotation, t.localScale) * M; t = t.parent; if ((object)t == null) { chain = false; break; } }
+                failure = "transform.chain=false";
                 if (chain)
                 {
                     M = Matrix4x4.TRS(Vector3.zero, child.localRotation, child.localScale) * M;
@@ -425,6 +448,9 @@ namespace StutterFix
                     s[24] = tint.r; s[25] = tint.g; s[26] = tint.b; s[27] = tint.a;
                     s[28] = 1f; s[29] = it.IsMask ? it.M.alphaCutoff : 0f; s[30] = tex.width; s[31] = tex.height;
                     bool finite = true; for (int i = 0; i < StaticFloats; i++) if (float.IsNaN(s[i]) || float.IsInfinity(s[i])) finite = false;
+                    failure = !uvOk ? "sprite.uv=non-affine/non-quad vertices=" + vertices.Length :
+                        "scale=" + ts + " textureScale=" + tm + " repeat=" + rx + "," + ry;
+                    if (!finite) for (int i = 0; i < StaticFloats; i++) if (float.IsNaN(s[i]) || float.IsInfinity(s[i])) { failure = "static[" + i + "]=" + s[i]; break; }
                     if (finite && uvOk && ts.x != 0 && ts.y != 0 && tm.x != 0 && tm.y != 0 && rx > 0 && ry > 0)
                     {
                         it.Tex = TextureSlot(tex);
@@ -439,12 +465,18 @@ namespace StutterFix
                         bool whole = uv0 == Vector2.zero && uvX == Vector2.right && uvY == Vector2.up && rx == 1f && ry == 1f;
                         it.Geom = Tight && whole ? GeometryFor(tex) : 0;
                         it.Ok = it.Tex >= 0;
+                        if (!it.Ok) failure = "texture.registration=-1 name=" + tex.name;
                     }
                 }
             }
-            sf_dr2_statics(token, (uint)it.Slot, 1, s);
+            if (sf_dr2_statics(token, (uint)it.Slot, 1, s) == 0) { it.Ok = false; failure = "native.statics=0"; }
             // 유효하지 않은 도형을 숨긴 채 남겨 두지 않는다. 마스크/순서도 다음 렌더 전에 다시 만든다.
-            if (!it.Ok) { ReleaseItem(it, "정적 값/도형/텍스처"); return; }
+            if (!it.Ok)
+            {
+                staticFailures++;
+                if (failureLogs++ < 10) Log("정적 실패 top" + failureLogs + " name=" + d.name + " slot=" + it.Slot + " field/value=" + failure);
+                ReleaseItem(it, "정적 값/도형/텍스처"); return;
+            }
             if (it.Ok != okBefore || it.Tex != texBefore || it.Geom != geomBefore || it.Flags != flagsBefore) listDirty = true;
         }
         // 더는 맡을 수 없는 장식: 원래 렌더러로 돌려보낸다(그 장식만 순서가 어긋날 수 있다).
@@ -452,15 +484,21 @@ namespace StutterFix
         {
             if (it.Released) return;
             it.Released = true; it.Ok = false; it.Drawable = false; listDirty = true; orderDirty = true; released++;
-            boundaryDirty = true;
+            rejected++; Count(why);
             itemOf.Remove(it.D);
             try
             {
-                if (it.R) it.R.forceRenderingOff = InvisibleSkip.Enabled && InvisibleSkip.IsHidden(it.D);
-                if (it.M) it.M.forceRenderingOff = false;
+                if (it.R) it.R.forceRenderingOff = it.BackForceR || InvisibleSkip.Enabled && InvisibleSkip.IsHidden(it.D);
+                if (it.M) it.M.forceRenderingOff = it.BackForceM;
                 it.D.SetOpacity(it.D.opacity); if (it.D.GetVisible()) it.D.UpdatePosition();
             }
             catch { }
+            // 같은 슬롯의 원래 렌더러를 끼워 그린다. 불가능할 때만 이 키를 경계로 추가한다.
+            var lf = MakeLeftover(it.R);
+            if (it.IsMask) { lf.Seq = false; lf.Why = "returned-mask"; }
+            leftovers.Add(lf);
+            if (lf.Seq && !NeedsMask(it) && WithinLimits(lf.Bg, lf.Key)) SequenceLeftover(lf);
+            else { lf.Seq = false; AddLimit(lf); boundaryDirty = true; }
         }
         static int TextureSlot(Texture2D tex)
         {
@@ -523,6 +561,107 @@ namespace StutterFix
         static bool Cell(ulong[] bits, int G, int x, int y) { int i = y * G + x; return ((bits[i >> 6] >> (i & 63)) & 1UL) != 0; }
 
         // ---------------------------------------------------------------- 남는 렌더러
+        static Leftover MakeLeftover(Renderer r)
+        {
+            var m = r.sharedMaterial; var sr = r as SpriteRenderer; var ps = r as ParticleSystemRenderer;
+            bool masked = sr && sr.maskInteraction != SpriteMaskInteraction.None || ps && ps.maskInteraction != SpriteMaskInteraction.None;
+            var lf = new Leftover { R = r, Go = r.gameObject, GoLayer = r.gameObject.layer, Deco = r.GetComponentInParent<scrDecoration>(true), Masked = masked,
+                Key = GpuDecoScene.SortKey(r, m, main), Materials = r.sharedMaterials };
+            lf.Bg = lf.Key.Layer <= bgValue;
+            string reason = !Sequence ? "sequence-off" : masked ? "mask" : !m || !m.shader ? "material-missing" : null;
+            if (reason == null && !(r is SpriteRenderer || r is MeshRenderer || r is LineRenderer || r is TrailRenderer || ps && SeqParticles)) reason = "renderer-type/particles-off";
+            for (int i = 0; reason == null && i < lf.Materials.Length; i++)
+            {
+                var mat = lf.Materials[i];
+                if (!mat || !mat.shader || mat.passCount != 1) reason = "material[" + i + "].passes=" + (mat ? mat.passCount : -1);
+            }
+            if (lf.Materials.Length == 0) reason = "materials-empty";
+            lf.Seq = reason == null;
+            lf.MaterialScratch = new List<Material>(Math.Max(4, lf.Materials.Length));
+            lf.Why = r.GetType().Name + ":" + (m && m.shader ? m.shader.name : "-") + ":" + (reason ?? "single-pass");
+            return lf;
+        }
+        static void SetAwake(Leftover lf, bool awake)
+        {
+            if (!lf.Suppressed) return;
+            cbDirty = true;
+            SetLeftoverVisible(lf);
+            if (awake && lf.PollIndex < 0) { lf.PollIndex = polled.Count; polled.Add(lf); }
+            else if (!awake && lf.PollIndex >= 0)
+            {
+                int last = polled.Count - 1, index = lf.PollIndex;
+                var tail = polled[last]; polled[index] = tail; tail.PollIndex = index; polled.RemoveAt(last); lf.PollIndex = -1;
+            }
+        }
+        static void SetLeftoverVisible(Leftover lf)
+        {
+            bool on = LeftoverVisible(lf);
+            if (lf.On != on) { lf.On = on; cbDirty = true; }
+            commandEntries.Set(lf.EntryIndex, on);
+        }
+        static void SequenceLeftover(Leftover lf)
+        {
+            sequenced.Add(lf);
+            if (lf.Deco) { if (!leftoverOf.TryGetValue(lf.Deco, out var ls)) leftoverOf[lf.Deco] = ls = new List<Leftover>(); if (!ls.Contains(lf)) ls.Add(lf); }
+            Suppress(lf);
+            lf.Lifetime = lf.Go.AddComponent<DirectDecoLifetime>();
+            lf.Lifetime.Changed = awake => SetAwake(lf, awake);
+            SetAwake(lf, lf.Go.activeInHierarchy);
+        }
+        static void RecountOwned()
+        {
+            ownedBg = ownedFg = ownedMask = ownedMasked = ownedAdd = 0;
+            foreach (var it in items) if (!it.Released)
+            {
+                if (it.IsMask) ownedMask++;
+                else { if (it.Layer <= bgValue) ownedBg++; else ownedFg++; if ((it.Flags & (FInside | FOutside)) != 0) ownedMasked++; if ((it.Flags & FAdd) != 0) ownedAdd++; }
+            }
+        }
+        static bool NeedsMask(Item it) => it.IsMask || it.R && it.R.maskInteraction != SpriteMaskInteraction.None;
+        static void AddLimit(Leftover lf)
+        {
+            if (lf.Bg) { if (!bgLimit || lf.Key.CompareTo(bgMin) < 0) { bgMin = lf.Key; bgLimit = true; } }
+            else { if (!fgLimit || lf.Key.CompareTo(fgMax) > 0) { fgMax = lf.Key; fgLimit = true; } }
+        }
+        static void ApplyBoundaries()
+        {
+            boundaryDirty = false; boundaryChanges++;
+            bool masksReturned = false;
+            foreach (var it in items) if (it.Released && NeedsMask(it)) masksReturned = true;
+            if (masksReturned) foreach (var it in items) if (!it.Released && NeedsMask(it)) ReleaseItem(it, "마스크 묶음 반환");
+            // 재검색/텍스처/도형/네이티브 재생성 없이 기존 키만 본다. 경계는 곡 중 완화하지 않는다.
+            for (int i = 0; i < leftovers.Count; i++)
+            {
+                var lf = leftovers[i]; if (lf.Seq || !lf.R) continue;
+                lf.Key = GpuDecoScene.SortKey(lf.R, lf.R.sharedMaterial, main); lf.Bg = lf.Key.Layer <= bgValue;
+                if (!unseqReasons.ContainsKey(lf.Why)) unseqReasons[lf.Why] = 1;
+                if (lf.Bg) { if (!bgLimit || lf.Key.CompareTo(bgMin) < 0) { bgMin = lf.Key; bgLimit = true; } }
+                else { if (!fgLimit || lf.Key.CompareTo(fgMax) > 0) { fgMax = lf.Key; fgLimit = true; } }
+            }
+            foreach (var c in canvasBounds) if (c)
+            {
+                int lv = SortingLayer.GetLayerValueFromID(c.sortingLayerID), order = c.sortingOrder;
+                if (lv <= bgValue) { if (lv < bgCanvasLayer || lv == bgCanvasLayer && order < bgCanvasOrder) { bgCanvasLayer = lv; bgCanvasOrder = order; } }
+                else { if (lv > fgCanvasLayer || lv == fgCanvasLayer && order > fgCanvasOrder) { fgCanvasLayer = lv; fgCanvasOrder = order; } }
+            }
+            foreach (var it in items) if (!it.Released && NeedsMask(it) && !WithinLimits(it.Layer <= bgValue, it.Key)) masksReturned = true;
+            if (masksReturned) foreach (var it in items) if (!it.Released && NeedsMask(it)) ReleaseItem(it, "마스크 대상 경계 반환");
+            for (int i = sequenced.Count - 1; i >= 0; i--)
+            {
+                if (i >= sequenced.Count) continue;
+                var lf = sequenced[i];
+                if (!WithinLimits(lf.Bg, lf.Key)) RetireSequence(lf.Go);
+            }
+            // 반환된 마스크/대상이 있으면 혼합 소유를 만들지 않는다.
+            for (int i = 0; i < items.Length; i++)
+            {
+                var it = items[i]; if (it.Released) continue;
+                if (!WithinLimits(it.Layer <= bgValue, it.Key)) ReleaseItem(it, "부분 실패 순서/마스크 경계");
+            }
+            unseqReasons.Clear();
+            foreach (var lf in leftovers) if (!lf.Seq) { unseqReasons.TryGetValue(lf.Why, out int n); unseqReasons[lf.Why] = n + 1; }
+            boundaryDirty = false; RecountOwned();
+        }
         static bool LeftoverVisible(Leftover lf) => lf.R && lf.R.enabled && !lf.R.forceRenderingOff && lf.Go.activeInHierarchy;
         static void CheckLeftovers(List<Leftover> ls)
         {
@@ -533,11 +672,35 @@ namespace StutterFix
         {
             for (int i = 0; i < ls.Count; i++)
             {
-                var lf = ls[i]; if (!lf.Suppressed || !lf.R) continue;
+                var lf = ls[i]; if (!lf.R) continue;
+                if (!lf.Suppressed) { boundaryDirty = true; continue; }
                 if (lf.Go.layer != HiddenLayer) { movedLayers[lf.Go] = lf.Go.layer; lf.Go.layer = HiddenLayer; }
-                try { var k = GpuDecoScene.SortKey(lf.R, lf.R.sharedMaterial, main); if (k.CompareTo(lf.Key) != 0) { lf.Key = k; orderDirty = true; } } catch { }
+                RefreshLeftover(lf);
             }
             cbDirty = true;
+        }
+        static void RefreshLeftover(Leftover lf)
+        {
+            var now = MakeLeftover(lf.R);
+            lf.Key = now.Key; lf.Bg = now.Bg; lf.Materials = now.Materials; lf.Why = now.Why;
+            orderDirty = cbDirty = true;
+            if (now.Seq && WithinLimits(lf.Bg, lf.Key)) return;
+            RetireSequence(lf.Go);
+            boundaryDirty = true;
+        }
+        static void RetireSequence(GameObject go)
+        {
+            // 한 GO에 여러 Renderer가 있으면 함께 원래 층으로 돌린다.
+            for (int i = sequenced.Count - 1; i >= 0; i--)
+            {
+                var other = sequenced[i]; if (!ReferenceEquals(other.Go, go)) continue;
+                SetAwake(other, false); other.On = false; commandEntries.Set(other.EntryIndex, false);
+                other.Suppressed = other.Seq = false;
+                if (other.Lifetime) { other.Lifetime.Changed = null; UnityEngine.Object.Destroy(other.Lifetime); }
+                sequenced.RemoveAt(i);
+            }
+            if (movedLayers.TryGetValue(go, out int original)) { go.layer = original; movedLayers.Remove(go); }
+            orderDirty = cbDirty = true;
         }
         static void Suppress(Leftover lf)
         {
@@ -561,9 +724,11 @@ namespace StutterFix
             managerTransform = manager.transform;
             if (!Identity(managerTransform)) { Log("건너뜀: 장식 부모 변환"); return; }
             var sw = System.Diagnostics.Stopwatch.StartNew();
+            generation++; staticFailures = failureLogs = 0; boundaryChanges = pollTicks = commitMaxTicks = 0;
+            leftovers.Clear(); canvasBounds.Clear(); unseqReasons.Clear();
             rejectWhy.Clear(); rejected = 0; itemOf.Clear(); leftoverOf.Clear(); sequenced.Clear(); polled.Clear(); entries.Clear(); texSlot.Clear(); texGeom.Clear(); nextGeom = 1; structQueue.Clear(); movedLayers.Clear();
             boundaryWatch.Clear(); boundaryVisible.Clear(); boundaryCanvases.Clear(); boundaryDirty = false;
-            tightTextures = tightRects = 0; tightCover = 0; polls = pollDirty = commits = listBuilds = structRefresh = orderBuilds = cbBuilds = released = 0; commitTicks = 0; pollCursor = 0;
+            tightTextures = tightRects = 0; tightCover = 0; polls = pollDirty = commits = listBuilds = structRefresh = orderBuilds = cbBuilds = released = 0; commitTicks = 0;
             bgValue = SortingLayer.GetLayerValueFromID(SortingLayer.NameToID("Bg")); fgValue = SortingLayer.GetLayerValueFromID(SortingLayer.NameToID("Default"));
 
             // 1. 후보 장식
@@ -574,13 +739,13 @@ namespace StutterFix
                 var d = all[i]; string why = Classify(d);
                 if (why != null) { rejected++; Count(why); continue; }
                 var v = (scrVisualDecoration)d; var r = v.spriteRenderer;
-                var it = new Item { D = v, R = r, M = v.spriteMask, P = d.parallax, Child = d.childTransform, IsMask = v.isMask() };
+                var it = new Item { D = v, R = r, M = v.spriteMask, P = d.parallax, Child = d.childTransform, IsMask = v.isMask(), BackForceR = r.forceRenderingOff, BackForceM = v.spriteMask && v.spriteMask.forceRenderingOff };
                 it.Key = GpuDecoScene.SortKey(r, r.sharedMaterial, main); it.Layer = it.Key.Layer; it.Order = it.Key.Order;
                 it.BackLayer = it.BackOrder = int.MinValue; it.FrontLayer = it.FrontOrder = int.MaxValue;
                 cand.Add(it); ownedRenderers.Add(r);
             }
             // 2. 남는 렌더러(메인 카메라가 그리는 다른 모든 것)와 경계
-            var left = new List<Leftover>(); int maskedLeft = 0;
+            var left = leftovers; int maskedLeft = 0;
             foreach (var r in Resources.FindObjectsOfTypeAll<Renderer>())
             {
                 if (!r || !r.gameObject.scene.IsValid() || ownedRenderers.Contains(r)) continue;
@@ -593,16 +758,12 @@ namespace StutterFix
                 var sr = r as SpriteRenderer; var psr = r as ParticleSystemRenderer;
                 bool masked = (sr && sr.maskInteraction != SpriteMaskInteraction.None) || (psr && psr.maskInteraction != SpriteMaskInteraction.None);
                 if (lv > bgValue && lv < fgValue) continue;   // 타일·행성 층: 두 장식 묶음 사이라 순서가 얽히지 않는다
-                var m = r.sharedMaterial;
-                var lf = new Leftover { R = r, Go = r.gameObject, Bg = lv <= bgValue, Masked = masked, GoLayer = r.gameObject.layer };
-                try { lf.Key = GpuDecoScene.SortKey(r, m, main); } catch { continue; }
-                lf.Deco = r.GetComponentInParent<scrDecoration>(true);
+                Leftover lf;
+                try { lf = MakeLeftover(r); } catch { continue; }
                 WatchBoundary(lf.Deco);
-                if (masked && (LeftoverVisible(lf) || !lf.Deco)) maskedLeft++;
-                lf.Seq = Sequence && !masked && m && m.shader && m.passCount == 1
-                    && (r is SpriteRenderer || r is MeshRenderer || (psr && SeqParticles) || r is LineRenderer || r is TrailRenderer);
-                lf.Why = r.GetType().Name + ":" + (m && m.shader ? m.shader.name : "-");
+                if (masked) maskedLeft++;
                 left.Add(lf);
+                if (lf.Deco) { if (!leftoverOf.TryGetValue(lf.Deco, out var ls)) leftoverOf[lf.Deco] = ls = new List<Leftover>(); ls.Add(lf); }
             }
             // 마스크 대상인 남는 것이 있으면 Unity 마스크가 그것들에 필요하다. 우리 마스크와 겹쳐도 되지만(각자 균형), 안전하게 알려 둔다.
             // 월드 캔버스(글자 장식 등)는 명령 버퍼로 그릴 수 없다.
@@ -616,24 +777,21 @@ namespace StutterFix
                     if (!boundaryCanvases.TryGetValue(cd, out var cs)) boundaryCanvases[cd] = cs = new List<Canvas>();
                     cs.Add(c); WatchBoundary(cd); boundaryVisible[cd] = BoundaryVisible(cd);
                 }
-                if (!c.isActiveAndEnabled) continue;
+                // 외부 활성화 후크가 없는 Canvas도 미래의 켜짐까지 보수적으로 예약한다.
                 if ((main.cullingMask & (1 << c.gameObject.layer)) == 0) continue;
                 int lv = SortingLayer.GetLayerValueFromID(c.sortingLayerID);
                 if (lv > bgValue && lv < fgValue) continue;
+                canvasBounds.Add(c);
                 canvases++;
                 if (lv <= bgValue) { if (lv < bgCanvasLayer || (lv == bgCanvasLayer && c.sortingOrder < bgCanvasOrder)) { bgCanvasLayer = lv; bgCanvasOrder = c.sortingOrder; } }
                 else { if (lv > fgCanvasLayer || (lv == fgCanvasLayer && c.sortingOrder > fgCanvasOrder)) { fgCanvasLayer = lv; fgCanvasOrder = c.sortingOrder; } }
             }
-            var unseqWhy = new Dictionary<string, int>();
-            // 장식이 아닌 남는 것(게임·다른 모드의 렌더러)은 매 프레임 켜짐을 확인해야 한다. 너무 많으면 끼우지 않는다.
-            int nonDecoSeq = 0; foreach (var lf in left) if (lf.Seq && (object)lf.Deco == null) nonDecoSeq++;
-            if (nonDecoSeq > MaxPolled) foreach (var lf in left) if (lf.Seq && (object)lf.Deco == null && !LeftoverVisible(lf)) lf.Seq = false;   // 지금 안 보이는 것은 경계로만
+            var unseqWhy = unseqReasons;
             foreach (var lf in left)
             {
                 if (lf.Seq) continue;
                 // 장식의 재활성화는 SetVisible/ApplyColor 후크가 다음 렌더 전에 재컴파일한다.
                 // 외부 오브젝트는 후크가 없으므로 경계로 남긴다.
-                if (lf.Deco && !LeftoverVisible(lf)) continue;
                 unseqWhy.TryGetValue(lf.Why, out int n0); unseqWhy[lf.Why] = n0 + 1;
                 if (lf.Bg) { if (!bgLimit || lf.Key.CompareTo(bgMin) < 0) { bgMin = lf.Key; bgLimit = true; } }
                 else { if (!fgLimit || lf.Key.CompareTo(fgMax) > 0) { fgMax = lf.Key; fgLimit = true; } }
@@ -641,7 +799,7 @@ namespace StutterFix
             // 마스크와 마스크 대상은 같은 스텐실을 쓴다. 우리가 그리는 것과 Unity 가 그리는 것이 섞이면 서로의 스텐실을 볼 수 없으므로,
             // 마스크·마스크 대상이 전부 맡을 수 있을 때만 맡고, 하나라도 남으면 모두 Unity 에 남긴다.
             int unownedMasks = 0;
-            foreach (var m0 in Resources.FindObjectsOfTypeAll<SpriteMask>()) if (m0 && m0.gameObject.scene.IsValid() && (main.cullingMask & (1 << m0.gameObject.layer)) != 0) { var vd = m0.GetComponentInParent<scrVisualDecoration>(true); WatchBoundary(vd); if ((!vd || !itemOfCand(cand, vd)) && (!vd || m0.enabled && m0.gameObject.activeInHierarchy)) unownedMasks++; }
+            foreach (var m0 in Resources.FindObjectsOfTypeAll<SpriteMask>()) if (m0 && m0.gameObject.scene.IsValid() && (main.cullingMask & (1 << m0.gameObject.layer)) != 0) { var vd = m0.GetComponentInParent<scrVisualDecoration>(true); WatchBoundary(vd); if (!vd || !itemOfCand(cand, vd)) unownedMasks++; }
             bool masksOk = Masks && maskedLeft == 0 && unownedMasks == 0;
             if (!masksOk)
             {
@@ -669,6 +827,13 @@ namespace StutterFix
 
             // 3. 네이티브와 버퍼
             int n = keep.Count;
+            left.Capacity = Math.Max(left.Capacity, left.Count + n);
+            commandEntries.Reset(left.Count + n * 2);
+            polled.Capacity = Math.Max(polled.Capacity, left.Count + n);
+            sequenced.Capacity = Math.Max(sequenced.Capacity, left.Count + n);
+            structQueue.Capacity = Math.Max(structQueue.Capacity, n);
+            entries.Capacity = Math.Max(entries.Capacity, left.Count + n * 2);
+            nativeEntries.Capacity = Math.Max(nativeEntries.Capacity, n * 2);
             token = sf_dr2_create(GetAnyResource(), (uint)Math.Max(1, n));
             if (token == 0) { Log("건너뜀: 네이티브 준비 실패"); return; }
             int cap = Math.Max(1, n);
@@ -691,8 +856,9 @@ namespace StutterFix
                 Poll(it);
                 if (it.IsMask) ownedMask++; else { if (it.Layer <= bgValue) ownedBg++; else ownedFg++; if ((it.Flags & (FInside | FOutside)) != 0) ownedMasked++; if ((it.Flags & FAdd) != 0) ownedAdd++; }
             }
-            fixed (float* ps = statics) sf_dr2_statics(token, 0, (uint)cap, ps);
-            if (released > 0) { Deactivate("정적 값 검증 실패: 부분 소유 대신 원래 경로"); return; }
+            fixed (float* ps = statics) if (sf_dr2_statics(token, 0, (uint)cap, ps) == 0) throw new InvalidOperationException("native statics preparation rejected");
+            if (boundaryDirty) ApplyBoundaries();
+            RecountOwned(); activationOwned = itemOf.Count;
             // 5. 차례에 끼울 남는 렌더러: 배경 쪽은 맡은 배경 장식 중 가장 위보다 아래인 것, 앞쪽은 맡은 앞 장식 중 가장 아래보다 위인 것
             bool anyBg = false, anyFg = false; SceneRenderOrder.Key bgTop = default(SceneRenderOrder.Key), fgBottom = default(SceneRenderOrder.Key);
             foreach (var it in items)
@@ -703,12 +869,11 @@ namespace StutterFix
             }
             foreach (var lf in left)
             {
-                if (!lf.Seq) continue;
-                bool need = SeqTest || (lf.Bg ? (anyBg && lf.Key.CompareTo(bgTop) < 0) : (anyFg && lf.Key.CompareTo(fgBottom) > 0));
+                if (!lf.Seq || lf.Suppressed) continue;
+                // 이후 SetDepth도 포함해 예약한 안전 구간의 남는 것을 미리 맡는다.
+                bool need = SeqTest || (lf.Bg ? anyBg : anyFg) && WithinLimits(lf.Bg, lf.Key);
                 if (!need) continue;
-                sequenced.Add(lf);
-                if ((object)lf.Deco != null) { if (!leftoverOf.TryGetValue(lf.Deco, out var ls)) leftoverOf[lf.Deco] = ls = new List<Leftover>(); ls.Add(lf); }
-                else polled.Add(lf);
+                SequenceLeftover(lf);
             }
             // 6. 원래 렌더러 끄기, 차례, 명령 버퍼
             foreach (var it in items) if (!it.Released) { it.R.forceRenderingOff = true; if (it.IsMask && it.M) it.M.forceRenderingOff = true; }
@@ -717,6 +882,7 @@ namespace StutterFix
             main.AddCommandBuffer(CameraEvent.BeforeForwardAlpha, cbBefore); main.AddCommandBuffer(CameraEvent.AfterForwardAlpha, cbAfter);
             RebuildOrder();
             if (!Active) return;
+            BuildList(); prepTicks = sw.ElapsedTicks; polls = pollDirty = pollTicks = 0;
             Log("켜짐: 맡은 장식 " + itemOf.Count + "개(배경 " + ownedBg + ", 앞 " + ownedFg + ", 마스크 " + ownedMask + ", 마스크 대상 " + ownedMasked + ", 더하기 " + ownedAdd + "), 맡지 않음 " + rejected + " (" + WhyText(rejectWhy)
                 + "), 끼워 그리는 렌더러 " + sequenced.Count + "개(장식 아님 " + polled.Count + "), 끼울 수 없는 것: " + WhyText(unseqWhy) + ", 캔버스 " + canvases + ", 마스크 대상 남는 것 " + maskedLeft
                 + ", 구간 " + totalSegs + ", 텍스처 " + texSlot.Count + "장, 빈 칸 뺀 도형 " + tightTextures + "장(사각형 " + tightRects + "개, 평균 덮음 " + (tightTextures > 0 ? (tightCover / tightTextures * 100).ToString("F0") : "-") + "%), 준비 " + sw.ElapsedMilliseconds + "ms");
@@ -746,7 +912,7 @@ namespace StutterFix
         // 맡은 장식·마스크 들어감/나옴·끼운 렌더러를 한 줄로 세우고, 장식이 이어지는 구간마다 번호를 준다.
         static void RebuildOrder()
         {
-            orderBuilds++; orderDirty = false; entries.Clear(); anyMask = false;
+            orderBuilds++; orderDirty = false; entries.Clear(); nativeEntries.Clear(); anyMask = false;
             foreach (var it in items)
             {
                 if (it.Released) continue;
@@ -755,13 +921,20 @@ namespace StutterFix
                     // 범위가 비어 있으면(앞 <= 뒤) 아무것도 가리지 않는다
                     if (it.FrontLayer < it.BackLayer || (it.FrontLayer == it.BackLayer && it.FrontOrder <= it.BackOrder)) continue;
                     anyMask = true;
-                    entries.Add(new Entry { It = it, Kind = 1, Layer = it.BackLayer, Order = it.BackOrder, Sub = -2, Bg = it.BackLayer <= bgValue });
-                    entries.Add(new Entry { It = it, Kind = 2, Layer = it.FrontLayer, Order = it.FrontOrder, Sub = -1, Bg = it.FrontLayer <= bgValue });
+                    var enter = it.First; enter.It = it; enter.Kind = 1; enter.Layer = it.BackLayer; enter.Order = it.BackOrder; enter.Sub = -2; enter.Bg = it.BackLayer <= bgValue; entries.Add(enter);
+                    var leave = it.Second; leave.It = it; leave.Kind = 2; leave.Layer = it.FrontLayer; leave.Order = it.FrontOrder; leave.Sub = -1; leave.Bg = it.FrontLayer <= bgValue; entries.Add(leave);
                 }
-                else entries.Add(new Entry { It = it, Layer = it.Layer, Order = it.Order, Key = it.Key, Bg = it.Layer <= bgValue });
+                else { var image = it.First; image.It = it; image.Kind = image.Sub = 0; image.Layer = it.Layer; image.Order = it.Order; image.Key = it.Key; image.Bg = it.Layer <= bgValue; entries.Add(image); }
             }
-            foreach (var lf in sequenced) if (lf.R) entries.Add(new Entry { Left = lf, Layer = lf.Key.Layer, Order = lf.Key.Order, Key = lf.Key, Bg = lf.Bg });
+            foreach (var lf in sequenced) if (lf.R) { var e = lf.DrawEntry; e.Left = lf; e.Layer = lf.Key.Layer; e.Order = lf.Key.Order; e.Key = lf.Key; e.Bg = lf.Bg; entries.Add(e); }
             entries.Sort(Compare);
+            commandEntries.Reset(entries.Count);
+            for (int i = 0; i < entries.Count; i++)
+            {
+                var e = entries[i];
+                if (e.Left == null) { nativeEntries.Add(e); commandEntries.Set(i, true); }
+                else { e.Left.EntryIndex = i; SetLeftoverVisible(e.Left); }
+            }
             // 구간 번호: 0 은 항상 배경 쪽 첫 이벤트. 끼운 렌더러나 배경/앞 경계를 만나면 새 구간.
             int seg = 0; bool open = true; bool bg = true;
             for (int i = 0; i < entries.Count; i++)
@@ -782,15 +955,15 @@ namespace StutterFix
             cbBuilds++; cbDirty = false; cbBefore.Clear(); cbAfter.Clear();
             IntPtr ev = sf_dr2_event(); var cb = cbBefore; int lastSeg = -1; bool bg = true;
             cb.IssuePluginEvent(ev, (token << 12) | 0); lastSeg = 0;
-            for (int i = 0; i < entries.Count; i++)
+            for (int i = commandEntries.Next(-1); i >= 0; i = commandEntries.Next(i))
             {
                 var e = entries[i];
                 if (bg && !e.Bg) { bg = false; cb = cbAfter; }
                 if (e.Left == null) { if (e.Seg != lastSeg) { cb.IssuePluginEvent(ev, (token << 12) | e.Seg); lastSeg = e.Seg; } continue; }
-                var lf = e.Left; lf.On = LeftoverVisible(lf);
+                var lf = e.Left;
                 if (!lf.On) continue;
-                var mats = lf.R.sharedMaterials;
-                for (int k = 0; k < mats.Length; k++) if (mats[k]) cb.DrawRenderer(lf.R, mats[k], k, -1);
+                var mats = lf.Materials;
+                for (int k = 0; k < mats.Length; k++) if (mats[k]) cb.DrawRenderer(lf.R, mats[k], k, 0);
             }
         }
 
@@ -801,32 +974,41 @@ namespace StutterFix
             long t0 = System.Diagnostics.Stopwatch.GetTimestamp();
             try { Commit(); }
             catch (Exception e) { Log("프레임 오류: " + e); Deactivate("프레임 오류"); }
-            commitTicks += System.Diagnostics.Stopwatch.GetTimestamp() - t0;
+            long elapsed = System.Diagnostics.Stopwatch.GetTimestamp() - t0;
+            commitTicks += elapsed; if (elapsed > commitMaxTicks) commitMaxTicks = elapsed;
         }
         static void Commit()
         {
             if (!main || !manager || !ReferenceEquals(level, ADOBase.customLevel != null ? ADOBase.customLevel.levelData : null)) { Deactivate("맵 바뀜"); return; }
-            if (boundaryDirty && !rebuilding)
-            {
-                rebuilding = true;
-                try { Deactivate("순서 경계 변경"); Activate(); }
-                finally { rebuilding = false; }
-                if (!Active) return;
-            }
+            if (boundaryDirty) ApplyBoundaries();
             if (camFrame != Time.frameCount) CaptureCamera();   // 관리자 LateUpdate 가 안 돈 프레임
             if (structQueue.Count > 0)
             {
                 for (int i = 0; i < structQueue.Count; i++) { var it = structQueue[i]; Refresh(it); if (!it.Released) Poll(it); }
                 structQueue.Clear();
+                RecountOwned();
             }
-            if (boundaryDirty) { Deactivate("소유 구조 변경: 다음 now/재생 준비 때 다시 분류"); return; }
-            // 끼운 렌더러의 켜짐: 장식이 아닌 것은 매 프레임, 장식인 것은 후크 + 조금씩 돌아가며 확인
-            if (!cbDirty)
+            if (boundaryDirty) ApplyBoundaries();
+            // 활성 GO만 확인한다. 풀의 비활성 GO는 OnEnable/OnDisable로 이 목록에 들어오고 나간다.
+            for (int i = polled.Count - 1; i >= 0; i--)
             {
-                for (int i = 0; i < polled.Count; i++) { var lf = polled[i]; if (LeftoverVisible(lf) != lf.On) { cbDirty = true; break; } }
-                int nseq = sequenced.Count;
-                for (int k = 0; k < 32 && nseq > 0 && !cbDirty; k++) { var lf = sequenced[pollCursor++ % nseq]; if (LeftoverVisible(lf) != lf.On) cbDirty = true; }
+                var lf = polled[i]; SetLeftoverVisible(lf);
+                if (!lf.On) continue;
+                if (lf.Go.layer != HiddenLayer) { movedLayers[lf.Go] = lf.Go.layer; lf.Go.layer = HiddenLayer; }
+                // 배열 getter 대신 준비된 List를 사용해 submesh 재질 교체도 확인한다.
+                lf.R.GetSharedMaterials(lf.MaterialScratch);
+                bool materialChanged = lf.MaterialScratch.Count != lf.Materials.Length;
+                for (int k = 0; !materialChanged && k < lf.Materials.Length; k++)
+                {
+                    var mat = lf.MaterialScratch[k];
+                    if (!ReferenceEquals(mat, lf.Materials[k]) || !mat || mat.passCount != 1) materialChanged = true;
+                }
+                var m = lf.MaterialScratch.Count > 0 ? lf.MaterialScratch[0] : null;
+                bool masked = lf.R is SpriteRenderer sr && sr.maskInteraction != SpriteMaskInteraction.None || lf.R is ParticleSystemRenderer ps && ps.maskInteraction != SpriteMaskInteraction.None;
+                if (materialChanged || masked || lf.R.sortingOrder != lf.Key.Order || SortingLayer.GetLayerValueFromID(lf.R.sortingLayerID) != lf.Key.Layer || m && m.renderQueue != lf.Key.Queue || GpuDecoScene.Distance(lf.R, main) != lf.Key.Distance)
+                    RefreshLeftover(lf);
             }
+            if (boundaryDirty) ApplyBoundaries();
             if (orderDirty) { RebuildOrder(); if (!Active) return; }
             else if (cbDirty) RebuildCommands();
             if (listDirty) BuildList();
@@ -838,7 +1020,7 @@ namespace StutterFix
             f.dirtyCount = (uint)dirtyCount; f.dirtySlots = (uint*)hDirty.AddrOfPinnedObject(); f.channels = pChannels;
             f.listChanged = listSend ? 1u : 0u; f.list = (uint*)hList.AddrOfPinnedObject(); f.runs = (Run*)hRuns.AddrOfPinnedObject(); f.segs = (uint*)hSegs.AddrOfPinnedObject();
             f.listCount = (uint)listCount; f.runCount = (uint)runCount; f.segCount = (uint)segCount; f.clearStencil = anyMask ? 1u : 0u;
-            sf_dr2_commit(token, &f);
+            if (sf_dr2_commit(token, &f) == 0) throw new InvalidOperationException("native commit rejected");
             listSend = false; dirtyCount = 0; stamp++; commits++;
         }
         static void BuildList()
@@ -847,9 +1029,9 @@ namespace StutterFix
             int n = 0, r = 0; int seg = 0; int runStartOfSeg = 0;
             for (int s = 0; s < totalSegs * 2; s++) segs[s] = 0;
             int lastTex = -1, lastGeom = -1; uint lastFlags = 0; bool openRun = false;
-            for (int i = 0; i < entries.Count; i++)
+            for (int i = 0; i < nativeEntries.Count; i++)
             {
-                var e = entries[i]; var it = e.It; if (it == null || !it.Drawable) continue;
+                var e = nativeEntries[i]; var it = e.It; if (!it.Drawable) continue;
                 if (e.Seg != seg) { segs[seg * 2] = (uint)runStartOfSeg; segs[seg * 2 + 1] = (uint)(r - runStartOfSeg); seg = e.Seg; runStartOfSeg = r; openRun = false; }
                 uint flags = e.Kind == 1 ? (it.Flags & FPoint) | FEnter : e.Kind == 2 ? (it.Flags & FPoint) | FLeave : it.Flags;
                 if (!openRun || it.Tex != lastTex || it.Geom != lastGeom || flags != lastFlags || (flags >> BlendShift) != 0)
@@ -866,12 +1048,18 @@ namespace StutterFix
         // ---------------------------------------------------------------- 끄기
         static void Release()
         {
+            foreach (var lf in sequenced)
+            {
+                lf.Suppressed = false;
+                if (lf.Lifetime) { lf.Lifetime.Changed = null; UnityEngine.Object.Destroy(lf.Lifetime); }
+            }
             if (token != 0) { sf_dr2_destroy(token); token = 0; }
             if (hChannels.IsAllocated) hChannels.Free(); if (hStatics.IsAllocated) hStatics.Free(); if (hDirty.IsAllocated) hDirty.Free();
             if (hList.IsAllocated) hList.Free(); if (hSegs.IsAllocated) hSegs.Free(); if (hRuns.IsAllocated) hRuns.Free();
             pChannels = pStatics = null; channels = statics = null;
-            itemOf.Clear(); leftoverOf.Clear(); items = new Item[0]; entries.Clear(); sequenced.Clear(); polled.Clear(); texSlot.Clear(); texGeom.Clear(); structQueue.Clear(); movedLayers.Clear();
+            itemOf.Clear(); leftoverOf.Clear(); items = new Item[0]; entries.Clear(); nativeEntries.Clear(); commandEntries.Reset(0); sequenced.Clear(); polled.Clear(); texSlot.Clear(); texGeom.Clear(); structQueue.Clear(); movedLayers.Clear();
             boundaryWatch.Clear(); boundaryVisible.Clear(); boundaryCanvases.Clear(); boundaryDirty = false;
+            leftovers.Clear(); canvasBounds.Clear();
         }
         internal static void Deactivate(string reason)
         {
@@ -883,7 +1071,7 @@ namespace StutterFix
                 if (cbAfter != null) { if (main) main.RemoveCommandBuffer(CameraEvent.AfterForwardAlpha, cbAfter); cbAfter.Release(); cbAfter = null; }
                 foreach (var kv in movedLayers) if (kv.Key && kv.Key.layer == HiddenLayer) kv.Key.layer = kv.Value;
                 var mine = items;
-                foreach (var it in mine) if (!it.Released) { if (it.R) it.R.forceRenderingOff = InvisibleSkip.Enabled && it.D && InvisibleSkip.IsHidden(it.D); if (it.M) it.M.forceRenderingOff = false; }
+                foreach (var it in mine) if (!it.Released) { if (it.R) it.R.forceRenderingOff = it.BackForceR || InvisibleSkip.Enabled && it.D && InvisibleSkip.IsHidden(it.D); if (it.M) it.M.forceRenderingOff = it.BackForceM; }
                 string stats = was ? State() : "";
                 Release();
                 // 원래 경로가 다시 맡는다: 색(숨김 처리 포함)과 위치를 한 번 다시 쓰게 한다.
@@ -994,17 +1182,21 @@ namespace StutterFix
         {
             if (token == 0) return "active=0 enabled=" + Enabled;
             double tick = 1e6 / System.Diagnostics.Stopwatch.Frequency; double fr = Math.Max(1, sf_dr2_stat(token, 0));
-            return "active=" + Active + " owned=" + itemOf.Count + " (bg " + ownedBg + ", fg " + ownedFg + ", mask " + ownedMask + ", masked " + ownedMasked + ", add " + ownedAdd + ") released=" + released + " segs=" + totalSegs + " seqRenderers=" + sequenced.Count
+            RecountOwned();
+            return "active=" + Active + " generation=" + generation + " activationOwned=" + activationOwned + " owned=" + itemOf.Count + " (bg " + ownedBg + ", fg " + ownedFg + ", mask " + ownedMask + ", masked " + ownedMasked + ", add " + ownedAdd + ") released=" + released + " staticFailures=" + staticFailures + " boundaryChanges=" + boundaryChanges + " boundaries=" + WhyText(unseqReasons) + " canvasBounds=" + canvasBounds.Count + " segs=" + totalSegs + " seqRenderers=" + sequenced.Count + " seqAwake=" + polled.Count
+                + " preparedSlots=" + items.Length + " rejected=" + rejected + " pollTiming=" + timing
+                + " bgBoundary=" + (bgLimit ? bgMin.Layer + "/" + bgMin.Order : "none") + " fgBoundary=" + (fgLimit ? fgMax.Layer + "/" + fgMax.Order : "none")
                 + " drawable=" + listCount + " runs=" + runCount + " frames=" + sf_dr2_stat(token, 0) + " draws/frame=" + (sf_dr2_stat(token, 1) / fr).ToString("F1")
                 + " instances/frame=" + (sf_dr2_stat(token, 2) / fr).ToString("F1") + " dropped=" + sf_dr2_stat(token, 3) + " errors=" + sf_dr2_stat(token, 4)
                 + " upload_bytes/frame=" + (sf_dr2_stat(token, 5) / fr).ToString("F0") + " render_event_us=" + sf_dr2_stat(token, 6).ToString("F1") + " native_commit_us=" + sf_dr2_stat(token, 7).ToString("F1")
                 + " grab_copies/frame=" + (sf_dr2_stat(token, 9) / fr).ToString("F1") + " grab_pixels/frame=" + (sf_dr2_stat(token, 10) / fr).ToString("F0")
                 + " polls/frame=" + (polls / Math.Max(1.0, commits)).ToString("F1") + " dirty/frame=" + (pollDirty / Math.Max(1.0, commits)).ToString("F1")
-                + " commit_us=" + (commitTicks * tick / Math.Max(1.0, commits)).ToString("F1") + " listBuilds=" + listBuilds + " orderBuilds=" + orderBuilds + " cbBuilds=" + cbBuilds + " structRefresh=" + structRefresh;
+                + " commit_us=" + (commitTicks * tick / Math.Max(1.0, commits)).ToString("F1") + " commit_max_us=" + (commitMaxTicks * tick).ToString("F1") + " poll_us/frame=" + (pollTicks * tick / Math.Max(1.0, commits)).ToString("F1") + " prep_us=" + (prepTicks * tick).ToString("F1") + " listBuilds=" + listBuilds + " orderBuilds=" + orderBuilds + " cbBuilds=" + cbBuilds + " structRefresh=" + structRefresh;
         }
         internal static string Command(string arg)
         {
             arg = (arg ?? "").Trim();
+            if (arg == "timing on" || arg == "timing off") { timing = arg.EndsWith("on"); pollTicks = 0; return "poll timing=" + timing; }
             if (arg == "on") { Install(); Enabled = true; return "enabled (다음 재생 준비부터)"; }
             if (arg == "off") { Enabled = false; Deactivate("명령"); return "disabled"; }
             if (arg == "now") { Install(); Enabled = true; Deactivate("명령"); Activate(); return State(); }
