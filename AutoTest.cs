@@ -253,6 +253,14 @@ namespace StutterFix
 
         // 끝났으면 true
         private static int modWatchFrame, onUpdFrame; private static long onUpdTotal0; private static readonly long[] onUpd0 = new long[64];
+        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.NoInlining)]
+        private static float JitProbeAdd(float a, float b) { float c = a + b; return c - a; }
+        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.NoInlining)]
+        private static double JitProbeMul(float a, float b) { float c = a * b * 3.3f; return c; }
+        // 인라인 경계 대조: 작은 float 반환 함수가 호출자에 인라인되면 반환 때 float 로 자르는 지점이 사라지는지
+        private static float JitProbeTiny(float a, float b) { return a * b + 0.3f; }
+        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.NoInlining)]
+        private static double JitProbeOuter(float a, float b) { return (double)JitProbeTiny(a, b) * 1.0000001; }
         private static bool Step(string cmd, string arg, float now)
         {
             var ed = ADOBase.isLevelEditor ? scnEditor.instance : null;
@@ -1008,6 +1016,15 @@ namespace StutterFix
                     }
                 case "decodetach": Log("[decodetach] " + DecoDetach.Command(arg)); return true;
                 case "fillcensus": return FillCensus.Step(arg);
+                case "jitprobe":
+                    {
+                        // JIT 최적화 묶음이 float 계산 방식을 바꾸는지: 이 명령 때 처음 컴파일되는 함수로 float 중간값 자르기 여부를 본다.
+                        float big = 16777216f; float r1 = JitProbeAdd(big, 1f);
+                        float x = 0.1f, y = 0.2f; double r2 = JitProbeMul(x, y);
+                        double r3 = JitProbeOuter(0.1f, 0.7f);
+                        Log("[jitprobe] inl=" + r3.ToString("R") + " add=" + r1.ToString("R") + " (float32=0, double중간값=1) mul=" + r2.ToString("R") + " JitInline=" + Main.Config.JitInline);
+                        return true;
+                    }
                 case "zcull": return ZCull.Step(arg);
                 case "occlude": if (arg.Trim() == "collect") { ShapeCellsCpu.CollectOpaque = true; Log("[occlude] 다음 맵 열기부터 불투명 정보 수집"); return true; } Occlude.Command(arg); return true;
                 case "gpuhide": GpuHide.Command(arg); return true;

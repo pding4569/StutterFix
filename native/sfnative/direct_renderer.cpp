@@ -40,6 +40,7 @@ struct Renderer {
     struct Job {double time=0;dr::Camera camera{};ComPtr<ID3D11Texture2D> target;};
     std::mutex queueMutex;std::array<Job,8> queue{};uint64_t read=0,write=0;
     Metric metrics[6];uint64_t frames=0,drawn=0,draws=0,errors=0;std::atomic<uint64_t> skipped{0};bool pending=false;int token;
+    uint64_t culled[3]{};
     Renderer(int id,unsigned n,unsigned m,unsigned anim,unsigned threads,ID3D11Texture2D* array):tracks(n,m,anim,threads),staging(n),token(id){
         array->GetDevice(&device);device->GetImmediateContext(&context);check(device->CreateDeferredContext(0,&deferred));
         D3D11_TEXTURE2D_DESC ad{};array->GetDesc(&ad);if(ad.ArraySize!=m||ad.SampleDesc.Count!=1)throw std::runtime_error("direct texture array mismatch");
@@ -64,6 +65,7 @@ struct Renderer {
         double begin=dr::clockUs();
         {std::lock_guard<std::mutex> lock(queueMutex);if(!pending)return;auto& job=queue[read%queue.size()];camera=job.camera;pendingTarget=job.target;}
         double waitBegin=dr::clockUs();tracks.wait();double waited=dr::clockUs()-waitBegin;
+        std::fill_n(culled,3,0);for(const auto& w:tracks.workers){culled[0]+=w.outside;culled[1]+=w.alpha;culled[2]+=w.other;}
         try{
             D3D11_TEXTURE2D_DESC td{};pendingTarget->GetDesc(&td);
             if(!rtv||target!=pendingTarget||td.Width!=targetDesc.Width||td.Height!=targetDesc.Height||td.Format!=targetDesc.Format){
@@ -72,7 +74,7 @@ struct Renderer {
                 check(device->CreateRenderTargetView(target.Get(),&rv,&rtv));
             }
             unsigned count=0;
-            for(auto& w:tracks.workers){if(!w.visible.empty())std::memcpy(staging.data()+count,w.visible.data(),w.visible.size()*sizeof(dr::Instance));count+=unsigned(w.visible.size());}
+            for(auto& w:tracks.workers){if(w.visibleCount!=0)std::memcpy(staging.data()+count,w.visible.data(),w.visibleCount*sizeof(dr::Instance));count+=unsigned(w.visibleCount);}
             if(count){D3D11_BOX box{0,0,0,count*unsigned(sizeof(dr::Instance)),1,1};deferred->UpdateSubresource(instances.Get(),0,&box,staging.data(),0,0);}
             deferred->UpdateSubresource(constant.Get(),0,nullptr,&camera,0,0);
             auto* output=rtv.Get();deferred->OMSetRenderTargets(1,&output,nullptr);deferred->OMSetBlendState(blend.Get(),nullptr,~0u);deferred->OMSetDepthStencilState(depth.Get(),0);
@@ -99,4 +101,4 @@ DR_API int sf_dr_create(unsigned n,unsigned m,unsigned anim,unsigned threads,voi
 DR_API int sf_dr_submit(int token,double t,const dr::Camera* camera,void* target) noexcept {try{auto r=std::atomic_load(&renderer);if(!r||r->token!=token||!camera||!target||!std::isfinite(t))return 0;return r->submit(t,*camera,static_cast<ID3D11Texture2D*>(target))?1:0;}catch(...){return 0;}}
 DR_API void sf_dr_destroy(int token) noexcept {try{std::lock_guard<std::mutex> lock(gate);auto r=std::atomic_load(&renderer);if(r&&r->token==token)std::atomic_store(&renderer,std::shared_ptr<Renderer>{});}catch(...){}}
 DR_API void* sf_dr_event() noexcept {return reinterpret_cast<void*>(&event);}
-DR_API double sf_dr_stat(int token,int i) noexcept {try{std::lock_guard<std::mutex> lock(gate);auto owned=std::atomic_load(&renderer);if(!owned||owned->token!=token)return -1;auto& r=*owned;std::lock_guard<std::mutex> queueLock(r.queueMutex);switch(i){case 0:return double(r.frames);case 1:return double(r.drawn);case 2:return double(r.draws);case 3:return double(r.tracks.activeCount);case 4:return double(r.skipped.load());case 5:return double(r.errors);default:return i>=6&&i<18?r.metrics[(i-6)/2].get((i&1)!=0):-1;}}catch(...){return -1;}}
+DR_API double sf_dr_stat(int token,int i) noexcept {try{std::lock_guard<std::mutex> lock(gate);auto owned=std::atomic_load(&renderer);if(!owned||owned->token!=token)return -1;auto& r=*owned;std::lock_guard<std::mutex> queueLock(r.queueMutex);switch(i){case 0:return double(r.frames);case 1:return double(r.drawn);case 2:return double(r.draws);case 3:return double(r.tracks.activeCount);case 4:return double(r.skipped.load());case 5:return double(r.errors);case 18:case 19:case 20:return double(r.culled[i-18]);default:return i>=6&&i<18?r.metrics[(i-6)/2].get((i&1)!=0):-1;}}catch(...){return -1;}}

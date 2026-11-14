@@ -6,26 +6,43 @@ using dr::matrix;
 #include <cstdlib>
 static void require(bool pass,const char* why){if(!pass){std::fprintf(stderr,"FAIL %s\n",why);std::exit(1);}}
 static dr::Camera identity(){dr::Camera c{};c.vp[0]=c.vp[5]=c.vp[10]=c.vp[15]=1;return c;}
+template<int E> static void easingRows(std::ofstream& csv){
+    dr::HotGroup hot;std::vector<dr::Object> objects(1001);
+    for(unsigned j=0;j<=1000;++j){hot.t0.push_back(-double(float(j)/1000));hot.invDuration.push_back(1);hot.from.push_back(0);hot.delta.push_back(1);hot.track.push_back(j);hot.object.push_back(&objects[j]);}
+    dr::evaluateHot<E,0>(hot,0);
+    for(unsigned j=0;j<=1000;++j){float actual=objects[j].gpu.matrix[2],expected=dr::ease(E,float(j)/1000);require(actual==expected,"SIMD easing versus scalar easing");csv<<E<<','<<j<<','<<actual<<'\n';}
+}
 static void tracksCheck(){
-    dr::Tracks one(3000,64,70,1),three(3000,64,70,3);auto cam=identity();cam.vp[0]=0.08f;cam.vp[5]=0.14f;
+    dr::Tracks one(3000,64,70,1),two(3000,64,70,2),three(3000,64,70,3);auto cam=identity();cam.vp[0]=0.08f;cam.vp[5]=0.14f;
     const double times[]={0,0.2,0.21,1,2,23.4,59.999,60,61,40,1,0,10,60};
-    for(double t:times){one.start(t,cam);three.start(t,cam);one.wait();three.wait();require(one.objects.size()==three.objects.size(),"object counts");
+    for(double t:times){one.start(t,cam);two.start(t,cam);three.start(t,cam);one.wait();two.wait();three.wait();require(one.objects.size()==three.objects.size(),"object counts");
         for(size_t n=0;n<one.objects.size();++n)require(std::memcmp(&one.objects[n].gpu,&three.objects[n].gpu,sizeof(dr::Instance))==0,"1/3 worker bit parity");
+        for(size_t n=0;n<one.objects.size();++n)require(std::memcmp(&one.objects[n].gpu,&two.objects[n].gpu,sizeof(dr::Instance))==0,"1/2 worker bit parity");
         require(one.activeCount==three.activeCount,"active parity");if(t>=60)require(one.activeCount==0,"end boundary inactive");else require(one.activeCount==2100,"animated count");
+        size_t offset=0;for(const auto& part:three.workers){require(std::memcmp(one.workers[0].visible.data()+offset,part.visible.data(),part.visibleCount*sizeof(dr::Instance))==0,"ordered visible 1/3 worker bit parity");offset+=part.visibleCount;}
+        require(offset==one.workers[0].visibleCount,"visible count parity");
+        const auto& all=one.workers[0];require(all.visibleCount+all.alpha+all.outside+all.other==one.objects.size(),"complete cull accounting");
+        for(const auto& worker:one.workers)for(const auto& tr:worker.tracks){auto it=std::upper_bound(tr.segments.begin(),tr.segments.end(),t,[](double at,const dr::Segment& s){return at<s.t0;});const auto& s=it==tr.segments.begin()?tr.segments.front():*(it-1);float u=(std::max)(0.0f,(std::min)(1.0f,float((t-s.t0)/s.duration)));float expected=s.from+(s.to-s.from)*dr::ease(s.easing,u);require(std::abs(one.objects[tr.instance].channel[tr.channel]-expected)<0.00004f,"cached evaluator versus cold segment oracle");}
     }
     dr::Tracks gap(1,1,0,1);auto& w=gap.workers[0];dr::Track track{};track.instance=0;track.channel=0;track.segments={{1,1,2,4,dr::Linear},{3,1,4,8,dr::Linear}};w.tracks.push_back(track);w.active.reserve(1);w.events={{1,0,true},{2,0,false},{3,0,true},{4,0,false}};
     const double boundary[]={0,1,1.5,2,2.5,3,3.5,4,5,1.5,0,3.5};const float expected[]={2,2,3,4,4,4,6,8,8,3,2,6};const size_t active[]={0,1,1,0,0,1,1,0,0,1,0,1};
     for(size_t k=0;k<sizeof(boundary)/sizeof(*boundary);++k){gap.start(boundary[k],cam);gap.wait();require(gap.objects[0].channel[0]==expected[k],"seek/gap value");require(gap.activeCount==active[k],"start/end/gap active set");}
-    std::puts("tracks: 3000 instances, 14 forward/backward/terminal times, 1/3 workers bit-identical; 12 gap/boundary cases passed");
-    std::ofstream csv("native-ease.csv");csv.precision(9);for(int e=0;e<dr::EaseCount;++e)for(int j=0;j<=1000;++j){float t=float(j)/1000;csv<<e<<','<<j<<','<<dr::ease(e,t)<<'\n';}
+    std::puts("tracks: 3000 instances, 14 forward/backward/terminal times, 1/2/3 workers bit-identical; 12 gap/boundary cases passed");
+    std::ofstream csv("native-ease.csv");csv.precision(9);
+    easingRows<dr::Linear>(csv);easingRows<dr::InQuad>(csv);easingRows<dr::OutQuad>(csv);easingRows<dr::InOutQuad>(csv);easingRows<dr::InSine>(csv);easingRows<dr::OutSine>(csv);easingRows<dr::InOutSine>(csv);easingRows<dr::OutBack>(csv);easingRows<dr::OutExpo>(csv);
+    std::puts("9009 SIMD easing samples match scalar; DOTween CSV uses the optimized evaluator");
 }
 static void stressCheck(){
     auto cam=identity();cam.vp[0]=0.08f;cam.vp[5]=0.14f;
     for(unsigned n:{3000u,30000u,100000u}){
-        dr::Tracks tracks(n,64,70,3);Metric start,wall,sum;
-        for(int frame=0;frame<150;++frame){double b=dr::clockUs();tracks.start(double(frame)/60,cam);double submit=dr::clockUs()-b;tracks.wait();if(frame>=30){start.add(submit);wall.add(tracks.wallUs);sum.add(tracks.sumUs);}}
-        size_t drawn=0;for(auto& w:tracks.workers)drawn+=w.visible.size();
+      for(unsigned threads:{1u,2u,3u}){
+        dr::Tracks tracks(n,64,70,threads);Metric start,wall,sum,eval,cull;
+        for(int frame=0;frame<150;++frame){double b=dr::clockUs();tracks.start(double(frame)/60,cam);double submit=dr::clockUs()-b;tracks.wait();if(frame>=30){start.add(submit);wall.add(tracks.wallUs);sum.add(tracks.sumUs);double e=0,c=0;for(const auto& w:tracks.workers){e+=w.evalUs;c+=w.cullUs;}eval.add(e);cull.add(c);}}
+        size_t drawn=0;for(auto& w:tracks.workers)drawn+=w.visibleCount;
         std::printf("offline CPU stress N=%u workers=%zu anim=70 active=%llu visible=%zu start_us_mean=%.3f p95=%.3f worker_wall_us_mean=%.3f p95=%.3f worker_sum_us_mean=%.3f p95=%.3f (not game timing)\n",n,tracks.workers.size(),static_cast<unsigned long long>(tracks.activeCount),drawn,start.get(false),start.get(true),wall.get(false),wall.get(true),sum.get(false),sum.get(true));
+        std::printf("track_ns=%.3f total_single_budget_us=300\n",sum.get(false)*1000/(n*0.7));
+        std::printf("eval_us=%.3f cull_copy_us=%.3f eval_track_ns=%.3f\n",eval.get(false),cull.get(false),eval.get(false)*1000/(n*0.7));
+      }
     }
 }
 static void pixelCheck(){
@@ -37,7 +54,7 @@ static void pixelCheck(){
     // Seed non-default immediate state; ExecuteCommandList(TRUE) must preserve it.
     c->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);D3D11_VIEWPORT oldViewport{2,3,7,9,0.2f,0.8f};c->RSSetViewports(1,&oldViewport);auto* oldOutput=view.Get();c->OMSetRenderTargets(1,&oldOutput,nullptr);
     int id=sf_dr_create(4,4,0,3,array.Get());require(id!=0,"create renderer");
-    for(unsigned k=0;k<4;++k){auto& o=renderer->tracks.objects[k];std::fill_n(o.channel,9,0.0f);o.channel[0]=(k&1)?0.5f:-0.5f;o.channel[1]=(k&2)?-0.5f:0.5f;o.channel[3]=o.channel[4]=1;for(unsigned j=5;j<9;++j)o.channel[j]=1;matrix(o);}
+    for(unsigned k=0;k<4;++k){auto& o=renderer->tracks.objects[k];o.gpu.flags=1;std::fill_n(o.channel,9,0.0f);o.channel[0]=(k&1)?0.5f:-0.5f;o.channel[1]=(k&2)?-0.5f:0.5f;o.channel[3]=o.channel[4]=1;for(unsigned j=5;j<9;++j)o.channel[j]=1;matrix(o);}
     auto cam=identity();require(sf_dr_submit(id,0,&cam,output.Get())==1,"first submit");event(id);
     require(sf_dr_stat(id,5)==0,"render errors");require(sf_dr_stat(id,1)==4&&sf_dr_stat(id,2)==1,"4 quads one draw");
     D3D11_PRIMITIVE_TOPOLOGY topology{};c->IAGetPrimitiveTopology(&topology);require(topology==D3D11_PRIMITIVE_TOPOLOGY_LINELIST,"topology restored");D3D11_VIEWPORT actual{};UINT count=1;c->RSGetViewports(&count,&actual);require(std::memcmp(&actual,&oldViewport,sizeof(actual))==0,"viewport restored");ComPtr<ID3D11RenderTargetView> restored;c->OMGetRenderTargets(1,&restored,nullptr);require(restored==view,"RT restored");
@@ -46,16 +63,33 @@ static void pixelCheck(){
         if(k==3)std::fill_n(expected,4,128u);else{expected[k]=255;expected[3]=255;}
         for(unsigned j=0;j<4;++j){unsigned delta=unsigned(std::abs(int(p[j])-int(expected[j])));maxDelta=(std::max)(maxDelta,delta);total+=delta;if(delta)++changed;}}
     c->Unmap(read.Get(),0);std::printf("WARP 4 quads: max_channel_delta=%u mean_channel_delta=%.9f changed_channels=%u/1024\n",maxDelta,total/1024,changed);require(maxDelta<=1,"expected RGBA pixels");
-    for(int k=0;k<8;++k)require(sf_dr_submit(id,double(k),&cam,output.Get())==1,"eight in-flight camera snapshots queued");require(sf_dr_submit(id,9,&cam,output.Get())==0,"bounded queue overflow visible");for(int k=0;k<8;++k)event(id);require(sf_dr_stat(id,0)==9,"every queued frame rendered");
+    // Reproduce a camera clip volume that rejects the legacy world-Z=0
+    // geometry, then verify the bench clip plane on both reported RT sizes.
+    auto rejects=identity();rejects.vp[14]=-2;
+    require(!dr::visible(renderer->tracks.objects[0].gpu,rejects),"legacy world plane can be entirely depth-culled");
+    for(unsigned size:{16u,2560u,3440u}){
+        D3D11_TEXTURE2D_DESC screen=desc;screen.Width=size;screen.Height=size==16?16:1440;screen.Usage=D3D11_USAGE_DEFAULT;screen.BindFlags=D3D11_BIND_RENDER_TARGET;screen.CPUAccessFlags=0;
+        ComPtr<ID3D11Texture2D> screenRT;check(d->CreateTexture2D(&screen,nullptr,&screenRT));
+        for(unsigned k=0;k<4;++k){auto& o=renderer->tracks.objects[k];o.gpu.flags=2;o.channel[0]=(k&1)?6.0f:-6.0f;o.channel[1]=(k&2)?-3.5f:3.5f;o.channel[3]=12;o.channel[4]=7;matrix(o);}
+        require(sf_dr_submit(id,0,&rejects,screenRT.Get())==1,"clip-plane submit");event(id);require(sf_dr_stat(id,1)==4&&sf_dr_stat(id,2)==1,"clip-plane draws under rejected world camera");
+        screen.Usage=D3D11_USAGE_STAGING;screen.BindFlags=0;screen.CPUAccessFlags=D3D11_CPU_ACCESS_READ;ComPtr<ID3D11Texture2D> screenRead;check(d->CreateTexture2D(&screen,nullptr,&screenRead));c->CopyResource(screenRead.Get(),screenRT.Get());check(c->Map(screenRead.Get(),0,D3D11_MAP_READ,0,&map));
+        for(unsigned k=0;k<4;++k){unsigned x=screen.Width*((k&1)?3:1)/4,y=screen.Height*((k&2)?3:1)/4;const auto* p=static_cast<unsigned char*>(map.pData)+y*map.RowPitch+x*4;for(unsigned j=0;j<4;++j){unsigned expected=k==3?128u:(j==3||j==k?255u:0u);require(p[j]==expected,"clip-plane quadrant pixel");}}
+        c->Unmap(screenRead.Get(),0);std::printf("WARP clip-plane %ux%u: four centre RGBA pixels exact, drawn=4 draws=1\n",screen.Width,screen.Height);
+    }
+    // Restore legacy-mode geometry for the existing queue/cull regression.
+    for(unsigned k=0;k<4;++k){auto& o=renderer->tracks.objects[k];o.gpu.flags=1;o.channel[0]=(k&1)?0.5f:-0.5f;o.channel[1]=(k&2)?-0.5f:0.5f;o.channel[3]=o.channel[4]=1;matrix(o);}
+    for(int k=0;k<8;++k)require(sf_dr_submit(id,double(k),&cam,output.Get())==1,"eight in-flight camera snapshots queued");require(sf_dr_submit(id,9,&cam,output.Get())==0,"bounded queue overflow visible");for(int k=0;k<8;++k)event(id);require(sf_dr_stat(id,0)==12,"every queued frame rendered");
     // Resize/rebind, invisibility compaction, stale queued events, and fresh lease.
     auto& invisible=renderer->tracks.objects[0];invisible.channel[8]=0;matrix(invisible);renderer->tracks.objects[1].channel[0]=100;matrix(renderer->tracks.objects[1]);
-    desc.Width=desc.Height=8;desc.Usage=D3D11_USAGE_DEFAULT;desc.BindFlags=D3D11_BIND_RENDER_TARGET;desc.CPUAccessFlags=0;ComPtr<ID3D11Texture2D> resized;check(d->CreateTexture2D(&desc,nullptr,&resized));require(sf_dr_submit(id,2,&cam,resized.Get())==1,"resize submit");event(id);require(sf_dr_stat(id,1)==2,"alpha and viewport cull");require(renderer->targetDesc.Width==8,"RTV rebind");sf_dr_destroy(id);event(id);int fresh=sf_dr_create(4,4,0,1,array.Get());require(fresh!=0&&fresh!=id,"fresh event token");event(id);require(sf_dr_stat(fresh,0)==0,"stale event ignored");sf_dr_destroy(fresh);
+    desc.Width=desc.Height=8;desc.Usage=D3D11_USAGE_DEFAULT;desc.BindFlags=D3D11_BIND_RENDER_TARGET;desc.CPUAccessFlags=0;ComPtr<ID3D11Texture2D> resized;check(d->CreateTexture2D(&desc,nullptr,&resized));require(sf_dr_submit(id,2,&cam,resized.Get())==1,"resize submit");event(id);require(sf_dr_stat(id,1)==2,"alpha and viewport cull");require(sf_dr_stat(id,18)==1&&sf_dr_stat(id,19)==1&&sf_dr_stat(id,20)==0,"cull reason counts");require(renderer->targetDesc.Width==8,"RTV rebind");
+    invisible.gpu.color[3]=std::numeric_limits<float>::quiet_NaN();require(sf_dr_submit(id,2,&cam,resized.Get())==1,"nonfinite alpha submit");event(id);require(sf_dr_stat(id,1)==2&&sf_dr_stat(id,18)==1&&sf_dr_stat(id,19)==0&&sf_dr_stat(id,20)==1,"nonfinite alpha reason");
+    sf_dr_destroy(id);event(id);int fresh=sf_dr_create(4,4,0,1,array.Get());require(fresh!=0&&fresh!=id,"fresh event token");event(id);require(sf_dr_stat(fresh,0)==0,"stale event ignored");sf_dr_destroy(fresh);
     std::puts("D3D11 state restore, resize RTV, alpha/offscreen cull, eight queued frames/overflow, stale callback and release passed");
     // Unity can expose typeless resources, and an array of length one still
     // needs a Texture2DArray SRV rather than the default Texture2D view.
     uint32_t grey=0xff808080;D3D11_SUBRESOURCE_DATA greyData{&grey,4,0};D3D11_TEXTURE2D_DESC single{};single.Width=single.Height=single.MipLevels=single.ArraySize=single.SampleDesc.Count=1;single.Format=DXGI_FORMAT_R8G8B8A8_TYPELESS;single.Usage=D3D11_USAGE_IMMUTABLE;single.BindFlags=D3D11_BIND_SHADER_RESOURCE;
     ComPtr<ID3D11Texture2D> greyArray;check(d->CreateTexture2D(&single,&greyData,&greyArray));single.Width=single.Height=8;single.Usage=D3D11_USAGE_DEFAULT;single.BindFlags=D3D11_BIND_RENDER_TARGET;ComPtr<ID3D11Texture2D> srgbTarget;check(d->CreateTexture2D(&single,nullptr,&srgbTarget));
-    int gamma=sf_dr_create(1,1,0,1,greyArray.Get());require(gamma!=0,"typeless single-layer creation");auto& full=renderer->tracks.objects[0];full.channel[0]=full.channel[1]=full.channel[2]=0;full.channel[3]=full.channel[4]=2;for(int j=5;j<9;++j)full.channel[j]=1;matrix(full);auto unchanged=full.gpu;
+    int gamma=sf_dr_create(1,1,0,1,greyArray.Get());require(gamma!=0,"typeless single-layer creation");auto& full=renderer->tracks.objects[0];full.gpu.flags=1;full.channel[0]=full.channel[1]=full.channel[2]=0;full.channel[3]=full.channel[4]=2;for(int j=5;j<9;++j)full.channel[j]=1;matrix(full);auto unchanged=full.gpu;
     auto moved=identity();moved.position[0]=7;moved.position[3]=1;moved.vp[12]=-7;require(sf_dr_submit(gamma,0,&moved,srgbTarget.Get())==1,"camera translation submit");event(gamma);require(sf_dr_stat(gamma,5)==0,"typeless render success");require(std::memcmp(&unchanged,&full.gpu,sizeof(unchanged))==0,"camera move requires zero instance rewrites");
     D3D11_SHADER_RESOURCE_VIEW_DESC arrayDesc{};renderer->textures->GetDesc(&arrayDesc);require(arrayDesc.ViewDimension==D3D11_SRV_DIMENSION_TEXTURE2DARRAY,"one layer explicit array SRV");
     single.Usage=D3D11_USAGE_STAGING;single.BindFlags=0;single.CPUAccessFlags=D3D11_CPU_ACCESS_READ;ComPtr<ID3D11Texture2D> gammaRead;check(d->CreateTexture2D(&single,nullptr,&gammaRead));c->CopyResource(gammaRead.Get(),srgbTarget.Get());check(c->Map(gammaRead.Get(),0,D3D11_MAP_READ,0,&map));const auto* greyPixel=static_cast<const unsigned char*>(map.pData)+4*map.RowPitch+4*4;

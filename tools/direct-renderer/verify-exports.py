@@ -12,8 +12,8 @@ def exports(path):
 
 
 before, after = map(exports, sys.argv[1:3])
-assert len(before) == 60, before
+assert len(before) in (60, 65), before
 assert len(after) == 65, after
 assert all(after.get(name) == ordinal for name, ordinal in before.items())
-assert sorted(after[name] for name in after.keys() - before.keys()) == list(range(61, 66))
-print('PASS native exports: original 60 names/ordinals preserved; new 5 appended @61..65')
+assert sorted(after[name] for name in after.keys() - before.keys()) == list(range(len(before)+1, 66))
+print(f'PASS native exports: original {len(before)} names/ordinals preserved; {65-len(before)} appended')

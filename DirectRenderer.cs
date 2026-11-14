@@ -41,12 +41,12 @@ namespace StutterFix {
                 if(!camera)throw new InvalidOperationException("camRT camera not found");
                 textures=new Texture2DArray(8,8,m,TextureFormat.RGBA32,false,false){name="DR.M0.Synthetic",filterMode=FilterMode.Bilinear,wrapMode=TextureWrapMode.Clamp};
                 var pixels=new Color32[64];for(int k=0;k<m;k++){var c=new Color32((byte)(64+k*53%192),(byte)(64+k*97%192),(byte)(64+k*131%192),192);for(int p=0;p<64;p++)pixels[p]=c;textures.SetPixels32(pixels,k);}
-                textures.Apply(false,true);token=sf_dr_create((uint)n,(uint)m,(uint)anim,3,textures.GetNativeTexturePtr());if(token==0)throw new InvalidOperationException("native DR setup failed");
+                textures.Apply(false,true);token=sf_dr_create((uint)n,(uint)m,(uint)anim,1,textures.GetNativeTexturePtr());if(token==0)throw new InvalidOperationException("native DR setup failed");
                 commands=new CommandBuffer{name="DR.M0.AfterForwardAlpha"};commands.IssuePluginEvent(sf_dr_event(),token);camera.AddCommandBuffer(CameraEvent.AfterForwardAlpha,commands);
                 level=ADOBase.customLevel!=null?ADOBase.customLevel.levelData:null;
                 targetPtr=target.GetNativeTexturePtr();width=target.width;height=target.height;mainCount=mainSum=0;
                 int found=0;var loop=EditLoop(PlayerLoop.GetCurrentPlayerLoop(),true,ref found);if(found!=1)throw new InvalidOperationException("DR PlayerLoop insertion count="+found);PlayerLoop.SetPlayerLoop(loop);
-                Log("bench n="+n+" textures="+m+" animated_percent="+anim+" workers=3 rtsize="+width+"x"+height+" GPU_ms=unmeasured");
+                Log("bench n="+n+" textures="+m+" animated_percent="+anim+" workers=1 geometry=clip_plane rtsize="+width+"x"+height+" GPU_ms=unmeasured");
             }catch{Stop();throw;}return true;
         }
         static PlayerLoopSystem EditLoop(PlayerLoopSystem node,bool insert,ref int found){
@@ -74,6 +74,7 @@ namespace StutterFix {
             string[] names={"native_submit","worker_sum","worker_wall","render_with_wait","render_without_wait","render_wait"};
             for(int i=0;i<6;i++)Log(FormattableString.Invariant($"{names[i]}_us_mean={sf_dr_stat(token,6+i*2):F3} p95={sf_dr_stat(token,7+i*2):F3}"));
             Log("p95_window=last4096 mean_window=since_enable GPU_ms=unmeasured");
+            Log(FormattableString.Invariant($"cull_outside={sf_dr_stat(token,18)} cull_alpha_zero={sf_dr_stat(token,19)} cull_other={sf_dr_stat(token,20)} geometry=clip_plane"));
         }
         internal static void Stop(){
             if(commands!=null){if(camera)camera.RemoveCommandBuffer(CameraEvent.AfterForwardAlpha,commands);commands.Release();commands=null;}
