@@ -1888,6 +1888,22 @@ namespace StutterFix
                     Log("설정 " + fi.Name + " = " + v + " (묶음 끝에 " + setOrig[fi] + " 로 되돌림)");
                     return true;
                 }
+                case "sfield":   // sfield <형식>.<정적 필드> <값> : 모드 안 정적 값을 바로 바꾼다(원인 나누기용, 되돌리지 않음)
+                {
+                    var sp = arg.Split(new[] { ' ' }, 2, StringSplitOptions.RemoveEmptyEntries);
+                    int dot = sp.Length < 2 ? -1 : sp[0].LastIndexOf('.');
+                    if (dot <= 0) throw new Exception("sfield <형식>.<필드> <값>");
+                    var asm = typeof(AutoTest).Assembly;
+                    string tn = sp[0].Substring(0, dot), fn = sp[0].Substring(dot + 1);
+                    var ty = asm.GetType(tn) ?? asm.GetType("StutterFix." + tn);
+                    if (ty == null) throw new Exception("형식 없음: " + tn);
+                    var sf = ty.GetField(fn, System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+                    if (sf == null) throw new Exception("정적 필드 없음: " + sp[0]);
+                    object old = sf.GetValue(null);
+                    sf.SetValue(null, ParseValue(sf.FieldType, sp[1].Trim()));
+                    Log("정적 " + sp[0] + " = " + sf.GetValue(null) + " (전 " + old + ")");
+                    return true;
+                }
                 case "reload":
                     if (DllHash() == loadedHash) { Log("DLL 이 그대로라 다시 불러오지 않음"); return true; }
                     reloadPending = true;
