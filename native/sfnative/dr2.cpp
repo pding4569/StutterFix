@@ -79,9 +79,9 @@ struct Renderer {
         // PrepVfx의 create에서 8개 패킷을 모두 확보한다. 첫 8프레임에 분산된 최초 할당도 없앤다.
         for (auto& p : ring) {
             p.dirtySlots.reserve(n); p.dirtyValues.reserve(size_t(n) * kChannelFloats);
-            p.list.reserve(size_t(n) * 2); p.runs.reserve(size_t(n) * 2); p.segs.reserve(8000);
+            p.list.reserve(size_t(n) * 2); p.runs.reserve(size_t(n) * 2); p.segs.reserve(130000);
         }
-        drawList.reserve(size_t(n) * 2); runs.reserve(size_t(n) * 2); segs.reserve(8000);
+        drawList.reserve(size_t(n) * 2); runs.reserve(size_t(n) * 2); segs.reserve(130000);
         D3D11_BUFFER_DESC b{}; b.Usage = D3D11_USAGE_DEFAULT; b.BindFlags = D3D11_BIND_SHADER_RESOURCE;
         b.ByteWidth = n * kChannelFloats * 4; check(device->CreateBuffer(&b, nullptr, &channelBuffer));
         b.ByteWidth = n * kStaticFloats * 4; check(device->CreateBuffer(&b, nullptr, &staticBuffer));
@@ -167,6 +167,7 @@ struct Renderer {
         staticDirtyLo = std::min(staticDirtyLo, first); staticDirtyHi = std::max(staticDirtyHi, first + count); staticPendingAny = true; return true;
     }
     bool commit(const FrameIn& f) {
+        if (f.segCount > 65000) return false;
         double t0 = nowUs();
         std::lock_guard<std::mutex> lock(mutex);
         bool full = writeIndex - readIndex == ring.size();
@@ -349,13 +350,13 @@ struct Renderer {
 };
 std::mutex gate; std::shared_ptr<Renderer> current; int nextToken = 0;
 std::shared_ptr<Renderer> get(int token) { std::lock_guard<std::mutex> lock(gate); return current && current->token == token ? current : nullptr; }
-void __stdcall onEvent(int id) noexcept { try { auto r = get(id >> 12); if (r) r->render(unsigned(id & 4095)); } catch (...) {} }
+void __stdcall onEvent(int id) noexcept { try { auto r = get(id >> 16); if (r) r->render(unsigned(id & 65535)); } catch (...) {} }
 }
 DR2_API int sf_dr2_create(void* anyResource, unsigned maxItems) noexcept { try {
     if (!anyResource || maxItems == 0 || maxItems > 1000000) return 0;
     ComPtr<ID3D11Device> device; static_cast<ID3D11DeviceChild*>(anyResource)->GetDevice(&device); if (!device) return 0;
     auto r = std::make_shared<Renderer>(device.Get(), maxItems);
-    std::lock_guard<std::mutex> lock(gate); r->token = ++nextToken; current = r; return r->token;
+    std::lock_guard<std::mutex> lock(gate); if (nextToken >= 32767) return 0; r->token = ++nextToken; current = r; return r->token;
 } catch (...) { return 0; } }
 DR2_API void sf_dr2_destroy(int token) noexcept { try { std::lock_guard<std::mutex> lock(gate); if (current && current->token == token) current.reset(); } catch (...) {} }
 DR2_API int sf_dr2_texture(int token, int slot, void* texture, int filter, int wrapU, int wrapV, int aniso) noexcept { try { auto r = get(token); return r && r->setTexture(slot, static_cast<ID3D11Texture2D*>(texture), filter, wrapU, wrapV, aniso) ? 1 : 0; } catch (...) { return 0; } }

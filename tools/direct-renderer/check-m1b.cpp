@@ -39,7 +39,7 @@ struct Fixture {
         require(sf_dr2_statics(id,0,2,statics)==1,"DR2 statics");
         FrameIn f{}; f.vp[0]=f.vp[5]=f.vp[10]=f.vp[15]=1;std::memcpy(f.cam,camera,sizeof(camera));std::memcpy(f.ortho,ortho,sizeof(ortho));
         f.dirtyCount=2;f.dirtySlots=slots;f.channels=channels;f.listChanged=1;f.list=list;f.runs=&run;f.segs=segs;f.listCount=count;f.runCount=f.segCount=1;
-        run.count=count;run.flags=flags|(mode<<8);require(sf_dr2_commit(id,&f)==1,"DR2 commit");onEvent(id<<12);
+        run.count=count;run.flags=flags|(mode<<8);require(sf_dr2_commit(id,&f)==1,"DR2 commit");onEvent(id<<16);
         require(sf_dr2_stat(id,4)==0,"DR2 render errors");
         D3D11_PRIMITIVE_TOPOLOGY topology{};ctx->IAGetPrimitiveTopology(&topology);require(topology==D3D11_PRIMITIVE_TOPOLOGY_LINELIST,"immediate topology restored");
         ComPtr<ID3D11RenderTargetView> restored;ctx->OMGetRenderTargets(1,&restored,nullptr);require(restored==rtv,"immediate RT restored");
@@ -137,10 +137,10 @@ static void maskCheck(){
     uint32_t list[]={0,1,0,1},segs[]={0,0,0,2,2,2};Run runs[]={{0,1,0,0,4},{1,1,0,0,16},{2,1,0,0,8},{3,1,0,0,32}};
     FrameIn frame{};frame.vp[0]=frame.vp[5]=frame.vp[10]=frame.vp[15]=1;frame.cam[3]=frame.ortho[0]=frame.ortho[1]=frame.ortho[2]=1;
     frame.listChanged=1;frame.list=list;frame.runs=runs;frame.segs=segs;frame.listCount=frame.runCount=4;frame.segCount=3;frame.clearStencil=1;
-    require(sf_dr2_commit(f.id,&frame)==1,"mask commit");onEvent(f.id<<12);onEvent((f.id<<12)|1);
+    require(sf_dr2_commit(f.id,&frame)==1,"mask commit");onEvent(f.id<<16);onEvent((f.id<<16)|1);
     auto changedPixels=[&](){f.ctx->CopyResource(f.readback.Get(),f.output.Get());D3D11_MAPPED_SUBRESOURCE map{};hr(f.ctx->Map(f.readback.Get(),0,D3D11_MAP_READ,0,&map));unsigned changed=0;for(unsigned y=0;y<32;y++)for(unsigned x=0;x<32;x++){auto p=reinterpret_cast<const uint32_t*>(static_cast<const char*>(map.pData)+y*map.RowPitch)[x];if(p!=0xffc08040){require(p==0xffffffff,"mask pixel color");changed++;}}f.ctx->Unmap(f.readback.Get(),0);return changed;};
     require(changedPixels()==64,"empty segment zero clears stencil; inside mask is 8x8");
-    onEvent((f.id<<12)|2);require(changedPixels()==1024,"leave decrements stencil; outside mask covers remainder");require(sf_dr2_stat(f.id,4)==0,"mask native errors");
+    onEvent((f.id<<16)|2);require(changedPixels()==1024,"leave decrements stencil; outside mask covers remainder");require(sf_dr2_stat(f.id,4)==0,"mask native errors");
     std::puts("WARP stencil: empty background clears stale stencil; enter/inside/leave/outside preserve 64/1024 pixels");
 }
 static void preparationCheck(){
@@ -149,10 +149,25 @@ static void preparationCheck(){
     require(sf_dr2_statics(f.id,0,2,f.statics)==1,"final prepared statics");
     auto vb=r->vertexBuffer.Get();auto ib=r->indexBuffer.Get();auto lb=r->listBuffer.Get();
     require(vb&&ib,"geometry buffers prepared before first render");
-    for(auto& p:r->ring){require(p.dirtySlots.capacity()>=2&&p.dirtyValues.capacity()>=32,"all eight dirty packets reserved");require(p.list.capacity()>=4&&p.runs.capacity()>=4&&p.segs.capacity()>=8000,"all eight list packets reserved");}
+    for(auto& p:r->ring){require(p.dirtySlots.capacity()>=2&&p.dirtyValues.capacity()>=32,"all eight dirty packets reserved");require(p.list.capacity()>=4&&p.runs.capacity()>=4&&p.segs.capacity()>=130000,"all eight list packets reserved");}
     f.image({0xffffffff},1,1);
     for(unsigned i=0;i<24;i++){f.channels[0]=float(i%2)*.01f;f.draw();require(r->vertexBuffer.Get()==vb&&r->indexBuffer.Get()==ib&&r->listBuffer.Get()==lb,"no first-frame/repeated buffer replacement");}
     require(sf_dr2_stat(f.id,4)==0,"prepared renderer errors");
     std::puts("M1c preparation: all 8 packet capacities and geometry/list GPU buffers ready before first render; 24 frames retain buffers");
 }
-int main(){try{blendCheck();uvCheck();regionAndSrgbCheck();vertexCheck();maskCheck();preparationCheck();std::puts("M1b/M1c offline PASS (not in-game framecmp/performance)");return 0;}catch(const std::exception& e){std::printf("FAIL: %s\n",e.what());return 1;}catch(...){std::puts("FAIL: native exception");return 1;}}
+static void largeSequenceCheck(){
+    Fixture f;f.image({0xffffffff},1,1);f.draw();auto r=get(f.id);
+    std::vector<uint32_t> segments(130000,0);segments[129998]=0;segments[129999]=1;
+    uint32_t list[]={0};Run run{0,1,0,0,0};FrameIn frame{};
+    frame.vp[0]=frame.vp[5]=frame.vp[10]=frame.vp[15]=1;frame.cam[3]=frame.ortho[0]=frame.ortho[1]=frame.ortho[2]=1;
+    frame.listChanged=1;frame.list=list;frame.runs=&run;frame.segs=segments.data();frame.listCount=frame.runCount=1;frame.segCount=65000;
+    auto storage=r->ring[r->writeIndex%r->ring.size()].segs.data();
+    require(sf_dr2_commit(f.id,&frame)==1,"65000-segment commit");
+    require(r->ring[(r->writeIndex-1)%r->ring.size()].segs.data()==storage,"large sequence reserved before commit");
+    auto draws=sf_dr2_stat(f.id,1);onEvent(f.id<<16);require(sf_dr2_stat(f.id,1)==draws,"empty segment zero");
+    onEvent((f.id<<16)|64999);require(sf_dr2_stat(f.id,1)==draws+1,"high segment event decoded without token alias");
+    frame.segCount=65001;require(sf_dr2_commit(f.id,&frame)==0,"reject excessive segment count");
+    auto saved=nextToken;nextToken=32767;require(sf_dr2_create(f.output.Get(),2)==0,"event generation exhaustion fails closed");nextToken=saved;
+    std::puts("M2 WARP: 65000 segments preallocated; event 64999 draws once; overflow and generation exhaustion rejected");
+}
+int main(){try{blendCheck();uvCheck();regionAndSrgbCheck();vertexCheck();maskCheck();preparationCheck();largeSequenceCheck();std::puts("M1b/M1c/M2 offline PASS (not in-game framecmp/performance)");return 0;}catch(const std::exception& e){std::printf("FAIL: %s\n",e.what());return 1;}catch(...){std::puts("FAIL: native exception");return 1;}}

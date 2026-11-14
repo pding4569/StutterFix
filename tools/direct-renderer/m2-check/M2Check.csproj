@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><EnableDefaultCompileItems>false</EnableDefaultCompileItems></PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="System.Text.Json" Version="9.0.8" />
+    <Compile Include="Program.cs" />
+    <Compile Include="../../../SceneRenderOrder.cs" Link="SceneRenderOrder.cs" />
+    <Compile Include="../../../DirectRenderVisibilityIndex.cs" Link="DirectRenderVisibilityIndex.cs" />
+    <Reference Include="0Harmony"><HintPath>D:/SteamLibrary/steamapps/common/A Dance of Fire and Ice/A Dance of Fire and Ice_Data/Managed/UnityModManager/0Harmony.dll</HintPath></Reference>
+  </ItemGroup>
+  <PropertyGroup><DefineConstants>DRAWCOLLAPSE_CHECK</DefineConstants></PropertyGroup>
+</Project>
