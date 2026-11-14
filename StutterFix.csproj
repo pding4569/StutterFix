@@ -40,6 +40,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="DirectRenderer.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="StutterFix.cs" />
     <Compile Include="FillGeometry.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="FillCensus.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />

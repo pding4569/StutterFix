@@ -61,3 +61,8 @@ EXPORTS
     sf_presentpath_pending @58
     sf_presentpath_pin @59
     sf_presentpath_stat @60
+    sf_dr_create @61
+    sf_dr_submit @62
+    sf_dr_destroy @63
+    sf_dr_event @64
+    sf_dr_stat @65

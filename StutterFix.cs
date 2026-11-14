@@ -1029,6 +1029,7 @@ ParticleTextWatch.Install(harmony);
 
 #if DEV || AUTOTEST
 
+            Try(DirectRenderer.Stop);
             Try(FreeFpsProbe.Restore);
 
             Try(TileSim.Shutdown);

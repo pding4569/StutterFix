@@ -262,6 +262,7 @@ namespace StutterFix
                 case "pause": FrameCompare.Pause(); return true;
                 case "resume": FrameCompare.Resume(); return true;
                 case "framecmp": return FrameCompare.Step(arg);
+                case "dr": return DirectRenderer.Step(arg);
                 case "coldopen": ColdOpenProbe.Step(arg); return true;
                 case "tightsprite": TightSpriteProbe.Step(arg); return true;
 #endif
@@ -1960,6 +1961,7 @@ namespace StutterFix
             TightSpriteProbe.Stop();
             TileRender.Shutdown();
             FrameCompare.Stop();
+            DirectRenderer.Stop();
 #endif
             if (finished) return;
             finished = true;
@@ -1995,6 +1997,7 @@ namespace StutterFix
             TightSpriteProbe.Stop();
             TileRender.Shutdown();
             FrameCompare.Stop();
+            DirectRenderer.Stop();
             MatShare.Stop();
             LiveDeco.Stop();
 #endif
