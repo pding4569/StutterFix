@@ -271,6 +271,8 @@ namespace StutterFix
                 case "resume": FrameCompare.Resume(); return true;
                 case "framecmp": return FrameCompare.Step(arg);
                 case "dr": return DirectRenderer.Step(arg);
+                case "drx": return DrProbe.Step(arg);
+                case "dr2": Log("[dr2] " + DirectDeco.Command(arg)); return true;
                 case "coldopen": ColdOpenProbe.Step(arg); return true;
                 case "tightsprite": TightSpriteProbe.Step(arg); return true;
 #endif
@@ -690,6 +692,7 @@ namespace StutterFix
                         panPhase = 0;
                         return true;
                     }
+                case "floorpin": FloorAnim.PinTileCull = arg.Trim() != "off"; Log("[floorpin] " + FloorAnim.PinTileCull); return true;
                 case "culltest":
                     Log("화면 밖 타일 비교: " + TileCull.RenderCompare()); return true;
                 case "framescan":
@@ -1978,7 +1981,7 @@ namespace StutterFix
             TightSpriteProbe.Stop();
             TileRender.Shutdown();
             FrameCompare.Stop();
-            DirectRenderer.Stop();
+            DirectRenderer.Stop(); DrProbe.Stop();
 #endif
             if (finished) return;
             finished = true;
@@ -2014,7 +2017,7 @@ namespace StutterFix
             TightSpriteProbe.Stop();
             TileRender.Shutdown();
             FrameCompare.Stop();
-            DirectRenderer.Stop();
+            DirectRenderer.Stop(); DrProbe.Stop();
             MatShare.Stop();
             LiveDeco.Stop();
 #endif

@@ -49,28 +49,52 @@ namespace StutterFix
             int ao = format == 4 ? 3 : format == 5 ? 0 : -1;
             if (ao < 0) return null;
             int Grid = GridFor(w, h);
-            var bits = new ulong[Grid * Grid / 64];
+            // 촘촘한 칸(직통 렌더러의 빈 칸 뺀 도형용): 한 번 훑으면서 촘촘한 격자에 표시하고, 기존 격자는 그것을 묶어서 만든다
+            // (칸 번호가 정수 내림이라 floor(floor(x*kG/w)/k) == floor(x*G/w), 결과가 기존과 같다).
+            int k = FineFactor(w, h), FG = Grid * k;
+            var fine = new ulong[FG * FG / 64];
             byte* p = (byte*)px;
             // 줄마다 알파>0 인 텍셀의 칸 범위(여백 포함)를 표시한다. 같은 칸을 이미 표시했으면 그 칸 끝까지 건너뛴다.
-            var rowCells = new bool[Grid];
+            var rowCells = new bool[FG];
             for (int y = 0; y < h; y++)
             {
-                Array.Clear(rowCells, 0, Grid); bool any = false;
+                Array.Clear(rowCells, 0, FG); bool any = false;
                 byte* row = p + (long)y * w * 4 + ao;
                 for (int x = 0; x < w; x++)
                 {
                     if (row[x * 4] == 0) continue;
-                    int c0 = Math.Max(0, x - Margin) * Grid / w, c1 = Math.Min(w - 1, x + Margin) * Grid / w;
+                    int c0 = Math.Max(0, x - Margin) * FG / w, c1 = Math.Min(w - 1, x + Margin) * FG / w;
                     for (int c = c0; c <= c1; c++) rowCells[c] = true;
                     any = true;
-                    int cellEnd = (c1 + 1) * w / Grid;   // 이 칸 끝 근처까지 건너뛰되 다음 칸 여백은 다시 본다
+                    int cellEnd = (c1 + 1) * w / FG;   // 이 칸 끝 근처까지 건너뛰되 다음 칸 여백은 다시 본다
                     int skip = cellEnd - Margin - 1; if (skip > x) x = skip;
                 }
                 if (!any) continue;
-                int r0 = Math.Max(0, y - Margin) * Grid / h, r1 = Math.Min(h - 1, y + Margin) * Grid / h;
-                for (int r = r0; r <= r1; r++) for (int c = 0; c < Grid; c++) if (rowCells[c]) { int b = r * Grid + c; bits[b >> 6] |= 1UL << (b & 63); }
+                int r0 = Math.Max(0, y - Margin) * FG / h, r1 = Math.Min(h - 1, y + Margin) * FG / h;
+                for (int r = r0; r <= r1; r++) for (int c = 0; c < FG; c++) if (rowCells[c]) { int b = r * FG + c; fine[b >> 6] |= 1UL << (b & 63); }
             }
+            var bits = new ulong[Grid * Grid / 64];
+            if (k == 1) Array.Copy(fine, bits, bits.Length);
+            else for (int fy = 0; fy < FG; fy++) for (int fx = 0; fx < FG; fx++)
+            {
+                int fb = fy * FG + fx; if ((fine[fb >> 6] & (1UL << (fb & 63))) == 0) continue;
+                int b = (fy / k) * Grid + fx / k; bits[b >> 6] |= 1UL << (b & 63);
+            }
+            if (k > 1) lock (gate) fineOf.Add(bits, fine);
             return bits;
+        }
+        // 촘촘한 칸 배율: 긴 변 1024 이상 8배(32 -> 256칸), 512 이상 4배, 256 이상 2배
+        internal static int FineFactor(int w, int h) { int m = Math.Max(w, h); return m >= 1024 ? 8 : m >= 512 ? 4 : m >= 256 ? 2 : 1; }
+        static readonly System.Runtime.CompilerServices.ConditionalWeakTable<ulong[], ulong[]> fineOf = new System.Runtime.CompilerServices.ConditionalWeakTable<ulong[], ulong[]>();
+        // 텍스처의 가장 촘촘한 칸(없으면 기존 칸)
+        internal static bool TryGetFine(int textureId, out ulong[] bits)
+        {
+            lock (gate)
+            {
+                if (!byTexture.TryGetValue(textureId, out bits) || bits == null) return false;
+                if (fineOf.TryGetValue(bits, out var f)) bits = f;
+                return true;
+            }
         }
         // 메인 스레드: 텍스처에 픽셀을 넣을 때
         internal static void Register(UnityEngine.Texture2D tex, ulong[] bits)

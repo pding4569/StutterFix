@@ -96,6 +96,7 @@ namespace StutterFix
 #endif
         private static void Work(scrVisualDecoration inst)
         {
+            if (DirectDeco.Active && DirectDeco.Owns(inst)) return;   // 직통 렌더러가 그리는 장식: 원래 렌더러는 계속 꺼 둔다
             if (GpuDecoPlayer.Active && DecoBake.GpuLiveOwns(inst) && !ReferenceEquals(inst,gpuImageColorSync)) return;
 #if DEV || AUTOTEST
             // The live mesh owner controls the original renderer's forced-off bit.

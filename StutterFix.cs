@@ -1027,9 +1027,12 @@ ParticleTextWatch.Install(harmony);
 
 #endif
 
+            Try(DirectDeco.Uninstall);
+
 #if DEV || AUTOTEST
 
             Try(DirectRenderer.Stop);
+            Try(DrProbe.Stop);
             Try(FreeFpsProbe.Restore);
 
             Try(TileSim.Shutdown);

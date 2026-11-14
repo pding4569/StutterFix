@@ -66,3 +66,11 @@ EXPORTS
     sf_dr_destroy @63
     sf_dr_event @64
     sf_dr_stat @65
+    sf_dr2_create @66
+    sf_dr2_destroy @67
+    sf_dr2_texture @68
+    sf_dr2_geometry @69
+    sf_dr2_statics @70
+    sf_dr2_commit @71
+    sf_dr2_event @72
+    sf_dr2_stat @73

@@ -41,6 +41,7 @@
 
   <ItemGroup>
     <Compile Include="DirectRenderer.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
+    <Compile Include="DrProbe.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="StutterFix.cs" />
     <Compile Include="FillGeometry.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="FillCensus.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
@@ -367,6 +368,7 @@
     <Compile Include="ZeroTween.cs" />
     <Compile Include="MoveApply.cs" />
     <Compile Include="TightLate.cs" />
+    <Compile Include="DirectDeco.cs" />
     <Compile Include="MoveDeltaPolicy.cs" />
     <Compile Include="NativeMotion.cs" />
     <Compile Include="CompiledTagTable.cs" />

@@ -228,6 +228,8 @@ namespace StutterFix
         }
         private static bool Process(Entry e, scrDecoration d, Transform parent, bool parentOK, Transform camera, Vector3 cam)
         {
+            // 직통 렌더러가 맡은 장식: 논리 값만 읽고(GPU 가 위치를 계산) Transform 은 쓰지 않는다.
+            if (DirectDeco.Active && (object)d != null && DirectDeco.SkipLate(d)) { if (e != null) e.Has = false; return true; }
 #if DEV || AUTOTEST || GPUDECO
 #if DEV || AUTOTEST
             if (LiveDecoRenderer.SkipLate(d)) { if (e != null) e.Has = false; return true; }
