@@ -5,7 +5,7 @@ namespace drfull {
 // All pointers are borrowed only for the duration of dispatch. Native owns copies
 // and COM references. Opcodes are versioned behind ONE appended export so old
 // export hints as well as ordinals remain stable.
-enum Op { Create, Program, Geometry, Draw, Commit, Event, Stats, Destroy, Error, Abi, Composite, Perf, CommitPacked };
+enum Op { Create, Program, Geometry, Draw, Commit, Event, Stats, Destroy, Error, Abi, Composite, Perf, CommitPacked, CommitActive, BatchPerf, GeometryCpu, CommitActiveWorld };
 struct Performance { double applyUs,cullUs,constantsUs,drawUs,executeUs; uint64_t uploads,uploadBytes,layoutCreates,layoutHits,sampledFrames; };
 struct CompositeIn { void *black, *white; };
 struct AbiInfo { uint32_t version,create,program,geometry,draw,frame,stats,pose; };
@@ -19,12 +19,13 @@ struct GeometryIn {
     const void* vertices; uint32_t vertexBytes; const uint32_t* cpuIndices; uint32_t cpuIndexCount;
 };
 struct Buffer { uint32_t stage,slot,bytes,offset; };
+// Kinds 16/17 preserve per-source RendererColor/Flip and normalize them only in a verified batch.
 struct Patch { uint32_t offset,kind; };
 struct Texture { void* resource; int32_t stage,slot,sampler,filter,wrapU,wrapV,aniso,srgb; };
 struct DrawIn {
     uint32_t program,geometry; const Buffer* buffers; uint32_t bufferCount;
     const Patch* patches; uint32_t patchCount; const Texture* textures; uint32_t textureCount;
-    const void* constants; uint32_t constantBytes; uint32_t pose; uint32_t grab,sprite;
+    const void* constants; uint32_t constantBytes; uint32_t pose; uint32_t grab,sprite; // sprite bit 0: renderer color; bit 1: verified world-space batch program.
     float center[3],extent[3];
 };
 struct Pose { float world[16],inverse[16]; };
@@ -35,6 +36,11 @@ struct Frame {
     const uint32_t* drawIds; const uint32_t* constantOffsets; const uint8_t* constants; uint32_t dirtyCount,constantBytes;
     const uint32_t* list; const uint32_t* segments; uint32_t listCount,segmentCount,listChanged,clearStencil;
 };
+struct CpuGeometry { uint32_t geometry; const void* vertices; uint32_t count; const uint32_t* indices; uint32_t indexCount; };
+// CommitActiveWorld borrows tightly packed world[16] matrices in Frame.poses.
+// Caller guarantees active programs do not need inverse matrices; old Frame/Commit remain unchanged.
+struct FrameActive { Frame frame; const uint32_t* ids; const uint8_t* values; uint32_t count; };
+struct BatchPerformance { uint64_t batches,sources,vertices,singleDraws,liveEdits,constantCreates; double buildUs; uint64_t gpuDispatches,gpuPoseUploads,gpuGeometryUploads,gpuAvailable; };
 struct Statistics { uint64_t frames,draws,errors,dropped,bytes,events; double renderUs,commitUs; int32_t lastHR; };
 }
 extern "C" intptr_t __cdecl sf_z_drfull_v1(int op,int token,const void* args) noexcept;

@@ -14,6 +14,9 @@ cbuffer Reference : register(b0) {
     float4x4 VP;
     float4 Screen;
     float4 P[12];
+#if FLOOR == 4
+    float4 RendererColor;float4 SpriteFlip;
+#endif
 };
 #define Color P[0]
 #define Repeat P[1].xy
@@ -52,13 +55,19 @@ struct Input { float3 position : POSITION; float4 color : COLOR; float2 uv : TEX
 struct Varying { float4 position : SV_POSITION; float4 color : COLOR; float2 uv : TEXCOORD0; float4 tileUv : TEXCOORD1; };
 Varying vertex(Input v) {
     Varying o;
+#if FLOOR == 4
+    v.position.xy *= SpriteFlip.xy;
+#endif
     float4 w = mul(World, float4(v.position, 1));
     o.position = mul(VP, w);
 #if SNAP
     float2 halfSize = Screen.xy * 0.5;
     o.position.xy = round(o.position.xy / o.position.w * halfSize) / halfSize * o.position.w;
 #endif
-#if FLOOR == 1
+#if FLOOR == 4
+    o.color = v.color * Color * RendererColor;
+    o.uv = v.uv;
+#elif FLOOR == 1
     o.color = float4(lerp(Color.rgb, 1, FlashColor) * v.color.rgb, Color.a * v.color.a);
     o.uv = v.uv;
 #else
@@ -66,7 +75,7 @@ Varying vertex(Input v) {
     o.uv = FLOOR >= 2 ? v.uv : v.uv * Repeat;
 #endif
     o.tileUv = float4(v.tileUv, 0, 1);
-#if FLOOR >= 2
+#if FLOOR == 2 || FLOOR == 3
     o.tileUv = float4((o.position.x + o.position.w)*.5, (o.position.w-o.position.y)*.5, o.position.zw);
 #endif
     return o;
@@ -76,12 +85,12 @@ float2 rotateUv(float2 uv, float radians) {
     return float2(c * uv.x - s * uv.y, s * uv.x + c * uv.y);
 }
 float4 pixel(Varying v) : SV_TARGET {
-#if FLOOR >= 2
+#if FLOOR == 2 || FLOOR == 3
     float4 src = Main.Sample(MainSampler, v.uv) * v.color;
     float3 dst = Perlin.Sample(TileSampler, v.tileUv.xy/v.tileUv.w).rgb;
     float3 blended = FLOOR == 2 ? dst * src.rgb : abs(dst-src.rgb);
     return float4(blended * src.a, src.a);
-#elif !FLOOR
+#elif !FLOOR || FLOOR == 4
     float2 uv = v.uv;
 #if POINT
     uint width, height; Main.GetDimensions(width, height);

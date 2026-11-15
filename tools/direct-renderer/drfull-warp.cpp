@@ -18,6 +18,12 @@
 #include <cmath>
 #include <atomic>
 #include <thread>
+#include <cstdlib>
+#include <new>
+std::atomic<uint64_t> nativeHeapCalls{0};
+void* operator new(size_t bytes){nativeHeapCalls.fetch_add(1,std::memory_order_relaxed);if(void* p=std::malloc(bytes?bytes:1))return p;throw std::bad_alloc();}
+void operator delete(void* p) noexcept {std::free(p);}
+void operator delete(void* p,size_t) noexcept {std::free(p);}
 #include "../../native/sfnative/drfull.h"
 using Microsoft::WRL::ComPtr;
 using namespace drfull;
@@ -61,13 +67,14 @@ int main(int argc,char** argv){try{
     for(unsigned caseIndex=0;caseIndex<count;caseIndex++){
         std::string label=r.text();int floor=r.pod<int>(),snap=r.pod<int>(),point=r.pod<int>(),mode=r.pod<int>(),filter=r.pod<int>();
         auto originalVs=r.blob(),originalPs=r.blob();ProgramIn program{};program.vs=originalVs.data();program.ps=originalPs.data();program.vsBytes=UINT(originalVs.size());program.psBytes=UINT(originalPs.size());for(auto& x:program.state)x=r.pod<int>();
+        ProgramIn baselineProgram=program;
         std::vector<Buffer> bindings(r.pod<uint32_t>());for(auto& x:bindings)x=r.pod<Buffer>();std::vector<Patch> patches(r.pod<uint32_t>());for(auto& x:patches)x=r.pod<Patch>();auto constants=r.blob();
         struct TextureInput{int stage,slot,sampler,pattern;};std::vector<TextureInput> texInputs(r.pod<uint32_t>());for(auto& x:texInputs)x=r.pod<TextureInput>();auto reference=r.blob();Pose pose{};for(auto& x:pose.world)x=r.pod<float>();for(int i=0;i<16;i++)pose.inverse[i]=i%5==0?1.f:0.f;
         Frame frame{};for(auto& x:frame.vp)x=r.pod<float>();for(auto& x:frame.screen)x=r.pod<float>();
         bool sprite=mode%2==0;bool multi=mode==3;
         std::array<Vertex,5> vertices{};float positions[4][2]={{-.75f,-.65f},{.72f,-.65f},{.72f,.69f},{-.75f,.69f}};
         const float uniform[4]={.61f,.84f,.47f,.71f};
-        for(unsigned i=0;i<4;i++){auto& v=vertices[i+1];v.p[0]=positions[i][0];v.p[1]=positions[i][1];v.p[2]=0;for(int j=0;j<4;j++)v.color[j]=sprite?uniform[j]:.35f+float((i+unsigned(j)*3)%5)*.12f;v.uv[0]=(i==1||i==2)?1.07f:-.09f;v.uv[1]=(i>=2)?(mode==1?1.85f:1.07f):(mode==1?1.05f:-.07f);v.uv1[0]=positions[i][0]*.81f;v.uv1[1]=positions[i][1]*.77f;}
+        for(unsigned i=0;i<4;i++){auto& v=vertices[i+1];v.p[0]=positions[i][0];v.p[1]=positions[i][1];v.p[2]=0;for(int j=0;j<4;j++)v.color[j]=sprite?(floor==4?1.f:uniform[j]):.35f+float((i+unsigned(j)*3)%5)*.12f;v.uv[0]=(i==1||i==2)?1.07f:-.09f;v.uv[1]=(i>=2)?(mode==1?1.85f:1.07f):(mode==1?1.05f:-.07f);v.uv1[0]=positions[i][0]*.81f;v.uv1[1]=positions[i][1]*.77f;}
         if(sprite && floor<2)std::memcpy(constants.data(),uniform,16);
         std::array<uint32_t,9> indices={0,0,0,0,1,2,0,2,3};
         Attribute attributes[]={{0,0,6,0,0},{3,0,2,multi?1u:0u,multi?0u:12u},{4,0,16,0,28},{4,1,16,0,36}};
@@ -78,7 +85,7 @@ int main(int argc,char** argv){try{
         else {geometry.buffers[0]=vb.Get();if(multi){geometry.buffers[1]=colorBuffer.Get();geometry.strides[1]=16;}geometry.indices=ib.Get();geometry.indexFormat=DXGI_FORMAT_R32_UINT;geometry.indexStart=3;geometry.indexCount=6;geometry.baseVertex=1;}
         CreateIn create{target.Get(),16,1};int token=dispatch(Create,0,&create);int programId=dispatch(Program,token,&program),geometryId=dispatch(Geometry,token,&geometry);
         std::vector<Texture> tex;for(const auto& t:texInputs)tex.push_back(Texture{t.pattern==5?nullptr:textures[size_t(t.pattern)].Get(),t.stage,t.slot,t.sampler,t.pattern==5?1:filter,t.pattern==5?1:mode%2,t.pattern==5?1:mode%2,1,t.pattern==5?-1:0});
-        DrawIn draw{};draw.program=UINT(programId);draw.geometry=UINT(geometryId);draw.buffers=bindings.data();draw.bufferCount=UINT(bindings.size());draw.patches=patches.data();draw.patchCount=UINT(patches.size());draw.textures=tex.data();draw.textureCount=UINT(tex.size());draw.constants=constants.data();draw.constantBytes=UINT(constants.size());draw.sprite=sprite?1u:0u;draw.grab=floor>=2?1u:0u;
+        DrawIn draw{};draw.program=UINT(programId);draw.geometry=UINT(geometryId);draw.buffers=bindings.data();draw.bufferCount=UINT(bindings.size());draw.patches=patches.data();draw.patchCount=UINT(patches.size());draw.textures=tex.data();draw.textureCount=UINT(tex.size());draw.constants=constants.data();draw.constantBytes=UINT(constants.size());draw.sprite=sprite?1u:0u;draw.grab=(floor==2||floor==3)?1u:0u;
         draw.extent[0]=draw.extent[1]=1;draw.extent[2]=.1f;
         int drawId=dispatch(Draw,token,&draw);uint32_t poseIds[]={0},drawIds[]={UINT(drawId)},offsets[]={0},list[]={UINT(drawId),UINT(drawId)},segs[]={0,mode==2?2u:1u};
         frame.poses=&pose;frame.poseIds=poseIds;frame.poseCount=1;frame.drawIds=drawIds;frame.constantOffsets=offsets;frame.constants=constants.data();frame.list=list;frame.segments=segs;frame.listCount=segs[1];frame.segmentCount=1;frame.listChanged=1;
@@ -100,9 +107,9 @@ int main(int argc,char** argv){try{
         D3D11_RASTERIZER_DESC rd{};rd.FillMode=D3D11_FILL_SOLID;rd.CullMode=D3D11_CULL_NONE;rd.DepthClipEnable=TRUE;ComPtr<ID3D11RasterizerState> raster;check(device->CreateRasterizerState(&rd,&raster));context->RSSetState(raster.Get());D3D11_DEPTH_STENCIL_DESC dd{};dd.DepthEnable=FALSE;ComPtr<ID3D11DepthStencilState> depthState;check(device->CreateDepthStencilState(&dd,&depthState));context->OMSetDepthStencilState(depthState.Get(),0);
         context->ClearRenderTargetView(rt,background);
         ComPtr<ID3D11Texture2D> grab;ComPtr<ID3D11ShaderResourceView> grabSrv;
-        if(floor>=2){D3D11_TEXTURE2D_DESC desc{};target->GetDesc(&desc);desc.BindFlags=D3D11_BIND_SHADER_RESOURCE;check(device->CreateTexture2D(&desc,nullptr,&grab));check(device->CreateShaderResourceView(grab.Get(),nullptr,&grabSrv));}
+        if(floor==2||floor==3){D3D11_TEXTURE2D_DESC desc{};target->GetDesc(&desc);desc.BindFlags=D3D11_BIND_SHADER_RESOURCE;check(device->CreateTexture2D(&desc,nullptr,&grab));check(device->CreateShaderResourceView(grab.Get(),nullptr,&grabSrv));}
         for(unsigned repeat=0;repeat<segs[1];repeat++){
-            if(floor>=2){ID3D11ShaderResourceView* nil=nullptr;context->PSSetShaderResources(1,1,&nil);context->CopyResource(grab.Get(),target.Get());auto* srv=grabSrv.Get();context->PSSetShaderResources(1,1,&srv);}
+            if(floor==2||floor==3){ID3D11ShaderResourceView* nil=nullptr;context->PSSetShaderResources(1,1,&nil);context->CopyResource(grab.Get(),target.Get());auto* srv=grabSrv.Get();context->PSSetShaderResources(1,1,&srv);}
             context->DrawIndexed(6,3,1);
         }auto ref=readback(device.Get(),context.Get(),target.Get());
         uint64_t changed=0,l1=0,nonBackground=0;unsigned maxChannel=0;for(size_t i=0;i<original.size();i+=4){bool diff=false,bg=false;for(size_t j=0;j<4;j++){unsigned delta=unsigned(std::abs(int(original[i+j])-int(ref[i+j])));maxChannel=std::max(maxChannel,delta);l1+=delta;diff|=delta!=0;bg|=original[i+j]!=uint8_t(std::round(background[j]*255));}changed+=diff;nonBackground+=bg;}
@@ -140,6 +147,9 @@ int main(int argc,char** argv){try{
             draw.pose=5;int packedDraw=dispatch(Draw,token,&draw);list[0]=UINT(packedDraw);poseIds[0]=5;
             context->ClearRenderTargetView(rt,background);dispatch(CommitPacked,token,&frame);event(token<<16);
             require(readback(device.Get(),context.Get(),target.Get())==original,"dense packed pose / sparse native ID mismatch");
+            std::array<float,16> sparseWorld{};std::memcpy(sparseWorld.data(),pose.world,64);frame.poses=reinterpret_cast<const Pose*>(sparseWorld.data());FrameActive sparseActive{frame,nullptr,nullptr,0};
+            context->ClearRenderTargetView(rt,background);dispatch(CommitActiveWorld,token,&sparseActive);event(token<<16);require(readback(device.Get(),context.Get(),target.Get())==original,"world-only packed pose / sparse native ID mismatch");frame.poses=&pose;
+            std::cout<<"PASS world-only poses dense-count=1 sparse-native-id=5 pixels=identical\n";
             draw.pose=0;list[0]=UINT(maskedDraw);poseIds[0]=0;
             context->ClearRenderTargetView(rt,background);dispatch(CommitPacked,token,&frame);event(token<<16);
             std::cout<<"PASS packed-poses dense-count=1 sparse-native-id=5 pixels=identical legacy-commit=preserved\n";
@@ -170,6 +180,84 @@ int main(int argc,char** argv){try{
             std::cout<<"PASS SPSC packets="<<packets<<" alternating-color-pixels=identical errors=0 dropped=0\n";
         }
         dispatch(Destroy,token,nullptr);event(token<<16); // stale command buffer lease is inert.
+        if(floor<2||floor==4){
+            // Same original DXBC and source order: per-object matrices versus
+            // world-space vertices + identity object matrices, with different poses.
+            int batchToken=dispatch(Create,0,&create);
+            draw.program=UINT(dispatch(Program,batchToken,&baselineProgram));draw.geometry=UINT(dispatch(Geometry,batchToken,&geometry));
+            std::array<uint32_t,6> localIndices={0,1,2,0,2,3};
+            if(!sprite){CpuGeometry cpu{draw.geometry,vertices.data()+1,4,localIndices.data(),6};dispatch(GeometryCpu,batchToken,&cpu);}
+            std::array<Pose,3> batchPoses={pose,pose,pose};
+            batchPoses[1].world[12]+=.19f;batchPoses[1].world[13]-=.11f;
+            batchPoses[2].world[0]*=-.7f;batchPoses[2].world[1]*=-.7f;batchPoses[2].world[12]-=.23f;
+            uint32_t batchPoseIds[]={0,1,2},singleIds[3]{},batchedIds[3]{},batchSegments[]={0,3},zeroOffsets[]={0};
+            std::array<std::vector<uint8_t>,3> colorsForBatch={constants,constants,constants};
+            for(unsigned j=0;j<3;j++){
+                if(sprite){float tint[4]={.37f+float(j)*.13f,.82f-float(j)*.11f,.61f,.53f+float(j)*.09f};
+                    if(floor==4){for(const auto& patch:patches){if(patch.kind==16)std::memcpy(colorsForBatch[j].data()+patch.offset,tint,16);if(patch.kind==17){float flips[2]={j==1?-1.f:1.f,j==2?-1.f:1.f};std::memcpy(colorsForBatch[j].data()+patch.offset,flips,8);}}}
+                    else std::memcpy(colorsForBatch[j].data(),tint,16);
+                }
+                draw.pose=j;draw.constants=colorsForBatch[j].data();draw.sprite=sprite?1u:0u;singleIds[j]=UINT(dispatch(Draw,batchToken,&draw));
+                draw.sprite=(sprite?1u:0u)|2u;batchedIds[j]=UINT(dispatch(Draw,batchToken,&draw));
+            }
+            Frame bf=frame;bf.poses=batchPoses.data();bf.poseIds=batchPoseIds;bf.poseCount=3;bf.dirtyCount=bf.constantBytes=0;bf.constantOffsets=zeroOffsets;bf.list=singleIds;bf.listCount=3;bf.segments=batchSegments;bf.segmentCount=1;bf.listChanged=1;
+            context->OMSetRenderTargets(1,&rt,dsv.Get());context->RSSetViewports(1,&vp);context->ClearRenderTargetView(rt,background);context->ClearDepthStencilView(dsv.Get(),D3D11_CLEAR_DEPTH|D3D11_CLEAR_STENCIL,0,0);
+            dispatch(CommitPacked,batchToken,&bf);event(batchToken<<16);auto singles=readback(device.Get(),context.Get(),target.Get());
+            bf.list=batchedIds;context->ClearRenderTargetView(rt,background);dispatch(CommitPacked,batchToken,&bf);event(batchToken<<16);auto batchImage=readback(device.Get(),context.Get(),target.Get());
+            unsigned batchMax=0;uint64_t batchChanged=0;for(size_t k=0;k<singles.size();k+=4){bool different=false;for(size_t c=0;c<4;c++){unsigned delta=unsigned(std::abs(int(singles[k+c])-int(batchImage[k+c])));batchMax=std::max(batchMax,delta);different|=delta!=0;}batchChanged+=different;}
+            BatchPerformance bp{};dispatch(BatchPerf,batchToken,&bp);Statistics bs{};dispatch(Stats,batchToken,&bs);
+            require(batchMax<=2&&bp.batches==1&&bp.sources==3&&bs.draws==4&&bs.errors==0,"world-space original-DXBC batch parity/draw reduction");
+            std::cout<<"PASS M4f batch "<<label<<" sources=3 draws=1 changed="<<batchChanged<<" max="<<batchMax<<" cb_creates="<<bp.constantCreates<<"\n";
+            // A native live edit does not send/rebuild the ordered draw list.
+            bf.listChanged=0;bf.poseCount=0;uint32_t liveId=1;uint8_t liveValue=0;FrameActive active{bf,&liveId,&liveValue,1};
+            context->ClearRenderTargetView(rt,background);dispatch(CommitActive,batchToken,&active);event(batchToken<<16);auto liveBatch=readback(device.Get(),context.Get(),target.Get());
+            uint32_t liveSingles[]={singleIds[0],singleIds[2]};bf.list=liveSingles;bf.listCount=2;bf.listChanged=1;batchSegments[1]=2;
+            context->ClearRenderTargetView(rt,background);dispatch(CommitPacked,batchToken,&bf);event(batchToken<<16);auto liveReference=readback(device.Get(),context.Get(),target.Get());
+            unsigned liveMax=0;for(size_t k=0;k<liveBatch.size();k++)liveMax=std::max(liveMax,unsigned(std::abs(int(liveBatch[k])-int(liveReference[k]))));require(liveMax<=2,"live-bit edit without list rebuild changed order/pixels");
+            liveValue=1;bf.list=batchedIds;bf.listCount=3;batchSegments[1]=3;active.frame=bf;
+            context->ClearRenderTargetView(rt,background);dispatch(CommitActive,batchToken,&active);event(batchToken<<16);require(readback(device.Get(),context.Get(),target.Get())==batchImage,"reactivation did not restore exactly");
+            // Invalidate cached world vertices on actual motion, then compare
+            // against original matrices again. Camera-only VP edits stay dynamic.
+            batchPoses[0].world[12]+=.137f;bf.poseCount=3;bf.list=batchedIds;bf.listCount=3;bf.listChanged=1;bf.vp[12]+=.071f;
+            std::array<std::array<float,16>,3> denseWorlds{};for(unsigned j=0;j<3;j++)std::memcpy(denseWorlds[j].data(),batchPoses[j].world,64);
+            bf.poses=reinterpret_cast<const Pose*>(denseWorlds.data());active.frame=bf;
+            context->ClearRenderTargetView(rt,background);dispatch(CommitActiveWorld,batchToken,&active);event(batchToken<<16);auto movedBatch=readback(device.Get(),context.Get(),target.Get());
+            bf.poses=batchPoses.data();bf.list=singleIds;bf.poseCount=0;context->ClearRenderTargetView(rt,background);dispatch(CommitPacked,batchToken,&bf);event(batchToken<<16);auto movedOracle=readback(device.Get(),context.Get(),target.Get());
+            unsigned movedMax=0;for(size_t k=0;k<movedBatch.size();k++)movedMax=std::max(movedMax,unsigned(std::abs(int(movedBatch[k])-int(movedOracle[k]))));require(movedMax<=2,"motion/VP did not invalidate/patch batch cache");
+            bf.list=batchedIds;bf.listChanged=1;
+            // A changed MPB is a hard batch boundary, including on an existing draw.
+            auto boundary=colorsForBatch[1];for(const auto& binding:bindings){bool done=false;for(unsigned k=0;k<binding.bytes;k+=4){unsigned cbOffset=binding.offset+k;bool dynamic=false;for(const auto& patch:patches)if(cbOffset>=patch.offset&&cbOffset<patch.offset+(patch.kind<=7?64:16))dynamic=true;if(!dynamic){float value=.271f;std::memcpy(boundary.data()+cbOffset,&value,4);done=true;break;}}if(done)break;}
+            uint32_t dirtyBatch=batchedIds[1],dirtyEnds[]={0,UINT(boundary.size())};bf.listChanged=1;bf.drawIds=&dirtyBatch;bf.dirtyCount=1;bf.constants=boundary.data();bf.constantBytes=UINT(boundary.size());bf.constantOffsets=dirtyEnds;
+            context->ClearRenderTargetView(rt,background);dispatch(CommitPacked,batchToken,&bf);event(batchToken<<16);BatchPerformance boundaryPerf{};dispatch(BatchPerf,batchToken,&boundaryPerf);require(boundaryPerf.batches==bp.batches+3,"different MPB failed to split consecutive runs");
+            auto boundaryImage=readback(device.Get(),context.Get(),target.Get());
+            dirtyBatch=singleIds[1];bf.list=singleIds;context->ClearRenderTargetView(rt,background);dispatch(CommitPacked,batchToken,&bf);event(batchToken<<16);auto boundaryOracle=readback(device.Get(),context.Get(),target.Get());
+            unsigned boundaryMax=0;for(size_t k=0;k<boundaryImage.size();k++)boundaryMax=std::max(boundaryMax,unsigned(std::abs(int(boundaryImage[k])-int(boundaryOracle[k]))));require(boundaryMax<=2,"MPB boundary pixels differ from original matrices");
+            dispatch(Destroy,batchToken,nullptr);
+            if(caseIndex==0){
+                // A submission microbenchmark, never a claim about GPU/game FPS.
+                ULONGLONG setupAt=GetTickCount64();CreateIn largeCreate{target.Get(),8192,1};int large=dispatch(Create,0,&largeCreate);
+                draw.program=UINT(dispatch(Program,large,&baselineProgram));draw.geometry=UINT(dispatch(Geometry,large,&geometry));draw.constants=constants.data();draw.sprite=3;
+                constexpr unsigned population=7000;std::vector<Pose> manyPoses(population,pose);std::vector<uint32_t> manyIds(population),manyList(population);
+                for(unsigned j=0;j<population;j++){draw.pose=j;manyIds[j]=j;manyList[j]=UINT(dispatch(Draw,large,&draw));manyPoses[j].world[0]*=.001f;manyPoses[j].world[1]*=.001f;manyPoses[j].world[4]*=.001f;manyPoses[j].world[5]*=.001f;}
+                Frame many=frame;uint32_t manySegments[]={0,population};many.poses=manyPoses.data();many.poseIds=manyIds.data();many.poseCount=population;many.list=manyList.data();many.listCount=population;many.segments=manySegments;many.segmentCount=1;many.listChanged=1;many.dirtyCount=many.constantBytes=0;many.constantOffsets=zeroOffsets;
+                ULONGLONG setupMs=GetTickCount64()-setupAt;
+                dispatch(CommitPacked,large,&many);event(large<<16);many.poseCount=0;many.listChanged=0;
+                Statistics warmStats{};Performance warmPhases{};BatchPerformance warmBatch{};dispatch(Stats,large,&warmStats);dispatch(Perf,large,&warmPhases);dispatch(BatchPerf,large,&warmBatch);
+                uint64_t beforeHeap=nativeHeapCalls.load();
+                for(unsigned j=0;j<256;j++){dispatch(CommitPacked,large,&many);event(large<<16);}
+                uint64_t heapCalls=nativeHeapCalls.load()-beforeHeap;Statistics largeStats{};BatchPerformance largePerf{};dispatch(Stats,large,&largeStats);dispatch(BatchPerf,large,&largePerf);Performance phases{};dispatch(Perf,large,&phases);
+                require(heapCalls==0&&largeStats.errors==0&&largeStats.dropped==0&&largeStats.draws==257&&largePerf.gpuDispatches==1&&largePerf.gpuGeometryUploads==1&&largePerf.sources==uint64_t(population)*257,"7000-source batch steady allocations/draw count/errors");
+                std::cout<<"PASS M4f submission sources="<<population<<" frames=256 draws_per_frame=1 cpp_heap_calls="<<heapCalls<<" render_us="<<(largeStats.renderUs*double(largeStats.frames)-warmStats.renderUs)/256.0<<" batch_build_us="<<(largePerf.buildUs-warmBatch.buildUs)/double(phases.sampledFrames-warmPhases.sampledFrames)<<" execute_us="<<(phases.executeUs*double(phases.sampledFrames)-warmPhases.executeUs*double(warmPhases.sampledFrames))/double(phases.sampledFrames-warmPhases.sampledFrames)<<" setup_native_ms="<<setupMs<<" cb_creates="<<largePerf.constantCreates<<" gpu_pretransform=True tiny_geometry=True WARP_not_game=True\n";
+                std::vector<std::array<float,16>> movingWorlds(population);for(unsigned j=0;j<population;j++)std::memcpy(movingWorlds[j].data(),manyPoses[j].world,64);many.poses=reinterpret_cast<const Pose*>(movingWorlds.data());many.poseCount=population;FrameActive movingFrame{many,nullptr,nullptr,0};uint64_t beforeMoving=nativeHeapCalls.load();
+                for(unsigned j=0;j<256;j++){for(auto& movingPose:movingWorlds)movingPose[12]+=.000001f;dispatch(CommitActiveWorld,large,&movingFrame);event(large<<16);}
+                uint64_t movingHeap=nativeHeapCalls.load()-beforeMoving;Statistics movingStats{};Performance movingPhases{};BatchPerformance movingBatch{};dispatch(Stats,large,&movingStats);dispatch(Perf,large,&movingPhases);dispatch(BatchPerf,large,&movingBatch);
+                require(movingHeap==0&&movingStats.errors==0&&movingStats.dropped==0&&movingStats.draws==513&&movingBatch.gpuDispatches==257&&movingBatch.gpuGeometryUploads==1,"moving 7000-source frame allocation/drop/draw mismatch");
+                std::cout<<"PASS M4f moving sources=7000 frames=256 draws_per_frame=1 cpp_heap_calls="<<movingHeap<<" render_us="<<(movingStats.renderUs*double(movingStats.frames)-largeStats.renderUs*double(largeStats.frames))/256.0<<" commit_us="<<(movingStats.commitUs*double(movingStats.frames)-largeStats.commitUs*double(largeStats.frames))/256.0<<" batch_build_us="<<(movingBatch.buildUs-largePerf.buildUs)/double(movingPhases.sampledFrames-phases.sampledFrames)<<" world_only=True gpu_pretransform=True tiny_geometry=True WARP_not_game=True\n";
+                dispatch(Destroy,large,nullptr);
+            }
+
+        }
+
         passed++;
     }
     require(passed==count&&count>=8&&(negative==5 || (negative==0 && count==8)),"fixture coverage");std::cout<<"PASS cases="<<passed<<" maxChannel="<<globalMax<<" differingPixels="<<allChanged<<" controls="<<negative<<" UnityCapture=UNMEASURED gameFPS=UNMEASURED\n";

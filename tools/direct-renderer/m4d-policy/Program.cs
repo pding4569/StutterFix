@@ -3,6 +3,7 @@ using System.Linq;
 using StutterFix;
 using K = StutterFix.SceneRenderOrder.Key;
 
+sealed class OrderValue { internal int Key, Id; }
 sealed class Node { internal int Layer; internal bool Dead; }
 static class Program
 {
@@ -78,6 +79,27 @@ static class Program
         Array.Sort(items, Sort);
         for (int i = 0; i < items.Length; i++) for (int j = i; j < items.Length; j++)
             Check(Sort(items[i], items[j]) <= 0 && Math.Sign(Sort(items[i], items[j])) == -Math.Sign(Sort(items[j], items[i])), "group comparator transitivity/antisymmetry");
-        Console.WriteLine($"PASS production per-object layer journal + nested group order: checks={checks} stable_layer_allocated={allocated}; Unity callbacks/physics=UNMEASURED");
+        int legacyChecks = checks;
+        // Persistent node ownership, sparse edits, duplicate priorities and long
+        // remove/reinsert sequences must preserve total order without allocations.
+        const int size = 7000;
+        var values = Enumerable.Range(0, size).Select(i => new OrderValue { Key = i, Id = i }).ToArray();
+        var order = new DirectFullOrderTree<OrderValue>((a,b) => { int c = a.Key.CompareTo(b.Key); return c != 0 ? c : a.Id.CompareTo(b.Id); });
+        var treeNodes = values.Select((v,i) => new DirectFullOrderTree<OrderValue>.Node(v,(uint)i+1)).ToArray();
+        var actual = new System.Collections.Generic.List<OrderValue>(size);
+        foreach (var n in treeNodes) order.Add(n);
+        var expected = new OrderValue[size];
+        for (int iteration=0;iteration<1000;iteration++)
+        {
+            for(int j=0;j<7;j++){int i=random.Next(size);order.Remove(treeNodes[i]);values[i].Key=random.Next(-10000,10000);order.Add(treeNodes[i]);}
+            order.CopyTo(actual);Array.Copy(values,expected,size);Array.Sort(expected,(a,b)=>{int c=a.Key.CompareTo(b.Key);return c!=0?c:a.Id.CompareTo(b.Id);});
+            for(int i=0;i<size;i++)Check(ReferenceEquals(actual[i],expected[i]),"incremental order differs from total order oracle");
+        }
+        long treeBefore=GC.GetAllocatedBytesForCurrentThread();var stamp=System.Diagnostics.Stopwatch.GetTimestamp();
+        for(int iteration=0;iteration<10000;iteration++){int i=iteration%size;order.Remove(treeNodes[i]);values[i].Key=-iteration;order.Add(treeNodes[i]);}
+        long treeAllocated=GC.GetAllocatedBytesForCurrentThread()-treeBefore;
+        Check(treeAllocated==0,"sparse order edits allocate");
+        Console.WriteLine("PASS M4f incremental order sources="+size+" oracle_edits=7000 allocated="+treeAllocated+" edit_us="+((System.Diagnostics.Stopwatch.GetTimestamp()-stamp)*1e6/System.Diagnostics.Stopwatch.Frequency/10000).ToString("F3"));
+        Console.WriteLine($"PASS production per-object layer journal + nested group order: checks={legacyChecks} stable_layer_allocated={allocated}; Unity callbacks/physics=UNMEASURED");
     }
 }

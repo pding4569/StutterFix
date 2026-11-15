@@ -1,9 +1,11 @@
 """Generate original-DXBC test cases; no D3D/game/installation calls."""
-import json, math, struct
+import json, math, struct, sys
 from pathlib import Path
 
 ROOT=Path(__file__).resolve().parents[2]
 OUT=ROOT/'out/direct-renderer/m4bc'
+DEST=ROOT/(sys.argv[1] if len(sys.argv)>1 else 'out/direct-renderer/m4e')
+DEST.mkdir(parents=True,exist_ok=True)
 audit=json.loads((OUT/'shaders/bindings.json').read_text(encoding='utf-8'))
 data=bytearray()
 def integer(x):data.extend(struct.pack('<I',x))
@@ -71,6 +73,6 @@ for case_index,(shader,variant,mode,sampler) in enumerate(cases):
     ref += [values['_IconFlipped'][0],values['_Sprite'][0],0,0]
     blob(struct.pack('<'+'f'*len(ref),*ref));floats(world);floats(vp);floats(screen)
     manifest.append(dict(case=label,shader=shader['name'],keywords=variant['keywords'],values=values))
-(ROOT/'out/direct-renderer/m4e/grab-cases.bin').write_bytes(data)
-(ROOT/'out/direct-renderer/m4e/grab-cases.json').write_text(json.dumps(manifest,indent=2),encoding='utf-8')
+(DEST/'grab-cases.bin').write_bytes(data)
+(DEST/'grab-cases.json').write_text(json.dumps(manifest,indent=2),encoding='utf-8')
 print('WARP case inputs',len(cases),'bytes',len(data))

@@ -1,4 +1,4 @@
-#if DEV || AUTOTEST
+﻿#if DEV || AUTOTEST
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -65,6 +65,7 @@ namespace StutterFix
             // Both callbacks read unscaledTime at timeScale=0. PlanetSprite writes
             // material._Frame without changing the renderer matrix/sprite/color.
             // Keep the last displayed frame; Resume unpatches both, without a setter.
+            Log("pause frozen UI component=StutterFix.PerfOverlay retained uGUI; " + PerfOverlay.PixelFreezeDescription());
             FreezePlanetUpdate(typeof(PlanetRenderer));
             FreezePlanetUpdate(typeof(PlanetSprite));
             // This counter uses unscaledDeltaTime/realtimeSinceStartup and writes

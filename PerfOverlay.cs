@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using UnityEngine;
@@ -206,8 +206,14 @@ namespace StutterFix
         private string sImg = "";   // 큰 이미지 줄이기 결과 (VRAM 줄 아래)
         private bool vramWarn;
 
+#if DEV || AUTOTEST
+        internal static string PixelFreezeDescription() => Instance ? "id=" + Instance.GetInstanceID() + " name=" + Instance.name + " mode=" + Mode + " fps=" + Instance.sFps : "absent";
+#endif
         private void Update()
         {
+#if DEV || AUTOTEST
+            if (FrameCompare.Paused) return; // Preserve retained overlay text, graphs, pulse and geometry during pixel controls.
+#endif
             if (C == null) return;
             if (Hotkey.Down(C.OverlayKey, C.OverlayMods)) { C.OverlayMode = (C.OverlayMode + 1) % 4; iconOpen = false; SaveConfig(); }
 
@@ -1083,6 +1089,9 @@ namespace StutterFix
         private float slide;   // 나타날 때 옆에서 미끄러져 들어오는 거리(모니터 단위)
         private void LateUpdate()
         {
+#if DEV || AUTOTEST
+            if (FrameCompare.Paused) return; // Preserve retained overlay text, graphs, pulse and geometry during pixel controls.
+#endif
             if (show <= 0f || C == null) { if (ui.Ready) ui.Hide(); return; }
             if (!built) Build();
             long drawStart = Stopwatch.GetTimestamp();
@@ -1138,6 +1147,9 @@ namespace StutterFix
         // 입력만(누르면 펼치기, 끌면 옮기기). 그리지는 않는다. 좌표는 예전처럼 모니터 단위로 받는다.
         private void OnGUI()
         {
+#if DEV || AUTOTEST
+            if (FrameCompare.Paused) return; // Preserve retained overlay text, graphs, pulse and geometry during pixel controls.
+#endif
             if (show <= 0f || C == null || Mode == 0 || !built) return;
             if ((!Cursor.visible || Hitch.Playing) && !dragging) { UiInputBlock.Clear(this); return; }
             long a = Edition.Dev ? Stopwatch.GetTimestamp() : 0;

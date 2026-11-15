@@ -17,6 +17,7 @@ namespace StutterFix
     {
         sealed class CanvasUnit
         {
+            internal bool OrderDirty = true;
             internal Canvas Canvas;
             internal readonly DirectFullObjectLayers<GameObject> LayerLease = new DirectFullObjectLayers<GameObject>(go => go, go => go.layer, (go, layer) => go.layer = layer);
             internal List<GameObject> Nodes => LayerLease.Objects;
@@ -194,8 +195,9 @@ namespace StutterFix
             foreach (var c in Resources.FindObjectsOfTypeAll<Canvas>())
             {
                 yield return 0;
-                if (!Relevant(c, main) || !CanvasInMask(c, original)) continue;
+                if (!Relevant(c, main)) continue;
                 if (!c.isActiveAndEnabled) { dormantCanvases.Add(c); canvasTotal++; continue; }
+                if (!CanvasInMask(c, original)) continue;
                 var u = new CanvasUnit { Canvas = c };
                 u.Signal = () => QueueCanvas(u); u.GraphicSignal = () => QueueCanvas(u); u.CullSignal = _ => QueueCanvas(u);
                 canvasUnits.Add(u); GatherCanvas(u, c.transform, true);
@@ -265,6 +267,7 @@ namespace StutterFix
             foreach (var c in pendingCanvasPromotions)
             {
                 if (!c || !dormantCanvases.Contains(c) || !c.isActiveAndEnabled) continue;
+                if (!CanvasInMask(c, removedMask)) continue;
                 dormantCanvases.Remove(c);
                 var u = new CanvasUnit { Canvas = c };
                 u.Signal = () => QueueCanvas(u); u.GraphicSignal = () => QueueCanvas(u); u.CullSignal = _ => QueueCanvas(u);
@@ -292,7 +295,7 @@ namespace StutterFix
                 canvasLiveGraphics += graphics - u.LiveGraphics; canvasInactiveGraphics += u.LiveGraphics - graphics; u.LiveGraphics = graphics;
                 bool live = graphics != 0;
                 if (u.Live && u.Reason != null) uncertainCanvases--;
-                if (u.Live != live) { u.Live = live; orderDirty = true; }
+                if (u.Live != live) { u.Live = live; u.OrderDirty = true; orderDirty = true; }
                 if (!live) RestoreCanvasLayers(u);
                 else if (!u.Moved && !u.Isolated)
                 {
@@ -302,7 +305,7 @@ namespace StutterFix
                 }
                 IndexCanvasMaterials(u); u.Reason = CanvasReason(u);
                 if (live && u.Reason != null) uncertainCanvases++;
-                if (live && u.Entry != null && u.Entry.Key.CompareTo(CanvasKey(u)) != 0) orderDirty = true;
+                if (live && u.Entry != null && u.Entry.Key.CompareTo(CanvasKey(u)) != 0) { u.OrderDirty = true; orderDirty = true; }
             }
             dirtyCanvases.Clear();
             // Material/vertex-only changes stay on Unity's auxiliary render path.
@@ -325,10 +328,14 @@ namespace StutterFix
         {
             foreach (var u in canvasUnits)
             {
+                if (!u.OrderDirty) continue; u.OrderDirty = false;
+                if (u.Entry?.Node != null) orderTree.Remove(u.Entry.Node);
                 if (!u.Live || !u.Canvas) continue;
                 var key = CanvasKey(u);
                 if (u.Entry == null) u.Entry = new Entry { Canvas = u };
-                u.Entry.Key = key; u.Entry.Layer = key.Layer; u.Entry.Order = key.Order; ordered.Add(u.Entry);
+                u.Entry.Key = key; u.Entry.Layer = key.Layer; u.Entry.Order = key.Order;
+                if (u.Entry.Node == null) u.Entry.Node = new DirectFullOrderTree<Entry>.Node(u.Entry, ++entrySerial);
+                orderTree.Add(u.Entry.Node);
             }
         }
         static void BeginCanvasRuns() { foreach (var u in canvasUnits) u.Run = -1; runCount = 0; recordingRun = -1; foreach (var r in canvasRuns) { r.Units.Clear(); r.Layers.Clear(); } }
@@ -454,14 +461,14 @@ namespace StutterFix
         static readonly Func<SortingGroup, bool> groupAtRoot = typeof(SortingGroup).GetProperty("sortAtRoot")?.GetGetMethod()?.CreateDelegate(typeof(Func<SortingGroup, bool>)) as Func<SortingGroup, bool>;
         static void RefreshGroups(Source s)
         {
-            var groups = s.R.GetComponentsInParent<SortingGroup>(true); int count = 0;
+            var groups = s.GroupScratch; s.R.GetComponentsInParent(true, groups); int count = 0;
             foreach (var g in groups) if (g.isActiveAndEnabled) { count++; if (groupAtRoot != null && groupAtRoot(g)) break; }
             bool same = count == s.Groups.Length; int at = count - 1;
             if (same) foreach (var g in groups) if (g.isActiveAndEnabled) { if (at < 0) break; if (s.Groups[at--] != g) { same = false; break; } }
             if (same) return;
             s.Groups = new SortingGroup[count]; s.GroupIds = new int[count]; s.GroupKeys = new SceneRenderOrder.Key[count]; at = count - 1;
             foreach (var g in groups) if (g.isActiveAndEnabled) { if (at < 0) break; s.Groups[at] = g; s.GroupIds[at--] = g.GetInstanceID(); }
-            orderDirty = true;
+            DirtyOrder(s, "group-path");
         }
         static SceneRenderOrder.Key GroupKey(Source s, int index)
         {
@@ -470,8 +477,8 @@ namespace StutterFix
         }
         static int CompareGroups(Entry a, Entry b)
         {
-            return DirectFullOrderPath.Compare(a.Source?.GroupIds ?? Array.Empty<int>(), a.Source?.GroupKeys ?? Array.Empty<SceneRenderOrder.Key>(), a.Key,
-                b.Source?.GroupIds ?? Array.Empty<int>(), b.Source?.GroupKeys ?? Array.Empty<SceneRenderOrder.Key>(), b.Key);
+            return DirectFullOrderPath.Compare(a.GroupIds, a.GroupKeys, a.Key,
+                b.GroupIds, b.GroupKeys, b.Key);
         }
 
         static string PlanSlot(Renderer r, Material m)

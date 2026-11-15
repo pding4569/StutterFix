@@ -114,6 +114,11 @@ namespace StutterFix
         static bool preparing, unityGrab;
         static string ColorAudit() => "stub-color-audit";
         static string WhyReplan() => "stub-order-reasons";
+        static double warmMs;
+        static void Warm() { warmMs = 0; }
+        static void Cold() { }
+        static void BeginPreparationWork() { }
+        static void EndPreparationWork() { }
         static string prepareStage = "stub";
         static long prepareSlices, prepareMaxTicks, prepareWorkTicks;
         static int prepareOriginal;

@@ -1,4 +1,4 @@
-#if DEV || AUTOTEST
+﻿#if DEV || AUTOTEST
 using System;
 using System.Collections.Generic;
 using HarmonyLib;
@@ -44,7 +44,9 @@ namespace StutterFix
                     throw new InvalidOperationException("preparation camera changed");
                 while (preparing)
                 {
-                    if (!preparation.MoveNext())
+                    BeginPreparationWork(); bool more;
+                    try { more = preparation.MoveNext(); } finally { EndPreparationWork(); }
+                    if (!more)
                     {
                         if (preparing) throw new InvalidOperationException("preparation ended without publishing");
                         break;
@@ -94,6 +96,8 @@ namespace StutterFix
                 case "assert ceil": CheckLease(); if (!Active || Rendering) throw new InvalidOperationException("drfull INVALID: ceiling lease not active"); return "assert ceil PASS";
                 case "assert on": CheckLease(); if (!Active || !Rendering) throw new InvalidOperationException("drfull INVALID: full renderer not active"); AssertFull(); return "assert on PASS";
                 case "assert off": CheckLease(); if (Active || preparing) throw new InvalidOperationException("drfull INVALID: lease/preparation still active"); return "assert off PASS";
+                case "warm": Warm(); return "warm_ms=" + warmMs.ToString("F3");
+                case "cold": if (Active || preparing) throw new InvalidOperationException("drfull cold requires off"); Cold(); return "warm=False";
                 case "on": StartFull(); return State();
                 default: throw new ArgumentException("drfull on|ceil|off|state|census|plan|assert on|assert off");
             }

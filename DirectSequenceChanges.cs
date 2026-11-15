@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -107,6 +107,49 @@ namespace StutterFix
             return -1;
         }
 
+        static readonly Dictionary<MethodBase,bool> writerCalls = new Dictionary<MethodBase,bool>();
+        static readonly OperandType[] shortOperands = new OperandType[256], longOperands = new OperandType[256];
+        static DirectSequenceChanges()
+        {
+            foreach (var field in typeof(OpCodes).GetFields(BindingFlags.Public | BindingFlags.Static))
+            {
+                if (!(field.GetValue(null) is OpCode code)) continue;
+                ushort value = unchecked((ushort)code.Value);
+                if (value < 256) shortOperands[value] = code.OperandType; else if ((value >> 8) == 0xfe) longOperands[value & 255] = code.OperandType;
+            }
+        }
+        static bool MightWrite(MethodInfo method)
+        {
+            // Scan raw IL first. Building Harmony CodeInstructions for every method
+            // in two assemblies was paid again at each activation.
+            try
+            {
+                var il = method.GetMethodBody()?.GetILAsByteArray(); if (il == null) return false;
+                for (int at = 0; at < il.Length;)
+                {
+                    int op = il[at++]; bool extended = op == 0xfe; if (extended) op = il[at++];
+                    OperandType operand = extended ? longOperands[op] : shortOperands[op];
+                    if (!extended && (op == 0x28 || op == 0x6f))
+                    {
+                        var called = method.Module.ResolveMethod(BitConverter.ToInt32(il, at));
+                        if (!writerCalls.TryGetValue(called, out bool writes)) { writes = called is MethodInfo target && Kind(target) >= 0; writerCalls.Add(called, writes); }
+                        if (writes) return true;
+                    }
+                    switch (operand)
+                    {
+                        case OperandType.InlineNone: break;
+                        case OperandType.ShortInlineBrTarget: case OperandType.ShortInlineI: case OperandType.ShortInlineVar: at++; break;
+                        case OperandType.InlineVar: at += 2; break;
+                        case OperandType.InlineI8: case OperandType.InlineR: at += 8; break;
+                        case OperandType.InlineSwitch: at += 4 + checked(BitConverter.ToInt32(il, at) * 4); break;
+                        default: at += 4; break;
+                    }
+                }
+                return false;
+            }
+            catch { return true; } // Unresolved metadata must take the complete Harmony check.
+        }
+
         internal static void Install(Harmony h)
         {
             foreach (var step in InstallSteps(h)) { }
@@ -127,6 +170,7 @@ namespace StutterFix
                     // The installed Harmony targets Mono mscorlib's ILGenerator.
                     // Reflection here avoids importing that incompatible signature
                     // into this netstandard assembly. No game method is invoked.
+                    if (!MightWrite(method)) continue;
                     var code = (IEnumerable<CodeInstruction>)readCode.Invoke(null, new object[] { method, null });
                     if (!code.Any(c => (c.opcode == OpCodes.Call || c.opcode == OpCodes.Callvirt)
                         && c.operand is MethodInfo target && Kind(target) >= 0)) continue;

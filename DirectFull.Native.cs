@@ -1,4 +1,4 @@
-#if DEV || AUTOTEST
+﻿#if DEV || AUTOTEST
 using System;
 using System.Runtime.InteropServices;
 using UnityEngine;
@@ -7,7 +7,7 @@ namespace StutterFix
 {
     internal static unsafe class DirectFullNative
     {
-        internal enum Op { Create, Program, Geometry, Draw, Commit, Event, Stats, Destroy, Error, Abi, Composite, Perf, CommitPacked }
+        internal enum Op { Create, Program, Geometry, Draw, Commit, Event, Stats, Destroy, Error, Abi, Composite, Perf, CommitPacked, CommitActive, BatchPerf, GeometryCpu, CommitActiveWorld }
         [StructLayout(LayoutKind.Sequential)] internal struct Performance { internal double ApplyUs, CullUs, ConstantsUs, DrawUs, ExecuteUs; internal ulong Uploads, UploadBytes, LayoutCreates, LayoutHits, SampledFrames; }
         [StructLayout(LayoutKind.Sequential)] internal struct Composite { internal IntPtr Black, White; }
         [StructLayout(LayoutKind.Sequential)] internal struct Abi { internal uint Version, Create, Program, Geometry, Draw, Frame, Stats, Pose; }
@@ -55,6 +55,9 @@ namespace StutterFix
             internal uint* DrawIds; internal uint* ConstantOffsets; internal byte* Constants; internal uint DirtyCount, ConstantBytes;
             internal uint* List; internal uint* Segments; internal uint ListCount, SegmentCount, ListChanged, ClearStencil;
         }
+        [StructLayout(LayoutKind.Sequential)] internal struct CpuGeometry { internal uint Geometry; internal void* Vertices; internal uint Count; internal uint* Indices; internal uint IndexCount; }
+        [StructLayout(LayoutKind.Sequential)] internal struct BatchPerformance { internal ulong Batches, Sources, Vertices, SingleDraws, LiveEdits, ConstantCreates; internal double BuildUs; internal ulong GpuDispatches, GpuPoseUploads, GpuGeometryUploads, GpuAvailable; }
+        [StructLayout(LayoutKind.Sequential)] internal struct FrameActive { internal Frame Frame; internal uint* Ids; internal byte* Values; internal uint Count; }
         [StructLayout(LayoutKind.Sequential)] internal struct Stats { internal ulong Frames, Draws, Errors, Dropped, Bytes, Events; internal double RenderUs, CommitUs; internal int LastHr; }
     }
 }
