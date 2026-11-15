@@ -15,9 +15,11 @@ namespace StutterFix
     internal static class DrProbe
     {
         static Camera main, pre; static int savedMask; static CommandBuffer cb; static readonly List<Renderer> cbOff = new List<Renderer>();
+        internal static bool Active => pre || cb != null;
         static void Log(string s) => Main.Entry.Logger.Log("[drx] " + s);
         internal static bool Step(string arg)
         {
+            if (DirectFull.Active) throw new InvalidOperationException("drx requires drfull off");
             var a = arg.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
             if (a.Length == 0) throw new ArgumentException("drx census|split on|off|cb on|off");
             switch (a[0])

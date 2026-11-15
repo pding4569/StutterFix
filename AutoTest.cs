@@ -273,6 +273,7 @@ namespace StutterFix
                 case "dr": return DirectRenderer.Step(arg);
                 case "drx": return DrProbe.Step(arg);
                 case "dr2": Log("[dr2] " + DirectDeco.Command(arg)); return true;
+                case "drfull": Log("[drfull] " + DirectFull.Command(arg)); return true;
                 case "coldopen": ColdOpenProbe.Step(arg); return true;
                 case "tightsprite": TightSpriteProbe.Step(arg); return true;
 #endif
@@ -1982,7 +1983,7 @@ namespace StutterFix
             TightSpriteProbe.Stop();
             TileRender.Shutdown();
             FrameCompare.Stop();
-            DirectRenderer.Stop(); DrProbe.Stop();
+            DirectRenderer.Stop(); DrProbe.Stop(); DirectFull.Stop();
 #endif
             if (finished) return;
             finished = true;
@@ -2018,7 +2019,7 @@ namespace StutterFix
             TightSpriteProbe.Stop();
             TileRender.Shutdown();
             FrameCompare.Stop();
-            DirectRenderer.Stop(); DrProbe.Stop();
+            DirectRenderer.Stop(); DrProbe.Stop(); DirectFull.Stop();
             MatShare.Stop();
             LiveDeco.Stop();
 #endif

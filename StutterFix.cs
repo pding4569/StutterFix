@@ -1033,6 +1033,7 @@ ParticleTextWatch.Install(harmony);
 
             Try(DirectRenderer.Stop);
             Try(DrProbe.Stop);
+            Try(DirectFull.Stop);
             Try(FreeFpsProbe.Restore);
 
             Try(TileSim.Shutdown);

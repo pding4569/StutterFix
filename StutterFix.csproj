@@ -43,6 +43,10 @@
     <Compile Include="DirectRenderVisibilityIndex.cs" />
     <Compile Include="DirectRenderer.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="DrProbe.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
+    <Compile Include="DirectFull.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
+    <Compile Include="DirectFull.Census.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
+    <Compile Include="DirectFull.MaskLease.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
+    <EmbeddedResource Include="effects/direct-full/shader-census.tsv" LogicalName="StutterFix.drfull.shader-census" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="StutterFix.cs" />
     <Compile Include="FillGeometry.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="FillCensus.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
