@@ -81,6 +81,7 @@ namespace StutterFix
         static int prepareOriginal;
         static readonly HashSet<Renderer> dormant = new HashSet<Renderer>();
         static readonly HashSet<Renderer> pendingPromotions = new HashSet<Renderer>();
+        static readonly HashSet<Canvas> pendingCanvasPromotions = new HashSet<Canvas>(); static long deadSources, canvasPromotions, hierarchyIncremental;
         static readonly List<Source> poseSources = new List<Source>();
         static NativeArray<N.Pose> uploadPoses;
         static bool transformsDirty;
@@ -195,7 +196,7 @@ namespace StutterFix
                 // Install managed write-site observers. Native Unity setters themselves
                 // are never patched. Existing game transforms/materials keep updating.
                 PromoteSources();
-                if (fullRescan) throw new InvalidOperationException("hierarchy changed during preparation; retry on stable map");
+                if (fullRescan) throw new InvalidOperationException("hierarchy changed during preparation; retry on stable map; why=" + rescanWhy + " count=" + rescanCount);
                 prepareStage = "publish";
                 BeginLease(main, removedMask, "StutterFix.DirectFull.Render");
                 ParkLiveCanvases();
@@ -212,7 +213,7 @@ namespace StutterFix
                 preparing = false;
                 LogCanvasSummary("on");
                 Log("FULL ON native=" + nativeCount + " unityExplicit=" + fallbackCount + " sources=" + sources.Count + " removedMask=" + removedMask + " retainedMask=" + retainedMask +
-                    " setup_ms=" + ((Stopwatch.GetTimestamp() - fullStartTicks) * 1000.0 / Stopwatch.Frequency).ToString("F2") + " originalDXBC=True parity=UNMEASURED");
+                    " setup_ms=" + ((Stopwatch.GetTimestamp() - fullStartTicks) * 1000.0 / Stopwatch.Frequency).ToString("F2") + " originalDXBC=True dead_sources={deadSources} canvas_promotions={canvasPromotions} hierarchy_incremental={hierarchyIncremental} rescans_marked={rescanCount} parity=UNMEASURED");
                 foreach (var pair in fallbackReasons) Log("fallback " + pair.Key + " count=" + pair.Value);
             }
         }
@@ -236,6 +237,7 @@ namespace StutterFix
                 if (r && dormant.Contains(r) && r.enabled && r.gameObject.activeInHierarchy && !r.forceRenderingOff)
                 { dormant.Remove(r); AddSource(r); }
             pendingPromotions.Clear();
+            if (pendingCanvasPromotions.Count != 0) PromoteCanvases();
         }
         static void BuildPoseTracking()
         {
@@ -267,12 +269,25 @@ namespace StutterFix
             if (!sourceIndex.TryGetValue(obj, out var list)) sourceIndex.Add(obj, list = new List<Source>());
             list.Add(s);
         }
+        static UnityEngine.Object rescanObj; static string rescanWriter, rescanWhy = ""; static long rescanCount;
+        static void MarkRescan(string site)
+        {
+            rescanCount++;
+            if (!fullRescan)
+            {
+                string name; try { name = rescanObj ? rescanObj.GetType().Name + ":" + rescanObj.name : (ReferenceEquals(rescanObj, null) ? "null" : "destroyed"); } catch { name = "?"; }
+                rescanWhy = site + " obj=" + name + " writer=" + rescanWriter;
+                if (rescanCount <= 20) Log("rescan " + rescanWhy);
+            }
+            fullRescan = true;
+        }
         static void Queue(Source s, bool tintOnly = false) { if (!s.Queued) { s.TintOnly = tintOnly; s.Queued = true; changed.Add(s); } else if (!tintOnly) s.TintOnly = false; }
         internal static void NotifyFull(UnityEngine.Object obj, int kind, string writer)
         {
+            rescanObj = obj; rescanWriter = writer;
             if (!rendering && !preparing) return;
             if (ReferenceEquals(obj, null)) return;
-            if (!obj) { if (sourceIndex.ContainsKey(obj) || canvasIndex.Contains(obj) || obj is Renderer dead && dormant.Contains(dead)) fullRescan = true; return; }
+            if (!obj) { if (sourceIndex.TryGetValue(obj, out var deadList)) { foreach (var ds in deadList) Queue(ds); return; } if (canvasIndex.Contains(obj)) MarkRescan("Render:dead-canvas"); return; }
             if (writer != null) { var key = (obj.GetType(), writer); signalWriters.TryGetValue(key, out long n); signalWriters[key] = n + 1; }
             NotifyCanvasWrite(obj, kind, writer);
             if (obj is Renderer wake && dormant.Contains(wake))
@@ -285,16 +300,21 @@ namespace StutterFix
                 foreach (var r in activeGo.GetComponentsInChildren<Renderer>(true))
                     if (dormant.Contains(r) && r.enabled && r.gameObject.activeInHierarchy && !r.forceRenderingOff) { pendingPromotions.Add(r); }
                 foreach (var c in activeGo.GetComponentsInChildren<Canvas>(true))
-                    if (dormantCanvases.Contains(c) && c.isActiveAndEnabled) { fullRescan = true; break; }
+                    if (dormantCanvases.Contains(c) && c.isActiveAndEnabled) pendingCanvasPromotions.Add(c);
             }
-            if (!obj) { if (sourceIndex.ContainsKey(obj) || canvasIndex.Contains(obj)) fullRescan = true; return; }
+            if (!obj) { if (sourceIndex.ContainsKey(obj) || canvasIndex.Contains(obj)) MarkRescan("Render:290"); return; }
             if (kind == DirectSequenceChanges.Hierarchy)
             {
-                if (sourceIndex.ContainsKey(obj) || canvasIndex.Contains(obj)) { fullRescan = true; return; }
+                if (canvasIndex.Contains(obj)) { MarkRescan("Render:293-canvas"); return; }
+                if (sourceIndex.TryGetValue(obj, out var moved0)) { foreach (var ms in moved0) { ms.GroupsDirty = true; Queue(ms); } orderDirty = true; transformsDirty = true; hierarchyIncremental++; }
                 var go = obj as GameObject; if (!go && obj is Component component) go = component.gameObject;
+                int mapMask = preparing ? prepareOriginal : lease.Original;
                 if (go) foreach (var r in go.GetComponentsInChildren<Renderer>(true))
-                    if (((preparing ? prepareOriginal : lease.Original) & 1 << r.gameObject.layer) != 0) { fullRescan = true; return; }
-                if (go) foreach (var c in go.GetComponentsInChildren<Canvas>(true)) if (Relevant(c, camera)) { fullRescan = true; break; }
+                    if ((mapMask & 1 << r.gameObject.layer) != 0 && r.gameObject.scene.IsValid() && !rendererSources.ContainsKey(r) && !dormant.Contains(r))
+                    { dormant.Add(r); if (r.enabled && r.gameObject.activeInHierarchy && !r.forceRenderingOff) pendingPromotions.Add(r); hierarchyIncremental++; }
+                if (go) foreach (var c in go.GetComponentsInChildren<Canvas>(true))
+                    if (Relevant(c, camera) && !dormantCanvases.Contains(c) && !canvasOwned.Contains(c.transform))
+                    { dormantCanvases.Add(c); if (c.isActiveAndEnabled) pendingCanvasPromotions.Add(c); hierarchyIncremental++; }
                 return;
             }
             if (obj is SortingGroup && sourceIndex.TryGetValue(obj, out var grouped)) { foreach (var s in grouped) { s.GroupsDirty = true; Queue(s); } orderDirty = true; return; }
@@ -308,8 +328,9 @@ namespace StutterFix
         internal static void NotifyFullGlobal() { if (rendering || preparing) globalsDirty = true; }
         internal static void BeforeFullWrite(UnityEngine.Object obj, int kind)
         {
+            rescanObj = obj; rescanWriter = "before:" + kind;
             if (rendering && kind == DirectSequenceChanges.Hierarchy && !ReferenceEquals(obj, null)
-                && (sourceIndex.ContainsKey(obj) || canvasIndex.Contains(obj) || obj is UnityEngine.Texture texture && texturePointers.ContainsKey(texture))) fullRescan = true;
+                && (sourceIndex.ContainsKey(obj) || canvasIndex.Contains(obj) || obj is UnityEngine.Texture texture && texturePointers.ContainsKey(texture))) MarkRescan("Render:312");
         }
         static void Refresh(Source s, bool initial)
         {
@@ -784,7 +805,7 @@ namespace StutterFix
                 if (stats.Errors != 0 || stats.Dropped != 0) throw new InvalidOperationException("native frame invalid errors=" + stats.Errors + " dropped=" + stats.Dropped + " hr=" + stats.LastHr.ToString("X8"));
                 if (sortSignature != SortSignature()) { sortSignature = SortSignature(); orderDirty = true; }
                 if (globalsDirty) { foreach (var s in sources) Queue(s); globalsDirty = false; }
-                foreach (var s in changed) { s.Queued = false; if (!s.R) fullRescan = true; else Refresh(s, false); } changed.Clear();
+                foreach (var s in changed) { s.Queued = false; if (!s.R) { if (s.Live) { s.Live = false; orderDirty = true; transformsDirty = true; } deadSources++; } else Refresh(s, false); } changed.Clear();
                 if (fullRescan) { RecreateFull(); return; }
                 if (transformsDirty) BuildPoseTracking();
                 collectTicks += Stopwatch.GetTimestamp() - phase; phase = Stopwatch.GetTimestamp();
@@ -793,7 +814,7 @@ namespace StutterFix
                 bool first = !haveNativeFrame;
                 poseCount = first ? poseSources.Count : 0;
                 if (first) for (int i = 0; i < poseCount; i++) { poseIds[i] = (uint)poseSources[i].Index; uploadPoses[i] = poses[i]; }
-                while (moved.TryDequeue(out int index)) { var s = poseSources[index]; if (!s.R) { fullRescan = true; continue; } if (!first) { poseIds[poseCount] = (uint)s.Index; uploadPoses[poseCount++] = poses[index]; } }
+                while (moved.TryDequeue(out int index)) { var s = poseSources[index]; if (!s.R) { transformsDirty = true; continue; } if (!first) { poseIds[poseCount] = (uint)s.Index; uploadPoses[poseCount++] = poses[index]; } }
                 if (fullRescan) { RecreateFull(); return; }
                 while (reordered.TryDequeue(out int index)) if (poseSources[index].R) { var source = poseSources[index]; if (source.Groups.Length != 0) orderDirty = true; UpdateKey(source); }
                 poseTicks += Stopwatch.GetTimestamp() - phase; phase = Stopwatch.GetTimestamp();
@@ -848,7 +869,7 @@ namespace StutterFix
             N.Stats s = default; N.Require(N.Op.Stats, fullToken, &s);
             N.Performance perf = default; N.Require(N.Op.Perf, fullToken, &perf);
             double phaseScale = 1e6 / Stopwatch.Frequency / Math.Max(1, fullFrames);
-            return FormattableString.Invariant($"mode=M4e-original active=True native={nativeCount} unityExplicit={fallbackCount} sources={sources.Count} dormant={dormant.Count} poseActive={poseSources.Count} removedMask={removedMask} retainedMask={retainedMask} frames={s.Frames} draws={s.Draws} errors={s.Errors} dropped={s.Dropped} main_us={(fullFrames != 0 ? fullTicks * 1e6 / Stopwatch.Frequency / fullFrames : 0):F3} main_max_us={fullMaxTicks * 1e6 / Stopwatch.Frequency:F3} render_us={s.RenderUs:F3} commit_us={s.CommitUs:F3} replans={orderBuilds} commit_max_us={commitMaxTicks * 1e6 / Stopwatch.Frequency:F3} replan_max_us={replanMaxTicks * 1e6 / Stopwatch.Frequency:F3} {CanvasState()} collect_us={collectTicks * phaseScale:F3} pose_us={poseTicks * phaseScale:F3} sort_us={sortTicks * phaseScale:F3} packet_us={packetTicks * phaseScale:F3} pose_uploads={poseCount} dirty_draws={dirtyCount} packet_bytes={constantCount} rt_apply_us={perf.ApplyUs:F3} rt_cull_us={perf.CullUs:F3} rt_constants_us={perf.ConstantsUs:F3} rt_draw_us={perf.DrawUs:F3} rt_execute_us={perf.ExecuteUs:F3} rt_uploads={perf.Uploads} rt_upload_bytes={perf.UploadBytes} layouts={perf.LayoutCreates} layout_hits={perf.LayoutHits} rt_sample_frames={perf.SampledFrames} avoided_mask_replans={avoidedMaskReplans} avoided_empty_replans={avoidedEmptyReplans} canvas_pose_signals={canvasPoseSignals} order_key_changes={orderKeyChanges} draw_rebinds={drawRebinds} prepare_slices={prepareSlices} prepare_max_ms={prepareMaxTicks * 1000.0 / Stopwatch.Frequency:F3} prepare_work_ms={prepareWorkTicks * 1000.0 / Stopwatch.Frequency:F3} parity=UNMEASURED");
+            return FormattableString.Invariant($"mode=M4e-original active=True native={nativeCount} unityExplicit={fallbackCount} sources={sources.Count} dormant={dormant.Count} poseActive={poseSources.Count} removedMask={removedMask} retainedMask={retainedMask} frames={s.Frames} draws={s.Draws} errors={s.Errors} dropped={s.Dropped} main_us={(fullFrames != 0 ? fullTicks * 1e6 / Stopwatch.Frequency / fullFrames : 0):F3} main_max_us={fullMaxTicks * 1e6 / Stopwatch.Frequency:F3} render_us={s.RenderUs:F3} commit_us={s.CommitUs:F3} replans={orderBuilds} commit_max_us={commitMaxTicks * 1e6 / Stopwatch.Frequency:F3} replan_max_us={replanMaxTicks * 1e6 / Stopwatch.Frequency:F3} {CanvasState()} collect_us={collectTicks * phaseScale:F3} pose_us={poseTicks * phaseScale:F3} sort_us={sortTicks * phaseScale:F3} packet_us={packetTicks * phaseScale:F3} pose_uploads={poseCount} dirty_draws={dirtyCount} packet_bytes={constantCount} rt_apply_us={perf.ApplyUs:F3} rt_cull_us={perf.CullUs:F3} rt_constants_us={perf.ConstantsUs:F3} rt_draw_us={perf.DrawUs:F3} rt_execute_us={perf.ExecuteUs:F3} rt_uploads={perf.Uploads} rt_upload_bytes={perf.UploadBytes} layouts={perf.LayoutCreates} layout_hits={perf.LayoutHits} rt_sample_frames={perf.SampledFrames} avoided_mask_replans={avoidedMaskReplans} avoided_empty_replans={avoidedEmptyReplans} canvas_pose_signals={canvasPoseSignals} order_key_changes={orderKeyChanges} draw_rebinds={drawRebinds} prepare_slices={prepareSlices} prepare_max_ms={prepareMaxTicks * 1000.0 / Stopwatch.Frequency:F3} prepare_work_ms={prepareWorkTicks * 1000.0 / Stopwatch.Frequency:F3} dead_sources={deadSources} canvas_promotions={canvasPromotions} hierarchy_incremental={hierarchyIncremental} rescans_marked={rescanCount} parity=UNMEASURED");
         }
         static string WhyReplan()
         {
@@ -874,7 +895,7 @@ namespace StutterFix
             foreach (var l in sourceLifetimes) if (l) { l.Changed = null; UnityEngine.Object.Destroy(l); }
             sourceLifetimes.Clear(); sources.Clear(); changed.Clear(); changedConstants.Clear(); ordered.Clear(); sourceIndex.Clear();
             geometryCache.Clear(); meshVersions.Clear(); programs.Clear(); texturePointers.Clear(); fallbackReasons.Clear();
-            rendererSources.Clear(); dormant.Clear(); pendingPromotions.Clear(); poseSources.Clear();
+            rendererSources.Clear(); dormant.Clear(); pendingPromotions.Clear(); pendingCanvasPromotions.Clear(); poseSources.Clear();
             if (uploadPoses.IsCreated) uploadPoses.Dispose();
             poseIds = dirtyIds = constantOffsets = drawList = segments = null; constantBytes = null;
             fullTarget = null;

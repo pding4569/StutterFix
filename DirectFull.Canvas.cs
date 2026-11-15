@@ -1,4 +1,4 @@
-#if DEV || AUTOTEST
+﻿#if DEV || AUTOTEST
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -251,13 +251,30 @@ namespace StutterFix
         static void NotifyCanvasWrite(UnityEngine.Object obj, int kind, string writer)
         {
             if (drawingAuxiliary) return;
-            if (obj is Canvas c && dormantCanvases.Contains(c) && c.isActiveAndEnabled) { fullRescan = true; return; }
+            if (obj is Canvas c && dormantCanvases.Contains(c) && c.isActiveAndEnabled) { pendingCanvasPromotions.Add(c); return; }
             if (canvasOwners.TryGetValue(obj, out var owners))
             {
                 if (obj is Transform && kind == DirectSequenceChanges.Pose) canvasPoseSignals++;
                 foreach (var u in owners) QueueCanvas(u);
-                if (kind == DirectSequenceChanges.Hierarchy) fullRescan = true;
+                if (kind == DirectSequenceChanges.Hierarchy) MarkRescan("Canvas:259");
             }
+        }
+        // 꺼져 있던 캔버스가 켜지면 전체를 다시 만들지 않고 그 캔버스만 단위로 올린다.
+        static void PromoteCanvases()
+        {
+            foreach (var c in pendingCanvasPromotions)
+            {
+                if (!c || !dormantCanvases.Contains(c) || !c.isActiveAndEnabled) continue;
+                dormantCanvases.Remove(c);
+                var u = new CanvasUnit { Canvas = c };
+                u.Signal = () => QueueCanvas(u); u.GraphicSignal = () => QueueCanvas(u); u.CullSignal = _ => QueueCanvas(u);
+                canvasUnits.Add(u); GatherCanvas(u, c.transform, true);
+                canvasGraphics += u.Graphics.Count; canvasInactiveGraphics += u.Graphics.Count;
+                IndexCanvasMaterials(u); u.Reason = CanvasReason(u); u.Isolated = PhysicsDependent(u);
+                foreach (var s in sources) if (s.R && !canvasRendererSources.Contains(s) && s.R.transform.IsChildOf(c.transform)) canvasRendererSources.Add(s);
+                canvasPromotions++; QueueCanvas(u);
+            }
+            pendingCanvasPromotions.Clear();
         }
         static void ReplanCanvases()
         {
@@ -265,7 +282,7 @@ namespace StutterFix
             foreach (var u in dirtyCanvases)
             {
                 u.Queued = false;
-                if (!u.Canvas) { fullRescan = true; continue; }
+                if (!u.Canvas) { MarkRescan("Canvas:268"); continue; }
                 bool active = u.Canvas.isActiveAndEnabled; int graphics = 0, potential = 0;
                 if (active) foreach (var cr in u.Graphics) if (LiveGraphic(cr)) { potential++; if (VisibleCanvasGraphic(cr, canvasPlanes)) graphics++; }
                 if (u.PotentialGraphics == 0 && potential != 0) potentialCanvases.Add(u);
