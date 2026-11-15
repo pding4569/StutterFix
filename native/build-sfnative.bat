@@ -19,6 +19,7 @@ set "PATH=%MSVC%\bin\Hostx64\x64;%~4;%PATH%"
 set "INCLUDE=%MSVC%\include;%SDKI%\ucrt;%SDKI%\um;%SDKI%\shared;%SDKI%\winrt"
 set "LIB=%MSVC%\lib\x64;%SDKL%\ucrt\x64;%SDKL%\um\x64"
 set "OUT=%TEMP%\sfnative_build"
+if defined SF_NATIVE_BUILD_DIR set "OUT=%SF_NATIVE_BUILD_DIR%"
 if not exist "%OUT%" mkdir "%OUT%"
 cd /d "%OUT%"
 ispc "%~dp0sfnative\sfdxt.ispc" -O2 --arch=x86-64 --target-os=windows --target=sse2-i32x4,sse4.1-i32x4,avx2-i32x8 --opt=disable-fma -o sfdxt.obj
@@ -29,11 +30,11 @@ cl /nologo /c /O2 /GL /MT /Brepro /W3 "%~dp0sfnative\sfnative.c" "%~dp0sfnative\
 if errorlevel 1 exit /b 1
 cl /nologo /c /std:c++17 /EHsc /O2 /MT /Brepro /W4 /WX "%~dp0sfnative\framegen.cpp"
 if errorlevel 1 exit /b 1
-cl /nologo /c /std:c++17 /EHsc /O2 /fp:strict /MT /Brepro /W4 /WX "%~dp0sfnative\direct_tracks.cpp" "%~dp0sfnative\direct_renderer.cpp" "%~dp0sfnative\dr2.cpp"
+cl /nologo /c /std:c++17 /EHsc /O2 /fp:strict /MT /Brepro /W4 /WX "%~dp0sfnative\direct_tracks.cpp" "%~dp0sfnative\direct_renderer.cpp" "%~dp0sfnative\dr2.cpp" "%~dp0sfnative\drfull.cpp"
 if errorlevel 1 exit /b 1
 cl /nologo /c /std:c++17 /O2 /fp:strict /arch:SSE2 /MT /Brepro /W4 /WX "%~dp0sfnative\decobatch.cpp"
 if errorlevel 1 exit /b 1
-link /nologo /DLL /LTCG /Brepro /DEF:"%~dp0sfnative\sfnative.def" /OUT:sfnative.dll sfnative.obj sfinflate.obj cpu_features.obj utils.obj sfdxt.obj sfdxt_sse2.obj sfdxt_sse4.obj sfdxt_avx2.obj sfmotion.obj sfmotion_sse2.obj sfmotion_sse4.obj sfmotion_avx2.obj sfmotion_avx512skx.obj framegen.obj decobatch.obj direct_tracks.obj direct_renderer.obj dr2.obj d3d11.lib dxgi.lib d3dcompiler.lib user32.lib
+link /nologo /DLL /LTCG /Brepro /DEF:"%~dp0sfnative\sfnative.def" /OUT:sfnative.dll sfnative.obj sfinflate.obj cpu_features.obj utils.obj sfdxt.obj sfdxt_sse2.obj sfdxt_sse4.obj sfdxt_avx2.obj sfmotion.obj sfmotion_sse2.obj sfmotion_sse4.obj sfmotion_avx2.obj sfmotion_avx512skx.obj framegen.obj decobatch.obj direct_tracks.obj direct_renderer.obj dr2.obj drfull.obj d3d11.lib dxgi.lib d3dcompiler.lib user32.lib
 if errorlevel 1 exit /b 1
 copy /y sfnative.dll "%~dp0sfnative.dll" >nul
 if errorlevel 1 exit /b 1

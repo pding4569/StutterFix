@@ -108,5 +108,14 @@ namespace StutterFix
         public static readonly Settings Config = new Settings();
         public static readonly EntryType Entry = new EntryType();
     }
-    internal static partial class DirectFull { static string Census() => "fixture-census-not-tested"; }
+    internal static partial class DirectFull
+    {
+        static string Census() => "fixture-census-not-tested";
+        internal static bool Rendering => false;
+        static void StartFull() => throw new InvalidOperationException("Native renderer is tested by the WARP fixture; this fixture tests the shared mask lease");
+        static void ReleaseFull() { }
+        static void FullPreCull() { }
+        static void AssertFull() => throw new InvalidOperationException("fixture native boundary");
+        static string FullState() => "fixture-native-not-tested";
+    }
 }

@@ -122,17 +122,19 @@ namespace StutterFix
                 Log("census slots=" + c.Total + " live=" + c.Live + " cameraVisible=" + c.CameraVisible + " " + pair.Key.Replace('\t', ' '));
             }
             File.WriteAllText(prefix + "-groups.tsv", summary.ToString(), new UTF8Encoding(false));
-            var shaderTable = new StringBuilder("shader\textractable\tvertexPrograms\tpixelPrograms\totherPrograms\trdefPrograms\tunityMetadata\tsource\n");
+            var originals = DirectFullShaders.Load();
+            var shaderTable = new StringBuilder("shader\textractable\tvertexPrograms\tpixelPrograms\totherPrograms\trdefPrograms\tunityMetadata\tsource\tverifiedOriginalVariants\n");
             foreach (string shader in usedShaders)
             {
                 string status = shaders.TryGetValue(shader, out string row) ? row : "UNKNOWN\t0\t0\t0\t0\tUNKNOWN\tmissing-from-offline-inventory";
-                shaderTable.Append(Clean(shader)).Append('\t').Append(status).Append('\n');
-                Log("census shader=" + Clean(shader) + " " + status.Replace('\t', ' ') + " variantBinding=UNVERIFIED");
+                int verified = 0; if (originals.TryGetValue(shader, out var originalShader)) foreach (var p in originalShader.Passes) verified += p.Variants.Length;
+                shaderTable.Append(Clean(shader)).Append('\t').Append(status).Append('\t').Append(verified).Append('\n');
+                Log("census shader=" + Clean(shader) + " " + status.Replace('\t', ' ') + " verifiedOriginalVariants=" + verified + " activeVariantPixelParity=UNMEASURED");
             }
             File.WriteAllText(prefix + "-shaders.tsv", shaderTable.ToString(), new UTF8Encoding(false));
             foreach (var layer in layers) Log("census layer=" + layer.Key + ":" + LayerMask.LayerToName(layer.Key) + " renderers=" + layer.Value + " removed=" + ((original & mapMask & (1 << layer.Key)) != 0));
             Log("census camera=" + main.name + " originalMask=" + original + " mapMask=" + mapMask + " removedLayers=" + LayerNames(original & mapMask) + " output=" + prefix);
-            return "census renderers=" + total + " affected=" + affected + " liveAffected=" + liveAffected + " knownMapOutsideRemovedLayers=" + mapOutside + " canvases=" + canvases + " spriteMasks=" + masks + " originalShaderRendering=UNIMPLEMENTED diagnostic-cost=exclude-from-bench";
+            return "census renderers=" + total + " affected=" + affected + " liveAffected=" + liveAffected + " knownMapOutsideRemovedLayers=" + mapOutside + " canvases=" + canvases + " spriteMasks=" + masks + " originalShaderRendering=M4c-available diagnostic-cost=exclude-from-bench";
         }
     }
 }

@@ -288,6 +288,9 @@ namespace StutterFix
         }
         internal static void BeforeSequenceWrite(UnityEngine.Object obj, int kind)
         {
+#if DEV || AUTOTEST
+            DirectFull.BeforeFullWrite(obj, kind);
+#endif
             // DestroyImmediate can make the post-write argument compare equal to null.
             if (!Active || !ProxyMode || !obj || kind != DirectSequenceChanges.Hierarchy) return;
             var go = obj as GameObject; if (!go && obj is Component component) go = component.gameObject;
@@ -296,6 +299,9 @@ namespace StutterFix
         }
         internal static void AfterSequenceWrite(UnityEngine.Object obj, int kind, string writer = null)
         {
+#if DEV || AUTOTEST
+            DirectFull.NotifyFull(obj, kind, writer);
+#endif
             if (!Active || !obj) return;
             if (obj is Renderer r)
             {

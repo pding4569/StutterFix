@@ -44,7 +44,11 @@ namespace StutterFix
 
         static bool Notify<T, A>(Binding b, T obj, A value) where T : UnityEngine.Object
         {
-            if (b.Read == null || !DirectDeco.Active) return true;
+            bool active = DirectDeco.Active;
+#if DEV || AUTOTEST
+            active |= DirectFull.Rendering;
+#endif
+            if (b.Read == null || !active) return true;
             A current;
             // On a destroyed object preserve the original writer's exception,
             // rather than replacing it with a new getter failure.
@@ -61,6 +65,7 @@ namespace StutterFix
             if (m == null || m.ContainsGenericParameters
                 || m.GetParameters().Any(p => p.ParameterType.IsByRef || p.ParameterType.IsPointer)) return -1;
             var t = m.DeclaringType; string n = m.Name;
+            if (t == typeof(Shader) && m.IsStatic && m.ReturnType == typeof(void) && (n.StartsWith("SetGlobal", StringComparison.Ordinal) || n == "EnableKeyword" || n == "DisableKeyword")) return Shape;
             if (t == typeof(UnityEngine.Object) && m.IsStatic && m.GetParameters().Length > 0)
             {
                 if ((n == "Destroy" || n == "DestroyImmediate") && m.ReturnType == typeof(void)) return Hierarchy;
@@ -80,12 +85,15 @@ namespace StutterFix
                     || n == "set_sortingLayerName" || n == "set_sortingOrder") return State;
                 if (n == "set_material" || n == "set_materials" || n == "set_sharedMaterial" || n == "SetMaterials" || n == "SetSharedMaterials"
                     || n == "set_sharedMaterials" || n == "SetPropertyBlock" || n == "set_sprite"
-                    || n == "set_flipX" || n == "set_flipY" || n == "set_drawMode" || n == "set_maskInteraction") return Shape;
+                    || n == "set_flipX" || n == "set_flipY" || n == "set_drawMode" || n == "set_maskInteraction" || n == "set_color") return Shape;
+                if (n == "set_additionalVertexStreams") return Shape;
                 if (n == "set_bounds" || n == "set_localBounds" || n == "ResetBounds" || n == "ResetLocalBounds"
                     || n == "set_spriteSortPoint" || n == "set_size") return Shape;
             }
             if (t == typeof(Material) && (n.StartsWith("Set", StringComparison.Ordinal) || n.StartsWith("set_", StringComparison.Ordinal)
                 || n == "EnableKeyword" || n == "DisableKeyword" || n == "CopyPropertiesFromMaterial")) return Shape;
+            if ((t == typeof(Mesh) || t == typeof(MeshFilter) || t == typeof(Texture) || t == typeof(RenderTexture))
+                && (n.StartsWith("Set", StringComparison.Ordinal) || n.StartsWith("set_", StringComparison.Ordinal) || n == "Clear" || n == "UploadMeshData" || n == "RecalculateBounds")) return Shape;
             if (t == typeof(GameObject) && (n == "SetActive" || n == "set_layer")) return State;
             if (t == typeof(Transform))
             {
@@ -129,6 +137,7 @@ namespace StutterFix
             while (type.DeclaringType != null) type = type.DeclaringType;
             string name = type.Name;
             return name.StartsWith("DirectDeco", StringComparison.Ordinal) || name == "DirectSequenceChanges"
+                || name.StartsWith("DirectFull", StringComparison.Ordinal)
                 || name.StartsWith("FrameCompare", StringComparison.Ordinal);
 
         }
@@ -145,7 +154,7 @@ namespace StutterFix
                 Type[] signature = (target.IsStatic ? Enumerable.Empty<Type>() : new[] { target.DeclaringType })
                     .Concat(target.GetParameters().Select(p => p.ParameterType))
                     .Concat(returns ? new[] { target.ReturnType } : Type.EmptyTypes).ToArray();
-                if (signature.Length > 5) throw new NotSupportedException("change writer arity: " + target);
+                if (signature.Length > 9) throw new NotSupportedException("change writer arity: " + target);
                 if (!bound.TryGetValue(target, out int id))
                 {
                     Type delegateType = returns ? System.Linq.Expressions.Expression.GetFuncType(signature)
@@ -153,7 +162,7 @@ namespace StutterFix
                     var binding = new Binding { Call = target.CreateDelegate(delegateType), Read = EqualityReader(target), Kind = kind, Writer = target.Name };
                     id = bindings.Count; bindings.Add(binding); bound.Add(target, id);
                 }
-                string name = target.IsStatic ? (returns ? "Spawn" : "Destroy") : returns ? "Add" : "Call";
+                string name = target.IsStatic ? (target.DeclaringType == typeof(Shader) ? "Global" : returns ? "Spawn" : "Destroy") : returns ? "Add" : "Call";
                 int arity = signature.Length - (target.IsStatic && !returns ? 0 : !target.IsStatic && returns ? 2 : 1);
                 var wrapper = typeof(DirectSequenceChanges).GetMethod(name + arity, AccessTools.all)
                     .MakeGenericMethod(signature);
@@ -172,6 +181,18 @@ namespace StutterFix
             var b = bindings[id]; DirectDeco.BeforeSequenceWrite(obj, b.Kind);
             ((Action<T>)b.Call)(obj); DirectDeco.AfterSequenceWrite(obj, b.Kind, b.Writer);
         }
+        static void GlobalChanged()
+        {
+#if DEV || AUTOTEST
+            DirectFull.NotifyFullGlobal();
+#endif
+        }
+        static void Global1<A>(A a, int id) { ((Action<A>)bindings[id].Call)(a); GlobalChanged(); }
+        static void Global2<A, B>(A a, B b, int id) { ((Action<A, B>)bindings[id].Call)(a, b); GlobalChanged(); }
+        static void Global3<A, B, C>(A a, B b, C c, int id) { ((Action<A, B, C>)bindings[id].Call)(a, b, c); GlobalChanged(); }
+        static void Global4<A, B, C, D>(A a, B b, C c, D d, int id) { ((Action<A, B, C, D>)bindings[id].Call)(a, b, c, d); GlobalChanged(); }
+        static void Global5<A, B, C, D, E>(A a, B b, C c, D d, E e, int id) { ((Action<A, B, C, D, E>)bindings[id].Call)(a, b, c, d, e); GlobalChanged(); }
+        static void Global6<A, B, C, D, E, F>(A a, B b, C c, D d, E e, F f, int id) { ((Action<A, B, C, D, E, F>)bindings[id].Call)(a, b, c, d, e, f); GlobalChanged(); }
         static void Call1<T, A>(T obj, A a, int id) where T : UnityEngine.Object
         {
             var b = bindings[id]; bool notify = Notify(b, obj, a);
@@ -194,6 +215,14 @@ namespace StutterFix
             var b = bindings[id]; DirectDeco.BeforeSequenceWrite(obj, b.Kind);
             ((Action<T, A, B, C, D>)b.Call)(obj, a, c, d, e); DirectDeco.AfterSequenceWrite(obj, b.Kind, b.Writer);
         }
+        static void Call5<T,A,B,C,D,E>(T obj,A a,B b,C c,D d,E e,int id) where T : UnityEngine.Object
+        { var x=bindings[id];DirectDeco.BeforeSequenceWrite(obj,x.Kind);((Action<T,A,B,C,D,E>)x.Call)(obj,a,b,c,d,e);DirectDeco.AfterSequenceWrite(obj,x.Kind,x.Writer); }
+        static void Call6<T,A,B,C,D,E,F>(T obj,A a,B b,C c,D d,E e,F f,int id) where T : UnityEngine.Object
+        { var x=bindings[id];DirectDeco.BeforeSequenceWrite(obj,x.Kind);((Action<T,A,B,C,D,E,F>)x.Call)(obj,a,b,c,d,e,f);DirectDeco.AfterSequenceWrite(obj,x.Kind,x.Writer); }
+        static void Call7<T,A,B,C,D,E,F,G>(T obj,A a,B b,C c,D d,E e,F f,G g,int id) where T : UnityEngine.Object
+        { var x=bindings[id];DirectDeco.BeforeSequenceWrite(obj,x.Kind);((Action<T,A,B,C,D,E,F,G>)x.Call)(obj,a,b,c,d,e,f,g);DirectDeco.AfterSequenceWrite(obj,x.Kind,x.Writer); }
+        static void Call8<T,A,B,C,D,E,F,G,H>(T obj,A a,B b,C c,D d,E e,F f,G g,H h,int id) where T : UnityEngine.Object
+        { var x=bindings[id];DirectDeco.BeforeSequenceWrite(obj,x.Kind);((Action<T,A,B,C,D,E,F,G,H>)x.Call)(obj,a,b,c,d,e,f,g,h);DirectDeco.AfterSequenceWrite(obj,x.Kind,x.Writer); }
         static R Spawn1<A, R>(A original, int id) where A : UnityEngine.Object where R : UnityEngine.Object
         {
             var b = bindings[id]; DirectDeco.BeforeSequenceWrite(original, b.Kind);

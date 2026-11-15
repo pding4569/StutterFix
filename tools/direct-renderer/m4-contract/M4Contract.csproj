@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><EnableDefaultCompileItems>false</EnableDefaultCompileItems><AllowUnsafeBlocks>true</AllowUnsafeBlocks><DefineConstants>DEV</DefineConstants></PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Program.cs"/><Compile Include="Stubs.cs"/>
+    <Compile Include="../../../DirectFull.Shaders.cs" Link="DirectFull.Shaders.cs"/>
+    <Compile Include="../../../DirectFull.Native.cs" Link="DirectFull.Native.cs"/>
+    <EmbeddedResource Include="../../../effects/direct-full/original-shaders.bin" LogicalName="StutterFix.drfull.original"/>
+  </ItemGroup>
+</Project>

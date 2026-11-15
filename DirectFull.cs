@@ -7,8 +7,7 @@ using UnityEngine.SceneManagement;
 
 namespace StutterFix
 {
-    // M4a only: removes camera work; deliberately draws nothing. No native/proxy
-    // submissions, renderer suppression, script disabling or GameObject layer moves.
+    // M4a ceiling and M4c original-shader rendering share one reversible mask lease.
     internal sealed class DirectFullLifetime : MonoBehaviour
     {
         void Update() { DirectFull.CheckLease(); }
@@ -41,10 +40,11 @@ namespace StutterFix
                 case "off": case "ceil off": Stop("command off"); return State();
                 case "state": return State();
                 case "census": return Census();
-                case "assert ceil": CheckLease(); if (!Active) throw new InvalidOperationException("drfull INVALID: ceiling lease not active"); return "assert ceil PASS";
+                case "assert ceil": CheckLease(); if (!Active || Rendering) throw new InvalidOperationException("drfull INVALID: ceiling lease not active"); return "assert ceil PASS";
+                case "assert on": CheckLease(); if (!Active || !Rendering) throw new InvalidOperationException("drfull INVALID: full renderer not active"); AssertFull(); return "assert on PASS";
                 case "assert off": CheckLease(); if (Active) throw new InvalidOperationException("drfull INVALID: ceiling lease still active"); return "assert off PASS";
-                case "on": throw new InvalidOperationException("drfull on unavailable: M4a ceiling only; original-shader rendering is not implemented");
-                default: throw new ArgumentException("drfull ceil|off|state|census");
+                case "on": StartFull(); return State();
+                default: throw new ArgumentException("drfull on|ceil|off|state|census|assert on|assert off");
             }
         }
 
@@ -62,6 +62,7 @@ namespace StutterFix
 
         static void StartCeiling()
         {
+            if (Rendering) Stop("switch full to ceiling");
             if (Active) { CheckLease(); if (Active) return; }
             // Explicit control starts from Unity's camera path. Never silently change
             // the caller's renderer configuration to manufacture a ceiling result.
@@ -78,8 +79,18 @@ namespace StutterFix
                         throw new InvalidOperationException("drfull: competing command buffer " + e.name);
             try
             {
-                camera = main;
-                lease.Begin(main.cullingMask, removed);
+                BeginLease(main, removed, "StutterFix.DirectFull.Ceiling");
+                Log("CEILING ON draws=0 originalMask=" + lease.Original + " removedMask=" + (lease.Original & lease.Removed) +
+                    " currentMask=" + main.cullingMask + " layers=" + LayerNames(lease.Original & lease.Removed) +
+                    " target=" + (main.targetTexture ? main.targetTexture.width + "x" + main.targetTexture.height : "screen") +
+                    " diagnostic=blank-map-render-only scripts=unchanged physics=unchanged");
+            }
+            catch { Stop("activation failed"); throw; }
+        }
+
+        static void BeginLease(Camera main, int removed, string objectName)
+        {
+                camera = main; lease.Begin(main.cullingMask, removed);
                 hooks = new Harmony(Owner);
                 foreach (var pair in new[] {
                     (typeof(scrController), "Restart"), (typeof(scrController), "ResetCustomLevel"), (typeof(scrController), "QuitToMainMenu"),
@@ -95,17 +106,11 @@ namespace StutterFix
                 SceneManager.sceneUnloaded += SceneUnloaded;
                 Camera.onPreCull += PreCull;
                 subscribed = true;
-                lifetime = new GameObject("StutterFix.DirectFull.Ceiling");
+                lifetime = new GameObject(objectName);
                 UnityEngine.Object.DontDestroyOnLoad(lifetime);
                 driver = lifetime.AddComponent<DirectFullLifetime>();
                 main.cullingMask = lease.Expected;
                 startedFrame = Time.frameCount; startedAt = Time.realtimeSinceStartupAsDouble; cameraFrames = 0;
-                Log("CEILING ON draws=0 originalMask=" + lease.Original + " removedMask=" + (lease.Original & lease.Removed) +
-                    " currentMask=" + main.cullingMask + " layers=" + LayerNames(lease.Original & lease.Removed) +
-                    " target=" + (main.targetTexture ? main.targetTexture.width + "x" + main.targetTexture.height : "screen") +
-                    " diagnostic=blank-map-render-only scripts=unchanged physics=unchanged");
-            }
-            catch { Stop("activation failed"); throw; }
         }
 
         static string LayerNames(int mask)
@@ -117,7 +122,7 @@ namespace StutterFix
         static void Ending(System.Reflection.MethodBase __originalMethod) => Stop(__originalMethod.Name);
         static void SceneChanged(Scene a, Scene b) => Stop("active scene changed");
         static void SceneUnloaded(Scene scene) { if (Active) Stop("scene unloaded"); }
-        static void PreCull(Camera c) { if (Active && c == camera) { CheckLease(); if (Active) cameraFrames++; } }
+        static void PreCull(Camera c) { if (Active && c == camera) { CheckLease(); if (Active) { cameraFrames++; if (Rendering) FullPreCull(); } } }
         internal static void LifetimeEnded(DirectFullLifetime source)
         {
             // Destroy is deferred. A previous lease's callback must not stop a
@@ -137,13 +142,15 @@ namespace StutterFix
         internal static void Stop(string reason)
         {
             bool wasActive = Active;
+            bool wasFull = Rendering;
             int original = lease.Original;
             bool cameraAlive = wasActive && camera;
             int restoredMask = 0;
             // A destroyed camera uses Unity's fake-null semantics. Never write to it.
-            try { if (cameraAlive) { camera.cullingMask = original; restoredMask = camera.cullingMask; } }
+            try { ReleaseFull(); }
             finally
             {
+                if (cameraAlive) { camera.cullingMask = original; restoredMask = camera.cullingMask; }
                 lease.Clear(); camera = null;
                 if (subscribed)
                 {
@@ -159,14 +166,15 @@ namespace StutterFix
                     var oldLifetime = lifetime; lifetime = null; driver = null;
                     if (oldLifetime) UnityEngine.Object.Destroy(oldLifetime);
                 }
-                if (wasActive) Log("CEILING OFF originalMask=" + original + " cameraAlive=" + cameraAlive + " restoredMask=" + restoredMask + " reason=" + reason);
+                if (wasActive) Log((wasFull ? "FULL" : "CEILING") + " OFF originalMask=" + original + " cameraAlive=" + cameraAlive + " restoredMask=" + restoredMask + " reason=" + reason);
             }
         }
 
         static string State()
         {
             CheckLease();
-            if (!Active) return "mode=off active=False originalShaderRendering=unavailable";
+            if (!Active) return "mode=off active=False originalShaderRendering=available";
+            if (Rendering) return FullState();
             double seconds = Time.realtimeSinceStartupAsDouble - startedAt;
             return FormattableString.Invariant($"mode=M4a-ceiling active=True draws=0 originalMask={lease.Original} removedMask={lease.Original & lease.Removed} currentMask={camera.cullingMask} frames={Time.frameCount - startedFrame} cameraFrames={cameraFrames} elapsed_s={seconds:F3} mean_fps={(seconds > 0 ? (Time.frameCount - startedFrame) / seconds : 0):F3} scope=since-ceil-includes-warmup-use-cpuwindow-for-bench");
         }

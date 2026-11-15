@@ -74,3 +74,4 @@ EXPORTS
     sf_dr2_commit @71
     sf_dr2_event @72
     sf_dr2_stat @73
+    sf_z_drfull_v1 @74
