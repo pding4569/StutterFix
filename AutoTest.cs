@@ -101,8 +101,23 @@ namespace StutterFix
                 new Harmony(Main.Entry.Info.Id).Patch(endMethod,
                     prefix: new HarmonyMethod(typeof(AutoTest), nameof(MissionEndPrefix)) { priority = Priority.First },
                     finalizer: new HarmonyMethod(typeof(AutoTest), nameof(MissionEndFinalizer)) { priority = Priority.Last });
+            // 측정 PC 에서 Steam 계정을 쓰지 않고 exe 로 바로 켤 때(같은 계정으로 다른 컴퓨터에서 게임 중): 모드 폴더에 nosteam.txt 가 있으면
+            // SteamClient.Init 이 실패하게 한다. 게임 SteamController.Init 은 이 실패를 잡고 그대로 이어 간다(원래 Steam 없이 켜졌을 때와 같은 길).
+            // 모드는 Steam 초기화보다 먼저 로드된다(Player.log: Loading mods → Startup: Initialize Steam SDK).
+            if (System.IO.File.Exists(System.IO.Path.Combine(modPath, "nosteam.txt")))
+            {
+                var sc = AccessTools.TypeByName("Steamworks.SteamClient");
+                int n = 0;
+                if (sc != null) foreach (var m in sc.GetMethods(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static))
+                    if (m.Name == "Init") { new Harmony(Main.Entry.Info.Id).Patch(m, prefix: new HarmonyMethod(typeof(AutoTest), nameof(NoSteamInit))); n++; }
+                Main.Entry.Logger.Log("[자동 시험] nosteam.txt: Steam 연결 건너뜀 (SteamClient.Init " + n + "개)");
+            }
 #endif
         }
+
+#if AUTOTEST
+        public static bool NoSteamInit() { throw new InvalidOperationException("StutterFix 자동 시험: nosteam.txt 로 Steam 연결을 건너뜀"); }
+#endif
 
 #if AUTOTEST
         // 완주 전환 때 한 번만 측정. Main.Unload의 기존 Harmony ID 해제에 포함된다.
