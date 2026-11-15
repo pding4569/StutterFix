@@ -495,6 +495,28 @@ struct Renderer {
         for(size_t i=0;i<d.buffers.size();i++)if(std::memcmp(&d.buffers[i].binding,&other->buffers[i].binding,sizeof(Buffer))){uploadPerf.singleConstants++;return;}
         uploadPerf.singleTextures++;
     }
+    // Grab 복사 범위: 그 draw 의 월드 경계 상자 8 꼭짓점을 화면에 투영한 사각형(+4px). 원래 BlendModes 셰이더는 자기 화면 위치의
+    // grab 텍셀만 읽으므로 그 밖은 읽지 않는다. 투영 방향(위아래 뒤집힘)을 모르므로 두 방향의 합집합. 불확실하면 전체 복사(false).
+    bool grabRect(DrawCall& d,UINT width,UINT height,D3D11_BOX& box){
+        worldBounds(d);
+        if(d.extent[0]==0&&d.extent[1]==0&&d.extent[2]==0)return false;
+        float x0=1e30f,y0=1e30f,x1=-1e30f,y1=-1e30f;const float* m=frame.vp;
+        for(int k=0;k<8;k++){
+            float w[3];for(int i=0;i<3;i++)w[i]=d.worldCenter[i]+((k>>i)&1?d.worldExtent[i]:-d.worldExtent[i]);
+            float c[4];for(int r=0;r<4;r++)c[r]=m[r]*w[0]+m[4+r]*w[1]+m[8+r]*w[2]+m[12+r];
+            if(!(c[3]>1e-6f)||!std::isfinite(c[0])||!std::isfinite(c[1]))return false;
+            float nx=c[0]/c[3],ny=c[1]/c[3];x0=std::min(x0,nx);x1=std::max(x1,nx);y0=std::min(y0,ny);y1=std::max(y1,ny);
+        }
+        float px0=(x0*.5f+.5f)*width-4,px1=(x1*.5f+.5f)*width+4;
+        float a0=(y0*.5f+.5f)*height,a1=(y1*.5f+.5f)*height;            // y 위 방향
+        float b0=height-a1,b1=height-a0;                                    // y 아래 방향
+        float py0=std::min(a0,b0)-4,py1=std::max(a1,b1)+4;
+        if(px1<=0||py1<=0||px0>=float(width)||py0>=float(height)){box={0,0,0,1,1,1};return true;}
+        box.left=UINT(std::max(0.f,std::floor(px0)));box.right=UINT(std::min(float(width),std::ceil(px1)));
+        box.top=UINT(std::max(0.f,std::floor(py0)));box.bottom=UINT(std::min(float(height),std::ceil(py1)));box.front=0;box.back=1;
+        if(box.right<=box.left||box.bottom<=box.top){box={0,0,0,1,1,1};}
+        return true;
+    }
     bool outsideWorld(const float* center,const float* extent) const {
         for(int plane=0;plane<6;plane++){
             const float* p=frustum[plane];
@@ -865,13 +887,13 @@ struct Renderer {
                     if(d.grabId==1||grab.frame!=stats.frames){
                         ComPtr<ID3D11Resource> resource;rtv->GetResource(&resource);ComPtr<ID3D11Texture2D> source;check(resource.As(&source));D3D11_TEXTURE2D_DESC td{};source->GetDesc(&td);require(td.SampleDesc.Count==1&&td.ArraySize==1);
                         D3D11_RENDER_TARGET_VIEW_DESC vd{};rtv->GetDesc(&vd);require(vd.ViewDimension==D3D11_RTV_DIMENSION_TEXTURE2D&&vd.Texture2D.MipSlice==0);
-                        if(!grab.texture||td.Width!=grab.desc.Width||td.Height!=grab.desc.Height||td.Format!=grab.desc.Format||vd.Format!=grab.format){grab.desc=td;grab.format=vd.Format;grab.texture.Reset();grab.view.Reset();td.BindFlags=D3D11_BIND_SHADER_RESOURCE;td.Usage=D3D11_USAGE_DEFAULT;td.CPUAccessFlags=0;td.MiscFlags=0;memoryDirty=true;check(device->CreateTexture2D(&td,nullptr,&grab.texture));D3D11_SHADER_RESOURCE_VIEW_DESC sv{};sv.Format=vd.Format;sv.ViewDimension=D3D11_SRV_DIMENSION_TEXTURE2D;sv.Texture2D.MipLevels=td.MipLevels;check(device->CreateShaderResourceView(grab.texture.Get(),&sv,&grab.view));}
+                        if(!grab.texture||td.Width!=grab.desc.Width||td.Height!=grab.desc.Height||td.Format!=grab.desc.Format||vd.Format!=grab.format){grab.desc=td;grab.format=vd.Format;grab.texture.Reset();grab.view.Reset();td.BindFlags=D3D11_BIND_SHADER_RESOURCE;td.Usage=D3D11_USAGE_DEFAULT;td.CPUAccessFlags=0;td.MiscFlags=0;memoryDirty=true;check(device->CreateTexture2D(&td,nullptr,&grab.texture));grab.texture->SetEvictionPriority(DXGI_RESOURCE_PRIORITY_MAXIMUM);D3D11_SHADER_RESOURCE_VIEW_DESC sv{};sv.Format=vd.Format;sv.ViewDimension=D3D11_SRV_DIMENSION_TEXTURE2D;sv.Texture2D.MipLevels=td.MipLevels;check(device->CreateShaderResourceView(grab.texture.Get(),&sv,&grab.view));}
                         ID3D11ShaderResourceView* nil[128]{};dc->VSSetShaderResources(0,128,nil);dc->PSSetShaderResources(0,128,nil);boundVsViews.fill(nullptr);boundPsViews.fill(nullptr);dc->OMSetRenderTargets(0,nullptr,nullptr);
-                        if(!resourceConfiguration.skipGrab){dc->CopyResource(grab.texture.Get(),source.Get());gpuPerf.grabCopies++;}else resourcePerf.grabSkips++;
+                        D3D11_BOX gbox{};bool gpartial=d.grabId==1&&grabRect(d,td.Width,td.Height,gbox);if(!resourceConfiguration.skipGrab){if(gpartial)dc->CopySubresourceRegion(grab.texture.Get(),0,gbox.left,gbox.top,0,source.Get(),0,&gbox);else dc->CopyResource(grab.texture.Get(),source.Get());gpuPerf.grabCopies++;}else resourcePerf.grabSkips++;
                         dc->OMSetRenderTargets(1,&rt,dsv.Get());grab.frame=stats.frames;
                         // camRT formats accepted here are 32/64/128-bit color formats.
                         UINT pixelBytes=(td.Format==DXGI_FORMAT_R32G32B32A32_FLOAT||td.Format==DXGI_FORMAT_R32G32B32A32_TYPELESS)?16u:(td.Format==DXGI_FORMAT_R16G16B16A16_FLOAT||td.Format==DXGI_FORMAT_R16G16B16A16_TYPELESS||td.Format==DXGI_FORMAT_R16G16B16A16_UNORM)?8u:4u;
-                        if(!resourceConfiguration.skipGrab)gpuPerf.grabBytes+=uint64_t(td.Width)*td.Height*pixelBytes;
+                        if(!resourceConfiguration.skipGrab)gpuPerf.grabBytes+=gpartial?uint64_t(gbox.right-gbox.left)*(gbox.bottom-gbox.top)*pixelBytes:uint64_t(td.Width)*td.Height*pixelBytes;
                     }else gpuPerf.namedGrabHits++;
                 }
                 drawProbe.grabbed(dc,measured);
