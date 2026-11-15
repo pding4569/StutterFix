@@ -40,11 +40,8 @@ DXGI_FORMAT format(DXGI_FORMAT f,bool srgb) {
     default:return f;
     }
 }
-D3D11_BLEND blend(int x) {
-    static const D3D11_BLEND table[]={D3D11_BLEND_ZERO,D3D11_BLEND_ONE,D3D11_BLEND_DEST_COLOR,D3D11_BLEND_SRC_COLOR,D3D11_BLEND_INV_DEST_COLOR,D3D11_BLEND_SRC_ALPHA,D3D11_BLEND_INV_SRC_COLOR,D3D11_BLEND_DEST_ALPHA,D3D11_BLEND_INV_DEST_ALPHA,D3D11_BLEND_SRC_ALPHA_SAT,D3D11_BLEND_INV_SRC_ALPHA};
-    require(x>=0&&x<11);return table[x];
-}
-D3D11_STENCIL_OP stencil(int x) { static const D3D11_STENCIL_OP t[]={D3D11_STENCIL_OP_KEEP,D3D11_STENCIL_OP_ZERO,D3D11_STENCIL_OP_REPLACE,D3D11_STENCIL_OP_INCR_SAT,D3D11_STENCIL_OP_DECR_SAT,D3D11_STENCIL_OP_INVERT,D3D11_STENCIL_OP_INCR,D3D11_STENCIL_OP_DECR};require(x>=0&&x<8);return t[x]; }
+#include "drfull-state.h"
+using unityState::blend;using unityState::stencil;
 struct Shader {
     ComPtr<ID3D11VertexShader> vs;ComPtr<ID3D11PixelShader> ps;std::vector<uint8_t> signature;
     ComPtr<ID3D11BlendState> blendState;ComPtr<ID3D11DepthStencilState> depth;ComPtr<ID3D11RasterizerState> raster;UINT stencilRef=0;
@@ -67,7 +64,7 @@ struct ConstantStorage {
     ComPtr<ID3D11Buffer> buffer;std::vector<uint8_t> uploaded;bool ready=false;
     bool dependenciesReady=false,inputReady=false,materialDirty=false;uint32_t dependencies=0;
     uint64_t poseEpoch=0,cameraEpoch=0,timeEpoch=0,colorEpoch=0;
-    uint64_t evaluatedFrame=UINT64_MAX,ringSerial=0;UINT ringOffset=0;
+    uint64_t evaluatedFrame=UINT64_MAX,ringSerial=0,visited=0;UINT ringOffset=0;
 };
 struct Constants { Buffer binding;std::shared_ptr<ConstantStorage> storage,batchStorage;std::vector<uint8_t> material;bool privateMaterial=false; };
 struct DrawCall {
@@ -86,6 +83,7 @@ void multiply(float* out,const float* a,const float* b) {
 }
 #include "drfull-timeline.h"
 #include "drfull-memory.h"
+#include "drfull-draw-probe.h"
 struct Renderer {
     int token=0;uint32_t capacity;
     ComPtr<ID3D11Device> device;ComPtr<ID3D11DeviceContext> context,deferred;
@@ -109,7 +107,7 @@ struct Renderer {
     struct GrabSurface {ComPtr<ID3D11Texture2D> texture;ComPtr<ID3D11ShaderResourceView> view;D3D11_TEXTURE2D_DESC desc{};DXGI_FORMAT format=DXGI_FORMAT_UNKNOWN;uint64_t frame=0;};
     std::map<uint32_t,GrabSurface> grabSurfaces;
     GpuPerformance gpuPerf{};double gpuSum=0;
-    GpuTimeline timeline;
+    GpuTimeline timeline;DrawGpuProbe drawProbe;
     GpuMemory memory;
     bool memoryDirty=true;
     uint64_t memoryFrame=UINT64_MAX;
@@ -143,7 +141,7 @@ struct Renderer {
     std::shared_ptr<Shader> compositor;
     Performance perf{};BatchPerformance batchPerf{};UploadPerformance uploadPerf{};bool profile=false;
     ComPtr<ID3D11Buffer> constantRing;UINT constantRingCapacity=0;
-    std::vector<uint8_t> ringData,ringResident;uint64_t ringSerial=0;
+    std::vector<uint8_t> ringData;uint64_t ringSerial=1,ringVisit=0;UINT ringHead=0;
     bool ringActive=false;
     std::vector<uint8_t> live;std::vector<uint64_t> poseVersions;std::vector<uint32_t> batchEnds;bool batchesDirty=true;
     struct RunBounds {float center[3]{},extent[3]{};uint64_t epoch=UINT64_MAX;UINT end=0;bool bounded=false,any=false;};
@@ -226,12 +224,12 @@ struct Renderer {
             D3D_FEATURE_LEVEL level=device->GetFeatureLevel(),selected{};
             if(SUCCEEDED(device1->CreateDeviceContextState(0,&level,1,D3D11_SDK_VERSION,__uuidof(ID3D11Device),&selected,&isolatedState)))submission.immediateAvailable=1;
             D3D11_FEATURE_DATA_D3D11_OPTIONS options{};
-            if(SUCCEEDED(device->CheckFeatureSupport(D3D11_FEATURE_D3D11_OPTIONS,&options,sizeof(options)))&&options.ConstantBufferOffsetting)submission.ringAvailable=1;
+            if(SUCCEEDED(device->CheckFeatureSupport(D3D11_FEATURE_D3D11_OPTIONS,&options,sizeof(options)))&&options.ConstantBufferOffsetting&&options.MapNoOverwriteOnDynamicConstantBuffer)submission.ringAvailable=1;
         }
         recording=deferred.Get();
         memory.init(device.Get());
         for(auto& t:timings){D3D11_QUERY_DESC q{D3D11_QUERY_TIMESTAMP_DISJOINT,0};check(device->CreateQuery(&q,&t.disjoint));q.Query=D3D11_QUERY_TIMESTAMP;check(device->CreateQuery(&q,&t.start));check(device->CreateQuery(&q,&t.end));}
-        ringData.reserve(size_t(capacity)*512);ringResident.reserve(size_t(capacity)*512);
+        ringData.reserve(size_t(capacity)*512);
         poseDraws.resize(capacity);poseMarked.resize(capacity);drawMarked.resize(size_t(capacity)*8);dirtyPoses.reserve(capacity);dirtyDraws.reserve(size_t(capacity)*8);
         orderRanges.reserve(size_t(capacity)*4);orderOffsets.reserve(size_t(capacity)*4+1);
         live.resize(capacity,1);poseVersions.resize(capacity);runBounds.reserve(size_t(capacity)*4);batchEnds.reserve(size_t(capacity)*4);batchVertices.resize(batchLimit);batchItems.reserve(size_t(capacity)*4);colorVersions.reserve(size_t(capacity)*8);poses.reserve(capacity);gpuPoses.reserve(capacity);gpuDraws.reserve(size_t(capacity)*8);vertexOffsets.reserve(size_t(capacity)*4+1);localVertices.reserve(size_t(capacity)*6);
@@ -270,15 +268,14 @@ struct Renderer {
         auto s=std::make_shared<Shader>();require(in.vs&&in.ps&&in.vsBytes>=32&&in.psBytes>=32);
         const auto* v=static_cast<const uint8_t*>(in.vs);s->signature.assign(v,v+in.vsBytes);
         check(device->CreateVertexShader(in.vs,in.vsBytes,nullptr,&s->vs));check(device->CreatePixelShader(in.ps,in.psBytes,nullptr,&s->ps));
-        const int32_t* a=in.state;D3D11_BLEND_DESC b{};b.AlphaToCoverageEnable=a[13]!=0;auto& rt=b.RenderTarget[0];
-        rt.BlendEnable=a[0]!=1||a[1]!=0||a[2]!=1||a[3]!=0;rt.SrcBlend=blend(a[0]);rt.DestBlend=blend(a[1]);rt.SrcBlendAlpha=blend(a[2]);rt.DestBlendAlpha=blend(a[3]);
-        require(a[4]>=0&&a[4]<=4&&a[5]>=0&&a[5]<=4);rt.BlendOp=D3D11_BLEND_OP(a[4]+1);rt.BlendOpAlpha=D3D11_BLEND_OP(a[5]+1);{int m=a[6];/* Unity ColorWriteMask: A=1 B=2 G=4 R=8, D3D11: R=1 G=2 B=4 A=8 */rt.RenderTargetWriteMask=UINT8(((m&8)?1:0)|((m&4)?2:0)|((m&2)?4:0)|((m&1)?8:0));}check(device->CreateBlendState(&b,&s->blendState));
-        D3D11_DEPTH_STENCIL_DESC dd{};dd.DepthEnable=a[8]!=0;dd.DepthWriteMask=a[9]?D3D11_DEPTH_WRITE_MASK_ALL:D3D11_DEPTH_WRITE_MASK_ZERO;
-        // Unity reverses Z on D3D11; convert Less/Greater and their inclusive forms.
-        int z=a[8];if(z==2)z=5;else if(z==5)z=2;else if(z==4)z=7;else if(z==7)z=4;
-        dd.DepthFunc=z?D3D11_COMPARISON_FUNC(z):D3D11_COMPARISON_ALWAYS;
+        const int32_t* a=in.state;D3D11_BLEND_DESC b{};b.AlphaToCoverageEnable=unityState::boolean(a[13]);auto& rt=b.RenderTarget[0];
+        rt.BlendEnable=a[0]!=1||a[1]!=0||a[2]!=1||a[3]!=0||a[4]!=0||a[5]!=0;rt.SrcBlend=blend(a[0]);rt.DestBlend=blend(a[1]);rt.SrcBlendAlpha=unityState::blendAlpha(a[2]);rt.DestBlendAlpha=unityState::blendAlpha(a[3]);
+        rt.BlendOp=unityState::blendOp(a[4]);rt.BlendOpAlpha=unityState::blendOp(a[5]);rt.RenderTargetWriteMask=unityState::colorMask(a[6]);check(device->CreateBlendState(&b,&s->blendState));
+        D3D11_DEPTH_STENCIL_DESC dd{};dd.DepthEnable=a[8]!=0;dd.DepthWriteMask=unityState::boolean(a[9])?D3D11_DEPTH_WRITE_MASK_ALL:D3D11_DEPTH_WRITE_MASK_ZERO;
+        dd.DepthFunc=unityState::compare(a[8],true); // reversed depth, never stencil
+        require(a[14]>=0&&a[14]<=255&&a[15]>=0&&a[15]<=255&&a[16]>=0&&a[16]<=255);
         dd.StencilReadMask=UINT8(a[14]);dd.StencilWriteMask=UINT8(a[15]);s->stencilRef=UINT(a[16]);
-        auto face=[&](int off){D3D11_DEPTH_STENCILOP_DESC d{};d.StencilPassOp=stencil(a[off]);d.StencilFailOp=stencil(a[off+1]);d.StencilDepthFailOp=stencil(a[off+2]);d.StencilFunc=a[off+3]?D3D11_COMPARISON_FUNC(a[off+3]):D3D11_COMPARISON_ALWAYS;return d;};
+        auto face=[&](int off){D3D11_DEPTH_STENCILOP_DESC d{};d.StencilPassOp=stencil(a[off]);d.StencilFailOp=stencil(a[off+1]);d.StencilDepthFailOp=stencil(a[off+2]);d.StencilFunc=unityState::compare(a[off+3]);return d;};
         // Serialized front/back defaults do not override ShaderLab's unified
         // Stencil block. Non-default per-face descriptions override it.
         auto useCommon=[&](int off){return a[off]==0&&a[off+1]==0&&a[off+2]==0&&a[off+3]==8;};
@@ -286,8 +283,8 @@ struct Renderer {
         auto enabled=[](const D3D11_DEPTH_STENCILOP_DESC& f){return f.StencilFunc!=D3D11_COMPARISON_ALWAYS||f.StencilPassOp!=D3D11_STENCIL_OP_KEEP||f.StencilFailOp!=D3D11_STENCIL_OP_KEEP||f.StencilDepthFailOp!=D3D11_STENCIL_OP_KEEP;};
         dd.StencilEnable=enabled(dd.FrontFace)||enabled(dd.BackFace);
         check(device->CreateDepthStencilState(&dd,&s->depth));
-        D3D11_RASTERIZER_DESC rd{};rd.FillMode=D3D11_FILL_SOLID;require(a[10]>=0&&a[10]<=2);rd.CullMode=a[10]==0?D3D11_CULL_NONE:a[10]==1?D3D11_CULL_FRONT:D3D11_CULL_BACK;
-        rd.FrontCounterClockwise=FALSE;rd.DepthClipEnable=a[7]!=0;rd.SlopeScaledDepthBias=-float(a[11])/1000000.f;rd.DepthBias=-a[12];check(device->CreateRasterizerState(&rd,&s->raster));
+        D3D11_RASTERIZER_DESC rd{};rd.FillMode=D3D11_FILL_SOLID;rd.CullMode=unityState::cull(a[10]);
+        rd.FrontCounterClockwise=FALSE;rd.DepthClipEnable=unityState::boolean(a[7]);rd.SlopeScaledDepthBias=-float(a[11])/1000000.f;rd.DepthBias=-a[12];check(device->CreateRasterizerState(&rd,&s->raster));
         shaders.push_back(s);return int(shaders.size());
     }
     int composite(const CompositeIn& in) {
@@ -369,14 +366,14 @@ struct Renderer {
             for(const auto& patch:d->patches)if(patch.offset>=c.binding.offset&&patch.offset<c.binding.offset+c.binding.bytes)std::memset(c.material.data()+patch.offset-c.binding.offset,0,patch.kind<=7?64:16);
             d->buffers.push_back(std::move(c));
         }
-        for(unsigned i=0;i<in.textureCount;i++){const auto& t=in.textures[i];require((t.resource||t.srgb<0)&&t.stage<2&&t.slot>=0&&t.slot<128&&t.sampler<16);Sample s{};s.stage=t.stage;s.slot=t.slot;s.samplerSlot=t.sampler;s.grab=t.srgb<0;s.grabId=s.grab?uint32_t(-t.srgb):0;if(s.grab)grabSurfaces.try_emplace(s.grabId);
+        for(unsigned i=0;i<in.textureCount;i++){const auto& t=in.textures[i];require((t.resource||t.srgb<0)&&t.stage>=0&&t.stage<2&&t.slot>=0&&t.slot<128&&t.sampler>=-1&&t.sampler<16);Sample s{};s.stage=t.stage;s.slot=t.slot;s.samplerSlot=t.sampler;s.grab=t.srgb<0;s.grabId=s.grab?uint32_t(-t.srgb):0;if(s.grab)grabSurfaces.try_emplace(s.grabId);
             if(!s.grab){auto* tex=static_cast<ID3D11Texture2D*>(t.resource);D3D11_TEXTURE2D_DESC td{};tex->GetDesc(&td);require(td.ArraySize==1&&td.SampleDesc.Count==1);
             auto key=std::make_pair(t.resource,t.srgb);auto found=textureViews.find(key);
             if(found!=textureViews.end())s.view=found->second;
             else {D3D11_SHADER_RESOURCE_VIEW_DESC sd{};sd.Format=format(td.Format,t.srgb!=0);sd.ViewDimension=D3D11_SRV_DIMENSION_TEXTURE2D;sd.Texture2D.MipLevels=td.MipLevels;check(device->CreateShaderResourceView(tex,&sd,&s.view));textureViews.emplace(key,s.view);}
             }
-            D3D11_SAMPLER_DESC sm{};sm.Filter=t.filter==0?D3D11_FILTER_MIN_MAG_MIP_POINT:t.aniso>1?D3D11_FILTER_ANISOTROPIC:t.filter==2?D3D11_FILTER_MIN_MAG_MIP_LINEAR:D3D11_FILTER_MIN_MAG_LINEAR_MIP_POINT;
-            auto addr=[](int x){return x==0?D3D11_TEXTURE_ADDRESS_WRAP:x==1?D3D11_TEXTURE_ADDRESS_CLAMP:x==2?D3D11_TEXTURE_ADDRESS_MIRROR:D3D11_TEXTURE_ADDRESS_MIRROR_ONCE;};sm.AddressU=addr(t.wrapU);sm.AddressV=addr(t.wrapV);sm.AddressW=D3D11_TEXTURE_ADDRESS_CLAMP;sm.MaxAnisotropy=UINT(std::clamp(t.aniso,1,16));sm.MaxLOD=D3D11_FLOAT32_MAX;auto key=std::make_tuple(t.filter,t.wrapU,t.wrapV,t.aniso);auto found=samplers.find(key);
+            D3D11_SAMPLER_DESC sm{};sm.Filter=unityState::filter(t.filter,t.aniso);
+            sm.AddressU=unityState::address(t.wrapU);sm.AddressV=unityState::address(t.wrapV);sm.AddressW=D3D11_TEXTURE_ADDRESS_CLAMP;sm.MaxAnisotropy=UINT(std::clamp(t.aniso,1,16));sm.MaxLOD=D3D11_FLOAT32_MAX;auto key=std::make_tuple(t.filter,t.wrapU,t.wrapV,t.aniso);auto found=samplers.find(key);
             if(found!=samplers.end())s.sampler=found->second;else {check(device->CreateSamplerState(&sm,&s.sampler));samplers.emplace(key,s.sampler);}d->textures.push_back(s);
         }
         if(d->batchable) {
@@ -684,37 +681,49 @@ struct Renderer {
         c.inputReady=true;c.materialDirty=false;c.poseEpoch=poseVersions[d.pose];c.cameraEpoch=cameraEpoch;c.timeEpoch=timeEpoch;c.colorEpoch=colorVersions[id];
     }
     void prepareConstants(UINT first,UINT count) {
-        ringData.clear();ringSerial++;
+        // Persistent offsets survive frames/segments. Append only changed values;
+        // NO_OVERWRITE never touches bytes referenced by an earlier GPU draw.
+        // A bounded arena rotates with DISCARD, lazily relocating live constants.
+        ringData.clear();ringVisit++;
         for(UINT i=first;i<first+count;i++){
             UINT id=list[i]-1;auto& d=*draws[id];if(d.composite||!live[d.pose])continue;
             bool batched=gpuBatch&&d.batchable&&std::min(first+count,batchEnds[i])>i+1;
             if(batched)i=std::min(first+count,batchEnds[i])-1;
             for(auto& binding:d.buffers){
                 auto& c=*(batched?binding.batchStorage:binding.storage);const auto& b=binding.binding;
-                if(c.ringSerial==ringSerial)continue;
+                if(c.visited==ringVisit)continue;c.visited=ringVisit;
+                bool changed=false;
                 if(c.evaluatedFrame!=stats.frames){
                     if(constantsChanged(c,d,b,batched,id)){
-                        patch(d,b,batched);std::memcpy(c.uploaded.data(),d.bytes.data()+b.offset,b.bytes);rememberConstants(c,d,id);timeline.perf.constantEvaluations++;
+                        patch(d,b,batched);changed=!c.ready||std::memcmp(c.uploaded.data(),d.bytes.data()+b.offset,b.bytes)!=0;
+                        std::memcpy(c.uploaded.data(),d.bytes.data()+b.offset,b.bytes);c.ready=true;rememberConstants(c,d,id);timeline.perf.constantEvaluations++;
                     }else timeline.perf.constantReuses++;
                     c.evaluatedFrame=stats.frames;
                 }else timeline.perf.constantReuses++;
-                c.ringOffset=UINT(ringData.size());c.ringSerial=ringSerial;
+                if(!changed&&c.ringSerial==ringSerial)continue;
+                c.ringOffset=ringHead+UINT(ringData.size());c.ringSerial=ringSerial;
                 size_t aligned=(size_t(b.bytes)+255)&~size_t(255);ringData.resize(ringData.size()+aligned);
-                std::memcpy(ringData.data()+c.ringOffset,c.uploaded.data(),b.bytes);
+                std::memcpy(ringData.data()+c.ringOffset-ringHead,c.uploaded.data(),b.bytes);
             }
         }
-        if(ringData.empty()||ringData==ringResident)return;
-        require(ringData.size()<=UINT32_MAX-255);
-        if(!constantRing||constantRingCapacity<ringData.size()){
-            constantRingCapacity=UINT((ringData.size()+255)&~size_t(255));constantRing.Reset();D3D11_BUFFER_DESC b{};
-            b.ByteWidth=constantRingCapacity;b.Usage=D3D11_USAGE_DYNAMIC;b.BindFlags=D3D11_BIND_CONSTANT_BUFFER;b.CPUAccessFlags=D3D11_CPU_ACCESS_WRITE;
-            check(device->CreateBuffer(&b,nullptr,&constantRing));memoryDirty=true;
+        if(ringData.empty())return;
+        if(!constantRing||ringData.size()>constantRingCapacity-ringHead){
+            size_t worst=0;
+            for(UINT i=first;i<first+count;i++)for(const auto& b:draws[list[i]-1]->buffers)worst+=(size_t(b.binding.bytes)+255)&~size_t(255);
+            require(worst<=UINT32_MAX-255);
+            if(!constantRing||worst>constantRingCapacity){
+                constantRingCapacity=UINT(std::max(size_t(8*1024*1024),(worst+255)&~size_t(255)));
+                constantRing.Reset();D3D11_BUFFER_DESC b{};b.ByteWidth=constantRingCapacity;
+                b.Usage=D3D11_USAGE_DYNAMIC;b.BindFlags=D3D11_BIND_CONSTANT_BUFFER;b.CPUAccessFlags=D3D11_CPU_ACCESS_WRITE;
+                check(device->CreateBuffer(&b,nullptr,&constantRing));memoryDirty=true;
+            }
+            ringHead=0;ringSerial++;prepareConstants(first,count);return;
         }
-        D3D11_MAPPED_SUBRESOURCE mapped{};check(recording->Map(constantRing.Get(),0,D3D11_MAP_WRITE_DISCARD,0,&mapped));
-        std::memcpy(mapped.pData,ringData.data(),ringData.size());recording->Unmap(constantRing.Get(),0);
+        D3D11_MAPPED_SUBRESOURCE mapped{};check(recording->Map(constantRing.Get(),0,ringHead?D3D11_MAP_WRITE_NO_OVERWRITE:D3D11_MAP_WRITE_DISCARD,0,&mapped));
+        std::memcpy(static_cast<uint8_t*>(mapped.pData)+ringHead,ringData.data(),ringData.size());recording->Unmap(constantRing.Get(),0);
         perf.uploads++;perf.uploadBytes+=ringData.size();uploadPerf.constantBytes+=ringData.size();uploadPerf.constantUploads++;
         submission.ringMaps++;submission.ringBytes+=ringData.size();
-        ringResident=ringData;
+        ringHead+=UINT(ringData.size());
     }
     void render(unsigned segment) {
         const double start=now();Timing* timing=nullptr;
@@ -727,6 +736,7 @@ struct Renderer {
         try {
             if(segment==0){profile=stats.frames%64==0;if(profile)perf.sampledFrames++;const double at=profile?now():0;const uint64_t r=read.load(std::memory_order_relaxed);require(r!=write.load(std::memory_order_acquire));auto& p=ring[r%ring.size()];apply(p);read.store(r+1,std::memory_order_release);if(profile)perf.applyUs+=now()-at;}
             require(size_t(segment)*2+1<segs.size());
+            if(segment==0)drawProbe.ordinal=0; // also for an empty leading segment
             UINT first=segs[segment*2],count=segs[segment*2+1];require(first+count<=list.size());
             // An empty boundary still consumes segment zero's packet, but does
             // not snapshot/restore the pipeline or execute an empty command list.
@@ -743,10 +753,12 @@ struct Renderer {
             if(immediate){if(timing)context->Begin(timing->disjoint.Get());timeline.mark(compositeOnly?6u:4u);timelineOpen=true;submission.immediateSegments++;}
             else submission.deferredSegments++;
             const double recordStart=now();
+            if(drawProbe.config.enabled&&segment==0&&stats.frames%drawProbe.config.interval==0)memory.sample();
+            drawProbe.begin(context.Get(),dc,stats.frames,segment);
             if(timing)dc->End(timing->start.Get());prepareGpu();
             // Use offset bindings only on immediate contexts. Old deferred drivers
             // can drop offset-only changes; the reference path keeps legacy CBs.
-            ringActive=immediate&&configuration.constantRing&&submission.ringAvailable;
+            ringActive=immediate&&configuration.constantRing&&submission.ringAvailable&&gpuBatch;
             if(ringActive){double at=profile?now():0;prepareConstants(first,count);if(profile)perf.constantsUs+=now()-at;}
             std::array<ID3D11Buffer*,14> boundVs{},boundPs{};
             std::array<ConstantStorage*,14> boundVsStorage{},boundPsStorage{};Shader* boundShader=nullptr;
@@ -785,6 +797,8 @@ struct Renderer {
                     if(outsideWorld(d.worldCenter,extent)){gpuPerf.culledDraws++;gpuPerf.culledSources++;if(d.grab)timeline.perf.culledGrabs++;if(profile)perf.cullUs+=now()-cullStart;continue;}
                 }
                 if(profile)perf.cullUs+=now()-cullStart;const double constantsStart=profile?now():0;
+                bool measured=false;if(drawProbe.config.enabled){DrawProbeRow probeRow{};probeRow.frame=stats.frames;probeRow.segment=segment;probeRow.draw=list[batchFirst];probeRow.first=batchFirst;probeRow.count=i+1-batchFirst;probeRow.indices=batched?UINT(batchVertexCount):g.indexCount;probeRow.usage=memory.perf.currentUsage;probeRow.budget=memory.perf.currentBudget;
+                measured=drawProbe.before(dc,probeRow);}
                 if(d.grab){
                     timeline.perf.visibleGrabs++;
                     auto& grab=grabSurfaces.at(d.grabId);
@@ -845,8 +859,9 @@ struct Renderer {
                     if(previous!=v){previous=v;if(t.stage==0)dc->VSSetShaderResources(UINT(t.slot),1,&v);else dc->PSSetShaderResources(UINT(t.slot),1,&v);}
                     if(t.samplerSlot>=0){auto& prior=t.stage==0?boundVsSamplers[t.samplerSlot]:boundPsSamplers[t.samplerSlot];if(prior!=sm){prior=sm;if(t.stage==0)dc->VSSetSamplers(UINT(t.samplerSlot),1,&sm);else dc->PSSetSamplers(UINT(t.samplerSlot),1,&sm);}}
                 }
-                if(batched){if(gpuBatch)dc->DrawIndexed(UINT(batchVertexCount),batchStart,0);else dc->Draw(UINT(batchVertexCount),0);}else{dc->DrawIndexed(g.indexCount,g.indexStart,g.baseVertex);batchPerf.singleDraws++;countSingle(i,first,first+count,d);}stats.draws++;if(profile)perf.drawUs+=now()-drawStart;
+                if(batched){if(gpuBatch)dc->DrawIndexed(UINT(batchVertexCount),batchStart,0);else dc->Draw(UINT(batchVertexCount),0);}else{dc->DrawIndexed(g.indexCount,g.indexStart,g.baseVertex);batchPerf.singleDraws++;countSingle(i,first,first+count,d);}stats.draws++;drawProbe.after(dc,measured);if(profile)perf.drawUs+=now()-drawStart;
             }
+            drawProbe.finish(context.Get(),dc,true);
             if(timing)dc->End(timing->end.Get());
             submission.recordUs+=now()-recordStart;
             const double executeStart=profile?now():0;
@@ -855,10 +870,12 @@ struct Renderer {
                 if(timing)context->Begin(timing->disjoint.Get());
                 timeline.mark(compositeOnly?6u:4u);timelineOpen=true;context->ExecuteCommandList(command.Get(),TRUE);
             }
+            drawProbe.submitted(context.Get());
             timeline.mark(7);timelineOpen=false;
             endGpu(timing);timing=nullptr;if(profile)perf.executeUs+=now()-executeStart;
-        }catch(HRESULT hr){stats.errors++;stats.lastHR=hr;if(!immediate){deferred->ClearState();ComPtr<ID3D11CommandList> discard;deferred->FinishCommandList(FALSE,&discard);}}
-        catch(...){stats.errors++;stats.lastHR=E_FAIL;}
+        }catch(HRESULT hr){ringSerial++;ringHead=0;stats.errors++;stats.lastHR=hr;if(!immediate){deferred->ClearState();ComPtr<ID3D11CommandList> discard;deferred->FinishCommandList(FALSE,&discard);}}
+        catch(...){ringSerial++;ringHead=0;stats.errors++;stats.lastHR=E_FAIL;}
+        if(drawProbe.active){drawProbe.active->valid=false;drawProbe.submitted(context.Get());}
         if(timelineOpen)timeline.mark(7);
         if(timing)endGpu(timing);
         state.restore();
@@ -907,6 +924,21 @@ extern "C" intptr_t __cdecl sf_z_drfull_v1(int op,int token,const void* args) no
         if(op==drfull::Stats){*const_cast<drfull::Statistics*>(static_cast<const drfull::Statistics*>(args))=r->snapshot();return 1;}
         std::lock_guard<std::mutex> lock(r->mutex);
         if(op==drfull::Configure){require(args&&r->stats.events==0);auto c=*static_cast<const drfull::Configuration*>(args);require(c.submission<=1&&c.constantRing<=1);r->configuration=c;return 1;}
+        if(op==drfull::DrawProbeConfigure){
+            require(args&&r->stats.events==0);auto c=*static_cast<const drfull::DrawProbeConfiguration*>(args);
+            require(c.enabled<=1&&c.count>0&&c.count<=DrawGpuProbe::limit&&c.interval>0&&c.first<=UINT32_MAX-c.count);
+            r->drawProbe.config=c;if(c.enabled)r->drawProbe.init(r->device.Get());return 1;
+        }
+        if(op==drfull::DrawProbeRead){require(args);r->drawProbe.read(*const_cast<drfull::DrawProbeReadback*>(static_cast<const drfull::DrawProbeReadback*>(args)));return 1;}
+        if(op==drfull::TextureProbe){
+            require(args);auto& q=*const_cast<drfull::TextureProbeInfo*>(static_cast<const drfull::TextureProbeInfo*>(args));require(q.draw>0&&q.draw<=r->draws.size());
+            const auto& textures=r->draws[q.draw-1]->textures;q.total=UINT(textures.size());if(q.index>=q.total)return 1;
+            const auto& t=textures[q.index];auto* view=t.grab?r->grabSurfaces.at(t.grabId).view.Get():t.view.Get();
+            q.stage=UINT(t.stage);q.slot=UINT(t.slot);q.samplerSlot=UINT(t.samplerSlot);
+            if(view){D3D11_SHADER_RESOURCE_VIEW_DESC v{};view->GetDesc(&v);q.viewFormat=v.Format;q.mostDetailedMip=v.Texture2D.MostDetailedMip;q.viewMips=v.Texture2D.MipLevels;
+                ComPtr<ID3D11Resource> resource;view->GetResource(&resource);ComPtr<ID3D11Texture2D> texture;check(resource.As(&texture));D3D11_TEXTURE2D_DESC d{};texture->GetDesc(&d);q.width=d.Width;q.height=d.Height;q.mips=d.MipLevels;q.resourceFormat=d.Format;}
+            D3D11_SAMPLER_DESC sm{};t.sampler->GetDesc(&sm);q.filter=sm.Filter;q.wrapU=sm.AddressU;q.wrapV=sm.AddressV;q.aniso=sm.MaxAnisotropy;q.mipBias=sm.MipLODBias;q.minLod=sm.MinLOD;q.maxLod=sm.MaxLOD;return 1;
+        }
         if(op==drfull::SubmissionPerf){*const_cast<drfull::SubmissionPerformance*>(static_cast<const drfull::SubmissionPerformance*>(args))=r->submission;return 1;}
         if(op==drfull::MemoryPerf){r->sampleMemory();*const_cast<drfull::MemoryPerformance*>(static_cast<const drfull::MemoryPerformance*>(args))=r->memory.perf;return 1;}
         if(op==drfull::TimelinePerf){*const_cast<drfull::TimelinePerformance*>(static_cast<const drfull::TimelinePerformance*>(args))=r->timeline.perf;return 1;}

@@ -7,7 +7,22 @@ namespace StutterFix
 {
     internal static unsafe class DirectFullNative
     {
-        internal enum Op { Create, Program, Geometry, Draw, Commit, Event, Stats, Destroy, Error, Abi, Composite, Perf, CommitPacked, CommitActive, BatchPerf, GeometryCpu, CommitActiveWorld, UploadPerf, GpuPerf, TimelineEvent, TimelinePerf, MemoryPerf, Configure, SubmissionPerf }
+        internal enum Op { Create, Program, Geometry, Draw, Commit, Event, Stats, Destroy, Error, Abi, Composite, Perf, CommitPacked, CommitActive, BatchPerf, GeometryCpu, CommitActiveWorld, UploadPerf, GpuPerf, TimelineEvent, TimelinePerf, MemoryPerf, Configure, SubmissionPerf, DrawProbeConfigure, DrawProbeRead, TextureProbe }
+        [StructLayout(LayoutKind.Sequential)] internal struct DrawProbeConfiguration { internal uint Enabled, First, Count, Interval; }
+        [StructLayout(LayoutKind.Sequential)] internal struct DrawProbeRow
+        {
+            internal ulong Frame, Usage, Budget; internal double Us, SegmentUs;
+            internal uint Segment, Ordinal, Draw, First, Count, Indices;
+        }
+        [StructLayout(LayoutKind.Sequential)] internal struct DrawProbeReadback
+        {
+            internal uint Index, Total; internal ulong Pending, Skipped, Invalid, Overflow; internal DrawProbeRow Row;
+        }
+        [StructLayout(LayoutKind.Sequential)] internal struct TextureProbeInfo
+        {
+            internal uint Draw, Index, Total, Stage, Slot, SamplerSlot, Width, Height, Mips, ResourceFormat, ViewFormat, MostDetailedMip, ViewMips, Filter, WrapU, WrapV, Aniso;
+            internal float MipBias, MinLod, MaxLod;
+        }
         [StructLayout(LayoutKind.Sequential)] internal struct Configuration { internal uint Submission, ConstantRing; }
         [StructLayout(LayoutKind.Sequential)] internal struct SubmissionPerformance
         {

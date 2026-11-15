@@ -126,6 +126,15 @@ int main(int argc,char** argv){try{
         auto event=reinterpret_cast<void(__stdcall*)(int)>(sf_z_drfull_v1(Event,0,nullptr));event(token<<16);
         Statistics stats{};dispatch(Stats,token,&stats);require(stats.frames==1&&stats.draws==segs[1]&&stats.errors==0,"original shader did not draw");
         auto original=readback(device.Get(),context.Get(),target.Get());
+        if(caseIndex==0){
+            TextureProbeInfo info{};info.draw=UINT(drawId);dispatch(TextureProbe,token,&info);require(info.total==tex.size(),"texture probe count");
+            for(UINT ti=0;ti<info.total;ti++){info.index=ti;dispatch(TextureProbe,token,&info);const auto& inputTexture=tex[ti];bool grabTexture=inputTexture.srgb<0;
+                require(info.width==(grabTexture?192u:8u)&&info.height==(grabTexture?128u:8u)&&info.mips==1&&info.viewMips==1&&info.mostDetailedMip==0&&info.resourceFormat==28&&info.viewFormat==28,"texture probe SRV metadata");
+                require(info.filter==UINT(inputTexture.filter?0x14:0)&&info.wrapU==UINT(inputTexture.wrapU?3:1)&&info.aniso<=1&&info.minLod==0&&info.maxLod==D3D11_FLOAT32_MAX,"texture probe sampler metadata");
+            }
+            std::cout<<"PASS M4j texture-probe dimensions_mips_formats_sampler=True\n";
+        }
+
         // Independently compiled reference binds by names/own layout, never original
         // cbuffer slots or variable offsets. External VB route tests submesh/baseVertex.
         auto refVs=compile(argv[2],"vertex","vs_4_0",floor,snap,point),refPs=compile(argv[2],"pixel","ps_4_0",floor,snap,point);

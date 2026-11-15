@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Text;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -13,6 +14,47 @@ namespace StutterFix
     {
         static bool skipExplicit, allExplicitPasses, localPrecision;
         static bool deferredSubmission, legacyConstants;
+        static N.DrawProbeConfiguration drawProbeConfig = new N.DrawProbeConfiguration { Count = 256, Interval = 64 };
+        static string SafePath(Transform t) { string path = t.name; for (t = t.parent; t; t = t.parent) path = t.name + "/" + path; return Clean(path); }
+        static string DrawGpuCommand(string arg)
+        {
+            if (arg == "dump")
+            {
+                if (!Rendering) throw new InvalidOperationException("drawgpu dump requires on");
+                N.DrawProbeReadback q = new N.DrawProbeReadback { Index = uint.MaxValue }; N.Require(N.Op.DrawProbeRead, fullToken, &q);
+                string prefix = Path.Combine(Main.Entry.Path, "drfull-drawgpu-" + DateTime.UtcNow.ToString("yyyyMMdd-HHmmss-fff"));
+                var rows = new StringBuilder("frame\tsegment\tordinal\tdraw\tfirst_list\tsources\tindices\tgpu_us\tsegment_us\tusage\tbudget\n");
+                var ids = new HashSet<uint>();
+                for (uint i = 0; i < q.Total; i++)
+                {
+                    q.Index = i; N.Require(N.Op.DrawProbeRead, fullToken, &q); var r = q.Row; ids.Add(r.Draw);
+                    rows.AppendLine(FormattableString.Invariant($"{r.Frame}\t{r.Segment}\t{r.Ordinal}\t{r.Draw}\t{r.First}\t{r.Count}\t{r.Indices}\t{r.Us:R}\t{r.SegmentUs:R}\t{r.Usage}\t{r.Budget}"));
+                }
+                var textures = new StringBuilder("draw\ttexture_index\tstage\tslot\tsampler_slot\tpath\tshader\ttexture\tunity_width\tunity_height\tunity_filter\tunity_wrapU\tunity_wrapV\tunity_aniso\tunity_srgb\twidth\theight\tmips\tresource_format\tsrv_format\tmost_detailed_mip\tview_mips\tfilter\twrapU\twrapV\taniso\tmip_bias\tmin_lod\tmax_lod\n");
+                foreach (uint id in ids)
+                {
+                    Bound bound = null;
+                    foreach (var source in sources) if (source.Passes != null) foreach (var b in source.Passes) if (b.NativeId == id) bound = b;
+                    N.TextureProbeInfo t = new N.TextureProbeInfo { Draw = id }; N.Require(N.Op.TextureProbe, fullToken, &t);
+                    for (uint j = 0; j < t.Total; j++)
+                    {
+                        t.Index = j; N.Require(N.Op.TextureProbe, fullToken, &t);
+                        var tex = bound != null && j < bound.TextureObjects.Length ? bound.TextureObjects[j] : null;
+                        textures.AppendLine(FormattableString.Invariant($"{id}\t{j}\t{t.Stage}\t{t.Slot}\t{t.SamplerSlot}\t{(bound != null ? SafePath(bound.Source.R.transform) : "retired-or-composite")}\t{bound?.Shader?.Name}\t{tex?.name}\t{(tex ? tex.width : 0)}\t{(tex ? tex.height : 0)}\t{(tex ? (int)tex.filterMode : -1)}\t{(tex ? (int)tex.wrapModeU : -1)}\t{(tex ? (int)tex.wrapModeV : -1)}\t{(tex ? tex.anisoLevel : -1)}\t{(tex && tex.isDataSRGB)}\t{t.Width}\t{t.Height}\t{t.Mips}\t{t.ResourceFormat}\t{t.ViewFormat}\t{t.MostDetailedMip}\t{t.ViewMips}\t{t.Filter}\t{t.WrapU}\t{t.WrapV}\t{t.Aniso}\t{t.MipBias:R}\t{t.MinLod:R}\t{t.MaxLod:R}"));
+                    }
+                }
+                File.WriteAllText(prefix + ".tsv", rows.ToString(), new UTF8Encoding(false));
+                File.WriteAllText(prefix + "-textures.tsv", textures.ToString(), new UTF8Encoding(false));
+                return FormattableString.Invariant($"drawgpu rows={q.Total} pending={q.Pending} skipped={q.Skipped} invalid={q.Invalid} overwritten_rows={q.Overflow} first={drawProbeConfig.First} count={drawProbeConfig.Count} interval={drawProbeConfig.Interval} output={prefix} quality_aniso={QualitySettings.anisotropicFiltering} color_space={QualitySettings.activeColorSpace} gpu_elapsed_not_busy=True Unity_actual_SRV=UNMEASURED");
+            }
+            if (Active || preparing) throw new InvalidOperationException("drawgpu configuration requires off");
+            if (arg == "off") { drawProbeConfig.Enabled = 0; return "drawgpu enabled=False"; }
+            string[] a = arg.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            if (a.Length != 4 || a[0] != "on" || !uint.TryParse(a[1], out uint first) || !uint.TryParse(a[2], out uint count) || !uint.TryParse(a[3], out uint interval) || count == 0 || count > 256 || interval == 0 || first > uint.MaxValue-count)
+                throw new ArgumentException("drawgpu on <first-visible-draw> <count 1..256> <sample-frame-interval> | off | dump");
+            drawProbeConfig = new N.DrawProbeConfiguration { Enabled = 1, First = first, Count = count, Interval = interval };
+            return "drawgpu enabled=True diagnostic_only=True";
+        }
         static int? savedTextureLimit;
         static string PressureMip(int value)
         {

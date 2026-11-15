@@ -5,7 +5,17 @@ namespace drfull {
 // All pointers are borrowed only for the duration of dispatch. Native owns copies
 // and COM references. Opcodes are versioned behind ONE appended export so old
 // export hints as well as ordinals remain stable.
-enum Op { Create, Program, Geometry, Draw, Commit, Event, Stats, Destroy, Error, Abi, Composite, Perf, CommitPacked, CommitActive, BatchPerf, GeometryCpu, CommitActiveWorld, UploadPerf, GpuPerf, TimelineEvent, TimelinePerf, MemoryPerf, Configure, SubmissionPerf };
+enum Op { Create, Program, Geometry, Draw, Commit, Event, Stats, Destroy, Error, Abi, Composite, Perf, CommitPacked, CommitActive, BatchPerf, GeometryCpu, CommitActiveWorld, UploadPerf, GpuPerf, TimelineEvent, TimelinePerf, MemoryPerf, Configure, SubmissionPerf, DrawProbeConfigure, DrawProbeRead, TextureProbe };
+struct DrawProbeConfiguration { uint32_t enabled,first,count,interval; };
+struct DrawProbeRow {
+    uint64_t frame,usage,budget;double us,segmentUs;
+    uint32_t segment,ordinal,draw,first,count,indices;
+};
+struct DrawProbeReadback { uint32_t index,total;uint64_t pending,skipped,invalid,overflow;DrawProbeRow row; };
+struct TextureProbeInfo {
+    uint32_t draw,index,total,stage,slot,samplerSlot,width,height,mips,resourceFormat,viewFormat,mostDetailedMip,viewMips,filter,wrapU,wrapV,aniso;
+    float mipBias,minLod,maxLod;
+};
 struct Configuration { uint32_t submission,constantRing; }; // 0 immediate, 1 deferred; before first event only
 struct SubmissionPerformance {
     uint64_t immediateSegments,deferredSegments,stateRestores,orderBytes,orderDispatches,ringMaps,ringBytes,ringBindings,immediateAvailable,ringAvailable;

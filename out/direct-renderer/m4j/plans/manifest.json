@@ -1,0 +1,107 @@
+{
+  "workspace": "E:\\StutterFixWork\\wt-m4",
+  "branch": "claude/drfull",
+  "launch": false,
+  "preset": "ppGpuCam",
+  "rt": "3440x1440",
+  "measure_order": [
+    "A1",
+    "B1",
+    "B2",
+    "A2"
+  ],
+  "duration_s": 12,
+  "validity": [
+    "candidate assert on before and after interval",
+    "native completed draws > 0",
+    "errors=0 dropped=0",
+    "no automatic OFF/sample invalid",
+    "originalMask==restoredMask",
+    "pixel gate before interpreting FPS",
+    "safe=0 on A/B and pixel runs",
+    "DXGI pressure correlation is not page-migration proof",
+    "actual immediate availability/counters must confirm selected path",
+    "ImageMaxSide must be set BEFORE opening/reloading map; verify actual texture dimensions and DXGI usage",
+    "probe indices are session-local; reject out-of-range/stale identities",
+    "draw GPU diagnostics alter workload; excluded from ordinary ABBA"
+  ],
+  "plans": [
+    "E:\\StutterFixWork\\wt-m4\\out\\direct-renderer\\m4j\\plans\\m4j-hl50-plan.json",
+    "E:\\StutterFixWork\\wt-m4\\out\\direct-renderer\\m4j\\plans\\m4j-hl50-pixel.json",
+    "E:\\StutterFixWork\\wt-m4\\out\\direct-renderer\\m4j\\plans\\m4j-hl50-A1.json",
+    "E:\\StutterFixWork\\wt-m4\\out\\direct-renderer\\m4j\\plans\\m4j-hl50-B1.json",
+    "E:\\StutterFixWork\\wt-m4\\out\\direct-renderer\\m4j\\plans\\m4j-hl50-B2.json",
+    "E:\\StutterFixWork\\wt-m4\\out\\direct-renderer\\m4j\\plans\\m4j-hl50-A2.json",
+    "E:\\StutterFixWork\\wt-m4\\out\\direct-renderer\\m4j\\plans\\m4j-wf-plan.json",
+    "E:\\StutterFixWork\\wt-m4\\out\\direct-renderer\\m4j\\plans\\m4j-wf-pixel.json",
+    "E:\\StutterFixWork\\wt-m4\\out\\direct-renderer\\m4j\\plans\\m4j-wf-A1.json",
+    "E:\\StutterFixWork\\wt-m4\\out\\direct-renderer\\m4j\\plans\\m4j-wf-B1.json",
+    "E:\\StutterFixWork\\wt-m4\\out\\direct-renderer\\m4j\\plans\\m4j-wf-B2.json",
+    "E:\\StutterFixWork\\wt-m4\\out\\direct-renderer\\m4j\\plans\\m4j-wf-A2.json",
+    "E:\\StutterFixWork\\wt-m4\\out\\direct-renderer\\m4j\\plans\\m4j-dd-plan.json",
+    "E:\\StutterFixWork\\wt-m4\\out\\direct-renderer\\m4j\\plans\\m4j-dd-pixel.json",
+    "E:\\StutterFixWork\\wt-m4\\out\\direct-renderer\\m4j\\plans\\m4j-dd-A1.json",
+    "E:\\StutterFixWork\\wt-m4\\out\\direct-renderer\\m4j\\plans\\m4j-dd-B1.json",
+    "E:\\StutterFixWork\\wt-m4\\out\\direct-renderer\\m4j\\plans\\m4j-dd-B2.json",
+    "E:\\StutterFixWork\\wt-m4\\out\\direct-renderer\\m4j\\plans\\m4j-dd-A2.json",
+    "E:\\StutterFixWork\\wt-m4\\out\\direct-renderer\\m4j\\plans\\m4j-sh-plan.json",
+    "E:\\StutterFixWork\\wt-m4\\out\\direct-renderer\\m4j\\plans\\m4j-sh-pixel.json",
+    "E:\\StutterFixWork\\wt-m4\\out\\direct-renderer\\m4j\\plans\\m4j-sh-A1.json",
+    "E:\\StutterFixWork\\wt-m4\\out\\direct-renderer\\m4j\\plans\\m4j-sh-B1.json",
+    "E:\\StutterFixWork\\wt-m4\\out\\direct-renderer\\m4j\\plans\\m4j-sh-B2.json",
+    "E:\\StutterFixWork\\wt-m4\\out\\direct-renderer\\m4j\\plans\\m4j-sh-A2.json"
+  ],
+  "prerequisites": [
+    "JALib disabled in every run",
+    "same loaded assets/render size/quality",
+    "pixel gate before FPS claims",
+    "no competing play or DLL replacement"
+  ],
+  "diagnostics": [
+    "E:\\StutterFixWork\\wt-m4\\out\\direct-renderer\\m4j\\plans\\m4j-hl50-bisect.json",
+    "E:\\StutterFixWork\\wt-m4\\out\\direct-renderer\\m4j\\plans\\m4j-sh-bisect.json",
+    "E:\\StutterFixWork\\wt-m4\\out\\direct-renderer\\m4j\\plans\\m4j-dd-bisect.json",
+    "E:\\StutterFixWork\\wt-m4\\out\\direct-renderer\\m4j\\plans\\m4j-wf-bisect.json",
+    "E:\\StutterFixWork\\wt-m4\\out\\direct-renderer\\m4j\\plans\\m4j-hl50-particles-pixel.json",
+    "E:\\StutterFixWork\\wt-m4\\out\\direct-renderer\\m4j\\plans\\m4j-sh-local-pixel.json",
+    "E:\\StutterFixWork\\wt-m4\\out\\direct-renderer\\m4j\\plans\\m4j-sh-unity-grab-pixel.json",
+    "E:\\StutterFixWork\\wt-m4\\out\\direct-renderer\\m4j\\plans\\m4j-dd-local-pixel.json",
+    "E:\\StutterFixWork\\wt-m4\\out\\direct-renderer\\m4j\\plans\\m4j-dd-unity-grab-pixel.json",
+    "E:\\StutterFixWork\\wt-m4\\out\\direct-renderer\\m4j\\plans\\m4j-wf-local-pixel.json",
+    "E:\\StutterFixWork\\wt-m4\\out\\direct-renderer\\m4j\\plans\\m4j-wf-unity-grab-pixel.json",
+    "E:\\StutterFixWork\\wt-m4\\out\\direct-renderer\\m4j\\plans\\m4j-dd-drawgpu-0000.json",
+    "E:\\StutterFixWork\\wt-m4\\out\\direct-renderer\\m4j\\plans\\m4j-dd-drawgpu-0256.json",
+    "E:\\StutterFixWork\\wt-m4\\out\\direct-renderer\\m4j\\plans\\m4j-dd-drawgpu-0512.json",
+    "E:\\StutterFixWork\\wt-m4\\out\\direct-renderer\\m4j\\plans\\m4j-dd-drawgpu-0768.json",
+    "E:\\StutterFixWork\\wt-m4\\out\\direct-renderer\\m4j\\plans\\m4j-dd-drawgpu-1024.json",
+    "E:\\StutterFixWork\\wt-m4\\out\\direct-renderer\\m4j\\plans\\m4j-dd-drawgpu-1280.json",
+    "E:\\StutterFixWork\\wt-m4\\out\\direct-renderer\\m4j\\plans\\m4j-dd-drawgpu-1536.json",
+    "E:\\StutterFixWork\\wt-m4\\out\\direct-renderer\\m4j\\plans\\m4j-dd-drawgpu-1792.json",
+    "E:\\StutterFixWork\\wt-m4\\out\\direct-renderer\\m4j\\plans\\m4j-dd-imagemax1024-A1.json",
+    "E:\\StutterFixWork\\wt-m4\\out\\direct-renderer\\m4j\\plans\\m4j-dd-imagemax1024-B1.json",
+    "E:\\StutterFixWork\\wt-m4\\out\\direct-renderer\\m4j\\plans\\m4j-dd-imagemax1024-B2.json",
+    "E:\\StutterFixWork\\wt-m4\\out\\direct-renderer\\m4j\\plans\\m4j-dd-imagemax1024-A2.json",
+    "E:\\StutterFixWork\\wt-m4\\out\\direct-renderer\\m4j\\plans\\m4j-dd-imagemax1024-pixel.json"
+  ],
+  "dd_protocol": {
+    "rejected_by_prior_game_evidence": [
+      "deferred command-list submission explains 41ms",
+      "mip2 proves lower VRAM for no-mip textures"
+    ],
+    "draw_probe": [
+      "run windows until no more visible ordinals; rerun shifted windows for boundaries",
+      "rank aggregate GPU time per draw/texture; compare sum to segment_us once per frame/segment, not once per row",
+      "if draw sum does not explain segment cost, inspect prepareGpu/constants/unmeasured gaps",
+      "capture original Unity and native draws with RenderDoc/PIX: actual PS/VS SRV formats, MostDetailedMip, mip count, sRGB view, sampler filter/aniso/MinLOD/MaxLOD and shader sampling instructions",
+      "timestamps measure GPU elapsed including stalls, not GPU busy or page migrations"
+    ],
+    "low_pressure": [
+      "apply ImageMaxSide=1024 before every fresh map load; close prior map or use fresh process to avoid cached full-size textures",
+      "require measured DXGI usage below budget with headroom, else lower to 512 and repeat matched A/B",
+      "same JALib/render size/quality/loaded assets and seek; pixel/noise gate within 1024 condition before ABBA",
+      "compare original-size ABBA versus 1024 ABBA separately; different-quality cross-condition pixels are not a parity gate",
+      "restore temporary setting in finally; original full-size assets require re-open after restoration"
+    ],
+    "attribution": "41ms hardware draw identities and remaining actual decoration pixels are UNMEASURED until authorized game tests"
+  }
+}
