@@ -112,7 +112,11 @@ namespace StutterFix
     internal static partial class DirectFull
     {
         static System.Collections.IEnumerator preparation;
-        static bool preparing, unityGrab, skipExplicit, allExplicitPasses, localPrecision;
+        static bool preparing, unityGrab, skipExplicit, allExplicitPasses, localPrecision, deferredSubmission, legacyConstants, bakedParticles;
+        static string ProbeCommand(string arg) => "stub-probe";
+        static readonly System.Collections.Generic.List<object> probeRenderers = new System.Collections.Generic.List<object>();
+        static void RestoreProbe() { }
+        static string PressureMip(int value) => "stub-pressure";
         static string ColorAudit() => "stub-color-audit";
         static string WhyReplan() => "stub-order-reasons";
         static double warmMs;

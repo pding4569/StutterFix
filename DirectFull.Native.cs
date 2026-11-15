@@ -7,7 +7,13 @@ namespace StutterFix
 {
     internal static unsafe class DirectFullNative
     {
-        internal enum Op { Create, Program, Geometry, Draw, Commit, Event, Stats, Destroy, Error, Abi, Composite, Perf, CommitPacked, CommitActive, BatchPerf, GeometryCpu, CommitActiveWorld, UploadPerf, GpuPerf, TimelineEvent, TimelinePerf, MemoryPerf }
+        internal enum Op { Create, Program, Geometry, Draw, Commit, Event, Stats, Destroy, Error, Abi, Composite, Perf, CommitPacked, CommitActive, BatchPerf, GeometryCpu, CommitActiveWorld, UploadPerf, GpuPerf, TimelineEvent, TimelinePerf, MemoryPerf, Configure, SubmissionPerf }
+        [StructLayout(LayoutKind.Sequential)] internal struct Configuration { internal uint Submission, ConstantRing; }
+        [StructLayout(LayoutKind.Sequential)] internal struct SubmissionPerformance
+        {
+            internal ulong ImmediateSegments, DeferredSegments, StateRestores, OrderBytes, OrderDispatches, RingMaps, RingBytes, RingBindings, ImmediateAvailable, RingAvailable;
+            internal double StateUs, RecordUs;
+        }
         [StructLayout(LayoutKind.Sequential)] internal struct Performance { internal double ApplyUs, CullUs, ConstantsUs, DrawUs, ExecuteUs; internal ulong Uploads, UploadBytes, LayoutCreates, LayoutHits, SampledFrames; }
         [StructLayout(LayoutKind.Sequential)] internal struct Composite { internal IntPtr Black, White; }
         [StructLayout(LayoutKind.Sequential)] internal struct Abi { internal uint Version, Create, Program, Geometry, Draw, Frame, Stats, Pose; }

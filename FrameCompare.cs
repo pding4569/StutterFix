@@ -264,6 +264,11 @@ namespace StutterFix
             }
             if (a.Length == 2 && a[0] == "save") { p.Save(a[1]); return true; }
             if (a.Length == 1 && a[0] == "clear") { p.shots.Clear(); return true; }
+            if (a.Length == 2 && a[0] == "drop")
+            {
+                if (!p.shots.Remove(a[1])) throw new ArgumentException("capture not found: " + a[1]);
+                return true;
+            }
             IEnumerator work;
             if (a.Length == 2 && a[0] == "grab") work = p.Grab(a[1]);
             else if (a.Length >= 3 && a[0] == "noise")

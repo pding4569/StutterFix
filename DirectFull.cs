@@ -80,6 +80,8 @@ namespace StutterFix
 
         internal static string Command(string arg)
         {
+            if (arg.Trim().StartsWith("probe ", StringComparison.OrdinalIgnoreCase)) return ProbeCommand(arg.Trim().Substring(6));
+            if (arg.Trim().StartsWith("pressure mip ", StringComparison.OrdinalIgnoreCase)) return PressureMip(int.Parse(arg.Trim().Substring(13), System.Globalization.CultureInfo.InvariantCulture));
             switch (arg.Trim().ToLowerInvariant())
             {
                 case "ceil": case "ceil on": StartCeiling(); return State();
@@ -88,6 +90,16 @@ namespace StutterFix
                 case "census": return Census();
                 case "colors": return ColorAudit();
                 case "why": return WhyReplan();
+                case "pressure restore": return PressureMip(-1);
+                case "particles baked": case "particles explicit":
+                    if (Active || preparing) throw new InvalidOperationException("particle route requires off");
+                    bakedParticles = arg.Trim().Equals("particles baked", StringComparison.OrdinalIgnoreCase); return "particles=" + (bakedParticles ? "baked-diagnostic" : "explicit");
+                case "submit immediate": case "submit deferred":
+                    if (Active || preparing) throw new InvalidOperationException("submission mode requires off");
+                    deferredSubmission = arg.Trim().Equals("submit deferred", StringComparison.OrdinalIgnoreCase); return "submit=" + (deferredSubmission ? "deferred" : "immediate");
+                case "constants ring": case "constants legacy":
+                    if (Active || preparing) throw new InvalidOperationException("constant mode requires off");
+                    legacyConstants = arg.Trim().Equals("constants legacy", StringComparison.OrdinalIgnoreCase); return "constants=" + (legacyConstants ? "legacy" : "ring");
                 case "assert clean": if (Resilience.SafeMode) throw new InvalidOperationException("drfull INVALID: safe=1"); return "safe=0 PASS";
                 case "precision local": case "precision batch":
                     if (Active || preparing) throw new InvalidOperationException("precision diagnostic requires off");
@@ -203,7 +215,11 @@ namespace StutterFix
                 Stop("competing renderer enabled; sample invalid");
         }
 
-        internal static void Stop() => Stop("shutdown/batch end");
+        internal static void Stop()
+        {
+            try { RestoreProbe(); probeRenderers.Clear(); Stop("shutdown/batch end"); }
+            finally { if (!Active && !preparing) PressureMip(-1); }
+        }
         internal static void Stop(string reason)
         {
             preparing = false; (preparation as IDisposable)?.Dispose(); preparation = null;

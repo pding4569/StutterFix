@@ -274,6 +274,7 @@ namespace StutterFix
                 case "drx": return DrProbe.Step(arg);
                 case "dr2": Log("[dr2] " + DirectDeco.Command(arg)); return true;
                 case "drfull":
+                    if (arg == "probe bisect") return DirectFull.ProbeBisectStep();
                     if (arg == "wait") { if (!DirectFull.WaitReady()) return false; Log("[drfull] " + DirectFull.Command("assert on")); return true; }
                     Log("[drfull] " + DirectFull.Command(arg)); return true;
                 case "coldopen": ColdOpenProbe.Step(arg); return true;

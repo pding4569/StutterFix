@@ -11,7 +11,7 @@ root=Path(__file__).resolve().parents[2]
 
 def main():
     p=argparse.ArgumentParser(description=__doc__)
-    p.add_argument('--milestone', choices=('m4d','m4e','m4f','m4g','m4h'), default='m4d')
+    p.add_argument('--milestone', choices=('m4d','m4e','m4f','m4g','m4h','m4i'), default='m4d')
     p.add_argument('--maps',default='hl50,wf,dd,sh')
     p.add_argument('--rt',default='3440x1440')
     p.add_argument('--output',type=Path,default=root/'out/direct-renderer/m4d/plans')
@@ -25,9 +25,10 @@ def main():
     settings,commands=bench.CFG2['ppGpuCam'];settings=dict(bench.CLEAN,**settings)
     assert settings['GpuDeco']==0 and settings['RunLod'] is False
     commands=list(commands)+['dr2 off','drfull off','drfull assert off']
-    if args.milestone in ('m4e','m4f','m4g','m4h'):commands += ['drfull grab native']
-    if args.milestone == 'm4h':commands += ['drfull explicit on','drfull explicit forward','drfull precision batch']
-    if args.milestone in ('m4f','m4g','m4h'):commands += ['drfull warm']
+    if args.milestone in ('m4e','m4f','m4g','m4h','m4i'):commands += ['drfull grab native']
+    if args.milestone in ('m4h','m4i'):commands += ['drfull explicit on','drfull explicit forward','drfull precision batch']
+    if args.milestone == 'm4i':commands += ['drfull submit immediate','drfull constants ring','drfull particles explicit','drfull probe clear','drfull pressure restore','framecmp clear']
+    if args.milestone in ('m4f','m4g','m4h','m4i'):commands += ['drfull warm']
     assert not any(c.startswith(('hidegroup','scriptskip','drx ','dr bench')) for c in commands)
     args.output.mkdir(parents=True,exist_ok=True)
     manifest=dict(workspace=str(root),branch='claude/drfull',launch=False,preset='ppGpuCam',rt=args.rt,
@@ -59,7 +60,7 @@ def main():
                 mid += ['drfull on' if candidate else 'drfull off','wait 2',assertion,'drfull state','cpuwindow begin']
                 post=['cpuwindow end',assertion,'drfull state','drfull off','drfull assert off','drfull state']+list(bench.CFG_POST['ppGpuCam'])
                 steps=bench.steps(path,at,name,commands,False,mid,post)
-            if args.milestone in ('m4e','m4f','m4g'):
+            if args.milestone in ('m4e','m4f','m4g','m4i'):
                 expanded=[]
                 for index, step in enumerate(steps):
                     # Freeze the song during incremental setup. Without this,
@@ -74,11 +75,11 @@ def main():
                     if step == 'framecmp grab d1':expanded.append('drfull colors')
                     if step == 'drfull state':expanded.append('drfull why')
                 steps=expanded
-            if args.milestone in ('m4f','m4g','m4h'):
+            if args.milestone in ('m4f','m4g','m4h','m4i'):
                 steps=[s for s in steps if s != 'drfull cold' and (candidate or s != 'drfull warm')]
                 at_quit=steps.index('quit')
                 steps.insert(at_quit,'drfull cold')
-            if args.milestone in ('m4g','m4h'):
+            if args.milestone in ('m4g','m4h','m4i'):
                 expanded=[]
                 for step in steps:
                     if step in ('fpsmark start','pause') or step.startswith('fpsmark end '):expanded.append('drfull assert clean')

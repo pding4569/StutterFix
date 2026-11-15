@@ -3,6 +3,7 @@
 #define NOMINMAX
 #include <windows.h>
 #include <d3d11.h>
+#include <d3d11_1.h>
 #include <dxgi1_4.h>
 #include <d3dcompiler.h>
 #include <wrl/client.h>
@@ -62,7 +63,12 @@ struct Geometry {
     std::map<std::pair<const Shader*,bool>,ComPtr<ID3D11InputLayout>> layouts;
 };
 struct Sample { ComPtr<ID3D11ShaderResourceView> view;ComPtr<ID3D11SamplerState> sampler;int stage,slot,samplerSlot;bool grab=false;uint32_t grabId=0; };
-struct ConstantStorage { ComPtr<ID3D11Buffer> buffer;std::vector<uint8_t> uploaded;bool ready=false;uint64_t evaluatedFrame=UINT64_MAX; };
+struct ConstantStorage {
+    ComPtr<ID3D11Buffer> buffer;std::vector<uint8_t> uploaded;bool ready=false;
+    bool dependenciesReady=false,inputReady=false,materialDirty=false;uint32_t dependencies=0;
+    uint64_t poseEpoch=0,cameraEpoch=0,timeEpoch=0,colorEpoch=0;
+    uint64_t evaluatedFrame=UINT64_MAX,ringSerial=0;UINT ringOffset=0;
+};
 struct Constants { Buffer binding;std::shared_ptr<ConstantStorage> storage,batchStorage;std::vector<uint8_t> material;bool privateMaterial=false; };
 struct DrawCall {
     std::shared_ptr<Shader> shader;std::shared_ptr<Geometry> geometry;ComPtr<ID3D11InputLayout> layout,batchLayout;
@@ -83,9 +89,23 @@ void multiply(float* out,const float* a,const float* b) {
 struct Renderer {
     int token=0;uint32_t capacity;
     ComPtr<ID3D11Device> device;ComPtr<ID3D11DeviceContext> context,deferred;
+    ComPtr<ID3D11DeviceContext1> context1;ComPtr<ID3DDeviceContextState> isolatedState;
+    ID3D11DeviceContext* recording=nullptr;
+    Configuration configuration{0,1};SubmissionPerformance submission{};
+    // A complete runtime state object includes bindings in stages we do not use,
+    // UAVs, stream output, predication and D3D11.1 constant buffer ranges.
+    struct StateScope {
+        Renderer& owner;ComPtr<ID3DDeviceContextState> saved;
+        explicit StateScope(Renderer& r):owner(r){}
+        void begin(bool active){if(active){double t=now();owner.context1->SwapDeviceContextState(owner.isolatedState.Get(),&saved);owner.context->ClearState();owner.submission.stateUs+=now()-t;}}
+        void restore(){if(saved){double t=now();owner.context1->SwapDeviceContextState(saved.Get(),nullptr);saved.Reset();owner.submission.stateRestores++;owner.submission.stateUs+=now()-t;}}
+        ~StateScope(){restore();}
+    };
     std::mutex mutex;std::vector<std::shared_ptr<Shader>> shaders;std::vector<std::shared_ptr<Geometry>> geometries;std::vector<std::shared_ptr<DrawCall>> draws;
     std::array<Packet,8> ring;std::atomic<uint64_t> read{0},write{0};std::vector<Pose> poses;
     std::vector<uint32_t> list,segs;Frame frame{};Statistics stats{};double renderSum=0,commitSum=0;uint64_t commits=0;
+    float frustum[6][4]{};
+    uint64_t cameraEpoch=0,timeEpoch=0;
     struct GrabSurface {ComPtr<ID3D11Texture2D> texture;ComPtr<ID3D11ShaderResourceView> view;D3D11_TEXTURE2D_DESC desc{};DXGI_FORMAT format=DXGI_FORMAT_UNKNOWN;uint64_t frame=0;};
     std::map<uint32_t,GrabSurface> grabSurfaces;
     GpuPerformance gpuPerf{};double gpuSum=0;
@@ -98,10 +118,12 @@ struct Renderer {
         memory.begin();
         for(const auto& g:geometries)if(g->owned){memory.buffer(g->buffers[0].Get(),0);memory.buffer(g->indices.Get(),0);}
         memory.buffer(gpuLocal.Get(),0);memory.buffer(gpuWorld.Get(),1);memory.buffer(poseUpload.Get(),1);
-        memory.buffer(gpuDraw.Get(),2);memory.buffer(drawUpload.Get(),2);memory.buffer(orderBuffer.Get(),3);
+        memory.buffer(gpuDraw.Get(),2);memory.buffer(drawUpload.Get(),2);memory.buffer(orderBuffer.Get(),3);memory.buffer(orderUpload.Get(),3);
         memory.buffer(gpuVertices.Get(),4);memory.buffer(batchBuffer.Get(),4);memory.buffer(blockUpload.Get(),4);memory.buffer(bakeControl.Get(),4);
         for(const auto& d:draws){memory.buffer(d->color.Get(),6);for(const auto& b:d->buffers){memory.buffer(b.storage->buffer.Get(),5);memory.buffer(b.batchStorage->buffer.Get(),5);}if(d->composite){memory.view(d->black.Get(),8);memory.view(d->white.Get(),8);}}
         for(const auto& entry:constantPool)memory.buffer(entry.second->buffer.Get(),5);
+        memory.buffer(constantRing.Get(),5);
+        memory.buffer(orderControl.Get(),5);
         for(const auto& pair:grabSurfaces)memory.texture(pair.second.texture.Get(),7);
         memory.finish();
         memoryDirty=false;
@@ -120,6 +142,9 @@ struct Renderer {
     void endGpu(Timing* t){if(t){context->End(t->disjoint.Get());t->pending=true;}}
     std::shared_ptr<Shader> compositor;
     Performance perf{};BatchPerformance batchPerf{};UploadPerformance uploadPerf{};bool profile=false;
+    ComPtr<ID3D11Buffer> constantRing;UINT constantRingCapacity=0;
+    std::vector<uint8_t> ringData,ringResident;uint64_t ringSerial=0;
+    bool ringActive=false;
     std::vector<uint8_t> live;std::vector<uint64_t> poseVersions;std::vector<uint32_t> batchEnds;bool batchesDirty=true;
     struct RunBounds {float center[3]{},extent[3]{};uint64_t epoch=UINT64_MAX;UINT end=0;bool bounded=false,any=false;};
     std::vector<RunBounds> runBounds;uint64_t boundsEpoch=0;
@@ -133,7 +158,13 @@ struct Renderer {
     ComPtr<ID3D11Buffer> gpuLocal,gpuWorld,gpuDraw,gpuVertices;
     ComPtr<ID3D11ShaderResourceView> localView,worldView,drawView;ComPtr<ID3D11UnorderedAccessView> verticesUav;
     UINT localCapacity=0,worldCapacity=0,drawCapacity=0;
-    std::vector<LocalVertex> localVertices;std::vector<uint32_t> vertexOffsets,orderOffsets,orderIndices;
+    std::vector<LocalVertex> localVertices;std::vector<uint32_t> vertexOffsets,orderOffsets;
+    struct OrderRange {UINT source,destination,count;};
+    std::vector<OrderRange> orderRanges;
+    ComPtr<ID3D11ComputeShader> orderShader;
+    ComPtr<ID3D11Buffer> orderControl;UINT orderCount=UINT32_MAX;
+    ComPtr<ID3D11Buffer> orderUpload;ComPtr<ID3D11ShaderResourceView> orderView;
+    ComPtr<ID3D11UnorderedAccessView> orderUav;UINT orderUploadCapacity=0;
     ComPtr<ID3D11Buffer> orderBuffer;UINT orderCapacity=0;size_t geometryDrawCount=0;
     std::vector<std::vector<uint32_t>> poseDraws;
     std::vector<uint32_t> bakeBlocks;std::vector<uint8_t> blockMarked;
@@ -150,8 +181,12 @@ struct Renderer {
     void markPose(uint32_t id) { if(!poseMarked[id]){poseMarked[id]=1;dirtyPoses.push_back(id);} }
     void markDraw(uint32_t id) { if(!drawMarked[id]){drawMarked[id]=1;dirtyDraws.push_back(id);} }
     std::shared_ptr<ConstantStorage> newConstants(UINT bytes) {
-        memoryDirty=true;
-        auto storage=std::make_shared<ConstantStorage>();D3D11_BUFFER_DESC b{};b.ByteWidth=bytes;b.Usage=D3D11_USAGE_DEFAULT;b.BindFlags=D3D11_BIND_CONSTANT_BUFFER;memoryDirty=true;check(device->CreateBuffer(&b,nullptr,&storage->buffer));storage->uploaded.resize(bytes);batchPerf.constantCreates++;return storage;
+        auto storage=std::make_shared<ConstantStorage>();storage->uploaded.resize(bytes);return storage;
+    }
+    void legacyConstants(ConstantStorage& c,UINT bytes) {
+        if(c.buffer)return;
+        D3D11_BUFFER_DESC b{};b.ByteWidth=bytes;b.Usage=D3D11_USAGE_DEFAULT;b.BindFlags=D3D11_BIND_CONSTANT_BUFFER;
+        check(device->CreateBuffer(&b,nullptr,&c.buffer));memoryDirty=true;batchPerf.constantCreates++;
     }
     std::shared_ptr<ConstantStorage> constantStorage(const DrawCall& d,const Buffer& binding,bool batched) {
         std::vector<uint32_t> key(binding.bytes/4+2);key[0]=batched?1u:0u;
@@ -186,10 +221,19 @@ struct Renderer {
         static_cast<ID3D11DeviceChild*>(in.resource)->GetDevice(&device);require(device!=nullptr);
         require((device->GetCreationFlags()&D3D11_CREATE_DEVICE_SINGLETHREADED)==0);
         device->GetImmediateContext(&context);check(device->CreateDeferredContext(0,&deferred));
+        ComPtr<ID3D11Device1> device1;
+        if(SUCCEEDED(device.As(&device1))&&SUCCEEDED(context.As(&context1))){
+            D3D_FEATURE_LEVEL level=device->GetFeatureLevel(),selected{};
+            if(SUCCEEDED(device1->CreateDeviceContextState(0,&level,1,D3D11_SDK_VERSION,__uuidof(ID3D11Device),&selected,&isolatedState)))submission.immediateAvailable=1;
+            D3D11_FEATURE_DATA_D3D11_OPTIONS options{};
+            if(SUCCEEDED(device->CheckFeatureSupport(D3D11_FEATURE_D3D11_OPTIONS,&options,sizeof(options)))&&options.ConstantBufferOffsetting)submission.ringAvailable=1;
+        }
+        recording=deferred.Get();
         memory.init(device.Get());
         for(auto& t:timings){D3D11_QUERY_DESC q{D3D11_QUERY_TIMESTAMP_DISJOINT,0};check(device->CreateQuery(&q,&t.disjoint));q.Query=D3D11_QUERY_TIMESTAMP;check(device->CreateQuery(&q,&t.start));check(device->CreateQuery(&q,&t.end));}
+        ringData.reserve(size_t(capacity)*512);ringResident.reserve(size_t(capacity)*512);
         poseDraws.resize(capacity);poseMarked.resize(capacity);drawMarked.resize(size_t(capacity)*8);dirtyPoses.reserve(capacity);dirtyDraws.reserve(size_t(capacity)*8);
-        orderIndices.reserve(size_t(capacity)*6);orderOffsets.reserve(size_t(capacity)*4+1);
+        orderRanges.reserve(size_t(capacity)*4);orderOffsets.reserve(size_t(capacity)*4+1);
         live.resize(capacity,1);poseVersions.resize(capacity);runBounds.reserve(size_t(capacity)*4);batchEnds.reserve(size_t(capacity)*4);batchVertices.resize(batchLimit);batchItems.reserve(size_t(capacity)*4);colorVersions.reserve(size_t(capacity)*8);poses.reserve(capacity);gpuPoses.reserve(capacity);gpuDraws.reserve(size_t(capacity)*8);vertexOffsets.reserve(size_t(capacity)*4+1);localVertices.reserve(size_t(capacity)*6);
         // CPU fallback VB is allocated only when used, sized to the actual run.
         if(device->GetFeatureLevel()>=D3D_FEATURE_LEVEL_11_0){
@@ -371,10 +415,15 @@ struct Renderer {
         write.store(w+1,std::memory_order_release);commitSum+=now()-start;commits++;return 1;
     }
     void apply(Packet& p) {
+        if(std::memcmp(&frame,&p.f,offsetof(Frame,time)))cameraEpoch++;
+        if(std::memcmp(frame.time,p.f.time,64))timeEpoch++;
         frame=p.f;
+        for(int plane=0;plane<6;plane++)for(int i=0;i<4;i++)frustum[plane][i]=plane==4?frame.vp[i*4+2]:frame.vp[i*4+3]+(plane%2==0?1.f:-1.f)*frame.vp[i*4+plane/2];
         for(size_t i=0;i<p.poseIds.size();i++){
             uint32_t id=p.poseIds[i];if(poses.size()<=id){poses.resize(size_t(id)+1);gpuPoses.resize(poses.size());}
+            bool inverseChanged=!p.worldOnly&&std::memcmp(poses[id].inverse,p.poses[i].inverse,64)!=0;
             if(p.worldOnly)std::memcpy(poses[id].world,p.poses[i].world,64);else poses[id]=p.poses[i];
+            if(inverseChanged)poseVersions[id]++;
             if(std::memcmp(gpuPoses[id].world,p.poses[i].world,64)){std::memcpy(gpuPoses[id].world,p.poses[i].world,64);markPose(id);poseVersions[id]++;boundsEpoch++;}
         }
         for(size_t i=0;i<p.ids.size();i++){
@@ -388,6 +437,7 @@ struct Renderer {
                 if(std::memcmp(material,binding.material.data(),binding.binding.bytes)){
                     if(!binding.privateMaterial){binding.storage=newConstants(binding.binding.bytes);binding.batchStorage=d.batchable?newConstants(binding.binding.bytes):binding.storage;binding.privateMaterial=true;}
                     std::memcpy(binding.material.data(),material,binding.binding.bytes);
+                    binding.storage->materialDirty=true;binding.batchStorage->materialDirty=true;
                 }
             }
         }
@@ -400,7 +450,7 @@ struct Renderer {
             // packet is consumed, never while an earlier segment uses its SRVs.
             compositeUsed.assign(draws.size(),0);for(auto id:p.list){require(id&&id<=draws.size());compositeUsed[id-1]=1;}
             for(auto id:list)if(draws[id-1]->composite&&!compositeUsed[id-1]){draws[id-1]->black.Reset();draws[id-1]->white.Reset();}
-            list=p.list;segs=p.segs;batchesDirty=true;indexDirty=true;
+            bool reordered=list!=p.list;list=p.list;segs=p.segs;batchesDirty|=reordered;indexDirty|=reordered;
         }
         if(batchesDirty){buildBatchRuns();batchesDirty=false;}
         stats.frames++;
@@ -436,8 +486,7 @@ struct Renderer {
     }
     bool outsideWorld(const float* center,const float* extent) const {
         for(int plane=0;plane<6;plane++){
-            float p[4];int axis=plane/2;
-            for(int i=0;i<4;i++)p[i]=plane==4?frame.vp[i*4+2]:frame.vp[i*4+3]+(plane%2==0?1.f:-1.f)*frame.vp[i*4+axis];
+            const float* p=frustum[plane];
             float distance=p[3],radius=0;for(int i=0;i<3;i++){distance+=p[i]*center[i];radius+=std::abs(p[i])*extent[i];}
             if(distance+radius<0)return true;
         }return false;
@@ -512,15 +561,15 @@ struct Renderer {
         // Dense frames bind the renamed upload buffer directly. On the first sparse
         // frame, synchronize the persistent cache on the GPU BEFORE renaming that
         // upload buffer; host traffic still contains only changed slots.
-        if(!dense&&!defaultCurrent){deferred->CopyResource(buffer.Get(),staging.Get());defaultCurrent=true;}
+        if(!dense&&!defaultCurrent){recording->CopyResource(buffer.Get(),staging.Get());defaultCurrent=true;}
         if(!staging||stagingCapacity<count){stagingCapacity=grow(count);staging.Reset();stagingView.Reset();D3D11_BUFFER_DESC b{};b.ByteWidth=stagingCapacity*sizeof(T);b.Usage=D3D11_USAGE_DYNAMIC;b.BindFlags=D3D11_BIND_SHADER_RESOURCE;b.CPUAccessFlags=D3D11_CPU_ACCESS_WRITE;b.MiscFlags=D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;b.StructureByteStride=sizeof(T);memoryDirty=true;check(device->CreateBuffer(&b,nullptr,&staging));D3D11_SHADER_RESOURCE_VIEW_DESC v{};v.Format=DXGI_FORMAT_UNKNOWN;v.ViewDimension=D3D11_SRV_DIMENSION_BUFFER;v.Buffer.NumElements=stagingCapacity;check(device->CreateShaderResourceView(staging.Get(),&v,&stagingView));}
-        std::sort(dirty.begin(),dirty.end());D3D11_MAPPED_SUBRESOURCE mapped{};check(deferred->Map(staging.Get(),0,D3D11_MAP_WRITE_DISCARD,0,&mapped));
+        std::sort(dirty.begin(),dirty.end());D3D11_MAPPED_SUBRESOURCE mapped{};check(recording->Map(staging.Get(),0,D3D11_MAP_WRITE_DISCARD,0,&mapped));
         if(dense)std::memcpy(mapped.pData,values.data(),size_t(count)*sizeof(T));
         else for(size_t i=0;i<dirty.size();i++)std::memcpy(static_cast<uint8_t*>(mapped.pData)+i*sizeof(T),&values[dirty[i]],sizeof(T));
-        deferred->Unmap(staging.Get(),0);uint64_t n=uint64_t(count)*sizeof(T);bytes+=n;perf.uploads++;perf.uploadBytes+=n;
+        recording->Unmap(staging.Get(),0);uint64_t n=uint64_t(count)*sizeof(T);bytes+=n;perf.uploads++;perf.uploadBytes+=n;
         // One renamed upload allocation, then GPU copies only the changed ranges.
         // No boxed UpdateSubresource on deferred contexts (legacy driver offset bug).
-        auto copy=[&](UINT first,UINT end,UINT source){D3D11_BOX box{source*UINT(sizeof(T)),0,0,(source+end-first)*UINT(sizeof(T)),1,1};deferred->CopySubresourceRegion(buffer.Get(),0,first*UINT(sizeof(T)),0,0,staging.Get(),0,&box);ranges++;};
+        auto copy=[&](UINT first,UINT end,UINT source){D3D11_BOX box{source*UINT(sizeof(T)),0,0,(source+end-first)*UINT(sizeof(T)),1,1};recording->CopySubresourceRegion(buffer.Get(),0,first*UINT(sizeof(T)),0,0,staging.Get(),0,&box);ranges++;};
         if(dense){ranges++;defaultCurrent=false;direct=true;}
         else {direct=false;for(size_t i=0;i<dirty.size();){UINT source=UINT(i),first=dirty[i],end=first+1;i++;while(i<dirty.size()&&dirty[i]==end){end++;i++;}copy(first,end,source);}}
         for(auto id:dirty)marked[id]=0;dirty.clear();return true;
@@ -561,11 +610,42 @@ struct Renderer {
             for(UINT block=0;block<blockMarked.size();block++)if(!blockMarked[block]){blockMarked[block]=1;bakeBlocks.push_back(block);}
         }
         if(indexDirty){
-            orderIndices.clear();orderOffsets.resize(list.size()+1);
-            for(size_t i=0;i<list.size();i++){orderOffsets[i]=UINT(orderIndices.size());uint32_t id=list[i]-1;for(UINT k=vertexOffsets[id];k<vertexOffsets[id+1];k++)orderIndices.push_back(k);}
-            orderOffsets.back()=UINT(orderIndices.size());
-            if(!orderBuffer||orderCapacity<orderIndices.size()){orderCapacity=grow(UINT(orderIndices.size()));orderBuffer.Reset();D3D11_BUFFER_DESC b{};b.ByteWidth=orderCapacity*4;b.Usage=D3D11_USAGE_DYNAMIC;b.CPUAccessFlags=D3D11_CPU_ACCESS_WRITE;b.BindFlags=D3D11_BIND_INDEX_BUFFER;memoryDirty=true;check(device->CreateBuffer(&b,nullptr,&orderBuffer));}
-            if(!orderIndices.empty()){D3D11_MAPPED_SUBRESOURCE map{};check(deferred->Map(orderBuffer.Get(),0,D3D11_MAP_WRITE_DISCARD,0,&map));std::memcpy(map.pData,orderIndices.data(),orderIndices.size()*4);deferred->Unmap(orderBuffer.Get(),0);perf.uploads++;perf.uploadBytes+=orderIndices.size()*4;uploadPerf.indexBytes+=orderIndices.size()*4;uploadPerf.indexUploads++;}indexDirty=false;
+            // Upload one 12-byte range per source. The index stream is generated
+            // on the GPU, never mapped/copied from the host, including reorders.
+            orderRanges.clear();orderOffsets.resize(list.size()+1);UINT total=0;
+            for(size_t i=0;i<list.size();i++){
+                orderOffsets[i]=total;UINT id=list[i]-1,n=vertexOffsets[id+1]-vertexOffsets[id];
+                if(n)orderRanges.push_back({vertexOffsets[id],total,n});total+=n;
+            }
+            orderOffsets.back()=total;
+            if(!orderBuffer||orderCapacity<total){
+                orderCapacity=grow(total);orderBuffer.Reset();orderUav.Reset();D3D11_BUFFER_DESC b{};
+                b.ByteWidth=orderCapacity*4;b.Usage=D3D11_USAGE_DEFAULT;b.BindFlags=D3D11_BIND_INDEX_BUFFER|D3D11_BIND_UNORDERED_ACCESS;b.MiscFlags=D3D11_RESOURCE_MISC_BUFFER_ALLOW_RAW_VIEWS;
+                memoryDirty=true;check(device->CreateBuffer(&b,nullptr,&orderBuffer));
+                D3D11_UNORDERED_ACCESS_VIEW_DESC v{};v.Format=DXGI_FORMAT_R32_TYPELESS;v.ViewDimension=D3D11_UAV_DIMENSION_BUFFER;v.Buffer.NumElements=orderCapacity;v.Buffer.Flags=D3D11_BUFFER_UAV_FLAG_RAW;
+                check(device->CreateUnorderedAccessView(orderBuffer.Get(),&v,&orderUav));
+            }
+            if(!orderRanges.empty()){
+                if(!orderShader){
+                    const char source[]=R"(struct R {uint source,destination,count;};StructuredBuffer<R> ranges:register(t0);RWByteAddressBuffer output:register(u0);cbuffer Control:register(b0){uint count;uint3 pad;};
+                        [numthreads(64,1,1)] void main(uint3 thread:SV_DispatchThreadID){uint id=thread.x+thread.y*65535*64;if(id>=count)return;R r=ranges[id];for(uint k=0;k<r.count;k++)output.Store((r.destination+k)*4,r.source+k);})";
+                    ComPtr<ID3DBlob> code,error;check(D3DCompile(source,sizeof(source)-1,nullptr,nullptr,nullptr,"main","cs_5_0",D3DCOMPILE_OPTIMIZATION_LEVEL3,0,&code,&error));
+                    check(device->CreateComputeShader(code->GetBufferPointer(),code->GetBufferSize(),nullptr,&orderShader));
+                    D3D11_BUFFER_DESC b{};b.ByteWidth=16;b.Usage=D3D11_USAGE_DEFAULT;b.BindFlags=D3D11_BIND_CONSTANT_BUFFER;check(device->CreateBuffer(&b,nullptr,&orderControl));
+                }
+                structured(orderUpload,orderView,orderUploadCapacity,UINT(orderRanges.size()),sizeof(OrderRange),true);
+                D3D11_MAPPED_SUBRESOURCE mapped{};check(recording->Map(orderUpload.Get(),0,D3D11_MAP_WRITE_DISCARD,0,&mapped));
+                UINT bytes=UINT(orderRanges.size()*sizeof(OrderRange));std::memcpy(mapped.pData,orderRanges.data(),bytes);recording->Unmap(orderUpload.Get(),0);
+                perf.uploads++;perf.uploadBytes+=bytes;uploadPerf.workBytes+=bytes;submission.orderBytes+=bytes;
+                recording->IASetIndexBuffer(nullptr,DXGI_FORMAT_R32_UINT,0);
+                recording->CSSetShader(orderShader.Get(),nullptr,0);ID3D11ShaderResourceView* input=orderView.Get();recording->CSSetShaderResources(0,1,&input);
+                ID3D11UnorderedAccessView* output=orderUav.Get();recording->CSSetUnorderedAccessViews(0,1,&output,nullptr);
+                UINT n=UINT(orderRanges.size());if(orderCount!=n){UINT control[4]{n,0,0,0};recording->UpdateSubresource(orderControl.Get(),0,nullptr,control,0,0);orderCount=n;perf.uploads++;perf.uploadBytes+=16;uploadPerf.workBytes+=16;}
+                ID3D11Buffer* control=orderControl.Get();recording->CSSetConstantBuffers(0,1,&control);
+                UINT groups=(n+63)/64;recording->Dispatch(std::min(groups,65535u),(groups+65534)/65535,1);submission.orderDispatches++;
+                input=nullptr;output=nullptr;recording->CSSetShaderResources(0,1,&input);recording->CSSetUnorderedAccessViews(0,1,&output,nullptr);recording->CSSetShader(nullptr,nullptr,0);
+            }
+            indexDirty=false;
         }
         // Expand dirty source IDs into stable 64-vertex blocks BEFORE uploadRanges
         // consumes those queues. Adjacent slots share a group; unchanged geometry
@@ -575,7 +655,7 @@ struct Renderer {
         if(uploadRanges(gpuWorld,worldView,worldCapacity,poseUpload,poseUploadView,poseUploadCapacity,poseDefaultCurrent,poseDirect,gpuPoses,dirtyPoses,poseMarked,uploadPerf.poseBytes,uploadPerf.poseRanges)){gpuVerticesDirty=true;batchPerf.gpuPoseUploads++;}
         if(uploadRanges(gpuDraw,drawView,drawCapacity,drawUpload,drawUploadView,drawUploadCapacity,drawDefaultCurrent,drawDirect,gpuDraws,dirtyDraws,drawMarked,uploadPerf.drawBytes,uploadPerf.drawRanges))gpuVerticesDirty=true;
         if(gpuVerticesDirty&&!bakeBlocks.empty()){
-            auto* dc=deferred.Get();ID3D11Buffer* nilBuffer=nullptr;UINT zero=0;dc->IASetVertexBuffers(0,1,&nilBuffer,&zero,&zero);
+            auto* dc=recording;ID3D11Buffer* nilBuffer=nullptr;UINT zero=0;dc->IASetVertexBuffers(0,1,&nilBuffer,&zero,&zero);
             structured(blockUpload,blockView,blockCapacity,UINT(bakeBlocks.size()),sizeof(uint32_t),true);
             D3D11_MAPPED_SUBRESOURCE blocksMap{};check(dc->Map(blockUpload.Get(),0,D3D11_MAP_WRITE_DISCARD,0,&blocksMap));std::memcpy(blocksMap.pData,bakeBlocks.data(),bakeBlocks.size()*4);dc->Unmap(blockUpload.Get(),0);
             perf.uploads++;perf.uploadBytes+=bakeBlocks.size()*4;uploadPerf.workBytes+=bakeBlocks.size()*4;uploadPerf.bakedVertices+=bakeBlocks.size()*64;
@@ -586,29 +666,101 @@ struct Renderer {
         }
         if(profile)batchPerf.buildUs+=now()-bt;
     }
+    bool constantsChanged(ConstantStorage& c,const DrawCall& d,const Buffer& binding,bool batched,uint32_t id) {
+        if(!c.dependenciesReady){
+            for(const auto& p:d.patches)if(p.offset>=binding.offset&&p.offset<binding.offset+binding.bytes){
+                if(!batched&&(p.kind==1||p.kind==2||p.kind==6||p.kind==7))c.dependencies|=1;
+                if(p.kind>=3&&p.kind<=11)c.dependencies|=2;
+                if(p.kind>=12&&p.kind<=15)c.dependencies|=4;
+                if(!batched&&(p.kind==16||p.kind==17))c.dependencies|=8;
+            }c.dependenciesReady=true;
+        }
+        bool changed=!c.inputReady||c.materialDirty||((c.dependencies&1)&&c.poseEpoch!=poseVersions[d.pose])
+            ||((c.dependencies&2)&&c.cameraEpoch!=cameraEpoch)||((c.dependencies&4)&&c.timeEpoch!=timeEpoch)
+            ||((c.dependencies&8)&&c.colorEpoch!=colorVersions[id]);
+        return changed;
+    }
+    void rememberConstants(ConstantStorage& c,const DrawCall& d,uint32_t id) {
+        c.inputReady=true;c.materialDirty=false;c.poseEpoch=poseVersions[d.pose];c.cameraEpoch=cameraEpoch;c.timeEpoch=timeEpoch;c.colorEpoch=colorVersions[id];
+    }
+    void prepareConstants(UINT first,UINT count) {
+        ringData.clear();ringSerial++;
+        for(UINT i=first;i<first+count;i++){
+            UINT id=list[i]-1;auto& d=*draws[id];if(d.composite||!live[d.pose])continue;
+            bool batched=gpuBatch&&d.batchable&&std::min(first+count,batchEnds[i])>i+1;
+            if(batched)i=std::min(first+count,batchEnds[i])-1;
+            for(auto& binding:d.buffers){
+                auto& c=*(batched?binding.batchStorage:binding.storage);const auto& b=binding.binding;
+                if(c.ringSerial==ringSerial)continue;
+                if(c.evaluatedFrame!=stats.frames){
+                    if(constantsChanged(c,d,b,batched,id)){
+                        patch(d,b,batched);std::memcpy(c.uploaded.data(),d.bytes.data()+b.offset,b.bytes);rememberConstants(c,d,id);timeline.perf.constantEvaluations++;
+                    }else timeline.perf.constantReuses++;
+                    c.evaluatedFrame=stats.frames;
+                }else timeline.perf.constantReuses++;
+                c.ringOffset=UINT(ringData.size());c.ringSerial=ringSerial;
+                size_t aligned=(size_t(b.bytes)+255)&~size_t(255);ringData.resize(ringData.size()+aligned);
+                std::memcpy(ringData.data()+c.ringOffset,c.uploaded.data(),b.bytes);
+            }
+        }
+        if(ringData.empty()||ringData==ringResident)return;
+        require(ringData.size()<=UINT32_MAX-255);
+        if(!constantRing||constantRingCapacity<ringData.size()){
+            constantRingCapacity=UINT((ringData.size()+255)&~size_t(255));constantRing.Reset();D3D11_BUFFER_DESC b{};
+            b.ByteWidth=constantRingCapacity;b.Usage=D3D11_USAGE_DYNAMIC;b.BindFlags=D3D11_BIND_CONSTANT_BUFFER;b.CPUAccessFlags=D3D11_CPU_ACCESS_WRITE;
+            check(device->CreateBuffer(&b,nullptr,&constantRing));memoryDirty=true;
+        }
+        D3D11_MAPPED_SUBRESOURCE mapped{};check(recording->Map(constantRing.Get(),0,D3D11_MAP_WRITE_DISCARD,0,&mapped));
+        std::memcpy(mapped.pData,ringData.data(),ringData.size());recording->Unmap(constantRing.Get(),0);
+        perf.uploads++;perf.uploadBytes+=ringData.size();uploadPerf.constantBytes+=ringData.size();uploadPerf.constantUploads++;
+        submission.ringMaps++;submission.ringBytes+=ringData.size();
+        ringResident=ringData;
+    }
     void render(unsigned segment) {
         const double start=now();Timing* timing=nullptr;
+        const bool immediate=configuration.submission==0&&submission.immediateAvailable;
+        // Snapshot only after consuming/validating a nonempty segment.
+        ComPtr<ID3D11RenderTargetView> rtv;ComPtr<ID3D11DepthStencilView> dsv;
+        UINT viewportCount=1;D3D11_VIEWPORT viewport{};
+        StateScope state(*this);recording=immediate?context.Get():deferred.Get();
+        bool timelineOpen=false;
         try {
             if(segment==0){profile=stats.frames%64==0;if(profile)perf.sampledFrames++;const double at=profile?now():0;const uint64_t r=read.load(std::memory_order_relaxed);require(r!=write.load(std::memory_order_acquire));auto& p=ring[r%ring.size()];apply(p);read.store(r+1,std::memory_order_release);if(profile)perf.applyUs+=now()-at;}
             require(size_t(segment)*2+1<segs.size());
             UINT first=segs[segment*2],count=segs[segment*2+1];require(first+count<=list.size());
             // An empty boundary still consumes segment zero's packet, but does
             // not snapshot/restore the pipeline or execute an empty command list.
-            if(count==0&&!frame.clearStencil){timeline.perf.emptySegments++;finishRender(start);return;}
-            ComPtr<ID3D11RenderTargetView> rtv;ComPtr<ID3D11DepthStencilView> dsv;context->OMGetRenderTargets(1,&rtv,&dsv);require(rtv!=nullptr);
+            if(count==0&&!frame.clearStencil){timeline.perf.emptySegments++;state.restore();finishRender(start);return;}
+            context->OMGetRenderTargets(1,&rtv,&dsv);context->RSGetViewports(&viewportCount,&viewport);
+            require(rtv!=nullptr);
             if(segment==0&&frame.clearStencil){require(dsv!=nullptr);D3D11_DEPTH_STENCIL_VIEW_DESC desc{};dsv->GetDesc(&desc);require(desc.Format==DXGI_FORMAT_D24_UNORM_S8_UINT||desc.Format==DXGI_FORMAT_D32_FLOAT_S8X24_UINT);context->ClearDepthStencilView(dsv.Get(),D3D11_CLEAR_STENCIL,0,0);}
-            UINT viewportCount=1;D3D11_VIEWPORT viewport{};context->RSGetViewports(&viewportCount,&viewport);require(viewportCount==1);
-            auto* dc=deferred.Get();ID3D11RenderTargetView* rt=rtv.Get();dc->OMSetRenderTargets(1,&rt,dsv.Get());dc->RSSetViewports(1,&viewport);dc->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+            require(viewportCount==1);
+            state.begin(immediate);
+            auto* dc=recording;ID3D11RenderTargetView* rt=rtv.Get();dc->OMSetRenderTargets(1,&rt,dsv.Get());dc->RSSetViewports(1,&viewport);dc->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
             dc->GSSetShader(nullptr,nullptr,0);dc->HSSetShader(nullptr,nullptr,0);dc->DSSetShader(nullptr,nullptr,0);
-            timing=profile?beginGpu():nullptr;if(timing)dc->End(timing->start.Get());prepareGpu();
-            std::array<ID3D11Buffer*,14> boundVs{},boundPs{};Shader* boundShader=nullptr;
+            timing=profile?beginGpu():nullptr;
+            const bool compositeOnly=count==1&&draws[list[first]-1]->composite;
+            if(immediate){if(timing)context->Begin(timing->disjoint.Get());timeline.mark(compositeOnly?6u:4u);timelineOpen=true;submission.immediateSegments++;}
+            else submission.deferredSegments++;
+            const double recordStart=now();
+            if(timing)dc->End(timing->start.Get());prepareGpu();
+            // Use offset bindings only on immediate contexts. Old deferred drivers
+            // can drop offset-only changes; the reference path keeps legacy CBs.
+            ringActive=immediate&&configuration.constantRing&&submission.ringAvailable;
+            if(ringActive){double at=profile?now():0;prepareConstants(first,count);if(profile)perf.constantsUs+=now()-at;}
+            std::array<ID3D11Buffer*,14> boundVs{},boundPs{};
+            std::array<ConstantStorage*,14> boundVsStorage{},boundPsStorage{};Shader* boundShader=nullptr;
+            Geometry* boundGeometry=nullptr;ID3D11InputLayout* boundLayout=nullptr;bool boundBatch=false;
+            ID3D11Buffer* boundColor=nullptr;
+            std::array<ID3D11ShaderResourceView*,128> boundVsViews{},boundPsViews{};
+            std::array<ID3D11SamplerState*,16> boundVsSamplers{},boundPsSamplers{};
             for(UINT i=first;i<first+count;i++){
                 require(list[i]&&list[i]<=draws.size());auto& d=*draws[list[i]-1];if(!d.composite&&!live[d.pose])continue;auto& s=*d.shader;
                 if(d.composite){
                     dc->VSSetShader(s.vs.Get(),nullptr,0);dc->PSSetShader(s.ps.Get(),nullptr,0);dc->IASetInputLayout(nullptr);
                     dc->OMSetBlendState(s.blendState.Get(),nullptr,~0u);dc->OMSetDepthStencilState(s.depth.Get(),0);dc->RSSetState(s.raster.Get());
                     ID3D11ShaderResourceView* views[]={d.black.Get(),d.white.Get()};dc->PSSetShaderResources(0,2,views);dc->Draw(3,0);
-                    ID3D11ShaderResourceView* nil[2]{};dc->PSSetShaderResources(0,2,nil);boundShader=nullptr;stats.draws++;continue;
+                    ID3D11ShaderResourceView* nil[2]{};dc->PSSetShaderResources(0,2,nil);boundPsViews[0]=boundPsViews[1]=nullptr;boundLayout=nullptr;boundShader=nullptr;stats.draws++;continue;
                 }
                 auto& g=*d.geometry;
                 bool batched=false;UINT batchFirst=i;
@@ -640,7 +792,7 @@ struct Renderer {
                         ComPtr<ID3D11Resource> resource;rtv->GetResource(&resource);ComPtr<ID3D11Texture2D> source;check(resource.As(&source));D3D11_TEXTURE2D_DESC td{};source->GetDesc(&td);require(td.SampleDesc.Count==1&&td.ArraySize==1);
                         D3D11_RENDER_TARGET_VIEW_DESC vd{};rtv->GetDesc(&vd);require(vd.ViewDimension==D3D11_RTV_DIMENSION_TEXTURE2D&&vd.Texture2D.MipSlice==0);
                         if(!grab.texture||td.Width!=grab.desc.Width||td.Height!=grab.desc.Height||td.Format!=grab.desc.Format||vd.Format!=grab.format){grab.desc=td;grab.format=vd.Format;grab.texture.Reset();grab.view.Reset();td.BindFlags=D3D11_BIND_SHADER_RESOURCE;td.Usage=D3D11_USAGE_DEFAULT;td.CPUAccessFlags=0;td.MiscFlags=0;memoryDirty=true;check(device->CreateTexture2D(&td,nullptr,&grab.texture));D3D11_SHADER_RESOURCE_VIEW_DESC sv{};sv.Format=vd.Format;sv.ViewDimension=D3D11_SRV_DIMENSION_TEXTURE2D;sv.Texture2D.MipLevels=td.MipLevels;check(device->CreateShaderResourceView(grab.texture.Get(),&sv,&grab.view));}
-                        ID3D11ShaderResourceView* nil[16]{};dc->VSSetShaderResources(0,16,nil);dc->PSSetShaderResources(0,16,nil);dc->OMSetRenderTargets(0,nullptr,nullptr);dc->CopyResource(grab.texture.Get(),source.Get());dc->OMSetRenderTargets(1,&rt,dsv.Get());
+                        ID3D11ShaderResourceView* nil[16]{};dc->VSSetShaderResources(0,16,nil);dc->PSSetShaderResources(0,16,nil);std::fill_n(boundVsViews.begin(),16,nullptr);std::fill_n(boundPsViews.begin(),16,nullptr);dc->OMSetRenderTargets(0,nullptr,nullptr);dc->CopyResource(grab.texture.Get(),source.Get());dc->OMSetRenderTargets(1,&rt,dsv.Get());
                         grab.frame=stats.frames;gpuPerf.grabCopies++;
                         // camRT formats accepted here are 32/64/128-bit color formats.
                         UINT pixelBytes=(td.Format==DXGI_FORMAT_R32G32B32A32_FLOAT||td.Format==DXGI_FORMAT_R32G32B32A32_TYPELESS)?16u:(td.Format==DXGI_FORMAT_R16G16B16A16_FLOAT||td.Format==DXGI_FORMAT_R16G16B16A16_TYPELESS||td.Format==DXGI_FORMAT_R16G16B16A16_UNORM)?8u:4u;
@@ -648,33 +800,68 @@ struct Renderer {
                     }else gpuPerf.namedGrabHits++;
                 }
                 if(boundShader!=&s){dc->VSSetShader(s.vs.Get(),nullptr,0);dc->PSSetShader(s.ps.Get(),nullptr,0);dc->OMSetBlendState(s.blendState.Get(),nullptr,~0u);dc->OMSetDepthStencilState(s.depth.Get(),s.stencilRef);dc->RSSetState(s.raster.Get());boundShader=&s;}
-                dc->IASetInputLayout(batched?d.batchLayout.Get():d.layout.Get());
-                ID3D11Buffer* vb[8]{};for(unsigned j=0;j<8;j++)vb[j]=g.buffers[j].Get();auto strides=g.strides;auto offsets=g.offsets;if(d.color&&!batched){if(!d.colorUploaded||std::memcmp(d.uploadedColor.data(),d.bytes.data(),16)){dc->UpdateSubresource(d.color.Get(),0,nullptr,d.bytes.data(),0,0);std::memcpy(d.uploadedColor.data(),d.bytes.data(),16);d.colorUploaded=true;perf.uploads++;perf.uploadBytes+=16;uploadPerf.colorBytes+=16;}vb[7]=d.color.Get();strides[7]=offsets[7]=0;}dc->IASetVertexBuffers(0,8,vb,strides.data(),offsets.data());dc->IASetIndexBuffer(g.indices.Get(),g.indexFormat,0);
+                auto* layout=batched?d.batchLayout.Get():d.layout.Get();if(boundLayout!=layout){dc->IASetInputLayout(layout);boundLayout=layout;}
+                if(!batched){
+                    if(boundGeometry!=&g||boundBatch){
+                        ID3D11Buffer* vb[8]{};for(unsigned j=0;j<8;j++)vb[j]=g.buffers[j].Get();
+                        dc->IASetVertexBuffers(0,8,vb,g.strides.data(),g.offsets.data());dc->IASetIndexBuffer(g.indices.Get(),g.indexFormat,0);boundColor=g.buffers[7].Get();
+                    }
+                    if(d.color){
+                        if(!d.colorUploaded||std::memcmp(d.uploadedColor.data(),d.bytes.data(),16)){dc->UpdateSubresource(d.color.Get(),0,nullptr,d.bytes.data(),0,0);std::memcpy(d.uploadedColor.data(),d.bytes.data(),16);d.colorUploaded=true;perf.uploads++;perf.uploadBytes+=16;uploadPerf.colorBytes+=16;}
+                        if(boundColor!=d.color.Get()){ID3D11Buffer* color=d.color.Get();UINT zero=0;dc->IASetVertexBuffers(7,1,&color,&zero,&zero);boundColor=color;}
+                    }else if(boundColor!=g.buffers[7].Get()){ID3D11Buffer* color=g.buffers[7].Get();dc->IASetVertexBuffers(7,1,&color,&g.strides[7],&g.offsets[7]);boundColor=color;}
+                }
+                boundGeometry=&g;bool wasBatch=boundBatch;boundBatch=batched;
                 if(batched&&!gpuBatch){if(cpuBatchCapacity<batchVertexCount){cpuBatchCapacity=UINT(batchVertexCount);batchBuffer.Reset();D3D11_BUFFER_DESC b{};b.ByteWidth=cpuBatchCapacity*sizeof(BatchVertex);b.Usage=D3D11_USAGE_DYNAMIC;b.BindFlags=D3D11_BIND_VERTEX_BUFFER;b.CPUAccessFlags=D3D11_CPU_ACCESS_WRITE;memoryDirty=true;check(device->CreateBuffer(&b,nullptr,&batchBuffer));}D3D11_MAPPED_SUBRESOURCE map{};check(dc->Map(batchBuffer.Get(),0,D3D11_MAP_WRITE_DISCARD,0,&map));std::memcpy(map.pData,batchVertices.data(),batchVertexCount*sizeof(BatchVertex));dc->Unmap(batchBuffer.Get(),0);ID3D11Buffer* batch=batchBuffer.Get();UINT stride=sizeof(BatchVertex),offset=0;dc->IASetVertexBuffers(0,1,&batch,&stride,&offset);perf.uploads++;perf.uploadBytes+=batchVertexCount*sizeof(BatchVertex);uploadPerf.cpuBatchBytes+=batchVertexCount*sizeof(BatchVertex);}
-                if(batched&&gpuBatch){ID3D11Buffer* batch=gpuVertices.Get();UINT stride=sizeof(BatchVertex),offset=0;dc->IASetVertexBuffers(0,1,&batch,&stride,&offset);dc->IASetIndexBuffer(orderBuffer.Get(),DXGI_FORMAT_R32_UINT,0);}
+                if(batched&&gpuBatch&&!wasBatch){ID3D11Buffer* batch=gpuVertices.Get();UINT stride=sizeof(BatchVertex),offset=0;dc->IASetVertexBuffers(0,1,&batch,&stride,&offset);dc->IASetIndexBuffer(orderBuffer.Get(),DXGI_FORMAT_R32_UINT,0);}
                 for(auto& binding:d.buffers){
                     auto& c=*(batched?binding.batchStorage:binding.storage);const auto& cbBinding=binding.binding;
+                    if(ringActive){
+                        require(c.ringSerial==ringSerial);
+                        auto& previous=cbBinding.stage==0?boundVsStorage[cbBinding.slot]:boundPsStorage[cbBinding.slot];
+                        if(previous==&c){timeline.perf.constantBindSkips++;continue;}previous=&c;
+                        ID3D11Buffer* cb=constantRing.Get();UINT offset=c.ringOffset/16,length=((cbBinding.bytes+255)&~255u)/16;
+                        if(cbBinding.stage==0)context1->VSSetConstantBuffers1(cbBinding.slot,1,&cb,&offset,&length);
+                        else context1->PSSetConstantBuffers1(cbBinding.slot,1,&cb,&offset,&length);
+                        submission.ringBindings++;continue;
+                    }
+                    legacyConstants(c,cbBinding.bytes);
                     if(c.evaluatedFrame!=stats.frames){
-                        patch(d,cbBinding,batched);const auto* data=d.bytes.data()+cbBinding.offset;
-                        if(!c.ready||std::memcmp(c.uploaded.data(),data,cbBinding.bytes)){dc->UpdateSubresource(c.buffer.Get(),0,nullptr,data,0,0);std::memcpy(c.uploaded.data(),data,cbBinding.bytes);c.ready=true;perf.uploads++;perf.uploadBytes+=cbBinding.bytes;uploadPerf.constantBytes+=cbBinding.bytes;uploadPerf.constantUploads++;}
-                        c.evaluatedFrame=stats.frames;timeline.perf.constantEvaluations++;
+                        if(constantsChanged(c,d,cbBinding,batched,list[batchFirst]-1)){
+                            patch(d,cbBinding,batched);const auto* data=d.bytes.data()+cbBinding.offset;
+                            if(!c.ready||std::memcmp(c.uploaded.data(),data,cbBinding.bytes)){dc->UpdateSubresource(c.buffer.Get(),0,nullptr,data,0,0);std::memcpy(c.uploaded.data(),data,cbBinding.bytes);c.ready=true;perf.uploads++;perf.uploadBytes+=cbBinding.bytes;uploadPerf.constantBytes+=cbBinding.bytes;uploadPerf.constantUploads++;}
+                            rememberConstants(c,d,list[batchFirst]-1);timeline.perf.constantEvaluations++;
+                        }else timeline.perf.constantReuses++;
+                        c.evaluatedFrame=stats.frames;
                     }else timeline.perf.constantReuses++;
                     ID3D11Buffer* cb=c.buffer.Get();auto& previous=cbBinding.stage==0?boundVs[cbBinding.slot]:boundPs[cbBinding.slot];
                     if(previous==cb){timeline.perf.constantBindSkips++;continue;}previous=cb;
                     if(cbBinding.stage==0)dc->VSSetConstantBuffers(cbBinding.slot,1,&cb);else dc->PSSetConstantBuffers(cbBinding.slot,1,&cb);
                 }
                 if(profile)perf.constantsUs+=now()-constantsStart;const double drawStart=profile?now():0;
-                for(const auto& t:d.textures){ID3D11ShaderResourceView* v=t.grab?grabSurfaces.at(t.grabId).view.Get():t.view.Get();ID3D11SamplerState* sm=t.sampler.Get();if(t.stage==0){dc->VSSetShaderResources(UINT(t.slot),1,&v);if(t.samplerSlot>=0)dc->VSSetSamplers(UINT(t.samplerSlot),1,&sm);}else{dc->PSSetShaderResources(UINT(t.slot),1,&v);if(t.samplerSlot>=0)dc->PSSetSamplers(UINT(t.samplerSlot),1,&sm);}}
+                for(const auto& t:d.textures){
+                    ID3D11ShaderResourceView* v=t.grab?grabSurfaces.at(t.grabId).view.Get():t.view.Get();ID3D11SamplerState* sm=t.sampler.Get();
+                    auto& previous=t.stage==0?boundVsViews[t.slot]:boundPsViews[t.slot];
+                    if(previous!=v){previous=v;if(t.stage==0)dc->VSSetShaderResources(UINT(t.slot),1,&v);else dc->PSSetShaderResources(UINT(t.slot),1,&v);}
+                    if(t.samplerSlot>=0){auto& prior=t.stage==0?boundVsSamplers[t.samplerSlot]:boundPsSamplers[t.samplerSlot];if(prior!=sm){prior=sm;if(t.stage==0)dc->VSSetSamplers(UINT(t.samplerSlot),1,&sm);else dc->PSSetSamplers(UINT(t.samplerSlot),1,&sm);}}
+                }
                 if(batched){if(gpuBatch)dc->DrawIndexed(UINT(batchVertexCount),batchStart,0);else dc->Draw(UINT(batchVertexCount),0);}else{dc->DrawIndexed(g.indexCount,g.indexStart,g.baseVertex);batchPerf.singleDraws++;countSingle(i,first,first+count,d);}stats.draws++;if(profile)perf.drawUs+=now()-drawStart;
             }
             if(timing)dc->End(timing->end.Get());
-            const double executeStart=profile?now():0;ComPtr<ID3D11CommandList> command;check(dc->FinishCommandList(FALSE,&command));
-            if(timing)context->Begin(timing->disjoint.Get());
-            const bool compositeOnly=count==1&&draws[list[first]-1]->composite;
-            timeline.mark(compositeOnly?6u:4u);context->ExecuteCommandList(command.Get(),TRUE);timeline.mark(7);
+            submission.recordUs+=now()-recordStart;
+            const double executeStart=profile?now():0;
+            if(!immediate){
+                ComPtr<ID3D11CommandList> command;check(dc->FinishCommandList(FALSE,&command));
+                if(timing)context->Begin(timing->disjoint.Get());
+                timeline.mark(compositeOnly?6u:4u);timelineOpen=true;context->ExecuteCommandList(command.Get(),TRUE);
+            }
+            timeline.mark(7);timelineOpen=false;
             endGpu(timing);timing=nullptr;if(profile)perf.executeUs+=now()-executeStart;
-        }catch(HRESULT hr){stats.errors++;stats.lastHR=hr;deferred->ClearState();ComPtr<ID3D11CommandList> discard;deferred->FinishCommandList(FALSE,&discard);}
+        }catch(HRESULT hr){stats.errors++;stats.lastHR=hr;if(!immediate){deferred->ClearState();ComPtr<ID3D11CommandList> discard;deferred->FinishCommandList(FALSE,&discard);}}
         catch(...){stats.errors++;stats.lastHR=E_FAIL;}
+        if(timelineOpen)timeline.mark(7);
+        if(timing)endGpu(timing);
+        state.restore();
         finishRender(start);
     }
     void finishRender(double start) {
@@ -719,6 +906,8 @@ extern "C" intptr_t __cdecl sf_z_drfull_v1(int op,int token,const void* args) no
         if(op==drfull::Commit||op==drfull::CommitPacked)return r->commit(*static_cast<const drfull::Frame*>(args),op==drfull::CommitPacked);
         if(op==drfull::Stats){*const_cast<drfull::Statistics*>(static_cast<const drfull::Statistics*>(args))=r->snapshot();return 1;}
         std::lock_guard<std::mutex> lock(r->mutex);
+        if(op==drfull::Configure){require(args&&r->stats.events==0);auto c=*static_cast<const drfull::Configuration*>(args);require(c.submission<=1&&c.constantRing<=1);r->configuration=c;return 1;}
+        if(op==drfull::SubmissionPerf){*const_cast<drfull::SubmissionPerformance*>(static_cast<const drfull::SubmissionPerformance*>(args))=r->submission;return 1;}
         if(op==drfull::MemoryPerf){r->sampleMemory();*const_cast<drfull::MemoryPerformance*>(static_cast<const drfull::MemoryPerformance*>(args))=r->memory.perf;return 1;}
         if(op==drfull::TimelinePerf){*const_cast<drfull::TimelinePerformance*>(static_cast<const drfull::TimelinePerformance*>(args))=r->timeline.perf;return 1;}
         switch(op){case drfull::GpuPerf:*const_cast<drfull::GpuPerformance*>(static_cast<const drfull::GpuPerformance*>(args))=r->gpuPerf;return 1;case drfull::UploadPerf:*const_cast<drfull::UploadPerformance*>(static_cast<const drfull::UploadPerformance*>(args))=r->uploadPerf;return 1;case drfull::GeometryCpu:return r->cpuGeometry(*static_cast<const drfull::CpuGeometry*>(args));case drfull::BatchPerf:*const_cast<drfull::BatchPerformance*>(static_cast<const drfull::BatchPerformance*>(args))=r->batchPerf;return 1;case drfull::Perf:{auto p=r->perf;const double n=double(std::max(uint64_t(1),r->perf.sampledFrames));p.applyUs/=n;p.cullUs/=n;p.constantsUs/=n;p.drawUs/=n;p.executeUs/=n;*const_cast<drfull::Performance*>(static_cast<const drfull::Performance*>(args))=p;return 1;}case drfull::Composite:return r->composite(*static_cast<const drfull::CompositeIn*>(args));case drfull::Program:return r->program(*static_cast<const drfull::ProgramIn*>(args));case drfull::Geometry:return r->geometry(*static_cast<const drfull::GeometryIn*>(args));case drfull::Draw:return r->draw(*static_cast<const drfull::DrawIn*>(args));default:throw E_INVALIDARG;}

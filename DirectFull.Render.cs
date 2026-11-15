@@ -190,6 +190,7 @@ namespace StutterFix
 
         static void StartFull()
         {
+            if (probeHidden) throw new InvalidOperationException("probe restore before starting renderer; hidden-reference diagnostic cannot be a normal sample");
             if (rendering || preparing) { CheckLease(); return; }
             if (Active) Stop("switch ceiling to full");
             firstReadyTicks = 0; prepareStageTicks.Clear(); fullStartTicks = Stopwatch.GetTimestamp(); prepareSlices = prepareMaxTicks = prepareWorkTicks = 0;
@@ -288,6 +289,8 @@ namespace StutterFix
         {
             var create = new N.Create { Resource = rt.GetNativeTexturePtr(), Capacity = (uint)capacity, Abi = 1 };
             fullToken = N.Require(N.Op.Create, 0, &create);
+            var config = new N.Configuration { Submission = deferredSubmission ? 1u : 0u, ConstantRing = legacyConstants ? 0u : 1u };
+            N.Require(N.Op.Configure, fullToken, &config);
         }
         static Source AddSource(Renderer r)
         {
@@ -974,6 +977,7 @@ namespace StutterFix
                 if (transformsDirty) BuildPoseTracking();
                 fp = Stopwatch.GetTimestamp() - phase; poseTicks += fp; phase = Stopwatch.GetTimestamp();
                 UpdateExplicitVisibility();
+                UpdateParticleMeshes();
                 if (orderDirty) { long rp = Stopwatch.GetTimestamp(); RebuildFullOrder(); replanMaxTicks = Math.Max(replanMaxTicks, Stopwatch.GetTimestamp() - rp); }
                 fs = Stopwatch.GetTimestamp() - phase; sortTicks += fs;
                 long canvas = Stopwatch.GetTimestamp(); RenderCanvases(); fa = Stopwatch.GetTimestamp() - canvas;
@@ -1055,6 +1059,7 @@ namespace StutterFix
             if (before != null) { if (camera) camera.RemoveCommandBuffer(CameraEvent.BeforeForwardAlpha, before); before.Release(); before = null; }
             if (opaque != null) { if (camera) camera.RemoveCommandBuffer(CameraEvent.BeforeForwardOpaque, opaque); opaque.Release(); opaque = null; }
             ReleaseTimeline();
+            ReleaseParticleMeshes();
             ReleaseCanvases();
             if (fullToken != 0) { N.Call(N.Op.Destroy, fullToken); fullToken = 0; }
             if (transforms.isCreated) transforms.Dispose(); if (poses.IsCreated) poses.Dispose(); if (moved.IsCreated) moved.Dispose();

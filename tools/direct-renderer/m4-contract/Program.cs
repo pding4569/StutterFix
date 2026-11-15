@@ -23,6 +23,7 @@ static class Program
         Check((int)N.Op.GpuPerf==18&&sizeof(N.GpuPerformance)==80,"M4g appended GPU counters ABI");
         Check((int)N.Op.TimelineEvent==19&&(int)N.Op.TimelinePerf==20&&sizeof(N.TimelinePerformance)==288,"M4h appended timeline ABI");
         Check((int)N.Op.MemoryPerf==21&&sizeof(N.MemoryPerformance)==208,"M4h appended memory ABI");
+        Check((int)N.Op.Configure==22&&(int)N.Op.SubmissionPerf==23&&sizeof(N.Configuration)==8&&sizeof(N.SubmissionPerformance)==96,"M4i appended configuration/submission ABI");
         Check(sizeof(N.Attribute)==20&&sizeof(N.Buffer)==16&&sizeof(N.Patch)==8&&sizeof(N.Texture)==40,"nested ABI");
         var shaders=S.Load();Check(shaders.Count==21,"shader count");Check(ReferenceEquals(shaders,S.Load()),"resource reload");
         using var doc=JsonDocument.Parse(File.ReadAllBytes(Path.Combine(root,"out/direct-renderer/m4bc/shaders/bindings.json")));

@@ -4,6 +4,7 @@
 #define NOMINMAX
 #include <windows.h>
 #include <d3d11.h>
+#include <d3d11_1.h>
 #include <d3dcompiler.h>
 #include <wrl/client.h>
 #include <array>
@@ -36,7 +37,7 @@ struct Reader {
     std::vector<uint8_t> blob(){auto n=pod<uint32_t>();require(n<10000000,"case extent");std::vector<uint8_t>b(n);f.read(reinterpret_cast<char*>(b.data()),n);require(bool(f),"case bytes");return b;}
     std::string text(){auto b=blob();return std::string(b.begin(),b.end());}
 };
-int dispatch(int op,int token,const void* p){auto n=sf_z_drfull_v1(op,token,p);if(n<=0){std::cerr<<"dispatch "<<op<<" hr="<<std::hex<<sf_z_drfull_v1(Error,0,nullptr)<<std::dec<<"\n";throw std::runtime_error("native refused fixture");}return int(n);}
+int dispatch(int op,int token,const void* p){auto n=sf_z_drfull_v1(op,token,p);if(n<=0){std::cerr<<"dispatch "<<op<<" hr="<<std::hex<<sf_z_drfull_v1(Error,0,nullptr)<<std::dec<<"\n";throw std::runtime_error("native refused fixture");}if(op==Create){char env[2]{};Configuration c{GetEnvironmentVariableA("SF_DRFULL_TEST_DEFERRED",env,2)?1u:0u,GetEnvironmentVariableA("SF_DRFULL_TEST_LEGACY_CB",env,2)?0u:1u};require(sf_z_drfull_v1(Configure,int(n),&c)!=0,"fixture configure");}return int(n);}
 struct Vertex{float p[3],color[4],uv[2],uv1[2];};
 ComPtr<ID3D11Buffer> buffer(ID3D11Device* d,const void* p,UINT n,UINT flags){D3D11_BUFFER_DESC b{};b.ByteWidth=n;b.Usage=D3D11_USAGE_DEFAULT;b.BindFlags=flags;D3D11_SUBRESOURCE_DATA data{};data.pSysMem=p;ComPtr<ID3D11Buffer> out;check(d->CreateBuffer(&b,p?&data:nullptr,&out));return out;}
 ComPtr<ID3DBlob> compile(const std::filesystem::path& path,const char* entry,const char* profile,int floor,int snap,int point){
@@ -46,6 +47,36 @@ ComPtr<ID3DBlob> compile(const std::filesystem::path& path,const char* entry,con
 }
 std::vector<uint8_t> readback(ID3D11Device* d,ID3D11DeviceContext* c,ID3D11Texture2D* texture){D3D11_TEXTURE2D_DESC td{};texture->GetDesc(&td);td.BindFlags=0;td.Usage=D3D11_USAGE_STAGING;td.CPUAccessFlags=D3D11_CPU_ACCESS_READ;ComPtr<ID3D11Texture2D> staging;check(d->CreateTexture2D(&td,nullptr,&staging));c->CopyResource(staging.Get(),texture);D3D11_MAPPED_SUBRESOURCE map{};check(c->Map(staging.Get(),0,D3D11_MAP_READ,0,&map));std::vector<uint8_t> bytes(size_t(td.Width)*td.Height*4);for(UINT y=0;y<td.Height;y++)std::memcpy(bytes.data()+size_t(y)*td.Width*4,static_cast<const uint8_t*>(map.pData)+size_t(y)*map.RowPitch,td.Width*4);c->Unmap(staging.Get(),0);return bytes;}
 void ppm(const std::filesystem::path& path,const std::vector<uint8_t>& bytes){std::ofstream f(path,std::ios::binary);f<<"P6\n192 128\n255\n";for(size_t i=0;i<bytes.size();i+=4)f.write(reinterpret_cast<const char*>(bytes.data()+i),3);}
+std::vector<uint64_t> pipelineState(ID3D11DeviceContext* c){
+    std::vector<uint64_t> result;
+    auto scalar=[&](uint64_t n){result.push_back(n);};
+    auto object=[&](IUnknown* p){scalar(reinterpret_cast<uintptr_t>(p));if(p)p->Release();};
+    auto bytes=[&](const void* p,size_t n){auto b=static_cast<const uint8_t*>(p);for(size_t i=0;i<n;i++)scalar(b[i]);};
+    ID3D11InputLayout* layout=nullptr;c->IAGetInputLayout(&layout);object(layout);
+    ID3D11Buffer* buffers[8]{};UINT strides[8]{},offsets[8]{};c->IAGetVertexBuffers(0,8,buffers,strides,offsets);for(auto b:buffers)object(b);bytes(strides,sizeof(strides));bytes(offsets,sizeof(offsets));
+    ID3D11Buffer* index=nullptr;DXGI_FORMAT format{};UINT offset=0;c->IAGetIndexBuffer(&index,&format,&offset);object(index);scalar(format);scalar(offset);
+    D3D11_PRIMITIVE_TOPOLOGY topology{};c->IAGetPrimitiveTopology(&topology);scalar(topology);
+    ID3D11VertexShader* vs=nullptr;ID3D11PixelShader* ps=nullptr;ID3D11GeometryShader* gs=nullptr;ID3D11HullShader* hs=nullptr;ID3D11DomainShader* ds=nullptr;ID3D11ComputeShader* cs=nullptr;
+    c->VSGetShader(&vs,nullptr,nullptr);c->PSGetShader(&ps,nullptr,nullptr);c->GSGetShader(&gs,nullptr,nullptr);c->HSGetShader(&hs,nullptr,nullptr);c->DSGetShader(&ds,nullptr,nullptr);c->CSGetShader(&cs,nullptr,nullptr);
+    object(vs);object(ps);object(gs);object(hs);object(ds);object(cs);
+    ComPtr<ID3D11DeviceContext1> c1;check(c->QueryInterface(IID_PPV_ARGS(&c1)));
+    for(int stage=0;stage<3;stage++){
+        ID3D11ShaderResourceView* views[128]{};ID3D11SamplerState* samplers[16]{};ID3D11Buffer* cb[14]{};UINT first[14]{},count[14]{};
+        if(stage==0){c->VSGetShaderResources(0,128,views);c->VSGetSamplers(0,16,samplers);c1->VSGetConstantBuffers1(0,14,cb,first,count);}
+        if(stage==1){c->PSGetShaderResources(0,128,views);c->PSGetSamplers(0,16,samplers);c1->PSGetConstantBuffers1(0,14,cb,first,count);}
+        if(stage==2){c->CSGetShaderResources(0,128,views);c->CSGetSamplers(0,16,samplers);c1->CSGetConstantBuffers1(0,14,cb,first,count);}
+        for(auto p:views)object(p);for(auto p:samplers)object(p);for(auto p:cb)object(p);bytes(first,sizeof(first));bytes(count,sizeof(count));
+    }
+    ID3D11UnorderedAccessView* uav[8]{};c->CSGetUnorderedAccessViews(0,8,uav);for(auto p:uav)object(p);
+    ID3D11RenderTargetView* rt[8]{};ID3D11DepthStencilView* depth=nullptr;c->OMGetRenderTargets(8,rt,&depth);for(auto p:rt)object(p);object(depth);
+    ID3D11BlendState* blend=nullptr;FLOAT factor[4]{};UINT mask=0;c->OMGetBlendState(&blend,factor,&mask);object(blend);bytes(factor,sizeof(factor));scalar(mask);
+    ID3D11DepthStencilState* stencil=nullptr;UINT ref=0;c->OMGetDepthStencilState(&stencil,&ref);object(stencil);scalar(ref);
+    ID3D11RasterizerState* raster=nullptr;c->RSGetState(&raster);object(raster);
+    D3D11_VIEWPORT vp[16]{};UINT n=16;c->RSGetViewports(&n,vp);scalar(n);bytes(vp,n*sizeof(*vp));
+    D3D11_RECT rects[16]{};n=16;c->RSGetScissorRects(&n,rects);scalar(n);bytes(rects,n*sizeof(*rects));
+    ID3D11Predicate* predicate=nullptr;BOOL value=FALSE;c->GetPredication(&predicate,&value);object(predicate);scalar(value);
+    return result;
+}
 int main(int argc,char** argv){try{
     require(argc==4,"usage: drfull-warp cases.bin reference.hlsl output-dir");
     const std::filesystem::path out=argv[3];std::filesystem::create_directories(out);
@@ -150,13 +181,37 @@ int main(int argc,char** argv){try{
                 require(readback(device.Get(),context.Get(),target.Get())==original,"retired Grab did not recreate exact snapshot");
                 dispatch(MemoryPerf,token,&retired);require(retired.grabBytes==192*128*4,"Grab reallocation count");
                 std::cout<<"PASS M4h Grab memory allocated="<<allocated.grabBytes<<" idle_bytes=0 restored="<<retired.grabBytes<<" offscreen_copies=0 pixels=identical named="<<namedGrab<<"\n";
+                // Fail after entering the isolated state, not just before a bad
+                // segment is validated. Grab intentionally rejects MSAA sources.
+                D3D11_TEXTURE2D_DESC msaaDesc{};target->GetDesc(&msaaDesc);msaaDesc.SampleDesc.Count=2;
+                ComPtr<ID3D11Texture2D> msaaTarget;ComPtr<ID3D11RenderTargetView> msaaView;
+                check(device->CreateTexture2D(&msaaDesc,nullptr,&msaaTarget));check(device->CreateRenderTargetView(msaaTarget.Get(),nullptr,&msaaView));
+                auto* msaaRt=msaaView.Get();context->OMSetRenderTargets(1,&msaaRt,nullptr);auto stateBeforeError=pipelineState(context.Get());
+                dispatch(Commit,token,&frame);event(token<<16);Statistics failed{};dispatch(Stats,token,&failed);
+                require(failed.errors==1&&stateBeforeError==pipelineState(context.Get()),"active Grab error did not restore full pipeline state");
+                context->OMSetRenderTargets(1,&rt,dsv.Get());
+                std::cout<<"PASS M4i active-scope-error MSAA_Grab=rejected state=restored errors=1\n";
             }
         }
         if(caseIndex==0 && floor<2){
             // Non-symmetric matrix transposition is a required negative control.
             auto bad=reference;float* matrix=reinterpret_cast<float*>(bad.data());for(int c=0;c<4;c++)for(int row=0;row<c;row++)std::swap(matrix[c*4+row],matrix[row*4+c]);context->UpdateSubresource(cb.Get(),0,nullptr,bad.data(),0,0);context->ClearRenderTargetView(rt,background);context->DrawIndexed(6,3,1);auto badImage=readback(device.Get(),context.Get(),target.Get());unsigned errors=0;for(size_t i=0;i<badImage.size();i+=4)if(std::memcmp(badImage.data()+i,original.data()+i,4)!=0)errors++;require(errors>1000,"matrix control failed to expose wrong layout");negative++;
             // ExecuteCommandList(TRUE) must restore Unity's immediate state.
-            context->UpdateSubresource(cb.Get(),0,nullptr,reference.data(),0,0);dispatch(Commit,token,&frame);event(token<<16);ComPtr<ID3D11VertexShader> restored;context->VSGetShader(&restored,nullptr,nullptr);require(restored.Get()==vs.Get(),"native corrupted immediate shader state");negative++;
+            // Non-null sentinels in states that native compute/ClearState touch.
+            D3D11_BUFFER_DESC sentinelDesc{};sentinelDesc.ByteWidth=64;sentinelDesc.Usage=D3D11_USAGE_DEFAULT;sentinelDesc.BindFlags=D3D11_BIND_UNORDERED_ACCESS;sentinelDesc.MiscFlags=D3D11_RESOURCE_MISC_BUFFER_ALLOW_RAW_VIEWS;
+            ComPtr<ID3D11Buffer> sentinelBuffer;check(device->CreateBuffer(&sentinelDesc,nullptr,&sentinelBuffer));D3D11_UNORDERED_ACCESS_VIEW_DESC sentinelView{};sentinelView.Format=DXGI_FORMAT_R32_TYPELESS;sentinelView.ViewDimension=D3D11_UAV_DIMENSION_BUFFER;sentinelView.Buffer.NumElements=16;sentinelView.Buffer.Flags=D3D11_BUFFER_UAV_FLAG_RAW;
+            ComPtr<ID3D11UnorderedAccessView> sentinelUav;check(device->CreateUnorderedAccessView(sentinelBuffer.Get(),&sentinelView,&sentinelUav));auto* sentinel=sentinelUav.Get();context->CSSetUnorderedAccessViews(0,1,&sentinel,nullptr);
+            const char csSource[]="[numthreads(1,1,1)] void main() {}";ComPtr<ID3DBlob> sentinelCode,sentinelError;check(D3DCompile(csSource,sizeof(csSource)-1,nullptr,nullptr,nullptr,"main","cs_5_0",0,0,&sentinelCode,&sentinelError));ComPtr<ID3D11ComputeShader> sentinelShader;check(device->CreateComputeShader(sentinelCode->GetBufferPointer(),sentinelCode->GetBufferSize(),nullptr,&sentinelShader));context->CSSetShader(sentinelShader.Get(),nullptr,0);
+            const char gsSource[]="struct V {float4 p:SV_Position;};[maxvertexcount(3)] void main(triangle V v[3],inout TriangleStream<V> o){o.Append(v[0]);o.Append(v[1]);o.Append(v[2]);}";check(D3DCompile(gsSource,sizeof(gsSource)-1,nullptr,nullptr,nullptr,"main","gs_5_0",0,0,&sentinelCode,&sentinelError));ComPtr<ID3D11GeometryShader> sentinelGs;check(device->CreateGeometryShader(sentinelCode->GetBufferPointer(),sentinelCode->GetBufferSize(),nullptr,&sentinelGs));context->GSSetShader(sentinelGs.Get(),nullptr,0);
+            ComPtr<ID3D11DeviceContext1> context1;check(context->QueryInterface(IID_PPV_ARGS(&context1)));std::array<UINT,256> sentinelData{};auto sentinelCb=buffer(device.Get(),sentinelData.data(),1024,D3D11_BIND_CONSTANT_BUFFER);ID3D11Buffer* ranged=sentinelCb.Get();UINT cbFirst=16,cbCount=16;context1->VSSetConstantBuffers1(13,1,&ranged,&cbFirst,&cbCount);context1->PSSetConstantBuffers1(13,1,&ranged,&cbFirst,&cbCount);context1->CSSetConstantBuffers1(13,1,&ranged,&cbFirst,&cbCount);
+            D3D11_QUERY_DESC predicateDesc{D3D11_QUERY_OCCLUSION_PREDICATE,0};ComPtr<ID3D11Predicate> predicate;check(device->CreatePredicate(&predicateDesc,&predicate));context->Begin(predicate.Get());context->End(predicate.Get());context->SetPredication(predicate.Get(),TRUE);
+            context->UpdateSubresource(cb.Get(),0,nullptr,reference.data(),0,0);auto beforeState=pipelineState(context.Get());dispatch(Commit,token,&frame);event(token<<16);require(beforeState==pipelineState(context.Get()),"native corrupted full pipeline state/ranges");negative++;
+            context->SetPredication(nullptr,FALSE);sentinel=nullptr;context->CSSetUnorderedAccessViews(0,1,&sentinel,nullptr);context->CSSetShader(nullptr,nullptr,0);context->GSSetShader(nullptr,nullptr,0);ranged=nullptr;context1->VSSetConstantBuffers1(13,1,&ranged,nullptr,nullptr);context1->PSSetConstantBuffers1(13,1,&ranged,nullptr,nullptr);context1->CSSetConstantBuffers1(13,1,&ranged,nullptr,nullptr);
+            SubmissionPerformance submissionState{};dispatch(SubmissionPerf,token,&submissionState);
+            if(submissionState.immediateSegments)require(submissionState.immediateAvailable&&submissionState.stateRestores==submissionState.immediateSegments,"immediate state restoration count");
+            else require(submissionState.deferredSegments>0,"no submission path exercised");
+            Configuration late{1,0};require(sf_z_drfull_v1(Configure,token,&late)==0,"mode changed with in-flight renderer");
+            std::cout<<"PASS M4i state IA=8 shaders=6 SRV=384 samplers=48 CB_ranges=42 UAV=8 RT=8 depth_blend_raster_viewport_scissor_predication=restored immediate="<<submissionState.immediateSegments<<" deferred="<<submissionState.deferredSegments<<" ring_bindings="<<submissionState.ringBindings<<" late_config=rejected\n";
             // Incremental constant packet must affect an existing draw, then restore.
             uint32_t dirtyOffsets[]={0,UINT(constants.size())};frame.dirtyCount=1;frame.constantBytes=UINT(constants.size());frame.constantOffsets=dirtyOffsets;
             std::array<uint8_t,16> savedColor{};std::memcpy(savedColor.data(),constants.data(),16);std::memset(constants.data(),0,16);
@@ -310,7 +365,7 @@ int main(int argc,char** argv){try{
             bf.list=reverseBatch;context->ClearRenderTargetView(rt,background);dispatch(CommitPacked,batchToken,&bf);event(batchToken<<16);auto reversed=readback(device.Get(),context.Get(),target.Get());
             dispatch(UploadPerf,batchToken,&sortAfter);dispatch(BatchPerf,batchToken,&sortBatchAfter);
             require(sortAfter.geometryBytes==sortBefore.geometryBytes&&sortBatchAfter.gpuGeometryUploads==sortBatchBefore.gpuGeometryUploads&&sortBatchAfter.gpuDispatches==sortBatchBefore.gpuDispatches,"reordering uploaded/recomputed geometry");
-            require(sortAfter.indexBytes-sortBefore.indexBytes==18*4,"reorder must upload only 18 uint indices");
+            require(sortAfter.indexBytes==sortBefore.indexBytes,"reorder must not upload index bytes");
             bf.list=reverseSingle;context->ClearRenderTargetView(rt,background);dispatch(CommitPacked,batchToken,&bf);event(batchToken<<16);auto reversedOracle=readback(device.Get(),context.Get(),target.Get());
             require(reversed==reversedOracle,"stable-geometry reorder pixels differ from singles");
             // Change the LAST sparse pose (not slot zero), to catch boxed-source offsets.
@@ -325,7 +380,7 @@ int main(int argc,char** argv){try{
             require(steadyAfter.constantBytes==steadyBefore.constantBytes&&steadyAfter.colorBytes==steadyBefore.colorBytes,"stable alternating single draws reuploaded CB/color");
             BatchPerformance reasonStats{};dispatch(BatchPerf,batchToken,&reasonStats);
             require(steadyAfter.singleUnverified+steadyAfter.singleGeometry+steadyAfter.singleProgram+steadyAfter.singleConstants+steadyAfter.singleTextures+steadyAfter.singleSegment+steadyAfter.singleLimit==reasonStats.singleDraws,"single reason partition mismatch");
-            std::cout<<"PASS M4g delta "<<label<<" reorder_geometry=0 reorder_dispatches=0 reorder_indices=72 sparse_pose_bytes=80 stable_cb_color=0 pixels=identical\n";
+            std::cout<<"PASS M4g delta "<<label<<" reorder_geometry=0 reorder_dispatches=0 reorder_indices=0 sparse_pose_bytes=80 stable_cb_color=0 pixels=identical\n";
             if(sprite){
                 auto tint=colorsForBatch[0];float changedTint[4]{.23f,.45f,.67f,.89f};size_t tintOffset=0;
                 for(const auto& patch:patches)if(patch.kind==16)tintOffset=patch.offset;std::memcpy(tint.data()+tintOffset,changedTint,16);
@@ -401,8 +456,10 @@ int main(int argc,char** argv){try{
                 uint64_t reorderHeapStart=nativeHeapCalls.load();
                 for(unsigned j=0;j<64;j++){std::reverse(manyList.begin(),manyList.end());dispatch(CommitPacked,large,&many);event(large<<16);}
                 uint64_t reorderHeap=nativeHeapCalls.load()-reorderHeapStart;dispatch(UploadPerf,large,&reEnd);dispatch(BatchPerf,large,&rbEnd);Statistics reStats{};dispatch(Stats,large,&reStats);
-                require(reorderHeap==0&&reStats.errors==0&&reEnd.geometryBytes==reStart.geometryBytes&&rbEnd.gpuGeometryUploads==rbStart.gpuGeometryUploads&&rbEnd.gpuDispatches==rbStart.gpuDispatches&&reEnd.poseBytes==reStart.poseBytes&&reEnd.indexBytes-reStart.indexBytes==uint64_t(population)*6*4*64,"reorder uploaded geometry/pose or dispatched compute");
-                std::cout<<"PASS M4g reorder sources=7000 frames=64 geometry_bytes=0 pose_bytes=0 compute_dispatches=0 index_bytes_per_frame=168000 cpp_heap_calls="<<reorderHeap<<" render_us="<<(reStats.renderUs*double(reStats.frames)-sparseStats.renderUs*double(sparseStats.frames))/64.0<<"\n";
+                require(reorderHeap==0&&reStats.errors==0&&reEnd.geometryBytes==reStart.geometryBytes&&rbEnd.gpuGeometryUploads==rbStart.gpuGeometryUploads&&rbEnd.gpuDispatches==rbStart.gpuDispatches&&reEnd.poseBytes==reStart.poseBytes&&reEnd.indexBytes==reStart.indexBytes,"reorder uploaded geometry/pose/index data");
+                SubmissionPerformance submission{};dispatch(SubmissionPerf,large,&submission);
+                require(submission.orderBytes>=uint64_t(population)*12*64&&submission.orderDispatches>=64,"GPU reorder descriptor path not exercised");
+                std::cout<<"PASS M4g reorder sources=7000 frames=64 geometry_bytes=0 pose_bytes=0 compute_dispatches=0 index_bytes_per_frame=0 order_bytes_per_frame=84000 cpp_heap_calls="<<reorderHeap<<" render_us="<<(reStats.renderUs*double(reStats.frames)-sparseStats.renderUs*double(sparseStats.frames))/64.0<<"\n";
                 Performance accounting{};dispatch(Perf,large,&accounting);
                 require(accounting.uploadBytes==reEnd.geometryBytes+reEnd.poseBytes+reEnd.drawBytes+reEnd.indexBytes+reEnd.constantBytes+reEnd.colorBytes+reEnd.cpuBatchBytes+reEnd.workBytes,"upload category bytes do not sum to total");
                 GpuPerformance timing{};dispatch(GpuPerf,large,&timing);require(timing.samples>0&&timing.eventUs>=0&&timing.maxEventUs>=timing.eventUs,"GPU timestamp query sampling failed");
@@ -410,10 +467,35 @@ int main(int argc,char** argv){try{
                 MemoryPerformance footprint{};dispatch(MemoryPerf,large,&footprint);
                 require(footprint.poseBytes<=uint64_t(7936)*80*2,"pose streams retain old power-of-two reservation");
                 require(footprint.drawBytes<=uint64_t(7936)*32*2,"draw streams retain old power-of-two reservation");
-                require(footprint.indexBytes<=uint64_t(47296)*4,"order stream retains old power-of-two reservation");
+                require(footprint.indexBytes<=uint64_t(47296)*4+uint64_t(7936)*12,"index/descriptor demand reservation too large");
                 TimelinePerformance constantsPerf{};dispatch(TimelinePerf,large,&constantsPerf);
                 std::cout<<"PASS M4h footprint sources=7000 owned="<<footprint.ownedBytes<<" pose="<<footprint.poseBytes<<" draw="<<footprint.drawBytes<<" index="<<footprint.indexBytes<<" pretransform="<<footprint.pretransformBytes<<" constant_evaluations="<<constantsPerf.constantEvaluations<<" constant_reuses="<<constantsPerf.constantReuses<<" constant_bind_skips="<<constantsPerf.constantBindSkips<<" logical_bytes=True driver_residency=UNMEASURED\n";
+                SubmissionPerformance identicalBefore{},identicalAfter{};dispatch(SubmissionPerf,large,&identicalBefore);
+                for(unsigned j=0;j<16;j++){many.listChanged=1;dispatch(CommitPacked,large,&many);event(large<<16);}
+                dispatch(SubmissionPerf,large,&identicalAfter);
+                require(identicalAfter.orderBytes==identicalBefore.orderBytes&&identicalAfter.orderDispatches==identicalBefore.orderDispatches,"same list re-notification rebuilt indices");
+                std::cout<<"PASS M4i identical-list packets=16 order_upload_bytes=0 order_dispatches=0\n";
                 dispatch(Destroy,large,nullptr);
+                // Hundreds of original-DXBC singles with per-object matrix CBs.
+                // Small geometry intentionally measures submission, not game FPS.
+                constexpr UINT singleCount=345;CreateIn singleCreate{target.Get(),512,1};int singlesToken=dispatch(Create,0,&singleCreate);
+                draw.program=UINT(dispatch(Program,singlesToken,&baselineProgram));draw.geometry=UINT(dispatch(Geometry,singlesToken,&geometry));draw.constants=constants.data();draw.sprite=sprite?1u:0u;
+                std::vector<Pose> singlePoses(singleCount,pose);std::vector<UINT> singlePoseIds(singleCount),singleList(singleCount);
+                for(UINT j=0;j<singleCount;j++){draw.pose=j;singlePoseIds[j]=j;singleList[j]=UINT(dispatch(Draw,singlesToken,&draw));singlePoses[j].world[0]*=.001f;singlePoses[j].world[5]*=.001f;}
+                Frame sf=frame;UINT ss[]={0,singleCount};sf.poses=singlePoses.data();sf.poseIds=singlePoseIds.data();sf.poseCount=singleCount;sf.list=singleList.data();sf.listCount=singleCount;sf.segments=ss;sf.segmentCount=1;sf.listChanged=1;sf.dirtyCount=sf.constantBytes=0;sf.constantOffsets=zeroOffsets;
+                dispatch(CommitPacked,singlesToken,&sf);event(singlesToken<<16);sf.listChanged=0;
+                for(UINT j=0;j<16;j++){dispatch(CommitPacked,singlesToken,&sf);event(singlesToken<<16);}
+                Statistics singleStart{},singleEnd{};SubmissionPerformance cbStart{},cbEnd{};dispatch(Stats,singlesToken,&singleStart);dispatch(SubmissionPerf,singlesToken,&cbStart);
+                uint64_t beforeSingles=nativeHeapCalls.load();
+                for(UINT j=0;j<128;j++){for(auto& pos:singlePoses)pos.world[12]+=.000001f;dispatch(CommitPacked,singlesToken,&sf);event(singlesToken<<16);}
+                uint64_t singleHeap=nativeHeapCalls.load()-beforeSingles;dispatch(Stats,singlesToken,&singleEnd);dispatch(SubmissionPerf,singlesToken,&cbEnd);
+                require(singleEnd.errors==0&&singleEnd.draws-singleStart.draws==uint64_t(singleCount)*128,"single draw fixture lost submissions");
+                require(singleHeap==0,"steady single submission allocated CPU heap");
+                require(cbEnd.ringMaps-cbStart.ringMaps<=128,"more than one constant map per single-draw segment");
+                std::cout<<"PASS M4i singles sources=345 frames=128 draws_per_frame=345 cpp_heap_calls="<<singleHeap<<" ring_maps="<<cbEnd.ringMaps-cbStart.ringMaps<<" ring_bindings="<<cbEnd.ringBindings-cbStart.ringBindings<<" render_us="<<(singleEnd.renderUs*double(singleEnd.frames)-singleStart.renderUs*double(singleStart.frames))/128<<" immediate="<<cbEnd.immediateSegments<<" deferred="<<cbEnd.deferredSegments<<" WARP_not_Exit=True\n";
+                auto intact=pipelineState(context.Get());event((singlesToken<<16)|65535);require(pipelineState(context.Get())==intact,"failed render did not restore pipeline state");dispatch(Stats,singlesToken,&singleEnd);require(singleEnd.errors==1,"invalid segment error not counted");
+                std::cout<<"PASS M4i failed-segment state=restored errors=1\n";
+                dispatch(Destroy,singlesToken,nullptr);
             }
 
         }

@@ -51,6 +51,9 @@
     <Compile Include="DirectFull.Shaders.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="DirectFull.Native.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="DirectFull.Render.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
+    <Compile Include="DirectFull.Diagnostics.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
+    <Compile Include="DirectFull.Probes.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
+    <Compile Include="DirectFull.ExplicitPolicy.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <EmbeddedResource Include="effects/direct-full/original-shaders.bin" LogicalName="StutterFix.drfull.original" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <EmbeddedResource Include="effects/direct-full/shader-census.tsv" LogicalName="StutterFix.drfull.shader-census" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="StutterFix.cs" />

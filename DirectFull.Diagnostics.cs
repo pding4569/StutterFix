@@ -1,4 +1,4 @@
-﻿#if DEV || AUTOTEST
+#if DEV || AUTOTEST
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -12,6 +12,16 @@ namespace StutterFix
     internal static unsafe partial class DirectFull
     {
         static bool skipExplicit, allExplicitPasses, localPrecision;
+        static bool deferredSubmission, legacyConstants;
+        static int? savedTextureLimit;
+        static string PressureMip(int value)
+        {
+            if (Active || preparing) throw new InvalidOperationException("pressure diagnostic requires off");
+            if (value < -1 || value > 16) throw new ArgumentOutOfRangeException(nameof(value));
+            if (value < 0) { if (savedTextureLimit.HasValue) QualitySettings.globalTextureMipmapLimit = savedTextureLimit.Value; savedTextureLimit = null; }
+            else { if (!savedTextureLimit.HasValue) savedTextureLimit = QualitySettings.globalTextureMipmapLimit; QualitySettings.globalTextureMipmapLimit = value; }
+            return "pressure_mip=" + QualitySettings.globalTextureMipmapLimit + " diagnostic_only=True verify_actual_DXGI_budget=True";
+        }
         static bool recordingExplicit;
         static IntPtr timelineCallback;
         static CommandBuffer auxiliaryTimelineStart, auxiliaryTimelineEnd;
@@ -102,6 +112,7 @@ namespace StutterFix
             if (!recordingExplicit) { Timeline(cb, 5); recordingExplicit = true; }
             foreach (int pass in e.ExplicitPasses)
             {
+                if (RecordBakedParticle(cb, e, pass)) { explicitSubmitted++; continue; }
                 cb.DrawRenderer(e.Source.R, e.Fallback, e.Source.Filter && e.Source.Filter.sharedMesh ? Math.Min(e.Slot, e.Source.Filter.sharedMesh.subMeshCount - 1) : 0, pass);
                 explicitSubmitted++;
             }
@@ -109,7 +120,9 @@ namespace StutterFix
         static string TimelineState()
         {
             N.TimelinePerformance p = default; N.Require(N.Op.TimelinePerf, fullToken, &p);
-            return FormattableString.Invariant($"gpu_camera_us={p.CameraUs:F3} gpu_native_frame_us={p.NativeUs:F3} gpu_explicit_us={p.ExplicitUs:F3} gpu_composite_us={p.CompositeUs:F3} gpu_other_us={p.OtherUs:F3} gpu_auxiliary_us={p.AuxiliaryUs:F3} gpu_opaque_us={p.OpaqueUs:F3} gpu_opaque_alpha_gap_us={p.GapUs:F3} gpu_alpha_us={p.AlphaUs:F3} gpu_post_alpha_us={p.PostAlphaUs:F3} gpu_effects_us={p.EffectsUs:F3} gpu_tail_us={p.TailUs:F3} gpu_camera_max_us={p.MaxCameraUs:F3} gpu_camera_last_us={p.LastCameraUs:F3} gpu_last_submit_vram_usage={p.LastUsage} gpu_last_submit_vram_budget={p.LastBudget} gpu_last_submit_nonlocal_usage={p.LastNonLocal} gpu_last_sample_serial={p.LastSerial} gpu_max_submit_vram_usage={p.MaxUsage} gpu_max_submit_vram_budget={p.MaxBudget} gpu_max_submit_nonlocal_usage={p.MaxNonLocal} gpu_max_sample_serial={p.MaxSerial} gpu_camera_samples={p.Samples} gpu_auxiliary_samples={p.AuxiliarySamples} gpu_timeline_pending={p.Pending} gpu_timeline_disjoint={p.Disjoint} gpu_timeline_invalid={p.Invalid} gpu_timeline_overflow={p.Overflow} gpu_timeline_skipped={p.Skipped} gpu_timeline_intervals={p.Intervals} gpu_event_unit=segment gpu_camera_scope=BeforeForwardOpaque..AfterEverything skip_explicit={skipExplicit} explicit_all_passes={allExplicitPasses} explicit_tests={explicitTests} explicit_culled={explicitCulled} explicit_visibility_changes={explicitVisibilityChanges} explicit_recorded_draws={explicitSubmitted} explicit_rejected_passes={explicitPassesRejected} precision_local={localPrecision} constant_evaluations={p.ConstantEvaluations} constant_reuses={p.ConstantReuses} constant_bind_skips={p.ConstantBindSkips} empty_native_segments={p.EmptySegments} visible_grab_draws={p.VisibleGrabs} culled_grab_draws={p.CulledGrabs}");
+            N.SubmissionPerformance submit = default; N.Require(N.Op.SubmissionPerf, fullToken, &submit);
+            string submissionState = FormattableString.Invariant($"submit_requested={(deferredSubmission ? "deferred" : "immediate")} submit_immediate_available={submit.ImmediateAvailable} submit_immediate_segments={submit.ImmediateSegments} submit_deferred_segments={submit.DeferredSegments} submit_state_restores={submit.StateRestores} submit_state_us_total={submit.StateUs:F3} submit_record_us_total={submit.RecordUs:F3} order_descriptor_bytes={submit.OrderBytes} order_gpu_dispatches={submit.OrderDispatches} cb_ring_available={submit.RingAvailable} cb_ring_maps={submit.RingMaps} cb_ring_bytes={submit.RingBytes} cb_ring_bindings={submit.RingBindings} ");
+            return FormattableString.Invariant($"particles_baked={bakedParticles} particle_bakes={particleBakes} particle_baked_vertices={particleVertices} particle_empty_bakes={particleEmpty} ") + submissionState + FormattableString.Invariant($"gpu_camera_us={p.CameraUs:F3} gpu_native_frame_us={p.NativeUs:F3} gpu_explicit_us={p.ExplicitUs:F3} gpu_composite_us={p.CompositeUs:F3} gpu_other_us={p.OtherUs:F3} gpu_auxiliary_us={p.AuxiliaryUs:F3} gpu_opaque_us={p.OpaqueUs:F3} gpu_opaque_alpha_gap_us={p.GapUs:F3} gpu_alpha_us={p.AlphaUs:F3} gpu_post_alpha_us={p.PostAlphaUs:F3} gpu_effects_us={p.EffectsUs:F3} gpu_tail_us={p.TailUs:F3} gpu_camera_max_us={p.MaxCameraUs:F3} gpu_camera_last_us={p.LastCameraUs:F3} gpu_last_submit_vram_usage={p.LastUsage} gpu_last_submit_vram_budget={p.LastBudget} gpu_last_submit_nonlocal_usage={p.LastNonLocal} gpu_last_sample_serial={p.LastSerial} gpu_max_submit_vram_usage={p.MaxUsage} gpu_max_submit_vram_budget={p.MaxBudget} gpu_max_submit_nonlocal_usage={p.MaxNonLocal} gpu_max_sample_serial={p.MaxSerial} gpu_camera_samples={p.Samples} gpu_auxiliary_samples={p.AuxiliarySamples} gpu_timeline_pending={p.Pending} gpu_timeline_disjoint={p.Disjoint} gpu_timeline_invalid={p.Invalid} gpu_timeline_overflow={p.Overflow} gpu_timeline_skipped={p.Skipped} gpu_timeline_intervals={p.Intervals} gpu_event_unit=segment gpu_camera_scope=BeforeForwardOpaque..AfterEverything skip_explicit={skipExplicit} explicit_all_passes={allExplicitPasses} explicit_tests={explicitTests} explicit_culled={explicitCulled} explicit_visibility_changes={explicitVisibilityChanges} explicit_recorded_draws={explicitSubmitted} explicit_rejected_passes={explicitPassesRejected} precision_local={localPrecision} constant_evaluations={p.ConstantEvaluations} constant_reuses={p.ConstantReuses} constant_bind_skips={p.ConstantBindSkips} empty_native_segments={p.EmptySegments} visible_grab_draws={p.VisibleGrabs} culled_grab_draws={p.CulledGrabs}");
         }
         static string MemoryState()
         {
