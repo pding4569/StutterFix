@@ -26,3 +26,16 @@
 ## 다음 (압도적으로 가려면)
 - 스크립트: scrDecorationManager.LateUpdate·행성·타일 Update 를 우리 계산으로 대체(장식 이동 효과를 GPU 포즈 버퍼에 직접 계산 — DR2/deco-v2 의 채널 방식) → Update/LateUpdate 0.9ms 중 상당 부분 제거.
 - FinishFrameRendering 나머지 0.57ms: 다른 카메라(BG/Overlay)·필터·UI 캔버스.
+
+## 추가 (Claude, M4k 실측 02:00): DD VRAM 붕괴 = Grab 복사
+- `m4k-dd-resources-full-grab-off`(이미지 원래 크기, VRAM 14.1/7.53GB 초과) 같은 세션 교차: **Grab 켬 → 메인 카메라 GPU 52~64ms(native 51~64ms), Grab 끔(skip_grab=1) → 6.0~8.0ms(native 5.3~7.2ms)**. 즉 초과 상태 붕괴의 주원인은 우리 이름 없는 Grab 복사(프레임당 약 11회 × 3440x1440 전체 19.8MB).
+- 고칠 것(픽셀 동일 유지): (1) Grab 텍스처에 `SetEvictionPriority(DXGI_RESOURCE_PRIORITY_MAXIMUM)`, (2) **복사 범위를 그 draw 가 실제로 읽는 화면 사각형(정점 화면 범위 + 필터 여유)으로 줄이기**(CopySubresourceRegion) — Unity 원래 셰이더는 grab UV 를 화면 좌표로 읽으므로 그 사각형 밖은 안 읽는다, (3) 연속한 Grab draw 사이에 camRT 가 안 바뀌었으면 복사 생략, (4) 가능하면 Unity 의 Grab 임시 RT 와 같은 풀/형식. 결과를 grab_bytes/grab_copies 로 state 에.
+- M4k Exit: A 327.6/329.7, B 241.6/233.3 (main 0.91~0.95ms, render 1.11~1.18ms, replans ~520) — Codex 가 같은 PC 에서 빌드 중이라 절대 FPS 는 낮음, 비율 ~72%. DD 1024: A 245.4/236.9, B 199.4/197.5 (~82%), GPU 메인 카메라 B 4.41~4.62ms(native 3.91~4.14).
+
+## 추가 2 (Claude, 03:00): Grab 실측 정정 — 꼭 읽을 것
+- Claude 가 drfull.cpp 에 Grab 수정을 넣었다(브랜치 `claude/drfull-grab` baf443a, wt-m4 작업 트리에도 이미 들어 있음): 이름 없는 Grab(grabId==1)은 `grabRect()`(draw 월드 경계 → 화면 사각형 +4px, 위아래 두 방향 합집합)만 `CopySubresourceRegion`, Grab 텍스처 `SetEvictionPriority(MAXIMUM)`.
+- **M4k 커밋 + 이 수정만**(wt-grab): DD 픽셀 비트 동일, Exit 픽셀 그대로(최대 2), Exit 일시정지 native GPU 1.86ms(정상). DD 원래 크기(VRAM 초과) B1 = **41.7 FPS**(24.5 에서), native GPU 24ms(41~68 에서), 복사 평균 6.3MB(19.8 에서), 프레임당 ~11회.
+- **너의 미완성 M4l 코드 + 이 수정** 빌드에서는 DD B1 170.7/167.8 FPS 였지만 **grab_copies=0** 이고 DD 픽셀이 최대 8 다르게 나왔다(0.065%) → **미완성 M4l 이 Grab 복사를 건너뛰고 있다(버그)**. 또 그 빌드는 Exit 일시정지 native GPU 가 1.8 → 8.2ms, HELLO 5.7 → 17.3ms 로 늘었다. 고쳐라.
+- 남은 DD 초과 붕괴(복사 끄면 6~8ms, 켜면 24ms): 복사 자체보다 "복사마다 RT 바인딩 해제·SRV 전부 해제 → 드라이버 명령 분할 → 초과 상태에서 분할마다 상주 처리" 가설. 시험: 연속한 Grab draw 를 묶어 한 번만 복사(그 사이 그리기가 다른 Grab draw 의 사각형과 안 겹치면 한 번의 합집합 복사로 충분), SRV 128개 전부 해제 대신 실제 묶인 슬롯만 해제, 복사를 같은 명령 묶음 안에 유지. Unity 원본은 같은 초과에서 3.5ms 이므로 Unity 가 grab 을 어떻게 하는지(RenderDoc 없이: 원본 실행 중 D3D11 호출 수를 우리 Present 후크로 세는 진단) 비교.
+- **주의: Claude 의 grabRect 는 HELLO 를 나쁘게 만든다** — 같은 M4k+Grab 수정 빌드 HELLO 픽셀 PSNR 42.8 → **39.8**, 최대 (155,59,136). 일부 Grab draw 의 사각형이 실제로 그리는/읽는 범위보다 작다(경계 상자가 실제 정점과 다름? 타일링/스크롤 스프라이트? 투영 방향?). Grab draw 별로 우리 사각형과 실제 정점 화면 범위(사전 변환 결과)를 비교하는 검증을 넣고, 확실하지 않은 draw 는 전체 복사로. HELLO PSNR 이 42.8 아래로 내려가면 안 된다. Exit/DD 는 이 수정으로 픽셀이 그대로였다.
+- 깨끗한 측정(M4k+Grab 만): Exit A 332.1 / B 233.1 (main 0.95, render 1.17, native GPU 1.49ms), DD 원래 크기 A 242.8 / B 41.7.

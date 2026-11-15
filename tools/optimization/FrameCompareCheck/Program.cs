@@ -70,6 +70,20 @@ foreach (var invalid in new[] { "mask=1,2,0,4", "mask=NaN,0,1,1", "mask=0,Infini
     Check(rejected, "mask guard " + invalid);
 }
 Console.WriteLine($"FrameCompare masks: {n - maskStart} checks passed (synthetic; no live evidence)");
+int qualityStart = n;
+var quality = new FrameCompareMetrics.Result { OutsidePixels = 1, Ratio = 1, Psnr = 42.8 }; quality.Max[0] = 2;
+Check(FrameCompareMetrics.WithinQuality(quality, 2, 42.8), "quality inclusive PSNR/max boundary, full changed frame allowed");
+quality.Psnr = 42.799; Check(!FrameCompareMetrics.WithinQuality(quality, 255, 42.8), "HELLO PSNR regression rejected");
+quality.Psnr = double.PositiveInfinity; quality.Max[3] = 3; Check(!FrameCompareMetrics.WithinQuality(quality, 2, 0), "Exit alpha maximum rejected");
+quality.Max[3] = 0; Check(FrameCompareMetrics.WithinQuality(quality, 2, 0), "identical quality accepted");
+quality.OutsidePixels = 0; Check(!FrameCompareMetrics.WithinQuality(quality, 255, 0), "quality empty evidence rejected");
+quality.OutsidePixels = 1; quality.Psnr = double.NaN; Check(!FrameCompareMetrics.WithinQuality(quality, 255, 0), "quality NaN evidence rejected");
+foreach (double bad in new[] { -1.0, double.NaN, double.PositiveInfinity })
+{
+    bool rejected = false; try { FrameCompareMetrics.WithinQuality(quality, 2, bad); } catch (ArgumentException) { rejected = true; }
+    Check(rejected, "invalid PSNR gate rejected");
+}
+Console.WriteLine($"FrameCompare M4l quality: {n - qualityStart} checks passed");
 int stateStart = n;
 FrameCompareState Snapshot(bool visible, string field, string value)
 {

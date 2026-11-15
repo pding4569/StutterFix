@@ -5,7 +5,13 @@ namespace drfull {
 // All pointers are borrowed only for the duration of dispatch. Native owns copies
 // and COM references. Opcodes are versioned behind ONE appended export so old
 // export hints as well as ordinals remain stable.
-enum Op { Create, Program, Geometry, Draw, Commit, Event, Stats, Destroy, Error, Abi, Composite, Perf, CommitPacked, CommitActive, BatchPerf, GeometryCpu, CommitActiveWorld, UploadPerf, GpuPerf, TimelineEvent, TimelinePerf, MemoryPerf, Configure, SubmissionPerf, DrawProbeConfigure, DrawProbeRead, TextureProbe, ResourceConfigure, ResourcePerf, DrawProbeDetailRead, DrawProbeStatus, ReplaceDraw };
+enum Op { Create, Program, Geometry, Draw, Commit, Event, Stats, Destroy, Error, Abi, Composite, Perf, CommitPacked, CommitActive, BatchPerf, GeometryCpu, CommitActiveWorld, UploadPerf, GpuPerf, TimelineEvent, TimelinePerf, MemoryPerf, Configure, SubmissionPerf, DrawProbeConfigure, DrawProbeRead, TextureProbe, ResourceConfigure, ResourcePerf, DrawProbeDetailRead, DrawProbeStatus, ReplaceDraw, CacheConfigure, CachePerf };
+struct CacheConfiguration { uint32_t enabled,chunkSize; };
+struct CachePerformance {
+    uint64_t available,segments,replays,records,planBuilds,constantPages,constantBytes,constantEvaluations,cullDispatches,indirectDraws,fallbackSegments;
+    double applyUs,poseUs,constantsUs,cullUs,planUs,recordUs,executeUs;
+    uint64_t rectTests,rectMismatches,rectFallbacks,rectCopies,grabGroups,grabMerged;
+};
 // M4k append-only payloads: old callers and export ordinals remain unchanged.
 struct ResourceConfiguration { uint32_t skipGrab,pretransform,stableUploads,trimBindings; };
 struct ResourcePerformance { uint64_t discardMaps,noOverwriteMaps,defaultUpdates,defaultBytes,grabSkips,srvUnbinds,constantCandidates,constantVisible,ringRotations,retiredDraws; };
@@ -46,7 +52,7 @@ struct DrawIn {
     uint32_t program,geometry; const Buffer* buffers; uint32_t bufferCount;
     const Patch* patches; uint32_t patchCount; const Texture* textures; uint32_t textureCount;
     const void* constants; uint32_t constantBytes; uint32_t pose;
-    uint32_t grab,sprite; // grab: 0 none, 1 unnamed/per-draw, >=2 frame/name ID; sprite bits: color, verified batch.
+    uint32_t grab,sprite; // grab: 0 none, 1 unnamed/per-draw, >=2 frame/name ID; sprite bits: 1 color, 2 verified batch, 4 verified screen Grab.
     float center[3],extent[3];
 };
 struct DrawReplacement { uint32_t previous; DrawIn draw; };

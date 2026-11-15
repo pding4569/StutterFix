@@ -252,6 +252,14 @@ namespace StutterFix
                     throw new InvalidOperationException("candidate pixel gate failed (changed percent must be strictly below limit; max channel inclusive)");
                 Log("assertlimit passed; candidate renderer state equality not asserted"); return true;
             }
+            if ((a.Length == 5 || a.Length == 6 && a[5] == "png") && a[0] == "assertquality")
+            {
+                int channel = int.Parse(a[3], Inv); double psnr = double.Parse(a[4], Inv);
+                var r = p.Diff(a[1], a[2], 0);
+                if (a.Length == 6) { p.Save(a[1]); p.Save(a[2]); }
+                if (!FrameCompareMetrics.WithinQuality(r, channel, psnr)) throw new InvalidOperationException("candidate quality gate failed (max channel and minimum PSNR inclusive)");
+                Log("assertquality passed; candidate renderer state equality not asserted"); return true;
+            }
             if (a.Length >= 3 && a[0] == "diff")
             {
                 int start = 3, threshold = 0;

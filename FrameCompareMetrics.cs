@@ -48,6 +48,14 @@ namespace StutterFix
             for (int i = 0; i < 4; i++) if (r.Max[i] > channel) return false;
             return true;
         }
+        internal static bool WithinQuality(Result r, int channel, double minPsnr)
+        {
+            if (channel < 0 || channel > 255 || double.IsNaN(minPsnr) || double.IsInfinity(minPsnr) || minPsnr < 0)
+                throw new ArgumentException("quality gate limits out of range");
+            if (r == null || r.OutsidePixels == 0 || double.IsNaN(r.Psnr) || r.Psnr < minPsnr) return false;
+            for (int i = 0; i < 4; i++) if (r.Max[i] > channel) return false;
+            return true;
+        }
         internal static Result Compare(byte[] a, byte[] b, int width, int height, int threshold, Mask[] masks = null)
         {
             if (width <= 0 || height <= 0 || threshold < 0 || threshold > 255 ||

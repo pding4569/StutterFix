@@ -7,7 +7,14 @@ namespace StutterFix
 {
     internal static unsafe class DirectFullNative
     {
-        internal enum Op { Create, Program, Geometry, Draw, Commit, Event, Stats, Destroy, Error, Abi, Composite, Perf, CommitPacked, CommitActive, BatchPerf, GeometryCpu, CommitActiveWorld, UploadPerf, GpuPerf, TimelineEvent, TimelinePerf, MemoryPerf, Configure, SubmissionPerf, DrawProbeConfigure, DrawProbeRead, TextureProbe, ResourceConfigure, ResourcePerf, DrawProbeDetailRead, DrawProbeStatus, ReplaceDraw }
+        internal enum Op { Create, Program, Geometry, Draw, Commit, Event, Stats, Destroy, Error, Abi, Composite, Perf, CommitPacked, CommitActive, BatchPerf, GeometryCpu, CommitActiveWorld, UploadPerf, GpuPerf, TimelineEvent, TimelinePerf, MemoryPerf, Configure, SubmissionPerf, DrawProbeConfigure, DrawProbeRead, TextureProbe, ResourceConfigure, ResourcePerf, DrawProbeDetailRead, DrawProbeStatus, ReplaceDraw, CacheConfigure, CachePerf }
+        [StructLayout(LayoutKind.Sequential)] internal struct CacheConfiguration { internal uint Enabled, ChunkSize; }
+        [StructLayout(LayoutKind.Sequential)] internal struct CachePerformance
+        {
+            internal ulong Available, Segments, Replays, Records, PlanBuilds, ConstantPages, ConstantBytes, ConstantEvaluations, CullDispatches, IndirectDraws, FallbackSegments;
+            internal double ApplyUs, PoseUs, ConstantsUs, CullUs, PlanUs, RecordUs, ExecuteUs;
+            internal ulong RectTests, RectMismatches, RectFallbacks, RectCopies, GrabGroups, GrabMerged;
+        }
         [StructLayout(LayoutKind.Sequential)] internal struct ResourceConfiguration { internal uint SkipGrab, Pretransform, StableUploads, TrimBindings; }
         [StructLayout(LayoutKind.Sequential)] internal struct ResourcePerformance { internal ulong DiscardMaps, NoOverwriteMaps, DefaultUpdates, DefaultBytes, GrabSkips, SrvUnbinds, ConstantCandidates, ConstantVisible, RingRotations, RetiredDraws; }
         [StructLayout(LayoutKind.Sequential)] internal struct DrawProbeDetail { internal uint Index; internal double PrepareGpuUs, PrepareConstantsUs, GrabUs; }

@@ -37,7 +37,7 @@ struct Reader {
     std::vector<uint8_t> blob(){auto n=pod<uint32_t>();require(n<10000000,"case extent");std::vector<uint8_t>b(n);f.read(reinterpret_cast<char*>(b.data()),n);require(bool(f),"case bytes");return b;}
     std::string text(){auto b=blob();return std::string(b.begin(),b.end());}
 };
-int dispatch(int op,int token,const void* p){auto n=sf_z_drfull_v1(op,token,p);if(n<=0){std::cerr<<"dispatch "<<op<<" hr="<<std::hex<<sf_z_drfull_v1(Error,0,nullptr)<<std::dec<<"\n";throw std::runtime_error("native refused fixture");}if(op==Create){char env[2]{};Configuration c{GetEnvironmentVariableA("SF_DRFULL_TEST_DEFERRED",env,2)?1u:0u,GetEnvironmentVariableA("SF_DRFULL_TEST_LEGACY_CB",env,2)?0u:1u};require(sf_z_drfull_v1(Configure,int(n),&c)!=0,"fixture configure");}return int(n);}
+int dispatch(int op,int token,const void* p){auto n=sf_z_drfull_v1(op,token,p);if(n<=0){std::cerr<<"dispatch "<<op<<" hr="<<std::hex<<sf_z_drfull_v1(Error,0,nullptr)<<std::dec<<"\n";throw std::runtime_error("native refused fixture");}if(op==Create){char env[2]{};Configuration c{GetEnvironmentVariableA("SF_DRFULL_TEST_DEFERRED",env,2)?1u:0u,GetEnvironmentVariableA("SF_DRFULL_TEST_LEGACY_CB",env,2)?0u:1u};require(sf_z_drfull_v1(Configure,int(n),&c)!=0,"fixture configure");CacheConfiguration cache{GetEnvironmentVariableA("SF_DRFULL_TEST_CACHE",env,2)?1u:0u,32};require(sf_z_drfull_v1(CacheConfigure,int(n),&cache)!=0,"fixture cache configure");}return int(n);}
 struct Vertex{float p[3],color[4],uv[2],uv1[2];};
 ComPtr<ID3D11Buffer> buffer(ID3D11Device* d,const void* p,UINT n,UINT flags){D3D11_BUFFER_DESC b{};b.ByteWidth=n;b.Usage=D3D11_USAGE_DEFAULT;b.BindFlags=flags;D3D11_SUBRESOURCE_DATA data{};data.pSysMem=p;ComPtr<ID3D11Buffer> out;check(d->CreateBuffer(&b,p?&data:nullptr,&out));return out;}
 ComPtr<ID3DBlob> compile(const std::filesystem::path& path,const char* entry,const char* profile,int floor,int snap,int point){
@@ -118,6 +118,7 @@ int main(int argc,char** argv){try{
         CreateIn create{target.Get(),16,1};int token=dispatch(Create,0,&create);int programId=dispatch(Program,token,&program),geometryId=dispatch(Geometry,token,&geometry);
         std::vector<Texture> tex;for(const auto& t:texInputs)tex.push_back(Texture{t.pattern==5?nullptr:textures[size_t(t.pattern)].Get(),t.stage,t.slot,t.sampler,t.pattern==5?1:filter,t.pattern==5?1:mode%2,t.pattern==5?1:mode%2,1,t.pattern==5?(namedGrab?-2:-1):0});
         DrawIn draw{};draw.program=UINT(programId);draw.geometry=UINT(geometryId);draw.buffers=bindings.data();draw.bufferCount=UINT(bindings.size());draw.patches=patches.data();draw.patchCount=UINT(patches.size());draw.textures=tex.data();draw.textureCount=UINT(tex.size());draw.constants=constants.data();draw.constantBytes=UINT(constants.size());draw.sprite=sprite?1u:0u;draw.grab=(floor==2||floor==3)?(namedGrab?2u:1u):0u;
+        char rectMode[2]{};if(draw.grab&&!snap&&GetEnvironmentVariableA("SF_DRFULL_TEST_RECT",rectMode,2))draw.sprite|=4u;
         draw.extent[0]=draw.extent[1]=1;draw.extent[2]=.1f;
         int drawId=dispatch(Draw,token,&draw);uint32_t poseIds[]={0},drawIds[]={UINT(drawId)},offsets[]={0},list[]={UINT(drawId),UINT(drawId)},segs[]={0,mode==2?2u:1u};
         frame.poses=&pose;frame.poseIds=poseIds;frame.poseCount=1;frame.drawIds=drawIds;frame.constantOffsets=offsets;frame.constants=constants.data();frame.list=list;frame.segments=segs;frame.listCount=segs[1];frame.segmentCount=1;frame.listChanged=1;
@@ -159,6 +160,11 @@ int main(int argc,char** argv){try{
         require(nonBackground>1000,"blank original falsely looks equal");
         std::cout<<label<<" nonblank="<<nonBackground<<" changed="<<changed<<" max="<<maxChannel<<" L1="<<l1<<"\n";
         require(maxChannel<=2,"original/reference pixel mismatch");globalMax=std::max(globalMax,maxChannel);allChanged+=changed;
+        char pixelOnly[2]{};
+        if(GetEnvironmentVariableA("SF_DRFULL_TEST_PIXEL_ONLY",pixelOnly,2)){
+            CachePerformance cached{};dispatch(CachePerf,token,&cached);require(cached.segments>0&&cached.fallbackSegments==0,"original DXBC bypassed cache");
+            dispatch(Destroy,token,nullptr);passed++;continue;
+        }
         if(floor==2||floor==3){
             GpuPerformance gp{};dispatch(GpuPerf,token,&gp);uint64_t copies=namedGrab?1u:segs[1];
             require(gp.grabCopies==copies&&gp.grabBytes==copies*192*128*4,"named/unnamed Grab copy count or bytes");
@@ -511,6 +517,7 @@ int main(int argc,char** argv){try{
 
         passed++;
     }
-    require(passed==count&&count>=8&&(negative==5 || (negative==0 && count==8)),"fixture coverage");std::cout<<"PASS cases="<<passed<<" maxChannel="<<globalMax<<" differingPixels="<<allChanged<<" controls="<<negative<<" UnityCapture=UNMEASURED gameFPS=UNMEASURED\n";
+    char pixelOnly[2]{};bool cachedPixels=GetEnvironmentVariableA("SF_DRFULL_TEST_PIXEL_ONLY",pixelOnly,2)!=0;
+    require(passed==count&&count>=8&&(negative==5 || (negative==0 && (count==8||cachedPixels))),"fixture coverage");std::cout<<"PASS cases="<<passed<<" maxChannel="<<globalMax<<" differingPixels="<<allChanged<<" controls="<<negative<<" UnityCapture=UNMEASURED gameFPS=UNMEASURED\n";
     std::ofstream summary(out/"warp-summary.json");summary<<"{\"passed\":"<<passed<<",\"max_channel\":"<<globalMax<<",\"differing_pixels\":"<<allChanged<<",\"controls\":"<<negative<<",\"adapter\":\"WARP\",\"unity_capture\":\"UNMEASURED\",\"game_fps\":\"UNMEASURED\"}\n";return 0;
 }catch(HRESULT hr){std::cerr<<"FAIL HRESULT 0x"<<std::hex<<hr<<"\n";return 1;}catch(const std::exception& e){std::cerr<<"FAIL "<<e.what()<<"\n";return 1;}}

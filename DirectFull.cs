@@ -24,6 +24,7 @@ namespace StutterFix
     internal static partial class DirectFull
     {
         const string Owner = "StutterFix.DirectFull";
+        static bool commandCache = true;
         // Names verified against the installed game's TagManager, not sorting layers.
         static readonly string[] MapLayers = { "Foreground", "Planet", "Floor", "BG", "BG Static", "TopGlow", "FloorTemp", "textDeco" };
         static readonly DirectFullMaskLease lease = new DirectFullMaskLease();
@@ -82,6 +83,13 @@ namespace StutterFix
         {
             if (arg.Trim().StartsWith("drawgpu", StringComparison.OrdinalIgnoreCase)) return DrawGpuCommand(arg.Trim().Substring(7).Trim());
             if (arg.Trim().StartsWith("resources ", StringComparison.OrdinalIgnoreCase)) return ResourceCommand(arg.Trim().Substring(10).Trim());
+            if (arg.Trim().StartsWith("cache ", StringComparison.OrdinalIgnoreCase))
+            {
+                if (Active || preparing) throw new InvalidOperationException("cache mode requires off");
+                string mode = arg.Trim().Substring(6).Trim().ToLowerInvariant();
+                if (mode != "on" && mode != "off") throw new ArgumentException("cache on/off");
+                commandCache = mode == "on"; return "cache=" + commandCache;
+            }
             if (arg.Trim().StartsWith("probe ", StringComparison.OrdinalIgnoreCase)) return ProbeCommand(arg.Trim().Substring(6));
             if (arg.Trim().StartsWith("pressure mip ", StringComparison.OrdinalIgnoreCase)) return PressureMip(int.Parse(arg.Trim().Substring(13), System.Globalization.CultureInfo.InvariantCulture));
             switch (arg.Trim().ToLowerInvariant())
@@ -119,6 +127,7 @@ namespace StutterFix
                 case "plan": return Plan();
                 case "assert ceil": CheckLease(); if (!Active || Rendering) throw new InvalidOperationException("drfull INVALID: ceiling lease not active"); return "assert ceil PASS";
                 case "assert on": CheckLease(); if (!Active || !Rendering) throw new InvalidOperationException("drfull INVALID: full renderer not active"); AssertFull(); return "assert on PASS";
+                case "assert cache": CheckLease(); if (!Active || !Rendering) throw new InvalidOperationException("drfull INVALID: cache renderer not active"); AssertFull(); AssertCache(); return "assert cache PASS";
                 case "assert off": CheckLease(); if (Active || preparing) throw new InvalidOperationException("drfull INVALID: lease/preparation still active"); return "assert off PASS";
                 case "warm": Warm(); return "warm_ms=" + warmMs.ToString("F3");
                 case "cold": if (Active || preparing) throw new InvalidOperationException("drfull cold requires off"); Cold(); return "warm=False";

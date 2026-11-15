@@ -74,7 +74,7 @@ struct DrawCall {
     float center[3]{},extent[3]{},worldCenter[3]{},worldExtent[3]{};uint64_t boundsVersion=UINT64_MAX;float rendererTint[4]{1,1,1,1},flip[4]{1,1,1,1};bool spritePatches=false,batchRequested=false;
     std::array<uint8_t,16> uploadedColor{};bool colorUploaded=false;
     std::vector<uint8_t> batchKey,nextBatchKey;uint64_t batchHash=0;std::vector<BatchVertex> baked;
-    bool composite=false,retired=false;ComPtr<ID3D11ShaderResourceView> black,white;
+    bool composite=false,retired=false,screenGrab=false;ComPtr<ID3D11ShaderResourceView> black,white;
 };
 struct Packet {
     Frame f{};bool worldOnly=false;std::vector<uint32_t> liveIds;std::vector<uint8_t> liveValues;std::vector<Pose> poses;std::vector<uint32_t> poseIds,ids,offsets,list,segs;std::vector<uint8_t> bytes;
@@ -124,6 +124,8 @@ struct Renderer {
         for(const auto& d:draws){memory.buffer(d->color.Get(),6);for(const auto& b:d->buffers){memory.buffer(b.storage->buffer.Get(),5);memory.buffer(b.batchStorage->buffer.Get(),5);}if(d->composite){memory.view(d->black.Get(),8);memory.view(d->white.Get(),8);}}
         for(const auto& entry:constantPool)memory.buffer(entry.second->buffer.Get(),5);
         memory.buffer(constantRing.Get(),5);
+        for(const auto& page:cachePages)memory.buffer(page.buffer.Get(),5);
+        memory.buffer(cacheCullBuffer.Get(),2);memory.buffer(cacheArgs.Get(),3);memory.buffer(cacheControl.Get(),5);
         memory.buffer(orderControl.Get(),5);
         for(const auto& pair:grabSurfaces)memory.texture(pair.second.texture.Get(),7);
         memory.finish();
@@ -355,7 +357,7 @@ struct Renderer {
         auto d=std::make_shared<DrawCall>();d->shader=shaders[in.program-1];d->geometry=geometries[in.geometry-1];d->pose=in.pose;d->grab=in.grab!=0;d->grabId=in.grab;if(in.grab)grabSurfaces.try_emplace(in.grab);d->sprite=(in.sprite&1)!=0;d->batchable=resourceConfiguration.pretransform&&(in.sprite&2)!=0&&!d->grab&&!d->geometry->cpu.empty();
         std::memcpy(d->center,in.center,12);std::memcpy(d->extent,in.extent,12);for(int i=0;i<3;i++)require(std::isfinite(d->center[i])&&std::isfinite(d->extent[i])&&d->extent[i]>=0);
         auto& g=*d->geometry;auto attributes=g.attributes;
-        d->batchRequested=(in.sprite&2)!=0;
+        d->batchRequested=(in.sprite&2)!=0;d->screenGrab=(in.sprite&4)!=0;
         if(d->sprite){for(auto& a:attributes)if(std::strcmp(a.SemanticName,"COLOR")==0){a.InputSlot=7;a.AlignedByteOffset=0;a.Format=DXGI_FORMAT_R32G32B32A32_FLOAT;}D3D11_BUFFER_DESC b{};b.ByteWidth=16;b.Usage=D3D11_USAGE_DEFAULT;b.BindFlags=D3D11_BIND_VERTEX_BUFFER;memoryDirty=true;check(device->CreateBuffer(&b,nullptr,&d->color));}
         auto layoutKey=std::make_pair(d->shader.get(),d->sprite);auto cached=g.layouts.find(layoutKey);
         if(cached!=g.layouts.end()){d->layout=cached->second;perf.layoutHits++;}
@@ -463,6 +465,7 @@ struct Renderer {
             for(auto id:p.list)require(!draws[id-1]->retired);
             bool reordered=list!=p.list;list=p.list;segs=p.segs;batchesDirty|=reordered;indexDirty|=reordered;
         }
+        if(p.f.listChanged||batchesDirty||(geometryDirty&&hasBatches)||cacheDraws.size()!=draws.size())cachePlanDirty=true;
         if(batchesDirty){buildBatchRuns();batchesDirty=false;}
         stats.frames++;
     }
@@ -494,6 +497,41 @@ struct Renderer {
         if(d.batchHash!=other->batchHash||d.batchKey!=other->batchKey||d.buffers.size()!=other->buffers.size()){uploadPerf.singleConstants++;return;}
         for(size_t i=0;i<d.buffers.size();i++)if(std::memcmp(&d.buffers[i].binding,&other->buffers[i].binding,sizeof(Buffer))){uploadPerf.singleConstants++;return;}
         uploadPerf.singleTextures++;
+    }
+    // Grab 복사 범위: 그 draw 의 월드 경계 상자 8 꼭짓점을 화면에 투영한 사각형(+4px). 원래 BlendModes 셰이더는 자기 화면 위치의
+    // grab 텍셀만 읽으므로 그 밖은 읽지 않는다. 투영 방향(위아래 뒤집힘)을 모르므로 두 방향의 합집합. 불확실하면 전체 복사(false).
+    bool grabRect(DrawCall& d,UINT width,UINT height,D3D11_BOX& box){
+        cachePerf.rectTests++;
+        // Only a verified screen-space sampler with readable canonical vertices
+        // may use a partial snapshot. Tiled/deformed/unknown geometry falls back.
+        if(!d.screenGrab||d.geometry->cpuIndices.empty()){cachePerf.rectFallbacks++;return false;}
+        worldBounds(d);
+        if(d.extent[0]==0&&d.extent[1]==0&&d.extent[2]==0){cachePerf.rectFallbacks++;return false;}
+        float x0=1e30f,y0=1e30f,x1=-1e30f,y1=-1e30f;const float* m=frame.vp;
+        for(int k=0;k<8;k++){
+            float w[3];for(int i=0;i<3;i++)w[i]=d.worldCenter[i]+((k>>i)&1?d.worldExtent[i]:-d.worldExtent[i]);
+            float c[4];for(int r=0;r<4;r++)c[r]=m[r]*w[0]+m[4+r]*w[1]+m[8+r]*w[2]+m[12+r];
+            if(!(c[3]>1e-6f)||!std::isfinite(c[0])||!std::isfinite(c[1])){cachePerf.rectFallbacks++;return false;}
+            float nx=c[0]/c[3],ny=c[1]/c[3];x0=std::min(x0,nx);x1=std::max(x1,nx);y0=std::min(y0,ny);y1=std::max(y1,ny);
+        }
+        float px0=(x0*.5f+.5f)*width-4,px1=(x1*.5f+.5f)*width+4;
+        float a0=(y0*.5f+.5f)*height,a1=(y1*.5f+.5f)*height;            // y 위 방향
+        float b0=height-a1,b1=height-a0;                                    // y 아래 방향
+        float py0=std::min(a0,b0)-4,py1=std::max(a1,b1)+4;
+        box.left=UINT(std::clamp(std::floor(px0),0.f,float(width)));box.right=UINT(std::clamp(std::ceil(px1),0.f,float(width)));
+        box.top=UINT(std::clamp(std::floor(py0),0.f,float(height)));box.bottom=UINT(std::clamp(std::ceil(py1),0.f,float(height)));box.front=0;box.back=1;
+        if(box.right<=box.left||box.bottom<=box.top){box={0,0,0,1,1,1};}
+        // Compare the proposed bounds against the ACTUAL indexed vertices used
+        // by our draw (including Sprite _Flip), not Renderer.localBounds alone.
+        // No GPU readback or driver synchronization is needed for this proof.
+        for(auto index:d.geometry->cpuIndices){const auto& v=d.geometry->cpu[index];float local[4]{v.position[0]*d.flip[0],v.position[1]*d.flip[1],v.position[2],1},world[4]{},clip[4]{};
+            const auto& pose=poses[d.pose];for(int r=0;r<4;r++)for(int k=0;k<4;k++)world[r]+=pose.world[k*4+r]*local[k];
+            for(int r=0;r<4;r++)for(int k=0;k<4;k++)clip[r]+=frame.vp[k*4+r]*world[k];
+            if(!(clip[3]>1e-6f)||!std::isfinite(clip[0])||!std::isfinite(clip[1])){cachePerf.rectFallbacks++;return false;}
+            float x=(clip[0]/clip[3]*.5f+.5f)*width,y=(clip[1]/clip[3]*.5f+.5f)*height;
+            for(float py:{y,float(height)-y})if(std::clamp(x-4,0.f,float(width))<box.left||std::clamp(x+4,0.f,float(width))>box.right||std::clamp(py-4,0.f,float(height))<box.top||std::clamp(py+4,0.f,float(height))>box.bottom){cachePerf.rectMismatches++;cachePerf.rectFallbacks++;return false;}
+        }
+        cachePerf.rectCopies++;return true;
     }
     bool outsideWorld(const float* center,const float* extent) const {
         for(int plane=0;plane<6;plane++){
@@ -537,7 +575,7 @@ struct Renderer {
         for(size_t i=0;i<list.size();){
             require(list[i]&&list[i]<=draws.size());auto& head=*draws[list[i]-1];size_t end=i+1;
             if(head.batchable)for(;end<list.size();end++){require(list[end]&&list[end]<=draws.size());if(!compatible(head,*draws[list[end]-1]))break;}
-            if(end>i+1)hasBatches=true;for(size_t j=i;j<end;j++)batchEnds[j]=uint32_t(end);i=end;
+            if(end>i+1||(head.batchable&&cacheEnabled()))hasBatches=true;for(size_t j=i;j<end;j++)batchEnds[j]=uint32_t(end);i=end;
         }
     }
     void appendBatch(size_t index) {
@@ -772,7 +810,10 @@ struct Renderer {
         }
         if(profile)perf.cullUs+=now()-at;return visible;
     }
+    #include "drfull-cache.h"
     void render(unsigned segment) {
+        if(cacheEnabled()){renderCached(segment);return;}
+        cachePerf.fallbackSegments++;
         const double start=now();Timing* timing=nullptr;
         const bool immediate=configuration.submission==0&&submission.immediateAvailable;
         // Snapshot only after consuming/validating a nonempty segment.
@@ -865,13 +906,17 @@ struct Renderer {
                     if(d.grabId==1||grab.frame!=stats.frames){
                         ComPtr<ID3D11Resource> resource;rtv->GetResource(&resource);ComPtr<ID3D11Texture2D> source;check(resource.As(&source));D3D11_TEXTURE2D_DESC td{};source->GetDesc(&td);require(td.SampleDesc.Count==1&&td.ArraySize==1);
                         D3D11_RENDER_TARGET_VIEW_DESC vd{};rtv->GetDesc(&vd);require(vd.ViewDimension==D3D11_RTV_DIMENSION_TEXTURE2D&&vd.Texture2D.MipSlice==0);
-                        if(!grab.texture||td.Width!=grab.desc.Width||td.Height!=grab.desc.Height||td.Format!=grab.desc.Format||vd.Format!=grab.format){grab.desc=td;grab.format=vd.Format;grab.texture.Reset();grab.view.Reset();td.BindFlags=D3D11_BIND_SHADER_RESOURCE;td.Usage=D3D11_USAGE_DEFAULT;td.CPUAccessFlags=0;td.MiscFlags=0;memoryDirty=true;check(device->CreateTexture2D(&td,nullptr,&grab.texture));D3D11_SHADER_RESOURCE_VIEW_DESC sv{};sv.Format=vd.Format;sv.ViewDimension=D3D11_SRV_DIMENSION_TEXTURE2D;sv.Texture2D.MipLevels=td.MipLevels;check(device->CreateShaderResourceView(grab.texture.Get(),&sv,&grab.view));}
-                        ID3D11ShaderResourceView* nil[128]{};dc->VSSetShaderResources(0,128,nil);dc->PSSetShaderResources(0,128,nil);boundVsViews.fill(nullptr);boundPsViews.fill(nullptr);dc->OMSetRenderTargets(0,nullptr,nullptr);
-                        if(!resourceConfiguration.skipGrab){dc->CopyResource(grab.texture.Get(),source.Get());gpuPerf.grabCopies++;}else resourcePerf.grabSkips++;
+                        if(!grab.texture||td.Width!=grab.desc.Width||td.Height!=grab.desc.Height||td.Format!=grab.desc.Format||vd.Format!=grab.format){grab.desc=td;grab.format=vd.Format;grab.texture.Reset();grab.view.Reset();td.BindFlags=D3D11_BIND_SHADER_RESOURCE;td.Usage=D3D11_USAGE_DEFAULT;td.CPUAccessFlags=0;td.MiscFlags=0;memoryDirty=true;check(device->CreateTexture2D(&td,nullptr,&grab.texture));grab.texture->SetEvictionPriority(DXGI_RESOURCE_PRIORITY_MAXIMUM);D3D11_SHADER_RESOURCE_VIEW_DESC sv{};sv.Format=vd.Format;sv.ViewDimension=D3D11_SRV_DIMENSION_TEXTURE2D;sv.Texture2D.MipLevels=td.MipLevels;check(device->CreateShaderResourceView(grab.texture.Get(),&sv,&grab.view));}
+                        for(UINT slot=0;slot<viewHigh;slot++){
+                            ID3D11ShaderResourceView* nil=nullptr;
+                            if(boundVsViews[slot]){dc->VSSetShaderResources(slot,1,&nil);boundVsViews[slot]=nullptr;resourcePerf.srvUnbinds++;}
+                            if(boundPsViews[slot]){dc->PSSetShaderResources(slot,1,&nil);boundPsViews[slot]=nullptr;resourcePerf.srvUnbinds++;}
+                        }dc->OMSetRenderTargets(0,nullptr,nullptr);
+                        D3D11_BOX gbox{};bool gpartial=d.grabId==1&&td.MipLevels==1&&viewport.TopLeftX==0&&viewport.TopLeftY==0&&viewport.Width==td.Width&&viewport.Height==td.Height&&grabRect(d,td.Width,td.Height,gbox);if(!resourceConfiguration.skipGrab){if(gpartial)dc->CopySubresourceRegion(grab.texture.Get(),0,gbox.left,gbox.top,0,source.Get(),0,&gbox);else dc->CopyResource(grab.texture.Get(),source.Get());gpuPerf.grabCopies++;}else resourcePerf.grabSkips++;
                         dc->OMSetRenderTargets(1,&rt,dsv.Get());grab.frame=stats.frames;
                         // camRT formats accepted here are 32/64/128-bit color formats.
                         UINT pixelBytes=(td.Format==DXGI_FORMAT_R32G32B32A32_FLOAT||td.Format==DXGI_FORMAT_R32G32B32A32_TYPELESS)?16u:(td.Format==DXGI_FORMAT_R16G16B16A16_FLOAT||td.Format==DXGI_FORMAT_R16G16B16A16_TYPELESS||td.Format==DXGI_FORMAT_R16G16B16A16_UNORM)?8u:4u;
-                        if(!resourceConfiguration.skipGrab)gpuPerf.grabBytes+=uint64_t(td.Width)*td.Height*pixelBytes;
+                        if(!resourceConfiguration.skipGrab)gpuPerf.grabBytes+=gpartial?uint64_t(gbox.right-gbox.left)*(gbox.bottom-gbox.top)*pixelBytes:uint64_t(td.Width)*td.Height*pixelBytes;
                     }else gpuPerf.namedGrabHits++;
                 }
                 drawProbe.grabbed(dc,measured);
@@ -949,7 +994,7 @@ struct Renderer {
             memoryFrame=stats.frames;
             // Idle snapshots may be recreated at their next real use. Never
             // alias distinct named snapshots still needed in the current frame.
-            for(auto& pair:grabSurfaces)if(pair.second.texture&&pair.second.frame+256<stats.frames){pair.second.view.Reset();pair.second.texture.Reset();memoryDirty=true;}
+            for(auto& pair:grabSurfaces)if(!cachePerf.segments&&pair.second.texture&&pair.second.frame+256<stats.frames){pair.second.view.Reset();pair.second.texture.Reset();memoryDirty=true;}
             for(auto it=constantPool.begin();it!=constantPool.end();)if(it->second.use_count()==1){it=constantPool.erase(it);memoryDirty=true;}else ++it;
             for(auto it=textureViews.begin();it!=textureViews.end();)if(it->second.expired())it=textureViews.erase(it);else ++it;
             if(memoryDirty)sampleMemory();else memory.sample();
@@ -990,6 +1035,8 @@ extern "C" intptr_t __cdecl sf_z_drfull_v1(int op,int token,const void* args) no
         if(op==drfull::Configure){require(args&&r->stats.events==0);auto c=*static_cast<const drfull::Configuration*>(args);require(c.submission<=1&&c.constantRing<=1);r->configuration=c;return 1;}
         if(op==drfull::ResourceConfigure){require(args&&r->stats.events==0&&r->draws.empty());auto c=*static_cast<const drfull::ResourceConfiguration*>(args);require(c.skipGrab<=1&&c.pretransform<=1&&c.stableUploads<=1&&c.trimBindings<=1);r->resourceConfiguration=c;return 1;}
         if(op==drfull::ResourcePerf){require(args);*const_cast<drfull::ResourcePerformance*>(static_cast<const drfull::ResourcePerformance*>(args))=r->resourcePerf;return 1;}
+        if(op==drfull::CacheConfigure){require(args&&r->stats.events==0);auto c=*static_cast<const drfull::CacheConfiguration*>(args);require(c.enabled<=1&&c.chunkSize>0&&c.chunkSize<=256);r->cacheConfig=c;return 1;}
+        if(op==drfull::CachePerf){require(args);auto p=r->cachePerf;double n=double(std::max(uint64_t(1),r->stats.frames));p.applyUs/=n;p.poseUs/=n;p.constantsUs/=n;p.cullUs/=n;p.planUs/=n;p.recordUs/=n;p.executeUs/=n;*const_cast<drfull::CachePerformance*>(static_cast<const drfull::CachePerformance*>(args))=p;return 1;}
         if(op==drfull::ReplaceDraw){require(args);const auto& replacement=*static_cast<const drfull::DrawReplacement*>(args);require(replacement.previous>0&&replacement.previous<=r->draws.size()&&!r->draws[replacement.previous-1]->retired&&!r->draws[replacement.previous-1]->composite);
             // program=0 explicitly retires a replaced pass with no successor.
             // The old draw stays usable until a new list packet omits it.

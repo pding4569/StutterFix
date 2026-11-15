@@ -145,6 +145,7 @@ namespace StutterFix
         static void ReleaseFull() { }
         static void FullPreCull() { }
         static void AssertFull() => throw new InvalidOperationException("fixture native boundary");
+        static void AssertCache() => throw new InvalidOperationException("fixture cache native boundary");
         static string FullState() => "fixture-native-not-tested";
     }
 }

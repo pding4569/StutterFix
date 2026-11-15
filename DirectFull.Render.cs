@@ -30,7 +30,7 @@ namespace StutterFix
         {
             internal Renderer R; internal SpriteRenderer Sprite; internal SpriteMask Mask;
             internal bool ExplicitVisible;
-            internal MeshFilter Filter; internal int Index, PoseIndex = -1; internal bool Queued, Live, GroupsDirty, TintOnly, HierarchyDirty, NeedsInverse;
+            internal MeshFilter Filter; internal int Index, PoseIndex = -1; internal bool Queued, Live, GroupsDirty, TintOnly, KeyOnly, HierarchyDirty, NeedsInverse;
             internal SceneRenderOrder.Key Key; internal Bound[] Passes;
             internal readonly HashSet<UnityEngine.Object> Indexed = new HashSet<UnityEngine.Object>();
             internal readonly List<Material> Materials = new List<Material>();
@@ -73,12 +73,13 @@ namespace StutterFix
             internal NativeArray<float> Distances;
             [ReadOnly] internal NativeArray<byte> InverseRequired;
             internal NativeArray<byte> Changed, Reorder;
+            internal NativeQueue<int>.ParallelWriter Changes;
             internal Vector3 Axis;
             internal bool AxisChanged;
             public void Execute(int index, TransformAccess access)
             {
                 Changed[index] = Reorder[index] = 0;
-                if (!access.isValid) { Changed[index] = 2; return; }
+                if (!access.isValid) { Changed[index] = 2; Changes.Enqueue(index); return; }
                 Matrix4x4 w = access.localToWorldMatrix;
                 N.Pose old = Poses[index]; bool changed = !old.World.Equals(w);
                 if (changed) { Poses[index] = new N.Pose { World = w, Inverse = InverseRequired[index] != 0 ? access.worldToLocalMatrix : default }; Changed[index] = 1; }
@@ -86,6 +87,7 @@ namespace StutterFix
                 PreviousCenters[index] = Centers[index];
                 Vector3 center = w.MultiplyPoint3x4(Centers[index]); float d = Vector3.Dot(center, Axis);
                 if (Distances[index] != d) { Distances[index] = d; Reorder[index] = 1; }
+                if (changed || Reorder[index] != 0) Changes.Enqueue(index);
             }
         }
         static Harmony warmHooks;
@@ -135,12 +137,13 @@ namespace StutterFix
         static void DirtyAllOrder(string reason) { foreach (var s in sources) DirtyOrder(s, reason); foreach (var u in canvasUnits) u.OrderDirty = true; orderDirty = true; }
         static void LiveChanged(Source s)
         {
+            namedGrabOwnershipDirty = true;
             if (!s.LiveQueued) { s.LiveQueued = true; liveChanges.Add(s); }
             liveToggles++; transformsDirty = true;
             // Native entries retain their order and use a packet-owned live bit.
             if (s.Passes != null) foreach (var b in s.Passes) if (b.NativeId == 0) { orderDirty = true; break; }
         }
-        static bool rendering, orderDirty, sendList, globalsDirty, clearStencil;
+        static bool rendering, orderDirty, sendList, globalsDirty, clearStencil, namedGrabOwnershipDirty = true;
         static int fullToken, nativeCount, fallbackCount, removedMask, retainedMask, segmentCount, listCount;
         static readonly List<Source> sources = new List<Source>(), changed = new List<Source>();
         static readonly List<Entry> ordered = new List<Entry>();
@@ -151,12 +154,13 @@ namespace StutterFix
         static readonly Dictionary<(S.Variant,long), int> programs = new Dictionary<(S.Variant,long), int>();
         static readonly Dictionary<UnityEngine.Texture, IntPtr> texturePointers = new Dictionary<UnityEngine.Texture, IntPtr>();
         static readonly Dictionary<string, uint> grabNames = new Dictionary<string, uint>(StringComparer.Ordinal);
-        static uint GrabId(string name) { if (string.IsNullOrEmpty(name)) return 1; if (!grabNames.TryGetValue(name, out uint id)) { id = (uint)grabNames.Count + 2; grabNames.Add(name, id); } return id; }
+        static uint GrabId(string name) { if (string.IsNullOrEmpty(name)) return 1; if (!grabNames.TryGetValue(name, out uint id)) { id = (uint)grabNames.Count + 2; grabNames.Add(name, id); namedGrabOwnershipDirty = true; } return id; }
         static readonly List<DirectFullSourceLifetime> sourceLifetimes = new List<DirectFullSourceLifetime>();
         static readonly Dictionary<Renderer, Source> rendererSources = new Dictionary<Renderer, Source>();
         static CommandBuffer before, opaque;
         static TransformAccessArray transforms;
         static NativeArray<N.Pose> poses;
+        static NativeQueue<int> poseChanges;
         static NativeArray<Vector3> centers;
         static NativeArray<Vector3> previousCenters;
         static Vector3 captureAxis; static bool haveCaptureAxis;
@@ -297,6 +301,7 @@ namespace StutterFix
             var config = new N.Configuration { Submission = deferredSubmission ? 1u : 0u, ConstantRing = legacyConstants ? 0u : 1u };
             N.Require(N.Op.Configure, fullToken, &config);
             var resources = resourceConfig; N.Require(N.Op.ResourceConfigure, fullToken, &resources);
+            var cache = new N.CacheConfiguration { Enabled = commandCache ? 1u : 0u, ChunkSize = 32 }; N.Require(N.Op.CacheConfigure, fullToken, &cache);
             var probe = drawProbeConfig; N.Require(N.Op.DrawProbeConfigure, fullToken, &probe);
         }
         static Source AddSource(Renderer r)
@@ -327,6 +332,11 @@ namespace StutterFix
                 distances = new NativeArray<float>(poseCapacity, Allocator.Persistent);
                 inverseRequired = new NativeArray<byte>(poseCapacity, Allocator.Persistent);
                 moved = new NativeArray<byte>(poseCapacity, Allocator.Persistent); reordered = new NativeArray<byte>(poseCapacity, Allocator.Persistent);
+                poseChanges = new NativeQueue<int>(Allocator.Persistent);
+                // Reserve queue blocks before live frames. Draining visits only
+                // changed slots; the main thread no longer scans all transforms.
+                for (int i = 0; i < poseCapacity; i++) poseChanges.Enqueue(i);
+                poseChanges.Clear();
                 poseIds = new uint[poseCapacity]; liveIds = new uint[poseCapacity]; liveValues = new byte[poseCapacity];
             }
             // A visibility edit only touches its slot. The native source ID is stable.
@@ -369,7 +379,7 @@ namespace StutterFix
             }
             fullRescan = true;
         }
-        static void Queue(Source s, bool tintOnly = false) { if (!s.Queued) { s.TintOnly = tintOnly; s.Queued = true; changed.Add(s); } else if (!tintOnly) s.TintOnly = false; }
+        static void Queue(Source s, bool tintOnly = false, bool keyOnly = false) { if (!s.Queued) { s.TintOnly = tintOnly; s.KeyOnly = keyOnly; s.Queued = true; changed.Add(s); } else { if (!tintOnly) s.TintOnly = false; if (!keyOnly) s.KeyOnly = false; } }
         internal static void NotifyFull(UnityEngine.Object obj, int kind, string writer)
         {
             rescanObj = obj; rescanWriter = writer;
@@ -414,7 +424,8 @@ namespace StutterFix
             if (obj is Shader) { globalsDirty = true; return; }
             if (obj is MeshFilter filter) { var renderer = filter.GetComponent<Renderer>(); if (renderer && rendererSources.TryGetValue(renderer, out var owner)) Queue(owner); }
             if (obj is UnityEngine.Texture texture && texturePointers.ContainsKey(texture)) { globalsDirty = true; texturePointers.Remove(texture); }
-            if (sourceIndex.TryGetValue(obj, out var list)) foreach (var s in list) Queue(s, obj is SpriteRenderer && writer == "set_color");
+            if (sourceIndex.TryGetValue(obj, out var list)) foreach (var s in list) Queue(s, obj is SpriteRenderer && writer == "set_color",
+                obj is Renderer && (writer == "set_sortingOrder" || writer == "set_sortingLayerID" || writer == "set_sortingLayerName"));
         }
         internal static void NotifyFullGlobal() { if (rendering || preparing) globalsDirty = true; }
         internal static void BeforeFullWrite(UnityEngine.Object obj, int kind)
@@ -425,6 +436,7 @@ namespace StutterFix
         }
         static void RetirePasses(Source source)
         {
+            namedGrabOwnershipDirty = true;
             if (source.Passes == null) return;
             foreach (var old in source.Passes)
             {
@@ -436,6 +448,11 @@ namespace StutterFix
         {
             if (!initial) { collectSignals++; if (s.TintOnly) collectTintSignals++; else collectFullSignals++; }
             if (!s.R) throw new InvalidOperationException("owned renderer destroyed");
+            if (!initial && s.KeyOnly && s.Live && !s.Mask && s.Passes != null)
+            {
+                s.KeyOnly = false; UpdateKey(s); return;
+            }
+            s.KeyOnly = false;
             if (!initial && s.TintOnly && s.Live && s.Sprite && s.Passes != null)
             {
                 s.TintOnly = false; Color tint = s.Sprite.color;
@@ -538,6 +555,7 @@ namespace StutterFix
         }
         static Bound Fallback(Source s, Material m, int slot, string reason)
         {
+            namedGrabOwnershipDirty = true;
             // Explicit DrawRenderer bypasses Unity's LOD selection. Such sources
             // need their original camera until a verified LOD path exists.
             if (s.R.GetComponentInParent<LODGroup>()) throw new InvalidOperationException("explicit LODGroup requires original camera");
@@ -563,6 +581,7 @@ namespace StutterFix
         }
         static Bound Bind(Source s, Material m, S.ShaderData shader, S.Pass pass, int slot, int maskKind)
         {
+            namedGrabOwnershipDirty = true;
             var v = s.Mask ? pass.Variants[0] : S.Select(shader, pass, m);
             var b = new Bound { Source = s, Material = m, UnityShader = m ? m.shader : null, Shader = shader, Pass = pass, Slot = slot, MaskKind = maskKind, Variant = v, Stages = new[] { v.Vs, v.Ps } };
             b.Entry = new Entry { Source = s, Draw = b, Slot = slot };
@@ -688,7 +707,7 @@ namespace StutterFix
                 {
                     var draw = new N.Draw { Program = (uint)program, Geometry = (uint)b.Geometry, Buffers = buffers, BufferCount = (uint)b.Buffers.Length,
                         Patches = patches, PatchCount = (uint)b.Patches.Length, Textures = textures, TextureCount = (uint)b.Textures.Length,
-                        Constants = bytes, ConstantBytes = (uint)b.Bytes.Length, Pose = (uint)s.Index, Grab = b.Pass.Grab ? GrabId(b.Pass.GrabName) : 0u, Sprite = (s.Sprite || s.Mask ? 1u : 0u) | (Batchable(b) ? 2u : 0u) };
+                        Constants = bytes, ConstantBytes = (uint)b.Bytes.Length, Pose = (uint)s.Index, Grab = b.Pass.Grab ? GrabId(b.Pass.GrabName) : 0u, Sprite = (s.Sprite || s.Mask ? 1u : 0u) | (Batchable(b) ? 2u : 0u) | (ScreenGrab(b) ? 4u : 0u) };
                     for (int i = 0; i < 3; i++) { draw.Center[i] = localBounds.center[i]; draw.Extent[i] = localBounds.extents[i]; }
                     if (b.NativeId != 0) { var replacement = new N.DrawReplacement { Previous = (uint)b.NativeId, Draw = draw }; b.NativeId = N.Require(N.Op.ReplaceDraw, fullToken, &replacement); }
                     else b.NativeId = N.Require(N.Op.Draw, fullToken, &draw);
@@ -699,6 +718,11 @@ namespace StutterFix
             if (!b.ConstantsQueued) { b.ConstantsQueued = true; changedConstants.Add(b); }
             if (sampleCollect) fillTicks += Stopwatch.GetTimestamp() - fillStart;
         }
+        // Original SpritesDefault Grab programs project POSITION directly and
+        // sample screen XY/W. Native additionally checks every indexed vertex.
+        // Unknown/deformed shaders and pixel snapping keep full snapshots.
+        static bool ScreenGrab(Bound b) => b.Pass.Grab && b.Shader.Name == "Hidden/BlendModes/SpritesDefault/Grab"
+            && Array.IndexOf(b.Variant.Keywords, "PIXELSNAP_ON") < 0;
         static bool Batchable(Bound b)
         {
             // These original vertex programs only transform POSITION, then use
@@ -896,10 +920,11 @@ namespace StutterFix
         {
             // Unity explicit draws have their own named-Grab cache. Sharing the
             // same name with our native cache would take two different snapshots.
-            foreach (var source in sources) if (source.Live && source.Passes != null) foreach (var bound in source.Passes)
+            if (namedGrabOwnershipDirty) foreach (var source in sources) if (source.Live && source.Passes != null) foreach (var bound in source.Passes)
                 if (bound.NativeId == 0 && bound.Material && bound.Material.shader && S.Load().TryGetValue(bound.Material.shader.name, out var shader))
                     foreach (var pass in shader.Passes) if (pass.Grab && !string.IsNullOrEmpty(pass.GrabName) && grabNames.ContainsKey(pass.GrabName))
                         throw new InvalidOperationException("mixed Unity/native named Grab ownership: " + pass.GrabName);
+            namedGrabOwnershipDirty = false;
             foreach (var s in orderChanges)
                 if (s.OrderedPasses != null) foreach (var b in s.OrderedPasses) if (b.Entry.Node != null) orderTree.Remove(b.Entry.Node);
             foreach (var s in orderChanges)
@@ -988,13 +1013,15 @@ namespace StutterFix
                 fc = Stopwatch.GetTimestamp() - phase; collectTicks += fc; phase = Stopwatch.GetTimestamp();
                 var sig = SortSignature();
                 var axis = new Vector3(sig.x, sig.y, sig.z);
-                var job = new Capture { Poses = poses, Centers = centers, PreviousCenters = previousCenters, Distances = distances, Axis = axis, AxisChanged = !haveCaptureAxis || !captureAxis.Equals(axis), Changed = moved, Reorder = reordered, InverseRequired = inverseRequired }; job.ScheduleReadOnly(transforms, 64).Complete();
+                var job = new Capture { Poses = poses, Centers = centers, PreviousCenters = previousCenters, Distances = distances, Axis = axis, AxisChanged = !haveCaptureAxis || !captureAxis.Equals(axis), Changed = moved, Reorder = reordered, InverseRequired = inverseRequired, Changes = poseChanges.AsParallelWriter() };
+                var captureHandle = job.ScheduleReadOnly(transforms, 64);
                 captureAxis = axis; haveCaptureAxis = true;
                 bool first = !haveNativeFrame; frameWorldOnly = inversePoseCount == 0;
                 var upload = (N.Pose*)NativeArrayUnsafeUtility.GetUnsafePtr(uploadPoses); var worlds = (Matrix4x4*)upload;
                 poseCount = first ? poseSources.Count : 0;
+                captureHandle.Complete();
                 if (first) for (int i = 0; i < poseCount; i++) { poseIds[i] = (uint)poseSources[i].Index; if (frameWorldOnly) worlds[i] = poses[i].World; else upload[i] = poses[i]; }
-                for (int index = 0; index < poseSources.Count; index++)
+                while (poseChanges.TryDequeue(out int index))
                 {
                     if (moved[index] == 0 && reordered[index] == 0) continue;
                     var source = poseSources[index];
@@ -1078,6 +1105,16 @@ namespace StutterFix
             foreach (var pair in signalWriters) Log("signal target=" + pair.Key.Item1.FullName + " writer=" + pair.Key.Item2 + " count=" + pair.Value);
             return "replans=" + orderBuilds + " unchangedMask=" + avoidedMaskReplans + " emptySprite=" + avoidedEmptyReplans + " canvasPose=" + canvasPoseSignals + " changedKey=" + orderKeyChanges + " reboundDraw=" + drawRebinds;
         }
+        static void AssertCache()
+        {
+            N.CachePerformance cache = default; N.Require(N.Op.CachePerf, fullToken, &cache);
+            if (!commandCache || cache.Available == 0 || cache.Segments == 0 || cache.Replays <= cache.Records || cache.FallbackSegments != 0)
+                throw new InvalidOperationException("drfull INVALID: reusable command cache unavailable, cold or bypassed");
+            N.TimelinePerformance timeline = default; N.Require(N.Op.TimelinePerf, fullToken, &timeline);
+            N.GpuPerformance gpu = default; N.Require(N.Op.GpuPerf, fullToken, &gpu);
+            if (resourceConfig.SkipGrab != 0 || (timeline.VisibleGrabs != 0 && gpu.GrabCopies == 0))
+                throw new InvalidOperationException("drfull INVALID: visible Grab snapshots disabled or missing");
+        }
         static void AssertFull()
         {
             N.Stats s = default; N.Require(N.Op.Stats, fullToken, &s);
@@ -1095,6 +1132,7 @@ namespace StutterFix
             ReleaseCanvases();
             if (fullToken != 0) { N.Call(N.Op.Destroy, fullToken); fullToken = 0; }
             if (transforms.isCreated) transforms.Dispose(); if (poses.IsCreated) poses.Dispose(); if (moved.IsCreated) moved.Dispose();
+            if (poseChanges.IsCreated) poseChanges.Dispose();
             if (inverseRequired.IsCreated) inverseRequired.Dispose();
             if (centers.IsCreated) centers.Dispose(); if (distances.IsCreated) distances.Dispose(); if (reordered.IsCreated) reordered.Dispose();
             if (previousCenters.IsCreated) previousCenters.Dispose(); haveCaptureAxis = false;
