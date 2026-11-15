@@ -6,5 +6,6 @@
   <ItemGroup>
     <Compile Include="../../../DirectFull.ObjectLayers.cs" Link="DirectFull.ObjectLayers.cs" />
     <Compile Include="../../../SceneRenderOrder.cs" Link="SceneRenderOrder.cs" />
+    <Compile Include="../../../DirectFull.ExplicitPolicy.cs" Link="DirectFull.ExplicitPolicy.cs" />
   </ItemGroup>
 </Project>

@@ -29,6 +29,7 @@ namespace StutterFix
         sealed class Source
         {
             internal Renderer R; internal SpriteRenderer Sprite; internal SpriteMask Mask;
+            internal bool ExplicitVisible;
             internal MeshFilter Filter; internal int Index, PoseIndex = -1; internal bool Queued, Live, GroupsDirty, TintOnly, HierarchyDirty, NeedsInverse;
             internal SceneRenderOrder.Key Key; internal Bound[] Passes;
             internal readonly HashSet<UnityEngine.Object> Indexed = new HashSet<UnityEngine.Object>();
@@ -57,6 +58,7 @@ namespace StutterFix
             internal Source Source; internal Bound Draw; internal Material Fallback; internal int Slot, Layer, Order, Sub;
             internal SceneRenderOrder.Key Key; internal CanvasUnit Canvas; internal int RecordedPhase; internal bool RecordedLive, RecordedIsolated;
             internal int[] GroupIds = Array.Empty<int>(); internal SceneRenderOrder.Key[] GroupKeys = Array.Empty<SceneRenderOrder.Key>();
+            internal int[] ExplicitPasses; internal bool RecordedVisible;
             internal DirectFullOrderTree<Entry>.Node Node;
 
         }
@@ -64,10 +66,12 @@ namespace StutterFix
         {
             internal NativeArray<N.Pose> Poses;
             [ReadOnly] internal NativeArray<Vector3> Centers;
+            internal NativeArray<Vector3> PreviousCenters;
             internal NativeArray<float> Distances;
             [ReadOnly] internal NativeArray<byte> InverseRequired;
             internal NativeArray<byte> Changed, Reorder;
             internal Vector3 Axis;
+            internal bool AxisChanged;
             public void Execute(int index, TransformAccess access)
             {
                 Changed[index] = Reorder[index] = 0;
@@ -75,6 +79,8 @@ namespace StutterFix
                 Matrix4x4 w = access.localToWorldMatrix;
                 N.Pose old = Poses[index]; bool changed = !old.World.Equals(w);
                 if (changed) { Poses[index] = new N.Pose { World = w, Inverse = InverseRequired[index] != 0 ? access.worldToLocalMatrix : default }; Changed[index] = 1; }
+                if (!changed && !AxisChanged && PreviousCenters[index].Equals(Centers[index])) return;
+                PreviousCenters[index] = Centers[index];
                 Vector3 center = w.MultiplyPoint3x4(Centers[index]); float d = Vector3.Dot(center, Axis);
                 if (Distances[index] != d) { Distances[index] = d; Reorder[index] = 1; }
             }
@@ -149,6 +155,8 @@ namespace StutterFix
         static TransformAccessArray transforms;
         static NativeArray<N.Pose> poses;
         static NativeArray<Vector3> centers;
+        static NativeArray<Vector3> previousCenters;
+        static Vector3 captureAxis; static bool haveCaptureAxis;
         static NativeArray<float> distances;
         static NativeArray<byte> moved, reordered, inverseRequired;
         static bool haveNativeFrame;
@@ -250,6 +258,7 @@ namespace StutterFix
                 before = new CommandBuffer { name = "StutterFix.DirectFull.BeforeAlpha" };
                 opaque = new CommandBuffer { name = "StutterFix.DirectFull.BeforeOpaque" };
                 main.AddCommandBuffer(CameraEvent.BeforeForwardOpaque, opaque); main.AddCommandBuffer(CameraEvent.BeforeForwardAlpha, before);
+                InstallTimeline();
                 // Install managed write-site observers. Native Unity setters themselves
                 // are never patched. Existing game transforms/materials keep updating.
                 PromoteSources();
@@ -304,6 +313,7 @@ namespace StutterFix
                 poses = new NativeArray<N.Pose>(poseCapacity, Allocator.Persistent);
                 uploadPoses = new NativeArray<N.Pose>(poseCapacity, Allocator.Persistent);
                 centers = new NativeArray<Vector3>(poseCapacity, Allocator.Persistent);
+                previousCenters = new NativeArray<Vector3>(poseCapacity, Allocator.Persistent);
                 distances = new NativeArray<float>(poseCapacity, Allocator.Persistent);
                 inverseRequired = new NativeArray<byte>(poseCapacity, Allocator.Persistent);
                 moved = new NativeArray<byte>(poseCapacity, Allocator.Persistent); reordered = new NativeArray<byte>(poseCapacity, Allocator.Persistent);
@@ -318,7 +328,7 @@ namespace StutterFix
                 {
                     int last = poseSources.Count - 1; if (source.NeedsInverse) inversePoseCount--;
                     transforms.RemoveAtSwapBack(index);
-                    if (index != last) { var swapped = poseSources[last]; poseSources[index] = swapped; swapped.PoseIndex = index; poses[index] = poses[last]; centers[index] = centers[last]; distances[index] = distances[last]; inverseRequired[index] = inverseRequired[last]; }
+                    if (index != last) { var swapped = poseSources[last]; poseSources[index] = swapped; swapped.PoseIndex = index; poses[index] = poses[last]; centers[index] = centers[last]; previousCenters[index] = previousCenters[last]; distances[index] = distances[last]; inverseRequired[index] = inverseRequired[last]; }
                     poseSources.RemoveAt(last); source.PoseIndex = -1; poseRemoves++;
                 }
                 else if (active && index < 0)
@@ -358,6 +368,7 @@ namespace StutterFix
             if (!obj) { if (sourceIndex.TryGetValue(obj, out var deadList)) { foreach (var ds in deadList) Queue(ds); return; } if (canvasIndex.Contains(obj)) MarkRescan("Render:dead-canvas"); return; }
             if (writer != null) { var key = (obj.GetType(), writer); signalWriters.TryGetValue(key, out long n); signalWriters[key] = n + 1; }
             NotifyCanvasWrite(obj, kind, writer);
+            if (obj is Camera) { explicitDistancesDirty = true; return; }
             if (obj is Renderer wake && dormant.Contains(wake))
             {
                 if (wake && wake.enabled && wake.gameObject.activeInHierarchy && !wake.forceRenderingOff) { pendingPromotions.Add(wake); }
@@ -464,7 +475,7 @@ namespace StutterFix
                 {
                     foreach (var b in s.Passes)
                     {
-                        try { if (b.NativeId != 0) Fill(b); } catch { structure = true; break; }
+                        try { if (b.NativeId != 0) Fill(b); else RefreshExplicitPasses(b); } catch { structure = true; break; }
                         if (!s.Mask && b.Entry.Key.CompareTo(FullKey(s.R, b.Material, b.Slot)) != 0) DirtyOrder(s, "pass-key");
                     }
                     if (!structure) { if (s.Mask) avoidedMaskReplans++; UpdateKey(s); return; }
@@ -512,9 +523,13 @@ namespace StutterFix
         }
         static Bound Fallback(Source s, Material m, int slot, string reason)
         {
+            // Explicit DrawRenderer bypasses Unity's LOD selection. Such sources
+            // need their original camera until a verified LOD path exists.
+            if (s.R.GetComponentInParent<LODGroup>()) throw new InvalidOperationException("explicit LODGroup requires original camera");
+            explicitSources.Add(s);
             fallbackReasons.TryGetValue(reason, out int n); fallbackReasons[reason] = n + 1; fallbackCount++;
-            var b = new Bound { Source = s, Slot = slot, Material = m };
-            b.Entry = new Entry { Source = s, Fallback = m, Slot = slot }; return b;
+            var b = new Bound { Source = s, Slot = slot, Material = m, UnityShader = m.shader };
+            b.Entry = new Entry { Source = s, Fallback = m, Slot = slot, ExplicitPasses = ExplicitPasses(m) }; return b;
         }
         static bool StructureMatches(Source s)
         {
@@ -524,7 +539,7 @@ namespace StutterFix
             foreach (var b in s.Passes)
             {
                 if (b.Slot >= s.Materials.Count || !ReferenceEquals(b.Material, s.Materials[b.Slot])) return false;
-                if (b.NativeId == 0) continue;
+                if (b.NativeId == 0) { if (b.Material.shader != b.UnityShader) return false; continue; }
                 if (s.R.isPartOfStaticBatch || s.R is MeshRenderer mr && mr.additionalVertexStreams) return false;
                 if (b.Material.shader != b.UnityShader || !ReferenceEquals(S.Select(b.Shader, b.Pass, b.Material), b.Variant)) return false;
                 if (GeometryFor(s, b.Variant, b.Slot) != b.Geometry) return false;
@@ -663,7 +678,7 @@ namespace StutterFix
         {
             // These original vertex programs only transform POSITION, then use
             // UV/color. Object-space deformations/Grab/masks are hard boundaries.
-            return b.MaskKind == 0 && !b.Pass.Grab && (b.Shader.Name == "Sprites/Tile" || b.Shader.Name == "ADOFAI/FloorMesh" || b.Shader.Name == "Sprites/Default" && b.Source.Sprite && Array.IndexOf(b.Variant.Keywords, "ETC1_EXTERNAL_ALPHA") < 0);
+            return !localPrecision && b.MaskKind == 0 && !b.Pass.Grab && (b.Shader.Name == "Sprites/Tile" || b.Shader.Name == "ADOFAI/FloorMesh" || b.Shader.Name == "Sprites/Default" && b.Source.Sprite && Array.IndexOf(b.Variant.Keywords, "ETC1_EXTERNAL_ALPHA") < 0);
         }
         static long StateHash(int[] values) { long h = 19; foreach (int x in values) h = unchecked(h * 397 ^ x); return h; }
         static float Float(Bound b, int id, string name, float fallback = 0)
@@ -839,6 +854,8 @@ namespace StutterFix
         }
         static void RecordSegment(CommandBuffer cb, ref int start)
         {
+            if (recordingExplicit) { Timeline(cb, 7); recordingExplicit = false; }
+            if (listCount == start && segmentCount != 0) return;
             if (segmentCount >= 65535) throw new InvalidOperationException("M4c segment limit");
             segments[segmentCount * 2] = (uint)start; segments[segmentCount * 2 + 1] = (uint)(listCount - start);
             cb.IssuePluginEvent(new IntPtr(N.Call(N.Op.Event, 0)), (fullToken << 16) | segmentCount);
@@ -882,12 +899,13 @@ namespace StutterFix
             AddCanvasEntries();
             bool same = orderCommandsReady && orderTree.Matches(ordered);
             if (same) foreach (var e in ordered)
-                if (e.RecordedPhase != FullPhase(e) || e.Draw == null && e.Source != null && e.RecordedLive != e.Source.Live
+                if (e.RecordedPhase != FullPhase(e) || e.Draw == null && e.Source != null && (e.RecordedLive != e.Source.Live || e.RecordedVisible != e.Source.ExplicitVisible)
                     || e.Canvas != null && e.RecordedIsolated != e.Canvas.Isolated) { same = false; break; }
             if (same) { avoidedOrderReplans++; keyOnlyFrames++; orderDirty = false; return; }
             orderTree.CopyTo(ordered);
-            foreach (var e in ordered) { e.RecordedPhase = FullPhase(e); e.RecordedLive = e.Source != null && e.Source.Live; e.RecordedIsolated = e.Canvas != null && e.Canvas.Isolated; }
-            before.Clear(); opaque.Clear(); listCount = segmentCount = 0;
+            foreach (var e in ordered) { e.RecordedPhase = FullPhase(e); e.RecordedLive = e.Source != null && e.Source.Live; e.RecordedVisible = e.Source != null && e.Source.ExplicitVisible; e.RecordedIsolated = e.Canvas != null && e.Canvas.Isolated; }
+            before.Clear(); opaque.Clear(); listCount = segmentCount = 0; recordingExplicit = false;
+            Timeline(opaque, 0); Timeline(opaque, 16); Timeline(before, 18);
             bool opaquePhase = ordered.Count != 0 && FullPhase(ordered[0]) == 0;
             var cb = opaquePhase ? opaque : before; int start = 0;
             BeginCanvasRuns();
@@ -901,10 +919,11 @@ namespace StutterFix
                 if (e.Canvas != null) { RecordCanvasEntry(cb, e, ref start); continue; }
                 EndCanvasRun();
                 if (e.Draw != null) { if (listCount == drawList.Length) throw new InvalidOperationException("M4c draw list capacity"); drawList[listCount++] = (uint)e.Draw.NativeId; if (e.Sub != 0) anyMasks = true; }
-                else { RecordSegment(cb, ref start); cb.DrawRenderer(e.Source.R, e.Fallback, e.Source.Filter && e.Source.Filter.sharedMesh ? Math.Min(e.Slot, e.Source.Filter.sharedMesh.subMeshCount - 1) : 0, -1); }
+                else RecordExplicit(cb, e, ref start);
             }
             EndCanvasRun();
             RecordSegment(cb, ref start);
+            RetireCanvasRuns();
             if (maskDepth != 0) throw new InvalidOperationException("M4c unbalanced mask range");
             if (anyMasks && camera.targetTexture.depth < 24) throw new InvalidOperationException("M4c masks require a stencil-capable camera depth target");
             clearStencil = anyMasks;
@@ -933,13 +952,16 @@ namespace StutterFix
                 if (transformsDirty) BuildPoseTracking();
                 fc = Stopwatch.GetTimestamp() - phase; collectTicks += fc; phase = Stopwatch.GetTimestamp();
                 var sig = SortSignature();
-                var job = new Capture { Poses = poses, Centers = centers, Distances = distances, Axis = new Vector3(sig.x, sig.y, sig.z), Changed = moved, Reorder = reordered, InverseRequired = inverseRequired }; job.ScheduleReadOnly(transforms, 64).Complete();
+                var axis = new Vector3(sig.x, sig.y, sig.z);
+                var job = new Capture { Poses = poses, Centers = centers, PreviousCenters = previousCenters, Distances = distances, Axis = axis, AxisChanged = !haveCaptureAxis || !captureAxis.Equals(axis), Changed = moved, Reorder = reordered, InverseRequired = inverseRequired }; job.ScheduleReadOnly(transforms, 64).Complete();
+                captureAxis = axis; haveCaptureAxis = true;
                 bool first = !haveNativeFrame; frameWorldOnly = inversePoseCount == 0;
                 var upload = (N.Pose*)NativeArrayUnsafeUtility.GetUnsafePtr(uploadPoses); var worlds = (Matrix4x4*)upload;
                 poseCount = first ? poseSources.Count : 0;
                 if (first) for (int i = 0; i < poseCount; i++) { poseIds[i] = (uint)poseSources[i].Index; if (frameWorldOnly) worlds[i] = poses[i].World; else upload[i] = poses[i]; }
                 for (int index = 0; index < poseSources.Count; index++)
                 {
+                    if (moved[index] == 0 && reordered[index] == 0) continue;
                     var source = poseSources[index];
                     if (moved[index] == 2 || !source.R) { if (source.Live) { source.Live = false; LiveChanged(source); DirtyOrder(source, "invalid-pose"); } continue; }
                     if (!first && moved[index] != 0) { poseIds[poseCount] = (uint)source.Index; if (frameWorldOnly) worlds[poseCount] = poses[index].World; else upload[poseCount] = poses[index]; poseCount++; }
@@ -951,6 +973,7 @@ namespace StutterFix
                 }
                 if (transformsDirty) BuildPoseTracking();
                 fp = Stopwatch.GetTimestamp() - phase; poseTicks += fp; phase = Stopwatch.GetTimestamp();
+                UpdateExplicitVisibility();
                 if (orderDirty) { long rp = Stopwatch.GetTimestamp(); RebuildFullOrder(); replanMaxTicks = Math.Max(replanMaxTicks, Stopwatch.GetTimestamp() - rp); }
                 fs = Stopwatch.GetTimestamp() - phase; sortTicks += fs;
                 long canvas = Stopwatch.GetTimestamp(); RenderCanvases(); fa = Stopwatch.GetTimestamp() - canvas;
@@ -1011,7 +1034,7 @@ namespace StutterFix
             N.UploadPerformance up = default; N.Require(N.Op.UploadPerf, fullToken, &up);
             N.GpuPerformance gpu = default; N.Require(N.Op.GpuPerf, fullToken, &gpu);
             double phaseScale = 1e6 / Stopwatch.Frequency / Math.Max(1, fullFrames);
-            return FormattableString.Invariant($"mode=M4g-original active=True native={nativeCount} unityExplicit={fallbackCount} sources={sources.Count} dormant={dormant.Count} poseActive={poseSources.Count} pose_capacity={poseCapacity} pose_world_only={frameWorldOnly} inverse_poses={inversePoseCount} pose_adds={poseAdds} pose_removes={poseRemoves} incremental_keys={incrementalKeys} live_toggles={liveToggles} removedMask={removedMask} retainedMask={retainedMask} frames={s.Frames} draws={s.Draws} errors={s.Errors} dropped={s.Dropped} main_us={(fullFrames != 0 ? fullTicks * 1e6 / Stopwatch.Frequency / fullFrames : 0):F3} main_max_us={fullMaxTicks * 1e6 / Stopwatch.Frequency:F3} render_us={s.RenderUs:F3} commit_us={s.CommitUs:F3} replans={orderBuilds} commit_max_us={commitMaxTicks * 1e6 / Stopwatch.Frequency:F3} replan_max_us={replanMaxTicks * 1e6 / Stopwatch.Frequency:F3} {CanvasState()} collect_us={collectTicks * phaseScale:F3} pose_us={poseTicks * phaseScale:F3} sort_us={sortTicks * phaseScale:F3} packet_us={packetTicks * phaseScale:F3} pose_uploads={poseCount} dirty_draws={dirtyCount} packet_bytes={constantCount} rt_apply_us={perf.ApplyUs:F3} rt_cull_us={perf.CullUs:F3} rt_constants_us={perf.ConstantsUs:F3} rt_draw_us={perf.DrawUs:F3} rt_execute_us={perf.ExecuteUs:F3} rt_uploads={perf.Uploads} rt_upload_bytes={perf.UploadBytes} upload_work_bytes={up.WorkBytes} baked_vertices={up.BakedVertices} upload_geometry_bytes={up.GeometryBytes} upload_pose_bytes={up.PoseBytes} upload_draw_bytes={up.DrawBytes} upload_index_bytes={up.IndexBytes} upload_constant_bytes={up.ConstantBytes} upload_color_bytes={up.ColorBytes} upload_cpu_batch_bytes={up.CpuBatchBytes} upload_pose_ranges={up.PoseRanges} upload_draw_ranges={up.DrawRanges} upload_index_calls={up.IndexUploads} upload_constant_calls={up.ConstantUploads} single_unverified={up.SingleUnverified} single_geometry={up.SingleGeometry} single_program={up.SingleProgram} single_constants={up.SingleConstants} single_textures={up.SingleTextures} single_segment={up.SingleSegment} single_limit={up.SingleLimit} layouts={perf.LayoutCreates} layout_hits={perf.LayoutHits} rt_sample_frames={perf.SampledFrames} gpu_batch={batch.GpuAvailable != 0} gpu_dispatches={batch.GpuDispatches} gpu_pose_uploads={batch.GpuPoseUploads} gpu_geometry_uploads={batch.GpuGeometryUploads} batch_runs={batch.Batches} batch_sources={batch.Sources} batch_vertices={batch.Vertices} single_draws={batch.SingleDraws} cb_creates={batch.ConstantCreates} rt_batch_us={batch.BuildUs / Math.Max(1.0, perf.SampledFrames):F3} avoided_order_replans={avoidedOrderReplans} key_only_frames={keyOnlyFrames} max_frame={maxFrameNumber} max_collect_us={maxCollect*1e6/Stopwatch.Frequency:F3} max_pose_us={maxPose*1e6/Stopwatch.Frequency:F3} max_sort_us={maxSort*1e6/Stopwatch.Frequency:F3} max_canvas_us={maxCanvas*1e6/Stopwatch.Frequency:F3} max_packet_us={maxPacket*1e6/Stopwatch.Frequency:F3} max_gc_collections={maxGc} commit_peak_poses={peakPacketPoses} commit_peak_dirty={peakPacketDirty} commit_peak_bytes={peakPacketBytes} commit_peak_gc={commitPeakGc} commit_peak_growths={commitPeakGrowths} commit_growths={commitGrowths} commit_growth_bytes={commitGrowthBytes} avoided_mask_replans={avoidedMaskReplans} avoided_empty_replans={avoidedEmptyReplans} canvas_pose_signals={canvasPoseSignals} order_key_changes={orderKeyChanges} draw_rebinds={drawRebinds} prepare_slices={prepareSlices} prepare_max_ms={prepareMaxTicks * 1000.0 / Stopwatch.Frequency:F3} prepare_work_ms={prepareWorkTicks * 1000.0 / Stopwatch.Frequency:F3} ready_ms={(firstReadyTicks == 0 ? 0 : (firstReadyTicks-fullStartTicks)*1000.0/Stopwatch.Frequency):F3} warm_ms={warmMs:F3} warm_cached={warmHooks != null} setup_ms={(preparationFinishedTicks-fullStartTicks)*1000.0/Stopwatch.Frequency:F3} setup_hooks_ms={StageMs("hooks"):F3} setup_discover_ms={StageMs("discover"):F3} setup_canvas_ms={StageMs("canvas"):F3} setup_native_ms={StageMs("native"):F3} setup_packets_ms={StageMs("packets"):F3} setup_shader_ms={StageMs("shader-resource"):F3} setup_bind_ms={StageMs("bind"):F3} setup_publish_ms={StageMs("publish"):F3} dead_sources={deadSources} canvas_promotions={canvasPromotions} hierarchy_incremental={hierarchyIncremental} rescans_marked={rescanCount} safe={(Resilience.SafeMode ? 1 : 0)} grab_copies={gpu.GrabCopies} grab_bytes={gpu.GrabBytes} named_grab_hits={gpu.NamedGrabHits} culled_draws={gpu.CulledDraws} culled_sources={gpu.CulledSources} gpu_event_us={gpu.EventUs:F3} gpu_event_max_us={gpu.MaxEventUs:F3} gpu_samples={gpu.Samples} gpu_pending={gpu.Pending} gpu_disjoint={gpu.Disjoint} parity=UNMEASURED");
+            return FormattableString.Invariant($"mode=M4h-original active=True native={nativeCount} unityExplicit={fallbackCount} sources={sources.Count} dormant={dormant.Count} poseActive={poseSources.Count} pose_capacity={poseCapacity} pose_world_only={frameWorldOnly} inverse_poses={inversePoseCount} pose_adds={poseAdds} pose_removes={poseRemoves} incremental_keys={incrementalKeys} live_toggles={liveToggles} removedMask={removedMask} retainedMask={retainedMask} frames={s.Frames} draws={s.Draws} errors={s.Errors} dropped={s.Dropped} main_us={(fullFrames != 0 ? fullTicks * 1e6 / Stopwatch.Frequency / fullFrames : 0):F3} main_max_us={fullMaxTicks * 1e6 / Stopwatch.Frequency:F3} render_us={s.RenderUs:F3} commit_us={s.CommitUs:F3} replans={orderBuilds} commit_max_us={commitMaxTicks * 1e6 / Stopwatch.Frequency:F3} replan_max_us={replanMaxTicks * 1e6 / Stopwatch.Frequency:F3} {CanvasState()} collect_us={collectTicks * phaseScale:F3} pose_us={poseTicks * phaseScale:F3} sort_us={sortTicks * phaseScale:F3} packet_us={packetTicks * phaseScale:F3} pose_uploads={poseCount} dirty_draws={dirtyCount} packet_bytes={constantCount} rt_apply_us={perf.ApplyUs:F3} rt_cull_us={perf.CullUs:F3} rt_constants_us={perf.ConstantsUs:F3} rt_draw_us={perf.DrawUs:F3} rt_execute_us={perf.ExecuteUs:F3} rt_uploads={perf.Uploads} rt_upload_bytes={perf.UploadBytes} upload_work_bytes={up.WorkBytes} baked_vertices={up.BakedVertices} upload_geometry_bytes={up.GeometryBytes} upload_pose_bytes={up.PoseBytes} upload_draw_bytes={up.DrawBytes} upload_index_bytes={up.IndexBytes} upload_constant_bytes={up.ConstantBytes} upload_color_bytes={up.ColorBytes} upload_cpu_batch_bytes={up.CpuBatchBytes} upload_pose_ranges={up.PoseRanges} upload_draw_ranges={up.DrawRanges} upload_index_calls={up.IndexUploads} upload_constant_calls={up.ConstantUploads} single_unverified={up.SingleUnverified} single_geometry={up.SingleGeometry} single_program={up.SingleProgram} single_constants={up.SingleConstants} single_textures={up.SingleTextures} single_segment={up.SingleSegment} single_limit={up.SingleLimit} layouts={perf.LayoutCreates} layout_hits={perf.LayoutHits} rt_sample_frames={perf.SampledFrames} gpu_batch={batch.GpuAvailable != 0} gpu_dispatches={batch.GpuDispatches} gpu_pose_uploads={batch.GpuPoseUploads} gpu_geometry_uploads={batch.GpuGeometryUploads} batch_runs={batch.Batches} batch_sources={batch.Sources} batch_vertices={batch.Vertices} single_draws={batch.SingleDraws} cb_creates={batch.ConstantCreates} rt_batch_us={batch.BuildUs / Math.Max(1.0, perf.SampledFrames):F3} avoided_order_replans={avoidedOrderReplans} key_only_frames={keyOnlyFrames} max_frame={maxFrameNumber} max_collect_us={maxCollect*1e6/Stopwatch.Frequency:F3} max_pose_us={maxPose*1e6/Stopwatch.Frequency:F3} max_sort_us={maxSort*1e6/Stopwatch.Frequency:F3} max_canvas_us={maxCanvas*1e6/Stopwatch.Frequency:F3} max_packet_us={maxPacket*1e6/Stopwatch.Frequency:F3} max_gc_collections={maxGc} commit_peak_poses={peakPacketPoses} commit_peak_dirty={peakPacketDirty} commit_peak_bytes={peakPacketBytes} commit_peak_gc={commitPeakGc} commit_peak_growths={commitPeakGrowths} commit_growths={commitGrowths} commit_growth_bytes={commitGrowthBytes} avoided_mask_replans={avoidedMaskReplans} avoided_empty_replans={avoidedEmptyReplans} canvas_pose_signals={canvasPoseSignals} order_key_changes={orderKeyChanges} draw_rebinds={drawRebinds} prepare_slices={prepareSlices} prepare_max_ms={prepareMaxTicks * 1000.0 / Stopwatch.Frequency:F3} prepare_work_ms={prepareWorkTicks * 1000.0 / Stopwatch.Frequency:F3} ready_ms={(firstReadyTicks == 0 ? 0 : (firstReadyTicks-fullStartTicks)*1000.0/Stopwatch.Frequency):F3} warm_ms={warmMs:F3} warm_cached={warmHooks != null} setup_ms={(preparationFinishedTicks-fullStartTicks)*1000.0/Stopwatch.Frequency:F3} setup_hooks_ms={StageMs("hooks"):F3} setup_discover_ms={StageMs("discover"):F3} setup_canvas_ms={StageMs("canvas"):F3} setup_native_ms={StageMs("native"):F3} setup_packets_ms={StageMs("packets"):F3} setup_shader_ms={StageMs("shader-resource"):F3} setup_bind_ms={StageMs("bind"):F3} setup_publish_ms={StageMs("publish"):F3} dead_sources={deadSources} canvas_promotions={canvasPromotions} hierarchy_incremental={hierarchyIncremental} rescans_marked={rescanCount} safe={(Resilience.SafeMode ? 1 : 0)} grab_copies={gpu.GrabCopies} grab_bytes={gpu.GrabBytes} named_grab_hits={gpu.NamedGrabHits} culled_draws={gpu.CulledDraws} culled_sources={gpu.CulledSources} gpu_event_us={gpu.EventUs:F3} gpu_event_max_us={gpu.MaxEventUs:F3} gpu_samples={gpu.Samples} gpu_pending={gpu.Pending} gpu_disjoint={gpu.Disjoint} {TimelineState()} {MemoryState()} parity=UNMEASURED");
         }
         static string WhyReplan()
         {
@@ -1031,11 +1054,13 @@ namespace StutterFix
             rendering = false;
             if (before != null) { if (camera) camera.RemoveCommandBuffer(CameraEvent.BeforeForwardAlpha, before); before.Release(); before = null; }
             if (opaque != null) { if (camera) camera.RemoveCommandBuffer(CameraEvent.BeforeForwardOpaque, opaque); opaque.Release(); opaque = null; }
+            ReleaseTimeline();
             ReleaseCanvases();
             if (fullToken != 0) { N.Call(N.Op.Destroy, fullToken); fullToken = 0; }
             if (transforms.isCreated) transforms.Dispose(); if (poses.IsCreated) poses.Dispose(); if (moved.IsCreated) moved.Dispose();
             if (inverseRequired.IsCreated) inverseRequired.Dispose();
             if (centers.IsCreated) centers.Dispose(); if (distances.IsCreated) distances.Dispose(); if (reordered.IsCreated) reordered.Dispose();
+            if (previousCenters.IsCreated) previousCenters.Dispose(); haveCaptureAxis = false;
             foreach (var l in sourceLifetimes) if (l) { l.Changed = null; UnityEngine.Object.Destroy(l); }
             orderCommandsReady = false; avoidedOrderReplans = keyOnlyFrames = commitGrowths = commitGrowthBytes = 0;
             maxCollect = maxPose = maxSort = maxCanvas = maxPacket = maxGc = maxFrameNumber = 0;

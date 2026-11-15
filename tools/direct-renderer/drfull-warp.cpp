@@ -138,6 +138,19 @@ int main(int argc,char** argv){try{
                 frame.segments=segs;frame.segmentCount=1;
             }
             std::cout<<"PASS M4g Grab "<<label<<" copies="<<copies<<" draws="<<segs[1]<<" bytes="<<copies*192*128*4<<" frame_reset=True segment_scope=True name_isolation=True pixels=identical\n";
+            if(caseIndex==0){
+                MemoryPerformance allocated{};dispatch(MemoryPerf,token,&allocated);
+                require(allocated.grabBytes==192*128*4,"Grab logical allocation is not one deduplicated surface");
+                float saved=pose.world[12];pose.world[12]=100;frame.poseCount=1;
+                auto before=gp.grabCopies;dispatch(GpuPerf,token,&gp);before=gp.grabCopies;
+                for(int idle=0;idle<514;idle++){dispatch(Commit,token,&frame);event(token<<16);}
+                MemoryPerformance retired{};dispatch(MemoryPerf,token,&retired);dispatch(GpuPerf,token,&gp);
+                require(retired.grabBytes==0&&gp.grabCopies==before,"offscreen Grab copied or idle snapshot retained");
+                pose.world[12]=saved;context->ClearRenderTargetView(rt,background);dispatch(Commit,token,&frame);event(token<<16);
+                require(readback(device.Get(),context.Get(),target.Get())==original,"retired Grab did not recreate exact snapshot");
+                dispatch(MemoryPerf,token,&retired);require(retired.grabBytes==192*128*4,"Grab reallocation count");
+                std::cout<<"PASS M4h Grab memory allocated="<<allocated.grabBytes<<" idle_bytes=0 restored="<<retired.grabBytes<<" offscreen_copies=0 pixels=identical named="<<namedGrab<<"\n";
+            }
         }
         if(caseIndex==0 && floor<2){
             // Non-symmetric matrix transposition is a required negative control.
@@ -199,6 +212,38 @@ int main(int argc,char** argv){try{
             consumer.join();Statistics concurrent{};dispatch(Stats,token,&concurrent);
             require(valid&&concurrent.errors==0&&concurrent.dropped==0,"SPSC packet overwrite/color snapshot/concurrent render failed");
             std::cout<<"PASS SPSC packets="<<packets<<" alternating-color-pixels=identical errors=0 dropped=0\n";
+        }
+        if(caseIndex==0&&floor<2){
+            auto marker=reinterpret_cast<void(__stdcall*)(int)>(sf_z_drfull_v1(TimelineEvent,token,nullptr));
+            require(marker!=nullptr,"timeline callback missing");
+            auto mark=[&](int id){marker((token<<16)|id);};
+            uint32_t savedSecond=list[1];list[1]=list[0]; // same binding in both segments
+            uint32_t split[]={0,1,1,1};frame.segments=split;frame.segmentCount=2;frame.listCount=2;frame.list=list;frame.listChanged=1;frame.dirtyCount=frame.constantBytes=0;frame.poseCount=0;
+            for(int j=0;j<192;j++){
+                mark(2);context->ClearRenderTargetView(rt,background);mark(3);
+                dispatch(Commit,token,&frame);mark(0);mark(16);
+                event(token<<16);mark(5);context->ClearRenderTargetView(rt,background);mark(7);mark(17);mark(18);
+                event((token<<16)|1);mark(6);context->ClearRenderTargetView(rt,background);mark(7);mark(19);mark(20);
+                context->ClearRenderTargetView(rt,background);mark(21);mark(1);
+                (void)readback(device.Get(),context.Get(),target.Get());frame.listChanged=0;
+            }
+            TimelinePerformance t{};dispatch(TimelinePerf,token,&t);
+            double categories=t.nativeUs+t.explicitUs+t.compositeUs+t.otherUs;
+            double phases=t.opaqueUs+t.gapUs+t.alphaUs+t.postAlphaUs+t.effectsUs+t.tailUs;
+            require(t.samples==3&&t.auxiliarySamples==3&&t.invalid==0&&t.disjoint==0&&t.overflow==0&&t.cameraUs>0&&t.nativeUs>0&&t.explicitUs>0&&t.compositeUs>0&&t.auxiliaryUs>0,"timeline scope/sample partition");
+            require(std::abs(categories-t.cameraUs)<1e-6&&std::abs(phases-t.cameraUs)<1e-6,"GPU categories/phases do not conserve camera total");
+            require(t.constantReuses>0&&t.constantEvaluations>0,"same-frame constant reuse across native segments was not exercised");
+            require(t.lastSerial==129&&t.maxSerial>0&&(t.maxSerial-1)%64==0,"memory/GPU observations lost their timestamp-slot serial");
+            std::cout<<"PASS M4h constants evaluations="<<t.constantEvaluations<<" reuses="<<t.constantReuses<<" across_segments=True\n";
+            mark(0);for(unsigned j=0;j<600;j++)mark(5+j%3);mark(1);
+            (void)readback(device.Get(),context.Get(),target.Get());mark(0);mark(1);dispatch(TimelinePerf,token,&t);
+            require(t.samples==3&&t.overflow>0&&t.invalid==1,"overflow sample was not rejected");
+            MemoryPerformance m{};dispatch(MemoryPerf,token,&m);
+            require(m.ownedBytes==m.geometryBytes+m.poseBytes+m.drawBytes+m.indexBytes+m.pretransformBytes+m.constantBytes+m.colorBytes+m.grabBytes+m.canvasColorBytes,"memory categories do not conserve logical bytes");
+            require(m.peakOwnedBytes>=m.ownedBytes&&m.queries+m.failures>0,"memory query accounting");
+            std::cout<<"PASS M4h memory owned="<<m.ownedBytes<<" conservation=exact deduplicated=True budget_supported="<<m.supported<<" queries="<<m.queries<<" failures="<<m.failures<<" adapter=WARP\n";
+            std::cout<<"PASS M4h timeline samples="<<t.samples<<" auxiliary_samples="<<t.auxiliarySamples<<" conservation=exact categories=4 phases=6 invalid_overflow=rejected camera_us="<<t.cameraUs<<" native_frame_us="<<t.nativeUs<<" explicit_us="<<t.explicitUs<<" composite_us="<<t.compositeUs<<" other_us="<<t.otherUs<<" adapter=WARP\n";
+            list[1]=savedSecond;frame.segments=segs;frame.segmentCount=1;frame.listCount=segs[1];
         }
         dispatch(Destroy,token,nullptr);event(token<<16); // stale command buffer lease is inert.
         if(floor<2||floor==4){
@@ -362,6 +407,12 @@ int main(int argc,char** argv){try{
                 require(accounting.uploadBytes==reEnd.geometryBytes+reEnd.poseBytes+reEnd.drawBytes+reEnd.indexBytes+reEnd.constantBytes+reEnd.colorBytes+reEnd.cpuBatchBytes+reEnd.workBytes,"upload category bytes do not sum to total");
                 GpuPerformance timing{};dispatch(GpuPerf,large,&timing);require(timing.samples>0&&timing.eventUs>=0&&timing.maxEventUs>=timing.eventUs,"GPU timestamp query sampling failed");
                 std::cout<<"PASS M4g accounting bytes="<<accounting.uploadBytes<<" categories=8 GPU_samples="<<timing.samples<<" gpu_event_us="<<timing.eventUs<<" gpu_max_us="<<timing.maxEventUs<<" adapter=WARP not_hardware=True\n";
+                MemoryPerformance footprint{};dispatch(MemoryPerf,large,&footprint);
+                require(footprint.poseBytes<=uint64_t(7936)*80*2,"pose streams retain old power-of-two reservation");
+                require(footprint.drawBytes<=uint64_t(7936)*32*2,"draw streams retain old power-of-two reservation");
+                require(footprint.indexBytes<=uint64_t(47296)*4,"order stream retains old power-of-two reservation");
+                TimelinePerformance constantsPerf{};dispatch(TimelinePerf,large,&constantsPerf);
+                std::cout<<"PASS M4h footprint sources=7000 owned="<<footprint.ownedBytes<<" pose="<<footprint.poseBytes<<" draw="<<footprint.drawBytes<<" index="<<footprint.indexBytes<<" pretransform="<<footprint.pretransformBytes<<" constant_evaluations="<<constantsPerf.constantEvaluations<<" constant_reuses="<<constantsPerf.constantReuses<<" constant_bind_skips="<<constantsPerf.constantBindSkips<<" logical_bytes=True driver_residency=UNMEASURED\n";
                 dispatch(Destroy,large,nullptr);
             }
 

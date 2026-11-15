@@ -17,3 +17,7 @@
 3. Exit: main 0.99ms·render 2.07ms·GPU +0.86ms 를 예산(전체 < 0.95ms) 안으로. replans 518 원인(order_key_changes)·rt_constants·grab 3회/프레임(이름 없는 Grab 은 Unity 도 매번 복사하지만 Unity 는 화면 밖이면 안 그린다 — 화면 안 블렌드 장식만 복사하는지), main_max 8ms 스파이크.
 4. 반올림 ±1~2(Exit 11%): 원인 한 가지를 증명(어느 셰이더/장식에서, 정점 변환·보간 정밀도·블렌드 순서 중 무엇).
 - 4종 빌드 오류 0, export 보존, fixture 통과. 계획은 m4h 접두사(4맵 pixel + ABBA + DD 진단판 `skip explicit`).
+
+## 추가 (Claude, 명세 작성 뒤): DD 는 판마다 다르다
+- DD **B2 = 212.4 FPS**(B1 24.3 과 같은 빌드·계획): 메인 카메라 GPU 4,324µs(B1 31,469), gpu_event_us 166(B1 1,087), main 766, render 1,285, replans 350/2,872, grab_copies 31,591(프레임당 11).
+- M4f 때는 DD B1·B2 모두 22.2 였다. 즉 **간헐적**이고, 걸리면 GPU 가 9배. 가장 유력: **VRAM 초과**(DD 는 이미지가 많고 게임이 이미 VRAM 을 많이 씀 — 우리 버퍼·Grab 텍스처(3440x1440, 이름별·이름 없는 것)·사전 변환 정점 버퍼·링 버퍼가 더해져 넘치면 드라이버가 페이지 이동). 확인: 켤 때·곡 중 우리 GPU 자원 총 바이트를 state 에, 그리고 DXGI QueryVideoMemoryInfo(CurrentUsage/Budget)를 켜기 전·후·곡 중 기록. 우리 자원을 줄여라(Grab 텍스처는 필요한 사각형만, 공유/재사용, 큰 예약 금지).

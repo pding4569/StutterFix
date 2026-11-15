@@ -1038,6 +1038,18 @@ namespace StutterFix
                 case "runlod": Log("[runlod] " + RunLod.Command(arg)); return true;
                 case "imagearrayreuse": Log("[imagearrayreuse] " + DecoBake.ImageArrayReuseCommand(arg)); return true;
                 case "runprobe": Log("[runprobe] " + RunProbe.Run(float.TryParse(arg.Trim(), System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out var rpm) ? rpm : 4f)); return true;
+                case "hidepath":
+                    {
+                        // 측정 전용: 경로(부모/이름)에 arg 가 들어간 Renderer(파티클 포함)를 그리지 않게 한다.
+                        var key = arg.Trim(); int n = 0;
+                        foreach (var r in UnityEngine.Object.FindObjectsByType<Renderer>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+                        {
+                            string path = r.name; for (var t = r.transform.parent; t; t = t.parent) path = t.name + "/" + path;
+                            if (path.IndexOf(key, StringComparison.OrdinalIgnoreCase) >= 0 && (key != "particles" || r is ParticleSystemRenderer)) { r.forceRenderingOff = true; n++; }
+                            else if (key == "particles" && r is ParticleSystemRenderer) { r.forceRenderingOff = true; n++; }
+                        }
+                        Log("[hidepath] " + key + " " + n); return true;
+                    }
                 case "hidetex":
                     {
                         // 측정 전용: 이름에 arg 가 들어간 텍스처를 쓰는 SpriteRenderer 를 그리지 않게 한다(새로 생기는 것 포함, 매 호출 다시 적용).

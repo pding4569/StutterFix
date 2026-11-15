@@ -7,7 +7,7 @@ namespace StutterFix
 {
     internal static unsafe class DirectFullNative
     {
-        internal enum Op { Create, Program, Geometry, Draw, Commit, Event, Stats, Destroy, Error, Abi, Composite, Perf, CommitPacked, CommitActive, BatchPerf, GeometryCpu, CommitActiveWorld, UploadPerf, GpuPerf }
+        internal enum Op { Create, Program, Geometry, Draw, Commit, Event, Stats, Destroy, Error, Abi, Composite, Perf, CommitPacked, CommitActive, BatchPerf, GeometryCpu, CommitActiveWorld, UploadPerf, GpuPerf, TimelineEvent, TimelinePerf, MemoryPerf }
         [StructLayout(LayoutKind.Sequential)] internal struct Performance { internal double ApplyUs, CullUs, ConstantsUs, DrawUs, ExecuteUs; internal ulong Uploads, UploadBytes, LayoutCreates, LayoutHits, SampledFrames; }
         [StructLayout(LayoutKind.Sequential)] internal struct Composite { internal IntPtr Black, White; }
         [StructLayout(LayoutKind.Sequential)] internal struct Abi { internal uint Version, Create, Program, Geometry, Draw, Frame, Stats, Pose; }
@@ -65,7 +65,22 @@ namespace StutterFix
             internal ulong WorkBytes, BakedVertices;
         }
         [StructLayout(LayoutKind.Sequential)] internal struct GpuPerformance { internal ulong GrabCopies, GrabBytes, NamedGrabHits, CulledDraws, CulledSources; internal double EventUs, MaxEventUs; internal ulong Samples, Pending, Disjoint; }
+        [StructLayout(LayoutKind.Sequential)] internal struct TimelinePerformance
+        {
+            internal double CameraUs, NativeUs, ExplicitUs, CompositeUs, OtherUs, AuxiliaryUs;
+            internal double OpaqueUs, GapUs, AlphaUs, PostAlphaUs, EffectsUs, TailUs, MaxCameraUs;
+            internal ulong Samples, AuxiliarySamples, Pending, Disjoint, Invalid, Overflow, Skipped, Intervals;
+            internal ulong ConstantEvaluations, ConstantReuses, ConstantBindSkips, EmptySegments, VisibleGrabs, CulledGrabs;
+            internal double LastCameraUs;
+            internal ulong LastUsage, LastBudget, LastNonLocal, LastSerial, MaxUsage, MaxBudget, MaxNonLocal, MaxSerial;
+        }
         [StructLayout(LayoutKind.Sequential)] internal struct FrameActive { internal Frame Frame; internal uint* Ids; internal byte* Values; internal uint Count; }
+        [StructLayout(LayoutKind.Sequential)] internal struct MemoryPerformance
+        {
+            internal ulong OwnedBytes, PeakOwnedBytes, GeometryBytes, PoseBytes, DrawBytes, IndexBytes, PretransformBytes, ConstantBytes, ColorBytes, GrabBytes, CanvasColorBytes;
+            internal ulong BeforeUsage, BeforeBudget, PreparedUsage, PreparedBudget, CurrentUsage, CurrentBudget, PeakUsage, NonLocalUsage, NonLocalBudget, Queries, Failures, Supported;
+            internal ulong OverBudgetSamples, MaxOverBudgetBytes, MinHeadroomBytes;
+        }
         [StructLayout(LayoutKind.Sequential)] internal struct Stats { internal ulong Frames, Draws, Errors, Dropped, Bytes, Events; internal double RenderUs, CommitUs; internal int LastHr; }
     }
 }

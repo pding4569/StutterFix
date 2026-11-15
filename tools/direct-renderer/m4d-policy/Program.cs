@@ -115,6 +115,13 @@ static class Program
         long matchesBefore=GC.GetAllocatedBytesForCurrentThread();for(int i=0;i<10000;i++)order.Matches(actual);
         Check(GC.GetAllocatedBytesForCurrentThread()==matchesBefore,"order identity gate allocates");
         Console.WriteLine("PASS M4g order identities common-drift=skip crossing=replan removed=replan stable_checks=10000 allocated=0");
+        foreach(var mode in new[]{"", "Always", "ForwardBase"})
+            Check(DirectFullExplicitPolicy.CameraPass(mode)&&!DirectFullExplicitPolicy.NonCameraPass(mode),"forward explicit pass rejected: "+mode);
+        foreach(var mode in new[]{"ShadowCaster", "Meta", "MotionVectors", "DepthOnly", "DepthNormals", "Deferred", "PrepassBase", "PrepassFinal"})
+            Check(!DirectFullExplicitPolicy.CameraPass(mode)&&DirectFullExplicitPolicy.NonCameraPass(mode),"non-camera explicit pass submitted: "+mode);
+        foreach(var mode in new[]{"ForwardAdd", "Vertex", "Unknown"})
+            Check(!DirectFullExplicitPolicy.CameraPass(mode)&&!DirectFullExplicitPolicy.NonCameraPass(mode),"unverified light mode silently accepted: "+mode);
+        Console.WriteLine("PASS M4h explicit pass policy forward=3 excluded=8 unknown_rejected=3");
         Console.WriteLine("PASS M4f incremental order sources="+size+" oracle_edits=7000 allocated="+treeAllocated+" edit_us="+treeUs.ToString("F3"));
         Console.WriteLine($"PASS production per-object layer journal + nested group order: checks={legacyChecks} stable_layer_allocated={allocated}; Unity callbacks/physics=UNMEASURED");
     }

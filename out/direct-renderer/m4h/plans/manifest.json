@@ -1,0 +1,66 @@
+{
+  "workspace": "E:\\StutterFixWork\\wt-m4",
+  "branch": "claude/drfull",
+  "launch": false,
+  "preset": "ppGpuCam",
+  "rt": "3440x1440",
+  "measure_order": [
+    "A1",
+    "B1",
+    "B2",
+    "A2"
+  ],
+  "duration_s": 12,
+  "validity": [
+    "candidate assert on before and after interval",
+    "native completed draws > 0",
+    "errors=0 dropped=0",
+    "no automatic OFF/sample invalid",
+    "originalMask==restoredMask",
+    "pixel gate before interpreting FPS",
+    "safe=0 on A/B and pixel runs",
+    "VRAM budget exceedance is evidence of pressure, not proof of page migration",
+    "skip-explicit/explicit-all/precision-local diagnostics excluded from ABBA",
+    "camera timeline starts at BeforeForwardOpaque, excludes earlier work",
+    "repeat DD runs to capture both fast and slow conditions"
+  ],
+  "plans": [
+    "E:\\StutterFixWork\\wt-m4\\out\\direct-renderer\\m4h\\plans\\m4h-hl50-plan.json",
+    "E:\\StutterFixWork\\wt-m4\\out\\direct-renderer\\m4h\\plans\\m4h-hl50-pixel.json",
+    "E:\\StutterFixWork\\wt-m4\\out\\direct-renderer\\m4h\\plans\\m4h-hl50-A1.json",
+    "E:\\StutterFixWork\\wt-m4\\out\\direct-renderer\\m4h\\plans\\m4h-hl50-B1.json",
+    "E:\\StutterFixWork\\wt-m4\\out\\direct-renderer\\m4h\\plans\\m4h-hl50-B2.json",
+    "E:\\StutterFixWork\\wt-m4\\out\\direct-renderer\\m4h\\plans\\m4h-hl50-A2.json",
+    "E:\\StutterFixWork\\wt-m4\\out\\direct-renderer\\m4h\\plans\\m4h-wf-plan.json",
+    "E:\\StutterFixWork\\wt-m4\\out\\direct-renderer\\m4h\\plans\\m4h-wf-pixel.json",
+    "E:\\StutterFixWork\\wt-m4\\out\\direct-renderer\\m4h\\plans\\m4h-wf-A1.json",
+    "E:\\StutterFixWork\\wt-m4\\out\\direct-renderer\\m4h\\plans\\m4h-wf-B1.json",
+    "E:\\StutterFixWork\\wt-m4\\out\\direct-renderer\\m4h\\plans\\m4h-wf-B2.json",
+    "E:\\StutterFixWork\\wt-m4\\out\\direct-renderer\\m4h\\plans\\m4h-wf-A2.json",
+    "E:\\StutterFixWork\\wt-m4\\out\\direct-renderer\\m4h\\plans\\m4h-dd-plan.json",
+    "E:\\StutterFixWork\\wt-m4\\out\\direct-renderer\\m4h\\plans\\m4h-dd-pixel.json",
+    "E:\\StutterFixWork\\wt-m4\\out\\direct-renderer\\m4h\\plans\\m4h-dd-A1.json",
+    "E:\\StutterFixWork\\wt-m4\\out\\direct-renderer\\m4h\\plans\\m4h-dd-B1.json",
+    "E:\\StutterFixWork\\wt-m4\\out\\direct-renderer\\m4h\\plans\\m4h-dd-B2.json",
+    "E:\\StutterFixWork\\wt-m4\\out\\direct-renderer\\m4h\\plans\\m4h-dd-A2.json",
+    "E:\\StutterFixWork\\wt-m4\\out\\direct-renderer\\m4h\\plans\\m4h-sh-plan.json",
+    "E:\\StutterFixWork\\wt-m4\\out\\direct-renderer\\m4h\\plans\\m4h-sh-pixel.json",
+    "E:\\StutterFixWork\\wt-m4\\out\\direct-renderer\\m4h\\plans\\m4h-sh-A1.json",
+    "E:\\StutterFixWork\\wt-m4\\out\\direct-renderer\\m4h\\plans\\m4h-sh-B1.json",
+    "E:\\StutterFixWork\\wt-m4\\out\\direct-renderer\\m4h\\plans\\m4h-sh-B2.json",
+    "E:\\StutterFixWork\\wt-m4\\out\\direct-renderer\\m4h\\plans\\m4h-sh-A2.json"
+  ],
+  "prerequisites": [
+    "JALib disabled for ALL A/B/pixel/diagnostic runs",
+    "same render size, quality and loaded assets",
+    "no competing play or DLL replacement"
+  ],
+  "diagnostics": [
+    "E:\\StutterFixWork\\wt-m4\\out\\direct-renderer\\m4h\\plans\\m4h-dd-skip-explicit-B1.json",
+    "E:\\StutterFixWork\\wt-m4\\out\\direct-renderer\\m4h\\plans\\m4h-dd-explicit-all-B1.json",
+    "E:\\StutterFixWork\\wt-m4\\out\\direct-renderer\\m4h\\plans\\m4h-dd-skip-explicit-B2.json",
+    "E:\\StutterFixWork\\wt-m4\\out\\direct-renderer\\m4h\\plans\\m4h-dd-explicit-all-B2.json",
+    "E:\\StutterFixWork\\wt-m4\\out\\direct-renderer\\m4h\\plans\\m4h-dd-precision-local-pixel.json",
+    "E:\\StutterFixWork\\wt-m4\\out\\direct-renderer\\m4h\\plans\\m4h-sh-precision-local-pixel.json"
+  ]
+}

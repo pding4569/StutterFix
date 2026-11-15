@@ -70,7 +70,44 @@ int main(int argc,char** argv){try{
         if(mode==0&&scene==2){auto blk=floats(d.Get(),c.Get(),black.texture.Get());bool fails=false;for(size_t i=0;i<blk.size();i+=4)fails|=std::abs((blk[i]+background[0]*(1-blk[i+3]))-expected[i])>.01f;require(fails,"negative control: naive UI alpha unexpectedly matched");naiveFailed++;}
         rows<<cases++<<'\t'<<maximum<<'\t'<<changed8<<'\t'<<max8<<'\n';
     }
-    Statistics stats{};dispatch(Stats,token,&stats);require(stats.errors==0&&stats.draws==48,"production compositor draw coverage");dispatch(Destroy,token,nullptr);
+    Statistics stats{};dispatch(Stats,token,&stats);require(stats.errors==0&&stats.draws==48,"production compositor draw coverage");
+    // Causal control: same VS, PS, geometry, draw order and blend state. Change
+    // ONLY the intermediate color target from UNORM8 to FLOAT32, then convert
+    // once with a texel Load (no UV interpolation or color arithmetic).
+    const char* conversion=R"(
+        Texture2D<float4> source:register(t0);
+        float4 vs(uint id:SV_VertexID):SV_Position { return float4(id==1?3:-1,id==2?3:-1,0,1); }
+        float4 ps(float4 p:SV_Position):SV_Target { return source.Load(int3(p.xy,0)); }
+    )";
+    auto cv=code(conversion,"vs","vs_4_0"),cp=code(conversion,"ps","ps_4_0");
+    ComPtr<ID3D11VertexShader> convertVs;ComPtr<ID3D11PixelShader> convertPs;
+    check(d->CreateVertexShader(cv->GetBufferPointer(),cv->GetBufferSize(),nullptr,&convertVs));
+    check(d->CreatePixelShader(cp->GetBufferPointer(),cp->GetBufferSize(),nullptr,&convertPs));
+    ComPtr<ID3D11ShaderResourceView> directView;check(d->CreateShaderResourceView(direct.texture.Get(),nullptr,&directView));
+    Target once(d.Get(),DXGI_FORMAT_R8G8B8A8_UNORM);
+    std::ofstream rounding(out/"rounding.tsv");rounding<<"case\tincremental_vs_once_pixels\tmax\tcomposite_vs_once_pixels\tmax\n";
+    uint64_t quantizedPixels=0;unsigned quantizedMax=0,roundingCases=0;
+    for(int mode=0;mode<2;mode++)for(int bg=0;bg<3;bg++){
+        float background[]={float(28+bg*59)/255,69.f/255,float(176-bg*48)/255,float(48+bg*79)/255};
+        paint(direct,background,mode,2);paint(d8,background,mode,2);
+        setTarget(c.Get(),once);c->VSSetShader(convertVs.Get(),nullptr,0);c->PSSetShader(convertPs.Get(),nullptr,0);
+        c->IASetInputLayout(nullptr);c->RSSetState(raster.Get());c->OMSetBlendState(nullptr,nullptr,~0u);c->OMSetDepthStencilState(noDepth.Get(),0);
+        ID3D11ShaderResourceView* source=directView.Get();c->PSSetShaderResources(0,1,&source);c->Draw(3,0);
+        source=nullptr;c->PSSetShaderResources(0,1,&source);
+        paint(black,clear,mode,2);paint(white,opaque,mode,2);setTarget(c.Get(),c8);c->ClearRenderTargetView(c8.rtv.Get(),background);dispatch(Commit,token,&f);event(token<<16);
+        auto incremental=readback(d.Get(),c.Get(),d8.texture.Get()),finalOnly=readback(d.Get(),c.Get(),once.texture.Get()),composite8=readback(d.Get(),c.Get(),c8.texture.Get());
+        unsigned maximum=0,compositeMax=0;uint64_t changed=0,compositeChanged=0;
+        for(size_t i=0;i<incremental.size();i+=4){bool diff=false,cdiff=false;for(size_t k=0;k<4;k++){
+            unsigned delta=unsigned(std::abs(int(incremental[i+k])-int(finalOnly[i+k])));maximum=std::max(maximum,delta);diff|=delta!=0;
+            delta=unsigned(std::abs(int(composite8[i+k])-int(finalOnly[i+k])));compositeMax=std::max(compositeMax,delta);cdiff|=delta!=0;
+        }changed+=diff;compositeChanged+=cdiff;}
+        require(changed>100&&maximum<=2,"intermediate UNORM quantization control failed");
+        require(compositeMax<=1,"float affine arithmetic introduced an unexpected large error");
+        rounding<<mode*3+bg<<'\t'<<changed<<'\t'<<maximum<<'\t'<<compositeChanged<<'\t'<<compositeMax<<'\n';
+        quantizedPixels+=changed;quantizedMax=std::max(quantizedMax,maximum);roundingCases++;
+    }
+    std::cout<<"PASS M4h rounding controls="<<roundingCases<<" changed_pixels="<<quantizedPixels<<" max="<<quantizedMax<<" vertex_shader=same pixel_shader=same order=same cause=intermediate_UNORM8_quantization affine_residual=see_rounding_tsv synthetic_UI=True live_Exit=UNMEASURED\n";
+    dispatch(Destroy,token,nullptr);
     // Native increment/decrement draws and independent Unity-style target draws
     // use the SAME DSV. This validates the reconstructed Ref=0/NotEqual|Equal
     // protocol; it does not execute Unity's internal SpriteRenderer state injection.
@@ -91,6 +128,31 @@ int main(int argc,char** argv){try{
         auto image=floats(d.Get(),c.Get(),direct.texture.Get());for(unsigned y=0;y<48;y++)for(unsigned x=0;x<64;x++){bool in=present&&x<40&&y<32;float expect=(inside?in:!in)?1.f:0.f;require(image[(size_t(y)*64+x)*4]==expect,"shared stencil target mismatch");}stencilCases++;
     };
     targetTest(true,false);targetTest(false,false);nativeMask(push);targetTest(true,true);targetTest(false,true);nativeMask(push);targetTest(true,true);nativeMask(pop);targetTest(true,true);targetTest(false,true);nativeMask(pop);targetTest(true,false);targetTest(false,false);
+    // Sequential auxiliary targets can share depth if BOTH depth and stencil
+    // are cleared before each render. Compare to a dedicated depth surface;
+    // the deliberately omitted clear must fail as a negative control.
+    ComPtr<ID3D11Texture2D> separateDepth;ComPtr<ID3D11DepthStencilView> separateView;
+    check(d->CreateTexture2D(&td,nullptr,&separateDepth));check(d->CreateDepthStencilView(separateDepth.Get(),nullptr,&separateView));
+    D3D11_DEPTH_STENCIL_DESC write{};write.DepthEnable=TRUE;write.DepthWriteMask=D3D11_DEPTH_WRITE_MASK_ALL;write.DepthFunc=D3D11_COMPARISON_ALWAYS;
+    write.StencilEnable=TRUE;write.StencilReadMask=write.StencilWriteMask=255;
+    write.FrontFace.StencilFunc=D3D11_COMPARISON_ALWAYS;write.FrontFace.StencilPassOp=D3D11_STENCIL_OP_REPLACE;write.FrontFace.StencilFailOp=write.FrontFace.StencilDepthFailOp=D3D11_STENCIL_OP_KEEP;write.BackFace=write.FrontFace;
+    ComPtr<ID3D11DepthStencilState> dirtyState,cleanTest;
+    check(d->CreateDepthStencilState(&write,&dirtyState));write.DepthWriteMask=D3D11_DEPTH_WRITE_MASK_ZERO;write.DepthFunc=D3D11_COMPARISON_LESS;
+    write.StencilWriteMask=0;write.FrontFace.StencilFunc=D3D11_COMPARISON_EQUAL;write.FrontFace.StencilPassOp=D3D11_STENCIL_OP_KEEP;write.BackFace=write.FrontFace;
+    check(d->CreateDepthStencilState(&write,&cleanTest));
+    auto depthPaint=[&](Target& t,ID3D11DepthStencilView* z,bool reset,bool dirty){
+        setTarget(c.Get(),t,z);c->ClearRenderTargetView(t.rtv.Get(),clear);
+        if(reset)c->ClearDepthStencilView(z,D3D11_CLEAR_DEPTH|D3D11_CLEAR_STENCIL,1,0);
+        geometry();c->OMSetBlendState(nullptr,nullptr,~0u);c->OMSetDepthStencilState(dirty?dirtyState.Get():cleanTest.Get(),dirty?7:0);c->Draw(3,0);
+        return floats(d.Get(),c.Get(),t.texture.Get());
+    };
+    for(int pass=0;pass<6;pass++){
+        auto expected=depthPaint(direct,separateView.Get(),true,false);
+        (void)depthPaint(black,depthView.Get(),true,true);
+        require(depthPaint(white,depthView.Get(),false,false)!=expected,"shared-depth negative control missed stale depth/stencil");
+        require(depthPaint(white,depthView.Get(),true,false)==expected,"shared-depth clear changed pixels");
+    }
+    std::cout<<"PASS M4h shared-depth renders=6 dedicated_vs_shared=identical stale_depth_stencil_control=rejected depth_surfaces=1\n";
     dispatch(Stats,token,&stats);require(stats.errors==0&&stats.draws==4,"native stencil draw coverage");dispatch(Destroy,token,nullptr);event(token<<16);
     require(cases==24&&naiveFailed==3&&stencilCases==9,"fixture coverage");
     std::ofstream summary(out/"summary.json");summary<<"{\"adapter\":\"WARP\",\"composition_cases\":"<<cases<<",\"float_max_error\":"<<floatMax<<",\"rgba8_max_channel\":"<<rgba8Max<<",\"rgba8_changed_pixels\":"<<rgba8Changed<<",\"naive_alpha_rejections\":"<<naiveFailed<<",\"shared_stencil_cases\":"<<stencilCases<<",\"Unity_internal_state\":\"UNMEASURED\"}\n";

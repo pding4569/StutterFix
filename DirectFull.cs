@@ -89,6 +89,15 @@ namespace StutterFix
                 case "colors": return ColorAudit();
                 case "why": return WhyReplan();
                 case "assert clean": if (Resilience.SafeMode) throw new InvalidOperationException("drfull INVALID: safe=1"); return "safe=0 PASS";
+                case "precision local": case "precision batch":
+                    if (Active || preparing) throw new InvalidOperationException("precision diagnostic requires off");
+                    localPrecision = arg.Trim().Equals("precision local", StringComparison.OrdinalIgnoreCase); return "precision_local=" + localPrecision;
+                case "skip explicit": case "explicit on": case "explicit all": case "explicit forward":
+                    if (Active || preparing) throw new InvalidOperationException("explicit diagnostic requires off");
+                    if (arg.Trim().Equals("skip explicit", StringComparison.OrdinalIgnoreCase)) skipExplicit = true;
+                    else if (arg.Trim().Equals("explicit on", StringComparison.OrdinalIgnoreCase)) skipExplicit = false;
+                    else allExplicitPasses = arg.Trim().Equals("explicit all", StringComparison.OrdinalIgnoreCase);
+                    return "skip_explicit=" + skipExplicit + " explicit_all_passes=" + allExplicitPasses;
                 case "grab unity": case "grab native":
                     if (Active || preparing) throw new InvalidOperationException("drfull grab route requires off");
                     unityGrab = arg.Trim().Equals("grab unity", StringComparison.OrdinalIgnoreCase);

@@ -112,7 +112,7 @@ namespace StutterFix
     internal static partial class DirectFull
     {
         static System.Collections.IEnumerator preparation;
-        static bool preparing, unityGrab;
+        static bool preparing, unityGrab, skipExplicit, allExplicitPasses, localPrecision;
         static string ColorAudit() => "stub-color-audit";
         static string WhyReplan() => "stub-order-reasons";
         static double warmMs;

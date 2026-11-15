@@ -5,7 +5,7 @@ namespace drfull {
 // All pointers are borrowed only for the duration of dispatch. Native owns copies
 // and COM references. Opcodes are versioned behind ONE appended export so old
 // export hints as well as ordinals remain stable.
-enum Op { Create, Program, Geometry, Draw, Commit, Event, Stats, Destroy, Error, Abi, Composite, Perf, CommitPacked, CommitActive, BatchPerf, GeometryCpu, CommitActiveWorld, UploadPerf, GpuPerf };
+enum Op { Create, Program, Geometry, Draw, Commit, Event, Stats, Destroy, Error, Abi, Composite, Perf, CommitPacked, CommitActive, BatchPerf, GeometryCpu, CommitActiveWorld, UploadPerf, GpuPerf, TimelineEvent, TimelinePerf, MemoryPerf };
 struct Performance { double applyUs,cullUs,constantsUs,drawUs,executeUs; uint64_t uploads,uploadBytes,layoutCreates,layoutHits,sampledFrames; };
 struct CompositeIn { void *black, *white; };
 struct AbiInfo { uint32_t version,create,program,geometry,draw,frame,stats,pose; };
@@ -50,6 +50,21 @@ struct UploadPerformance {
     uint64_t workBytes,bakedVertices;
 };
 struct GpuPerformance { uint64_t grabCopies,grabBytes,namedGrabHits,culledDraws,culledSources; double eventUs,maxEventUs; uint64_t samples,pending,disjoint; };
+// Append-only ABI. All category/phase values use the SAME completed camera frames.
+// Auxiliary is a separate scope and is never subtracted from cameraUs.
+struct TimelinePerformance {
+    double cameraUs,nativeUs,explicitUs,compositeUs,otherUs,auxiliaryUs;
+    double opaqueUs,gapUs,alphaUs,postAlphaUs,effectsUs,tailUs,maxCameraUs;
+    uint64_t samples,auxiliarySamples,pending,disjoint,invalid,overflow,skipped,intervals;
+    uint64_t constantEvaluations,constantReuses,constantBindSkips,emptySegments,visibleGrabs,culledGrabs;
+    double lastCameraUs;
+    uint64_t lastUsage,lastBudget,lastNonLocal,lastSerial,maxUsage,maxBudget,maxNonLocal,maxSerial;
+};
+struct MemoryPerformance {
+    uint64_t ownedBytes,peakOwnedBytes,geometryBytes,poseBytes,drawBytes,indexBytes,pretransformBytes,constantBytes,colorBytes,grabBytes,canvasColorBytes;
+    uint64_t beforeUsage,beforeBudget,preparedUsage,preparedBudget,currentUsage,currentBudget,peakUsage,nonLocalUsage,nonLocalBudget,queries,failures,supported;
+    uint64_t overBudgetSamples,maxOverBudgetBytes,minHeadroomBytes;
+};
 struct Statistics { uint64_t frames,draws,errors,dropped,bytes,events; double renderUs,commitUs; int32_t lastHR; };
 }
 extern "C" intptr_t __cdecl sf_z_drfull_v1(int op,int token,const void* args) noexcept;

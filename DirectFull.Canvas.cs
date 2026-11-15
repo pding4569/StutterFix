@@ -55,6 +55,7 @@ namespace StutterFix
         static readonly List<SuppressedGraphic> suppressedGraphics = new List<SuppressedGraphic>();
         static Camera auxiliary;
         static GameObject auxiliaryObject;
+        static RenderTexture canvasDepth;
         static int auxiliaryLayer = -1, parkingLayer = -1, runCount, recordingRun = -1;
         static bool canvasDirty, fullRescan, drawingAuxiliary;
         static long auxiliaryDraws, auxiliaryTicks, auxiliaryMaxTicks, rescans;
@@ -341,7 +342,7 @@ namespace StutterFix
         static void BeginCanvasRuns() { foreach (var u in canvasUnits) u.Run = -1; runCount = 0; recordingRun = -1; foreach (var r in canvasRuns) { r.Units.Clear(); r.Layers.Clear(); } }
         static RenderTexture CanvasTarget(string name)
         {
-            var t = new RenderTexture(fullWidth, fullHeight, 24, RenderTextureFormat.ARGBFloat, RenderTextureReadWrite.Linear)
+            var t = new RenderTexture(fullWidth, fullHeight, 0, RenderTextureFormat.ARGBFloat, RenderTextureReadWrite.Linear)
                 { name = name, antiAliasing = 1, filterMode = FilterMode.Point, wrapMode = TextureWrapMode.Clamp };
             if (!t.Create()) { UnityEngine.Object.Destroy(t); throw new InvalidOperationException("M4d canvas RT creation failed"); } return t;
         }
@@ -366,10 +367,30 @@ namespace StutterFix
             if (!e.Canvas.Isolated) canvasRuns[recordingRun].Layers.Add(e.Canvas.LayerLease);
         }
         static void EndCanvasRun() { recordingRun = -1; }
+        static void RetireCanvasRuns()
+        {
+            for (int i = runCount; i < canvasRuns.Count; i++)
+            {
+                var run = canvasRuns[i];
+                if (run.Black) { run.Black.Release(); UnityEngine.Object.Destroy(run.Black); }
+                if (run.White) { run.White.Release(); UnityEngine.Object.Destroy(run.White); }
+                run.Black = run.White = null; run.Draw = 0;
+            }
+            if (runCount == 0 && canvasDepth) { canvasDepth.Release(); UnityEngine.Object.Destroy(canvasDepth); canvasDepth = null; }
+        }
         static void RenderCanvases()
         {
             if (runCount == 0) return;
             long start = Stopwatch.GetTimestamp();
+            // Auxiliary renders are sequential and each SolidColor render clears
+            // depth/stencil. Keep full float color, but share one D24S8 allocation
+            // across both backgrounds and all runs.
+            if (!canvasDepth)
+            {
+                canvasDepth = new RenderTexture(fullWidth, fullHeight, 24, RenderTextureFormat.Depth)
+                    { name = "drfull canvas shared depth", antiAliasing = 1 };
+                if (!canvasDepth.Create()) throw new InvalidOperationException("M4h shared canvas depth creation failed");
+            }
             if (!auxiliary)
             {
                 auxiliaryObject = new GameObject("StutterFix.DirectFull.Auxiliary");
@@ -382,6 +403,8 @@ namespace StutterFix
                 auxiliary.transform.SetPositionAndRotation(camera.transform.position, camera.transform.rotation);
                 auxiliary.worldToCameraMatrix = camera.worldToCameraMatrix; auxiliary.projectionMatrix = camera.projectionMatrix;
                 auxiliary.clearFlags = CameraClearFlags.SolidColor; auxiliary.RemoveAllCommandBuffers();
+                auxiliary.AddCommandBuffer(CameraEvent.BeforeForwardOpaque, auxiliaryTimelineStart);
+                auxiliary.AddCommandBuffer(CameraEvent.AfterEverything, auxiliaryTimelineEnd);
                 auxiliary.useOcclusionCulling = false; auxiliary.allowMSAA = false;
                 for (int i = 0; i < runCount; i++)
                 {
@@ -398,8 +421,10 @@ namespace StutterFix
                         DirectFullObjectLayers<GameObject>.MoveAll(run.Layers, auxiliaryLayer);
                         SuppressOtherObjects(i, mask, isolate);
                         auxiliary.cullingMask = mask;
-                        auxiliary.targetTexture = run.Black; auxiliary.backgroundColor = Color.clear; auxiliary.Render(); auxiliaryDraws++;
-                        auxiliary.targetTexture = run.White; auxiliary.backgroundColor = Color.white; auxiliary.Render(); auxiliaryDraws++;
+                        auxiliary.targetTexture = run.Black; auxiliary.SetTargetBuffers(run.Black.colorBuffer, canvasDepth.depthBuffer);
+                        auxiliary.backgroundColor = Color.clear; auxiliary.Render(); auxiliaryDraws++;
+                        auxiliary.targetTexture = run.White; auxiliary.SetTargetBuffers(run.White.colorBuffer, canvasDepth.depthBuffer);
+                        auxiliary.backgroundColor = Color.white; auxiliary.Render(); auxiliaryDraws++;
                     }
                     finally
                     {
@@ -452,6 +477,7 @@ namespace StutterFix
                 foreach (var l in canvasLifetimes) if (l) { l.Changed = null; UnityEngine.Object.Destroy(l); }
                 foreach (var r in canvasRuns) { if (r.Black) { r.Black.Release(); UnityEngine.Object.Destroy(r.Black); } if (r.White) { r.White.Release(); UnityEngine.Object.Destroy(r.White); } }
                 if (auxiliaryObject) UnityEngine.Object.Destroy(auxiliaryObject);
+                if (canvasDepth) { canvasDepth.Release(); UnityEngine.Object.Destroy(canvasDepth); canvasDepth = null; }
                 auxiliary = null; auxiliaryObject = null; dormantCanvases.Clear(); canvasUnits.Clear(); canvasRuns.Clear(); canvasRendererSources.Clear(); canvasBlendReasons.Clear(); canvasOwned.Clear(); canvasIndex.Clear(); canvasOwners.Clear(); dirtyCanvases.Clear(); potentialCanvases.Clear(); canvasViewValid = false; canvasLifetimes.Clear();
                 auxiliaryLayer = parkingLayer = recordingRun = -1; runCount = 0; auxiliaryDraws = auxiliaryTicks = auxiliaryMaxTicks = 0;
             }
