@@ -58,7 +58,12 @@ static class Program
         }
         Console.WriteLine("PASS installed game metadata endpoints=8; DEV/PlayerAuto include diagnostic+catalog; Player excludes both; no game methods executed");
     }
-    static void Main(string[] args)
+    static int Main(string[] args)
+    {
+        try { Run(args); return 0; }
+        catch (Exception e) { Console.Error.WriteLine("FAIL " + e); return 1; }
+    }
+    static void Run(string[] args)
     {
         var c = Fresh(); DirectFull.Command("ceil"); int masked = c.cullingMask;
         Check(DirectFull.Command("assert ceil").Contains("PASS"), "active assertion");
@@ -105,6 +110,34 @@ static class Program
         Check(delta == 0, "steady lifecycle checks allocate " + delta); DirectFull.Stop(); CheckClean(); cases++;
         Throws(() => DirectFull.Command("on")); cases++;
         Console.WriteLine($"PASS {cases} lifecycle/refusal cases; 10000 random masks; 100000 steady checks allocated={delta} bytes; Unity native callbacks/game performance=UNMEASURED");
+        PreparationCases();
         if (args.Length > 0) Audit(Path.GetFullPath(args[0]));
+    }
+    static bool disposed;
+    static System.Collections.IEnumerator PreparationSteps(int mode)
+    {
+        try
+        {
+            if (mode == 1) throw new InvalidOperationException("injected preparation failure");
+            yield return null;
+            if (mode == 2) { System.Threading.Thread.Sleep(6); yield return null; }
+            DirectFull.FixturePublish();
+        }
+        finally { disposed = true; }
+    }
+    static void PreparationCases()
+    {
+        var c = Fresh(); disposed = false; DirectFull.FixturePrepare(PreparationSteps(0), c);
+        DirectFull.PrepareTick(); Check(disposed && !DirectFull.FixturePreparing && c.cullingMask == -1, "preparation completion"); DirectFull.Stop(); CheckClean();
+        c = Fresh(); disposed = false; DirectFull.FixturePrepare(PreparationSteps(1), c);
+        DirectFull.PrepareTick(); Check(disposed && !DirectFull.FixturePreparing && c.cullingMask == -1, "preparation failure cleanup"); CheckClean();
+        c = Fresh(); disposed = false; DirectFull.FixturePrepare(PreparationSteps(2), c);
+        var old = (DirectFullPreparation)GameObject.LastComponent;
+        DirectFull.PrepareTick(); Check(!disposed && DirectFull.FixturePreparing && c.cullingMask == -1, "preparation must yield with original mask");
+        Throws(() => DirectFull.Command("assert off")); DirectFull.Stop(); Check(disposed, "cancel did not dispose iterator"); CheckClean();
+        disposed = false; DirectFull.FixturePrepare(PreparationSteps(2), c); DirectFull.PreparationEnded(old);
+        Check(DirectFull.FixturePreparing, "old preparation driver cancelled new preparation"); c.cullingMask = 123;
+        DirectFull.PrepareTick(); Check(!DirectFull.FixturePreparing && c.cullingMask == 123, "external camera edit was overwritten"); CheckClean();
+        Console.WriteLine("PASS preparation completion/failure/budget-yield/cancel/stale-driver/camera-drift; original Unity mask preserved; production pump with stubs");
     }
 }

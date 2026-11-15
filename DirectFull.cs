@@ -14,6 +14,12 @@ namespace StutterFix
         void OnDisable() { DirectFull.LifetimeEnded(this); }
         void OnDestroy() { DirectFull.LifetimeEnded(this); }
     }
+    internal sealed class DirectFullPreparation : MonoBehaviour
+    {
+        void Update() => DirectFull.PrepareTick();
+        void OnDisable() => DirectFull.PreparationEnded(this);
+        void OnDestroy() => DirectFull.PreparationEnded(this);
+    }
 
     internal static partial class DirectFull
     {
@@ -25,6 +31,44 @@ namespace StutterFix
         static GameObject lifetime;
         static DirectFullLifetime driver;
         static Harmony hooks;
+        static GameObject preparationObject;
+        static DirectFullPreparation preparationDriver;
+        static Camera preparationCamera;
+        internal static void PrepareTick()
+        {
+            if (!preparing) return;
+            long start = System.Diagnostics.Stopwatch.GetTimestamp();
+            try
+            {
+                if (!preparationCamera || !preparationCamera.isActiveAndEnabled || preparationCamera.cullingMask != prepareOriginal)
+                    throw new InvalidOperationException("preparation camera changed");
+                while (preparing)
+                {
+                    if (!preparation.MoveNext())
+                    {
+                        if (preparing) throw new InvalidOperationException("preparation ended without publishing");
+                        break;
+                    }
+                    if ((System.Diagnostics.Stopwatch.GetTimestamp() - start) * 1000.0 / System.Diagnostics.Stopwatch.Frequency >= 4) break;
+                }
+                if (!preparing)
+                {
+                    (preparation as IDisposable)?.Dispose(); preparation = null;
+                    var old = preparationObject; preparationObject = null; preparationDriver = null;
+                    if (old) UnityEngine.Object.Destroy(old);
+                }
+            }
+            catch (Exception e) { Log("preparation failed: " + e); Stop("preparation failed; restored"); }
+            finally
+            {
+                long elapsed = System.Diagnostics.Stopwatch.GetTimestamp() - start;
+                prepareSlices++; prepareWorkTicks += elapsed; prepareMaxTicks = Math.Max(prepareMaxTicks, elapsed);
+            }
+        }
+        internal static void PreparationEnded(DirectFullPreparation source)
+        {
+            if (ReferenceEquals(source, preparationDriver)) Stop("preparation lifetime ended");
+        }
         static bool subscribed;
         static int startedFrame;
         static double startedAt;
@@ -40,10 +84,16 @@ namespace StutterFix
                 case "off": case "ceil off": Stop("command off"); return State();
                 case "state": return State();
                 case "census": return Census();
+                case "colors": return ColorAudit();
+                case "why": return WhyReplan();
+                case "grab unity": case "grab native":
+                    if (Active || preparing) throw new InvalidOperationException("drfull grab route requires off");
+                    unityGrab = arg.Trim().Equals("grab unity", StringComparison.OrdinalIgnoreCase);
+                    return "grab=" + (unityGrab ? "unity-diagnostic" : "native");
                 case "plan": return Plan();
                 case "assert ceil": CheckLease(); if (!Active || Rendering) throw new InvalidOperationException("drfull INVALID: ceiling lease not active"); return "assert ceil PASS";
                 case "assert on": CheckLease(); if (!Active || !Rendering) throw new InvalidOperationException("drfull INVALID: full renderer not active"); AssertFull(); return "assert on PASS";
-                case "assert off": CheckLease(); if (Active) throw new InvalidOperationException("drfull INVALID: ceiling lease still active"); return "assert off PASS";
+                case "assert off": CheckLease(); if (Active || preparing) throw new InvalidOperationException("drfull INVALID: lease/preparation still active"); return "assert off PASS";
                 case "on": StartFull(); return State();
                 default: throw new ArgumentException("drfull on|ceil|off|state|census|plan|assert on|assert off");
             }
@@ -63,7 +113,7 @@ namespace StutterFix
 
         static void StartCeiling()
         {
-            if (Rendering) Stop("switch full to ceiling");
+            if (Rendering || preparing) Stop("switch full to ceiling");
             if (Active) { CheckLease(); if (Active) return; }
             // Explicit control starts from Unity's camera path. Never silently change
             // the caller's renderer configuration to manufacture a ceiling result.
@@ -92,7 +142,7 @@ namespace StutterFix
         static void BeginLease(Camera main, int removed, string objectName)
         {
                 camera = main; lease.Begin(main.cullingMask, removed);
-                hooks = new Harmony(Owner);
+                if (hooks == null) hooks = new Harmony(Owner);
                 foreach (var pair in new[] {
                     (typeof(scrController), "Restart"), (typeof(scrController), "ResetCustomLevel"), (typeof(scrController), "QuitToMainMenu"),
                     (typeof(scnEditor), "SwitchToEditMode"), (typeof(scnEditor), "QuitToMenu"), (typeof(scnEditor), "Play"), (typeof(scnGame), "ResetScene") })
@@ -142,6 +192,9 @@ namespace StutterFix
         internal static void Stop() => Stop("shutdown/batch end");
         internal static void Stop(string reason)
         {
+            preparing = false; (preparation as IDisposable)?.Dispose(); preparation = null;
+            var oldPrepare = preparationObject; preparationObject = null; preparationDriver = null; preparationCamera = null;
+            if (oldPrepare) UnityEngine.Object.Destroy(oldPrepare);
             bool wasActive = Active;
             bool wasFull = Rendering;
             int original = lease.Original;
@@ -174,6 +227,7 @@ namespace StutterFix
         static string State()
         {
             CheckLease();
+            if (preparing) return FormattableString.Invariant($"mode=preparing active=False stage={prepareStage} sources={sources.Count} dormant={dormant.Count} slices={prepareSlices} slice_max_ms={prepareMaxTicks * 1000.0 / System.Diagnostics.Stopwatch.Frequency:F3} work_ms={prepareWorkTicks * 1000.0 / System.Diagnostics.Stopwatch.Frequency:F3}");
             if (!Active) return "mode=off active=False originalShaderRendering=available";
             if (Rendering) return FullState();
             double seconds = Time.realtimeSinceStartupAsDouble - startedAt;

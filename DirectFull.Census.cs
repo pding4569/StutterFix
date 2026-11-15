@@ -10,6 +10,42 @@ namespace StutterFix
 {
     internal static partial class DirectFull
     {
+        static string ColorAudit()
+        {
+            if (preparing) throw new InvalidOperationException("colors requires completed preparation or off");
+            var main = Active ? camera : GpuDecoScene.FindMain();
+            int original = Active ? lease.Original : main.cullingMask;
+            var rb = new MaterialPropertyBlock(); var sb = new MaterialPropertyBlock();
+            int colorId = Shader.PropertyToID("_Color"), rendererId = Shader.PropertyToID("_RendererColor");
+            var text = new StringBuilder("id\tpath\tshader\tkeywords\tsortingLayer\torder\tqueue\tmask\tspriteColor\tmaterialColor\trendererMPBColor\tslotMPBColor\trendererMPBRendererColor\tslotMPBRendererColor\tbounds\tnativeCB\n");
+            int count = 0;
+            foreach (var r in Resources.FindObjectsOfTypeAll<Renderer>())
+            {
+                if (!InCameraScene(r, original) || !r.enabled || !r.gameObject.activeInHierarchy || r.forceRenderingOff) continue;
+                r.GetPropertyBlock(rb); var materials = r.sharedMaterials;
+                for (int slot = 0; slot < materials.Length; slot++)
+                {
+                    var m = materials[slot]; if (!m || !m.shader) continue;
+                    sb.Clear(); r.GetPropertyBlock(sb, slot);
+                    string path = r.name; for (var t = r.transform.parent; t; t = t.parent) path = t.name + "/" + path;
+                    var sprite = r as SpriteRenderer;
+                    text.Append(r.GetInstanceID()).Append('\t').Append(Clean(path)).Append('\t').Append(m.shader.name).Append('\t').Append(Keywords(m))
+                        .Append('\t').Append(r.sortingLayerID).Append('\t').Append(r.sortingOrder).Append('\t').Append(m.renderQueue).Append('\t').Append(sprite ? sprite.maskInteraction.ToString() : "-")
+                        .Append('\t').Append(sprite ? sprite.color.ToString("R") : "-").Append('\t').Append(m.HasProperty(colorId) ? m.GetColor(colorId).ToString("R") : "-")
+                        .Append('\t').Append(rb.HasProperty(colorId) ? rb.GetVector(colorId).ToString("R") : "-").Append('\t').Append(sb.HasProperty(colorId) ? sb.GetVector(colorId).ToString("R") : "-")
+                        .Append('\t').Append(rb.HasProperty(rendererId) ? rb.GetVector(rendererId).ToString("R") : "-").Append('\t').Append(sb.HasProperty(rendererId) ? sb.GetVector(rendererId).ToString("R") : "-")
+                        .Append('\t').Append(r.bounds.ToString("R")).Append('\t');
+                    if (rendererSources.TryGetValue(r, out var source) && source.Passes != null)
+                        foreach (var b in source.Passes) if (b.Slot == slot && b.NativeId != 0)
+                            text.Append("pass=").Append(b.Pass.Index).Append(":id=").Append(b.NativeId).Append(":grab=").Append(b.Pass.Grab).Append(":bytes=").Append(Convert.ToBase64String(b.Bytes)).Append(';');
+                    text.Append('\n'); count++;
+                }
+            }
+            string file = Path.Combine(Main.Entry.Path, "drfull-colors-" + DateTime.UtcNow.ToString("yyyyMMdd-HHmmss-fff") + ".tsv");
+            File.WriteAllText(file, text.ToString(), new UTF8Encoding(false));
+            Log("colors slots=" + count + " output=" + file + " actualTintAndMPB=True actualUnityCBuffer=UNMEASURED");
+            return "colors slots=" + count + " file=" + file;
+        }
         sealed class CensusCount { internal int Total, Live, ForcedOff, CameraVisible, NativeCandidate; }
         static string Clean(string value) => (value ?? "-").Replace('\t', ' ').Replace('\r', ' ').Replace('\n', ' ');
         static string Keywords(Material m)

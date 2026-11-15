@@ -49,7 +49,7 @@ SamplerState PerlinSampler : register(s2);
 SamplerState IconSampler : register(s3);
 SamplerState OutlineSampler : register(s4);
 struct Input { float3 position : POSITION; float4 color : COLOR; float2 uv : TEXCOORD0; float2 tileUv : TEXCOORD1; };
-struct Varying { float4 position : SV_POSITION; float4 color : COLOR; float2 uv : TEXCOORD0; float2 tileUv : TEXCOORD1; };
+struct Varying { float4 position : SV_POSITION; float4 color : COLOR; float2 uv : TEXCOORD0; float4 tileUv : TEXCOORD1; };
 Varying vertex(Input v) {
     Varying o;
     float4 w = mul(World, float4(v.position, 1));
@@ -58,14 +58,17 @@ Varying vertex(Input v) {
     float2 halfSize = Screen.xy * 0.5;
     o.position.xy = round(o.position.xy / o.position.w * halfSize) / halfSize * o.position.w;
 #endif
-#if FLOOR
+#if FLOOR == 1
     o.color = float4(lerp(Color.rgb, 1, FlashColor) * v.color.rgb, Color.a * v.color.a);
     o.uv = v.uv;
 #else
     o.color = v.color * Color;
-    o.uv = v.uv * Repeat;
+    o.uv = FLOOR >= 2 ? v.uv : v.uv * Repeat;
 #endif
-    o.tileUv = v.tileUv;
+    o.tileUv = float4(v.tileUv, 0, 1);
+#if FLOOR >= 2
+    o.tileUv = float4((o.position.x + o.position.w)*.5, (o.position.w-o.position.y)*.5, o.position.zw);
+#endif
     return o;
 }
 float2 rotateUv(float2 uv, float radians) {
@@ -73,7 +76,12 @@ float2 rotateUv(float2 uv, float radians) {
     return float2(c * uv.x - s * uv.y, s * uv.x + c * uv.y);
 }
 float4 pixel(Varying v) : SV_TARGET {
-#if !FLOOR
+#if FLOOR >= 2
+    float4 src = Main.Sample(MainSampler, v.uv) * v.color;
+    float3 dst = Perlin.Sample(TileSampler, v.tileUv.xy/v.tileUv.w).rgb;
+    float3 blended = FLOOR == 2 ? dst * src.rgb : abs(dst-src.rgb);
+    return float4(blended * src.a, src.a);
+#elif !FLOOR
     float2 uv = v.uv;
 #if POINT
     uint width, height; Main.GetDimensions(width, height);
@@ -89,16 +97,16 @@ float4 pixel(Varying v) : SV_TARGET {
     float2 center = SpriteMode != 0 ? 0.5 : TileST.zw;
     float3 offset = SpriteMode != 0 ? 0 : UV2Offset.xyz;
     float scale = SpriteMode != 0 ? 1 : TileScale;
-    float2 tileUv = center + offset.xy + rotateUv(v.tileUv, offset.z * 3.141529) / scale;
+    float2 tileUv = center + offset.xy + rotateUv(v.tileUv.xy, offset.z * 3.141529) / scale;
     tileUv.y *= TextureRatio;
     float4 main = v.uv.y > Inset || AbsoluteInset != 0 ? Main.Sample(MainSampler, v.uv) * Tint : 1;
-    float noise = Perlin.Sample(PerlinSampler, center + v.tileUv / PerlinScale).r * PerlinStrength;
+    float noise = Perlin.Sample(PerlinSampler, center + v.tileUv.xy / PerlinScale).r * PerlinStrength;
     main.rgb = min(main.rgb * ShadowTune + noise * noise * noise, 1);
     float4 tile = Tile.Sample(TileSampler, tileUv) * v.color;
     tile.a = CommentColor.a * (1 - tile.a) + tile.a;
     tile.rgb = CommentColor.rgb * CommentColor.a + (1 - CommentColor.a) * tile.rgb;
     float4 base = main * tile;
-    float2 iconUv = rotateUv(v.tileUv, IconAngle) / IconScale + 0.5;
+    float2 iconUv = rotateUv(v.tileUv.xy, IconAngle) / IconScale + 0.5;
     iconUv.x = lerp(iconUv.x, 1 - iconUv.x, IconFlipped);
     float inside = all(abs(iconUv - 0.5) <= 0.5) ? 1 : 0;
     float4 icon = Icon.Sample(IconSampler, iconUv) * IconColor;

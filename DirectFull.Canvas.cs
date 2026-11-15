@@ -42,6 +42,7 @@ namespace StutterFix
         }
         struct SuppressedRenderer { internal Renderer Renderer; internal bool Forced; }
         struct SuppressedGraphic { internal CanvasRenderer Renderer; internal bool Culled; }
+        static readonly HashSet<Canvas> dormantCanvases = new HashSet<Canvas>();
         static readonly List<CanvasUnit> canvasUnits = new List<CanvasUnit>();
         static readonly List<Source> canvasRendererSources = new List<Source>();
         static readonly Dictionary<Shader, string> canvasBlendReasons = new Dictionary<Shader, string>();
@@ -84,7 +85,7 @@ namespace StutterFix
         static void WatchCanvas(CanvasUnit u, GameObject go)
         {
             IndexCanvas(go, u);
-            var l = go.AddComponent<DirectFullSourceLifetime>(); l.Changed = u.Signal; canvasLifetimes.Add(l);
+            if (go == u.Canvas.gameObject) { var l = go.AddComponent<DirectFullSourceLifetime>(); l.Changed = u.Signal; canvasLifetimes.Add(l); }
             IndexCanvas(go.transform, u);
         }
         static void GatherCanvas(CanvasUnit u, Transform t, bool root)
@@ -186,13 +187,15 @@ namespace StutterFix
                 else { parkingLayer = i; break; }
             }
         }
-        static void PrepareCanvases(Camera main, int original)
+        static System.Collections.Generic.IEnumerable<int> PrepareCanvasesSteps(Camera main, int original)
         {
             canvasTotal = canvasActive = canvasGraphics = canvasLiveGraphics = canvasInactiveGraphics = canvasPotentialGraphics = uncertainCanvases = 0;
             UpdateCanvasView(main);
             foreach (var c in Resources.FindObjectsOfTypeAll<Canvas>())
             {
+                yield return 0;
                 if (!Relevant(c, main) || !CanvasInMask(c, original)) continue;
+                if (!c.isActiveAndEnabled) { dormantCanvases.Add(c); canvasTotal++; continue; }
                 var u = new CanvasUnit { Canvas = c };
                 u.Signal = () => QueueCanvas(u); u.GraphicSignal = () => QueueCanvas(u); u.CullSignal = _ => QueueCanvas(u);
                 canvasUnits.Add(u); GatherCanvas(u, c.transform, true);
@@ -248,9 +251,10 @@ namespace StutterFix
         static void NotifyCanvasWrite(UnityEngine.Object obj, int kind, string writer)
         {
             if (drawingAuxiliary) return;
+            if (obj is Canvas c && dormantCanvases.Contains(c) && c.isActiveAndEnabled) { fullRescan = true; return; }
             if (canvasOwners.TryGetValue(obj, out var owners))
             {
-                if (obj is Transform && kind == DirectSequenceChanges.Pose) orderDirty = true;
+                if (obj is Transform && kind == DirectSequenceChanges.Pose) canvasPoseSignals++;
                 foreach (var u in owners) QueueCanvas(u);
                 if (kind == DirectSequenceChanges.Hierarchy) fullRescan = true;
             }
@@ -281,7 +285,7 @@ namespace StutterFix
                 }
                 IndexCanvasMaterials(u); u.Reason = CanvasReason(u);
                 if (live && u.Reason != null) uncertainCanvases++;
-                if (live && u.Entry != null && (u.Entry.Layer != SortingLayer.GetLayerValueFromID(u.Canvas.sortingLayerID) || u.Entry.Order != u.Canvas.sortingOrder)) orderDirty = true;
+                if (live && u.Entry != null && u.Entry.Key.CompareTo(CanvasKey(u)) != 0) orderDirty = true;
             }
             dirtyCanvases.Clear();
             // Material/vertex-only changes stay on Unity's auxiliary render path.
@@ -291,17 +295,21 @@ namespace StutterFix
         {
             long start = Stopwatch.GetTimestamp(); long count = rescans + 1;
             long priorMax = replanMaxTicks, oldAuxDraws = auxiliaryDraws, oldAuxTicks = auxiliaryTicks, oldAuxMax = auxiliaryMaxTicks;
-            ReleaseFull(); StartFull(true); rescans = count;
+            Stop("hierarchy rescan; Unity visible during preparation"); StartFull(); rescans = count;
             auxiliaryDraws += oldAuxDraws; auxiliaryTicks += oldAuxTicks; auxiliaryMaxTicks = Math.Max(auxiliaryMaxTicks, oldAuxMax);
             replanMaxTicks = Math.Max(priorMax, Stopwatch.GetTimestamp() - start);
+        }
+        static SceneRenderOrder.Key CanvasKey(CanvasUnit u)
+        {
+            var c = u.Canvas; float d = Vector3.Dot(c.transform.position, new Vector3(sortSignature.x, sortSignature.y, sortSignature.z));
+            return new SceneRenderOrder.Key(SortingLayer.GetLayerValueFromID(c.sortingLayerID), c.sortingOrder, 3000, d, 0, c.GetInstanceID());
         }
         static void AddCanvasEntries()
         {
             foreach (var u in canvasUnits)
             {
                 if (!u.Live || !u.Canvas) continue;
-                var c = u.Canvas; float d = Vector3.Dot(c.transform.position, new Vector3(sortSignature.x, sortSignature.y, sortSignature.z));
-                var key = new SceneRenderOrder.Key(SortingLayer.GetLayerValueFromID(c.sortingLayerID), c.sortingOrder, 3000, d, 0, c.GetInstanceID());
+                var key = CanvasKey(u);
                 if (u.Entry == null) u.Entry = new Entry { Canvas = u };
                 u.Entry.Key = key; u.Entry.Layer = key.Layer; u.Entry.Order = key.Order; ordered.Add(u.Entry);
             }
@@ -399,7 +407,7 @@ namespace StutterFix
             foreach (var s in suppressedGraphics) if (s.Renderer) s.Renderer.cull = s.Culled;
             suppressedRenderers.Clear(); suppressedGraphics.Clear();
         }
-        static string CanvasState() => FormattableString.Invariant($"canvasTotal={canvasTotal} canvasActive={canvasActive} canvasGraphics={canvasGraphics} canvasPotentialGraphics={canvasPotentialGraphics} canvasLiveGraphics={canvasLiveGraphics} canvasInactiveGraphics={canvasInactiveGraphics} auxRT={canvasRuns.Count * 2} auxActiveRT={runCount * 2} auxRuns={runCount} auxDraws={auxiliaryDraws} aux_us={(fullFrames > 0 ? auxiliaryTicks * 1e6 / Stopwatch.Frequency / fullFrames : 0):F3} aux_max_us={auxiliaryMaxTicks * 1e6 / Stopwatch.Frequency:F3} rescans={rescans} uncertainCanvas={uncertainCanvases}");
+        static string CanvasState() => FormattableString.Invariant($"canvasTotal={canvasTotal} canvasDormant={dormantCanvases.Count} canvasActive={canvasActive} canvasGraphics={canvasGraphics} canvasPotentialGraphics={canvasPotentialGraphics} canvasLiveGraphics={canvasLiveGraphics} canvasInactiveGraphics={canvasInactiveGraphics} auxRT={canvasRuns.Count * 2} auxActiveRT={runCount * 2} auxRuns={runCount} auxDraws={auxiliaryDraws} aux_us={(fullFrames > 0 ? auxiliaryTicks * 1e6 / Stopwatch.Frequency / fullFrames : 0):F3} aux_max_us={auxiliaryMaxTicks * 1e6 / Stopwatch.Frequency:F3} rescans={rescans} uncertainCanvas={uncertainCanvases}");
         static void LogCanvasSummary(string where) { Log(where + " " + CanvasState()); foreach (var u in canvasUnits) if (u.Live && u.Reason != null) Log("canvas reason=" + u.Reason + " name=" + u.Canvas.name); }
         static void ReleaseCanvases()
         {
@@ -420,7 +428,7 @@ namespace StutterFix
                 foreach (var l in canvasLifetimes) if (l) { l.Changed = null; UnityEngine.Object.Destroy(l); }
                 foreach (var r in canvasRuns) { if (r.Black) { r.Black.Release(); UnityEngine.Object.Destroy(r.Black); } if (r.White) { r.White.Release(); UnityEngine.Object.Destroy(r.White); } }
                 if (auxiliaryObject) UnityEngine.Object.Destroy(auxiliaryObject);
-                auxiliary = null; auxiliaryObject = null; canvasUnits.Clear(); canvasRuns.Clear(); canvasRendererSources.Clear(); canvasBlendReasons.Clear(); canvasOwned.Clear(); canvasIndex.Clear(); canvasOwners.Clear(); dirtyCanvases.Clear(); potentialCanvases.Clear(); canvasViewValid = false; canvasLifetimes.Clear();
+                auxiliary = null; auxiliaryObject = null; dormantCanvases.Clear(); canvasUnits.Clear(); canvasRuns.Clear(); canvasRendererSources.Clear(); canvasBlendReasons.Clear(); canvasOwned.Clear(); canvasIndex.Clear(); canvasOwners.Clear(); dirtyCanvases.Clear(); potentialCanvases.Clear(); canvasViewValid = false; canvasLifetimes.Clear();
                 auxiliaryLayer = parkingLayer = recordingRun = -1; runCount = 0; auxiliaryDraws = auxiliaryTicks = auxiliaryMaxTicks = 0;
             }
             finally { drawingAuxiliary = false; }

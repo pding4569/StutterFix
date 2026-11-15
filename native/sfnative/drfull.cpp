@@ -13,13 +13,16 @@
 #include <algorithm>
 #include <cstring>
 #include <cmath>
+#include <map>
+#include <tuple>
+#include <atomic>
 #include "drfull.h"
 namespace {
 using Microsoft::WRL::ComPtr;
 using namespace drfull;
 void check(HRESULT hr) { if(FAILED(hr)) throw hr; }
 void require(bool b) { if(!b) throw E_INVALIDARG; }
-double now() { LARGE_INTEGER c,f;QueryPerformanceCounter(&c);QueryPerformanceFrequency(&f);return double(c.QuadPart)*1e6/double(f.QuadPart); }
+double now() { static const double scale=[](){LARGE_INTEGER f;QueryPerformanceFrequency(&f);return 1e6/double(f.QuadPart);}();LARGE_INTEGER c;QueryPerformanceCounter(&c);return double(c.QuadPart)*scale; }
 const char* semantics[]={"POSITION","NORMAL","TANGENT","COLOR","TEXCOORD"};
 DXGI_FORMAT format(DXGI_FORMAT f,bool srgb) {
     switch(f) {
@@ -47,13 +50,15 @@ struct Geometry {
     std::array<ComPtr<ID3D11Buffer>,8> buffers;std::array<UINT,8> strides{},offsets{};
     ComPtr<ID3D11Buffer> indices;DXGI_FORMAT indexFormat;UINT indexStart,indexCount;INT baseVertex;
     std::vector<D3D11_INPUT_ELEMENT_DESC> attributes;
+    std::map<std::pair<const Shader*,bool>,ComPtr<ID3D11InputLayout>> layouts;
 };
 struct Sample { ComPtr<ID3D11ShaderResourceView> view;ComPtr<ID3D11SamplerState> sampler;int stage,slot,samplerSlot;bool grab=false; };
-struct Constants { Buffer binding;ComPtr<ID3D11Buffer> buffer; };
+struct Constants { Buffer binding;ComPtr<ID3D11Buffer> buffer;std::vector<uint8_t> uploaded;bool ready=false; };
 struct DrawCall {
     std::shared_ptr<Shader> shader;std::shared_ptr<Geometry> geometry;ComPtr<ID3D11InputLayout> layout;
     std::vector<Constants> buffers;std::vector<Patch> patches;std::vector<Sample> textures;std::vector<uint8_t> bytes;uint32_t pose;bool grab=false;ComPtr<ID3D11Buffer> color;
     float center[3]{},extent[3]{};
+    std::array<uint8_t,16> uploadedColor{};bool colorUploaded=false;
     bool composite=false;ComPtr<ID3D11ShaderResourceView> black,white;
 };
 struct Packet {
@@ -66,16 +71,27 @@ struct Renderer {
     int token=0;uint32_t capacity;
     ComPtr<ID3D11Device> device;ComPtr<ID3D11DeviceContext> context,deferred;
     std::mutex mutex;std::vector<std::shared_ptr<Shader>> shaders;std::vector<std::shared_ptr<Geometry>> geometries;std::vector<std::shared_ptr<DrawCall>> draws;
-    std::array<Packet,8> ring;uint64_t read=0,write=0;std::vector<Pose> poses;
+    std::array<Packet,8> ring;std::atomic<uint64_t> read{0},write{0};std::vector<Pose> poses;
     std::vector<uint32_t> list,segs;Frame frame{};Statistics stats{};double renderSum=0,commitSum=0;uint64_t commits=0;
     ComPtr<ID3D11Texture2D> grabTexture;ComPtr<ID3D11ShaderResourceView> grabView;D3D11_TEXTURE2D_DESC grabDesc{};DXGI_FORMAT grabFormat=DXGI_FORMAT_UNKNOWN;
     std::shared_ptr<Shader> compositor;
+    Performance perf{};bool profile=false;
+    std::atomic<uint64_t> publishedFrames{0},publishedDraws{0},publishedErrors{0},publishedBytes{0},publishedEvents{0},dropped{0};
+    std::atomic<int32_t> publishedHR{0};std::atomic<double> publishedRenderUs{0};
+    Statistics snapshot() {
+        Statistics s{};s.frames=publishedFrames.load(std::memory_order_acquire);s.draws=publishedDraws.load(std::memory_order_relaxed);
+        s.errors=publishedErrors.load(std::memory_order_relaxed);s.bytes=publishedBytes.load(std::memory_order_relaxed);s.events=publishedEvents.load(std::memory_order_relaxed);
+        s.lastHR=publishedHR.load(std::memory_order_relaxed);s.dropped=dropped.load(std::memory_order_relaxed);s.renderUs=publishedRenderUs.load(std::memory_order_relaxed);
+        s.commitUs=commits?commitSum/double(commits):0;return s;
+    }
+    std::map<std::pair<void*,int>,ComPtr<ID3D11ShaderResourceView>> textureViews;
+    std::map<std::tuple<int,int,int,int>,ComPtr<ID3D11SamplerState>> samplers;
     Renderer(const CreateIn& in):capacity(in.capacity) {
         require(in.resource&&in.abi==1&&capacity>0&&capacity<=4000000);
         static_cast<ID3D11DeviceChild*>(in.resource)->GetDevice(&device);require(device!=nullptr);
         require((device->GetCreationFlags()&D3D11_CREATE_DEVICE_SINGLETHREADED)==0);
         device->GetImmediateContext(&context);check(device->CreateDeferredContext(0,&deferred));
-        poses.resize(capacity);list.reserve(capacity*4);segs.reserve(131072);draws.reserve(capacity*4);
+        list.reserve(capacity*4);segs.reserve(131072);draws.reserve(capacity*4);
         for(auto& p:ring){p.poses.reserve(capacity);p.poseIds.reserve(capacity);p.ids.reserve(capacity*4);p.offsets.reserve(capacity*4+1);p.bytes.reserve(size_t(std::min(capacity,8192u))*1024);p.list.reserve(capacity*4);p.segs.reserve(131072);}
     }
     int program(const ProgramIn& in) {
@@ -147,34 +163,41 @@ struct Renderer {
         std::memcpy(d->center,in.center,12);std::memcpy(d->extent,in.extent,12);for(int i=0;i<3;i++)require(std::isfinite(d->center[i])&&std::isfinite(d->extent[i])&&d->extent[i]>=0);
         auto& g=*d->geometry;auto attributes=g.attributes;
         if(in.sprite){for(auto& a:attributes)if(std::strcmp(a.SemanticName,"COLOR")==0){a.InputSlot=7;a.AlignedByteOffset=0;a.Format=DXGI_FORMAT_R32G32B32A32_FLOAT;}D3D11_BUFFER_DESC color{};color.ByteWidth=16;color.Usage=D3D11_USAGE_DEFAULT;color.BindFlags=D3D11_BIND_VERTEX_BUFFER;check(device->CreateBuffer(&color,nullptr,&d->color));}
-        check(device->CreateInputLayout(attributes.data(),UINT(attributes.size()),d->shader->signature.data(),d->shader->signature.size(),&d->layout));
+        auto layoutKey=std::make_pair(d->shader.get(),in.sprite!=0);auto cached=g.layouts.find(layoutKey);
+        if(cached!=g.layouts.end()){d->layout=cached->second;perf.layoutHits++;}
+        else {check(device->CreateInputLayout(attributes.data(),UINT(attributes.size()),d->shader->signature.data(),d->shader->signature.size(),&d->layout));g.layouts.emplace(layoutKey,d->layout);perf.layoutCreates++;}
+        if(poses.size()<=in.pose)poses.resize(size_t(in.pose)+1);
         const auto* bytes=static_cast<const uint8_t*>(in.constants);d->bytes.assign(bytes,bytes+in.constantBytes);
         if(in.patchCount)d->patches.assign(in.patches,in.patches+in.patchCount);
         for(const auto& p:d->patches)require(p.kind>=1&&p.kind<=15&&p.offset+(p.kind<=7?64:16)<=in.constantBytes);
-        for(unsigned i=0;i<in.bufferCount;i++){Constants c{};c.binding=in.buffers[i];require(c.binding.slot<14&&c.binding.stage<2&&c.binding.bytes>0&&c.binding.bytes%16==0&&c.binding.offset+c.binding.bytes<=in.constantBytes);D3D11_BUFFER_DESC b{};b.ByteWidth=c.binding.bytes;b.Usage=D3D11_USAGE_DEFAULT;b.BindFlags=D3D11_BIND_CONSTANT_BUFFER;check(device->CreateBuffer(&b,nullptr,&c.buffer));d->buffers.push_back(c);}
+        for(unsigned i=0;i<in.bufferCount;i++){Constants c{};c.binding=in.buffers[i];require(c.binding.slot<14&&c.binding.stage<2&&c.binding.bytes>0&&c.binding.bytes%16==0&&c.binding.offset+c.binding.bytes<=in.constantBytes);D3D11_BUFFER_DESC b{};b.ByteWidth=c.binding.bytes;b.Usage=D3D11_USAGE_DEFAULT;b.BindFlags=D3D11_BIND_CONSTANT_BUFFER;check(device->CreateBuffer(&b,nullptr,&c.buffer));c.uploaded.resize(c.binding.bytes);d->buffers.push_back(std::move(c));}
         for(unsigned i=0;i<in.textureCount;i++){const auto& t=in.textures[i];require((t.resource||t.srgb==-1)&&t.stage<2&&t.slot>=0&&t.slot<128&&t.sampler<16);Sample s{};s.stage=t.stage;s.slot=t.slot;s.samplerSlot=t.sampler;s.grab=t.srgb==-1;
             if(!s.grab){auto* tex=static_cast<ID3D11Texture2D*>(t.resource);D3D11_TEXTURE2D_DESC td{};tex->GetDesc(&td);require(td.ArraySize==1&&td.SampleDesc.Count==1);
-            D3D11_SHADER_RESOURCE_VIEW_DESC sd{};sd.Format=format(td.Format,t.srgb!=0);sd.ViewDimension=D3D11_SRV_DIMENSION_TEXTURE2D;sd.Texture2D.MipLevels=td.MipLevels;check(device->CreateShaderResourceView(tex,&sd,&s.view));
+            auto key=std::make_pair(t.resource,t.srgb);auto found=textureViews.find(key);
+            if(found!=textureViews.end())s.view=found->second;
+            else {D3D11_SHADER_RESOURCE_VIEW_DESC sd{};sd.Format=format(td.Format,t.srgb!=0);sd.ViewDimension=D3D11_SRV_DIMENSION_TEXTURE2D;sd.Texture2D.MipLevels=td.MipLevels;check(device->CreateShaderResourceView(tex,&sd,&s.view));textureViews.emplace(key,s.view);}
             }
             D3D11_SAMPLER_DESC sm{};sm.Filter=t.filter==0?D3D11_FILTER_MIN_MAG_MIP_POINT:t.aniso>1?D3D11_FILTER_ANISOTROPIC:t.filter==2?D3D11_FILTER_MIN_MAG_MIP_LINEAR:D3D11_FILTER_MIN_MAG_LINEAR_MIP_POINT;
-            auto addr=[](int x){return x==0?D3D11_TEXTURE_ADDRESS_WRAP:x==1?D3D11_TEXTURE_ADDRESS_CLAMP:x==2?D3D11_TEXTURE_ADDRESS_MIRROR:D3D11_TEXTURE_ADDRESS_MIRROR_ONCE;};sm.AddressU=addr(t.wrapU);sm.AddressV=addr(t.wrapV);sm.AddressW=D3D11_TEXTURE_ADDRESS_CLAMP;sm.MaxAnisotropy=UINT(std::clamp(t.aniso,1,16));sm.MaxLOD=D3D11_FLOAT32_MAX;check(device->CreateSamplerState(&sm,&s.sampler));d->textures.push_back(s);
+            auto addr=[](int x){return x==0?D3D11_TEXTURE_ADDRESS_WRAP:x==1?D3D11_TEXTURE_ADDRESS_CLAMP:x==2?D3D11_TEXTURE_ADDRESS_MIRROR:D3D11_TEXTURE_ADDRESS_MIRROR_ONCE;};sm.AddressU=addr(t.wrapU);sm.AddressV=addr(t.wrapV);sm.AddressW=D3D11_TEXTURE_ADDRESS_CLAMP;sm.MaxAnisotropy=UINT(std::clamp(t.aniso,1,16));sm.MaxLOD=D3D11_FLOAT32_MAX;auto key=std::make_tuple(t.filter,t.wrapU,t.wrapV,t.aniso);auto found=samplers.find(key);
+            if(found!=samplers.end())s.sampler=found->second;else {check(device->CreateSamplerState(&sm,&s.sampler));samplers.emplace(key,s.sampler);}d->textures.push_back(s);
         }
         draws.push_back(d);return int(draws.size());
     }
-    int commit(const Frame& f) {
+    int commit(const Frame& f,bool packed=false) {
         const double start=now();require(f.poseCount<=capacity&&f.dirtyCount<=draws.size());
-        if(write-read==ring.size()){stats.dropped++;return 0;}
-        auto& p=ring[write%ring.size()];p.f=f;p.poseIds.assign(f.poseIds,f.poseIds+f.poseCount);p.poses.resize(f.poseCount);
-        for(unsigned i=0;i<f.poseCount;i++){require(f.poseIds[i]<capacity);p.poses[i]=f.poses[f.poseIds[i]];}
+        const uint64_t w=write.load(std::memory_order_relaxed);
+        if(w-read.load(std::memory_order_acquire)==ring.size()){dropped.fetch_add(1,std::memory_order_relaxed);return 0;}
+        auto& p=ring[w%ring.size()];p.f=f;p.poseIds.assign(f.poseIds,f.poseIds+f.poseCount);p.poses.resize(f.poseCount);
+        for(unsigned i=0;i<f.poseCount;i++){require(f.poseIds[i]<capacity);p.poses[i]=f.poses[packed?i:f.poseIds[i]];}
         p.ids.assign(f.drawIds,f.drawIds+f.dirtyCount);p.offsets.assign(f.constantOffsets,f.constantOffsets+f.dirtyCount+1);
         require(f.constantBytes<=size_t(capacity)*16384&&p.offsets.back()==f.constantBytes);
         p.bytes.assign(f.constants,f.constants+f.constantBytes);
         if(f.listChanged){require(f.listCount<=capacity*4&&f.segmentCount<=65535);p.list.assign(f.list,f.list+f.listCount);p.segs.assign(f.segments,f.segments+size_t(f.segmentCount)*2);}
-        write++;commitSum+=now()-start;commits++;return 1;
+        write.store(w+1,std::memory_order_release);commitSum+=now()-start;commits++;return 1;
     }
     void apply(Packet& p) {
         frame=p.f;
-        for(size_t i=0;i<p.poseIds.size();i++)poses[p.poseIds[i]]=p.poses[i];
+        for(size_t i=0;i<p.poseIds.size();i++){if(poses.size()<=p.poseIds[i])poses.resize(size_t(p.poseIds[i])+1);poses[p.poseIds[i]]=p.poses[i];}
         for(size_t i=0;i<p.ids.size();i++){require(p.ids[i]&&p.ids[i]<=draws.size());auto& d=*draws[p.ids[i]-1];require(p.offsets[i+1]-p.offsets[i]==d.bytes.size());std::memcpy(d.bytes.data(),p.bytes.data()+p.offsets[i],d.bytes.size());stats.bytes+=d.bytes.size();}
         if(p.f.listChanged){list=p.list;segs=p.segs;}
         stats.frames++;
@@ -192,7 +215,7 @@ struct Renderer {
     void render(unsigned segment) {
         const double start=now();
         try {
-            if(segment==0){require(read!=write);auto& p=ring[read%ring.size()];apply(p);read++;}
+            if(segment==0){profile=stats.frames%64==0;if(profile)perf.sampledFrames++;const double at=profile?now():0;const uint64_t r=read.load(std::memory_order_relaxed);require(r!=write.load(std::memory_order_acquire));auto& p=ring[r%ring.size()];apply(p);read.store(r+1,std::memory_order_release);if(profile)perf.applyUs+=now()-at;}
             require(size_t(segment)*2+1<segs.size());
             UINT first=segs[segment*2],count=segs[segment*2+1];require(first+count<=list.size());
             ComPtr<ID3D11RenderTargetView> rtv;ComPtr<ID3D11DepthStencilView> dsv;context->OMGetRenderTargets(1,&rtv,&dsv);require(rtv!=nullptr);
@@ -209,11 +232,13 @@ struct Renderer {
                     ID3D11ShaderResourceView* nil[2]{};dc->PSSetShaderResources(0,2,nil);stats.draws++;continue;
                 }
                 auto& g=*d.geometry;
+                const double cullStart=profile?now():0;
                 if(d.extent[0]>0||d.extent[1]>0||d.extent[2]>0){
                     float m[16];multiply(m,frame.vp,poses[d.pose].world);unsigned outside=63;
                     for(unsigned corner=0;corner<8&&outside;corner++){float p[3];for(unsigned axis=0;axis<3;axis++)p[axis]=d.center[axis]+((corner&(1u<<axis))?d.extent[axis]:-d.extent[axis]);float clip[4];for(unsigned row=0;row<4;row++)clip[row]=m[row]*p[0]+m[4+row]*p[1]+m[8+row]*p[2]+m[12+row];unsigned flags=(clip[0]<-clip[3]?1u:0u)|(clip[0]>clip[3]?2u:0u)|(clip[1]<-clip[3]?4u:0u)|(clip[1]>clip[3]?8u:0u)|(clip[2]<0?16u:0u)|(clip[2]>clip[3]?32u:0u);outside&=flags;}
-                    if(outside)continue;
+                    if(outside){if(profile)perf.cullUs+=now()-cullStart;continue;}
                 }
+                if(profile)perf.cullUs+=now()-cullStart;const double constantsStart=profile?now():0;
                 if(d.grab){
                     ComPtr<ID3D11Resource> resource;rtv->GetResource(&resource);ComPtr<ID3D11Texture2D> source;check(resource.As(&source));D3D11_TEXTURE2D_DESC td{};source->GetDesc(&td);require(td.SampleDesc.Count==1&&td.ArraySize==1);
                     D3D11_RENDER_TARGET_VIEW_DESC vd{};rtv->GetDesc(&vd);require(vd.ViewDimension==D3D11_RTV_DIMENSION_TEXTURE2D&&vd.Texture2D.MipSlice==0);
@@ -221,16 +246,20 @@ struct Renderer {
                     ID3D11ShaderResourceView* nil[16]{};dc->PSSetShaderResources(0,16,nil);dc->OMSetRenderTargets(0,nullptr,nullptr);dc->CopyResource(grabTexture.Get(),source.Get());dc->OMSetRenderTargets(1,&rt,dsv.Get());
                 }
                 patch(d);dc->VSSetShader(s.vs.Get(),nullptr,0);dc->PSSetShader(s.ps.Get(),nullptr,0);dc->IASetInputLayout(d.layout.Get());
-                ID3D11Buffer* vb[8]{};for(unsigned j=0;j<8;j++)vb[j]=g.buffers[j].Get();auto strides=g.strides;auto offsets=g.offsets;if(d.color){dc->UpdateSubresource(d.color.Get(),0,nullptr,d.bytes.data(),0,0);vb[7]=d.color.Get();strides[7]=offsets[7]=0;}dc->IASetVertexBuffers(0,8,vb,strides.data(),offsets.data());dc->IASetIndexBuffer(g.indices.Get(),g.indexFormat,0);
+                ID3D11Buffer* vb[8]{};for(unsigned j=0;j<8;j++)vb[j]=g.buffers[j].Get();auto strides=g.strides;auto offsets=g.offsets;if(d.color){if(!d.colorUploaded||std::memcmp(d.uploadedColor.data(),d.bytes.data(),16)){dc->UpdateSubresource(d.color.Get(),0,nullptr,d.bytes.data(),0,0);std::memcpy(d.uploadedColor.data(),d.bytes.data(),16);d.colorUploaded=true;perf.uploads++;perf.uploadBytes+=16;}vb[7]=d.color.Get();strides[7]=offsets[7]=0;}dc->IASetVertexBuffers(0,8,vb,strides.data(),offsets.data());dc->IASetIndexBuffer(g.indices.Get(),g.indexFormat,0);
                 dc->OMSetBlendState(s.blendState.Get(),nullptr,~0u);dc->OMSetDepthStencilState(s.depth.Get(),s.stencilRef);dc->RSSetState(s.raster.Get());
-                for(const auto& c:d.buffers){dc->UpdateSubresource(c.buffer.Get(),0,nullptr,d.bytes.data()+c.binding.offset,0,0);ID3D11Buffer* cb=c.buffer.Get();if(c.binding.stage==0)dc->VSSetConstantBuffers(c.binding.slot,1,&cb);else dc->PSSetConstantBuffers(c.binding.slot,1,&cb);}
+                for(auto& c:d.buffers){const auto* data=d.bytes.data()+c.binding.offset;if(!c.ready||std::memcmp(c.uploaded.data(),data,c.binding.bytes)){dc->UpdateSubresource(c.buffer.Get(),0,nullptr,data,0,0);std::memcpy(c.uploaded.data(),data,c.binding.bytes);c.ready=true;perf.uploads++;perf.uploadBytes+=c.binding.bytes;}ID3D11Buffer* cb=c.buffer.Get();if(c.binding.stage==0)dc->VSSetConstantBuffers(c.binding.slot,1,&cb);else dc->PSSetConstantBuffers(c.binding.slot,1,&cb);}
+                if(profile)perf.constantsUs+=now()-constantsStart;const double drawStart=profile?now():0;
                 for(const auto& t:d.textures){ID3D11ShaderResourceView* v=t.grab?grabView.Get():t.view.Get();ID3D11SamplerState* sm=t.sampler.Get();if(t.stage==0){dc->VSSetShaderResources(UINT(t.slot),1,&v);if(t.samplerSlot>=0)dc->VSSetSamplers(UINT(t.samplerSlot),1,&sm);}else{dc->PSSetShaderResources(UINT(t.slot),1,&v);if(t.samplerSlot>=0)dc->PSSetSamplers(UINT(t.samplerSlot),1,&sm);}}
-                dc->DrawIndexed(g.indexCount,g.indexStart,g.baseVertex);stats.draws++;
+                dc->DrawIndexed(g.indexCount,g.indexStart,g.baseVertex);stats.draws++;if(profile)perf.drawUs+=now()-drawStart;
             }
-            ComPtr<ID3D11CommandList> command;check(dc->FinishCommandList(FALSE,&command));context->ExecuteCommandList(command.Get(),TRUE);
+            const double executeStart=profile?now():0;ComPtr<ID3D11CommandList> command;check(dc->FinishCommandList(FALSE,&command));context->ExecuteCommandList(command.Get(),TRUE);if(profile)perf.executeUs+=now()-executeStart;
         }catch(HRESULT hr){stats.errors++;stats.lastHR=hr;deferred->ClearState();ComPtr<ID3D11CommandList> discard;deferred->FinishCommandList(FALSE,&discard);}
         catch(...){stats.errors++;stats.lastHR=E_FAIL;}
         stats.events++;renderSum+=now()-start;
+        publishedDraws.store(stats.draws,std::memory_order_relaxed);publishedErrors.store(stats.errors,std::memory_order_relaxed);
+        publishedBytes.store(stats.bytes,std::memory_order_relaxed);publishedEvents.store(stats.events,std::memory_order_relaxed);publishedHR.store(stats.lastHR,std::memory_order_relaxed);
+        publishedRenderUs.store(stats.frames?renderSum/double(stats.frames):0,std::memory_order_relaxed);publishedFrames.store(stats.frames,std::memory_order_release);
     }
 };
 std::mutex gate;std::shared_ptr<Renderer> current;int nextToken=0;thread_local HRESULT lastHR=S_OK;
@@ -244,7 +273,12 @@ extern "C" intptr_t __cdecl sf_z_drfull_v1(int op,int token,const void* args) no
         if(op==drfull::Event)return reinterpret_cast<intptr_t>(&event);
         if(op==drfull::Error)return lastHR;
         if(op==drfull::Destroy){std::lock_guard<std::mutex> lock(gate);if(current&&current->token==token)current.reset();return 1;}
-        auto r=get(token);require(r!=nullptr);std::lock_guard<std::mutex> lock(r->mutex);
-        switch(op){case drfull::Composite:return r->composite(*static_cast<const drfull::CompositeIn*>(args));case drfull::Program:return r->program(*static_cast<const drfull::ProgramIn*>(args));case drfull::Geometry:return r->geometry(*static_cast<const drfull::GeometryIn*>(args));case drfull::Draw:return r->draw(*static_cast<const drfull::DrawIn*>(args));case drfull::Commit:return r->commit(*static_cast<const drfull::Frame*>(args));case drfull::Stats:{auto* s=const_cast<drfull::Statistics*>(static_cast<const drfull::Statistics*>(args));*s=r->stats;s->renderUs=r->stats.frames?r->renderSum/double(r->stats.frames):0;s->commitUs=r->commits?r->commitSum/double(r->commits):0;return 1;}default:throw E_INVALIDARG;}
+        auto r=get(token);require(r!=nullptr);
+        // Commit is a single-producer ring copy. It does not touch render-owned
+        // resources or wait for deferred recording. Stats reads published atomics.
+        if(op==drfull::Commit||op==drfull::CommitPacked)return r->commit(*static_cast<const drfull::Frame*>(args),op==drfull::CommitPacked);
+        if(op==drfull::Stats){*const_cast<drfull::Statistics*>(static_cast<const drfull::Statistics*>(args))=r->snapshot();return 1;}
+        std::lock_guard<std::mutex> lock(r->mutex);
+        switch(op){case drfull::Perf:{auto p=r->perf;const double n=double(std::max(uint64_t(1),r->perf.sampledFrames));p.applyUs/=n;p.cullUs/=n;p.constantsUs/=n;p.drawUs/=n;p.executeUs/=n;*const_cast<drfull::Performance*>(static_cast<const drfull::Performance*>(args))=p;return 1;}case drfull::Composite:return r->composite(*static_cast<const drfull::CompositeIn*>(args));case drfull::Program:return r->program(*static_cast<const drfull::ProgramIn*>(args));case drfull::Geometry:return r->geometry(*static_cast<const drfull::GeometryIn*>(args));case drfull::Draw:return r->draw(*static_cast<const drfull::DrawIn*>(args));default:throw E_INVALIDARG;}
     }catch(HRESULT hr){lastHR=hr;return 0;}catch(...){lastHR=E_FAIL;return 0;}
 }

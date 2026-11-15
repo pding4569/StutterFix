@@ -1,0 +1,48 @@
+{
+  "workspace": "E:\\StutterFixWork\\wt-m4",
+  "branch": "claude/drfull",
+  "launch": false,
+  "preset": "ppGpuCam",
+  "rt": "3440x1440",
+  "measure_order": [
+    "A1",
+    "B1",
+    "B2",
+    "A2"
+  ],
+  "duration_s": 12,
+  "validity": [
+    "candidate assert on before and after interval",
+    "native completed draws > 0",
+    "errors=0 dropped=0",
+    "no automatic OFF/sample invalid",
+    "originalMask==restoredMask",
+    "pixel gate before interpreting FPS"
+  ],
+  "plans": [
+    "E:\\StutterFixWork\\wt-m4\\out\\direct-renderer\\m4e\\plans\\m4e-hl50-plan.json",
+    "E:\\StutterFixWork\\wt-m4\\out\\direct-renderer\\m4e\\plans\\m4e-hl50-pixel.json",
+    "E:\\StutterFixWork\\wt-m4\\out\\direct-renderer\\m4e\\plans\\m4e-hl50-A1.json",
+    "E:\\StutterFixWork\\wt-m4\\out\\direct-renderer\\m4e\\plans\\m4e-hl50-B1.json",
+    "E:\\StutterFixWork\\wt-m4\\out\\direct-renderer\\m4e\\plans\\m4e-hl50-B2.json",
+    "E:\\StutterFixWork\\wt-m4\\out\\direct-renderer\\m4e\\plans\\m4e-hl50-A2.json",
+    "E:\\StutterFixWork\\wt-m4\\out\\direct-renderer\\m4e\\plans\\m4e-wf-plan.json",
+    "E:\\StutterFixWork\\wt-m4\\out\\direct-renderer\\m4e\\plans\\m4e-wf-pixel.json",
+    "E:\\StutterFixWork\\wt-m4\\out\\direct-renderer\\m4e\\plans\\m4e-wf-A1.json",
+    "E:\\StutterFixWork\\wt-m4\\out\\direct-renderer\\m4e\\plans\\m4e-wf-B1.json",
+    "E:\\StutterFixWork\\wt-m4\\out\\direct-renderer\\m4e\\plans\\m4e-wf-B2.json",
+    "E:\\StutterFixWork\\wt-m4\\out\\direct-renderer\\m4e\\plans\\m4e-wf-A2.json",
+    "E:\\StutterFixWork\\wt-m4\\out\\direct-renderer\\m4e\\plans\\m4e-dd-plan.json",
+    "E:\\StutterFixWork\\wt-m4\\out\\direct-renderer\\m4e\\plans\\m4e-dd-pixel.json",
+    "E:\\StutterFixWork\\wt-m4\\out\\direct-renderer\\m4e\\plans\\m4e-dd-A1.json",
+    "E:\\StutterFixWork\\wt-m4\\out\\direct-renderer\\m4e\\plans\\m4e-dd-B1.json",
+    "E:\\StutterFixWork\\wt-m4\\out\\direct-renderer\\m4e\\plans\\m4e-dd-B2.json",
+    "E:\\StutterFixWork\\wt-m4\\out\\direct-renderer\\m4e\\plans\\m4e-dd-A2.json",
+    "E:\\StutterFixWork\\wt-m4\\out\\direct-renderer\\m4e\\plans\\m4e-sh-plan.json",
+    "E:\\StutterFixWork\\wt-m4\\out\\direct-renderer\\m4e\\plans\\m4e-sh-pixel.json",
+    "E:\\StutterFixWork\\wt-m4\\out\\direct-renderer\\m4e\\plans\\m4e-sh-A1.json",
+    "E:\\StutterFixWork\\wt-m4\\out\\direct-renderer\\m4e\\plans\\m4e-sh-B1.json",
+    "E:\\StutterFixWork\\wt-m4\\out\\direct-renderer\\m4e\\plans\\m4e-sh-B2.json",
+    "E:\\StutterFixWork\\wt-m4\\out\\direct-renderer\\m4e\\plans\\m4e-sh-A2.json"
+  ]
+}

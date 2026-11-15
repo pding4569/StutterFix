@@ -5,7 +5,8 @@ namespace drfull {
 // All pointers are borrowed only for the duration of dispatch. Native owns copies
 // and COM references. Opcodes are versioned behind ONE appended export so old
 // export hints as well as ordinals remain stable.
-enum Op { Create, Program, Geometry, Draw, Commit, Event, Stats, Destroy, Error, Abi, Composite };
+enum Op { Create, Program, Geometry, Draw, Commit, Event, Stats, Destroy, Error, Abi, Composite, Perf, CommitPacked };
+struct Performance { double applyUs,cullUs,constantsUs,drawUs,executeUs; uint64_t uploads,uploadBytes,layoutCreates,layoutHits,sampledFrames; };
 struct CompositeIn { void *black, *white; };
 struct AbiInfo { uint32_t version,create,program,geometry,draw,frame,stats,pose; };
 struct CreateIn { void* resource; uint32_t capacity; uint32_t abi; };

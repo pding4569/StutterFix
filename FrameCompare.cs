@@ -67,6 +67,15 @@ namespace StutterFix
             // Keep the last displayed frame; Resume unpatches both, without a setter.
             FreezePlanetUpdate(typeof(PlanetRenderer));
             FreezePlanetUpdate(typeof(PlanetSprite));
+            // This counter uses unscaledDeltaTime/realtimeSinceStartup and writes
+            // TMP text plus its RectTransform even at timeScale=0. Keep exactly
+            // the displayed text/geometry; no screen-coordinate exclusion.
+            var fpsUpdate = AccessTools.Method(typeof(ADOFAI.FPSCounter), "Update", Type.EmptyTypes);
+            if (fpsUpdate == null) throw new MissingMethodException("ADOFAI.FPSCounter.Update");
+            pausePatch.Patch(fpsUpdate, prefix: new HarmonyMethod(typeof(FrameCompare), nameof(PlanetUpdate)));
+            foreach (var counter in Resources.FindObjectsOfTypeAll<ADOFAI.FPSCounter>())
+                if (counter && counter.gameObject.scene.IsValid())
+                    Log("pause frozen UI component=ADOFAI.FPSCounter id=" + counter.GetInstanceID() + " name=" + counter.name);
             foreach (var planet in Resources.FindObjectsOfTypeAll<PlanetRenderer>())
             {
                 if (!planet || !planet.gameObject.scene.IsValid()) continue;

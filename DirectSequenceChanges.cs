@@ -46,7 +46,7 @@ namespace StutterFix
         {
             bool active = DirectDeco.Active;
 #if DEV || AUTOTEST
-            active |= DirectFull.Rendering;
+            active |= DirectFull.Rendering || DirectFull.Preparing;
 #endif
             if (b.Read == null || !active) return true;
             A current;
@@ -109,6 +109,10 @@ namespace StutterFix
 
         internal static void Install(Harmony h)
         {
+            foreach (var step in InstallSteps(h)) { }
+        }
+        internal static IEnumerable<int> InstallSteps(Harmony h)
+        {
             Methods = Sites = 0;
             // These two assemblies contain the game and our competing optimizations.
             // Own writes/restoration and diagnostics are intentionally not instrumented.
@@ -119,6 +123,7 @@ namespace StutterFix
                 foreach (var method in type.GetMethods(AccessTools.all).Where(m => m.DeclaringType == type
                     && !m.IsAbstract && !m.ContainsGenericParameters && m.GetMethodBody() != null))
                 {
+                    yield return 0; // caller may budget the scan/individual Harmony patches
                     // The installed Harmony targets Mono mscorlib's ILGenerator.
                     // Reflection here avoids importing that incompatible signature
                     // into this netstandard assembly. No game method is invoked.

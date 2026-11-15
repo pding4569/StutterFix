@@ -16,6 +16,8 @@
 #include <cstring>
 #include <algorithm>
 #include <cmath>
+#include <atomic>
+#include <thread>
 #include "../../native/sfnative/drfull.h"
 using Microsoft::WRL::ComPtr;
 using namespace drfull;
@@ -32,7 +34,7 @@ int dispatch(int op,int token,const void* p){auto n=sf_z_drfull_v1(op,token,p);i
 struct Vertex{float p[3],color[4],uv[2],uv1[2];};
 ComPtr<ID3D11Buffer> buffer(ID3D11Device* d,const void* p,UINT n,UINT flags){D3D11_BUFFER_DESC b{};b.ByteWidth=n;b.Usage=D3D11_USAGE_DEFAULT;b.BindFlags=flags;D3D11_SUBRESOURCE_DATA data{};data.pSysMem=p;ComPtr<ID3D11Buffer> out;check(d->CreateBuffer(&b,p?&data:nullptr,&out));return out;}
 ComPtr<ID3DBlob> compile(const std::filesystem::path& path,const char* entry,const char* profile,int floor,int snap,int point){
-    D3D_SHADER_MACRO macros[]={{"FLOOR",floor?"1":"0"},{"SNAP",snap?"1":"0"},{"POINT",point?"1":"0"},{nullptr,nullptr}};
+    std::string floorValue=std::to_string(floor);D3D_SHADER_MACRO macros[]={{"FLOOR",floorValue.c_str()},{"SNAP",snap?"1":"0"},{"POINT",point?"1":"0"},{nullptr,nullptr}};
     ComPtr<ID3DBlob> code,error;HRESULT hr=D3DCompileFromFile(path.c_str(),macros,D3D_COMPILE_STANDARD_FILE_INCLUDE,entry,profile,D3DCOMPILE_OPTIMIZATION_LEVEL3|D3DCOMPILE_IEEE_STRICTNESS,0,&code,&error);
     if(FAILED(hr)){if(error)std::cerr<<static_cast<const char*>(error->GetBufferPointer());check(hr);}return code;
 }
@@ -66,7 +68,7 @@ int main(int argc,char** argv){try{
         std::array<Vertex,5> vertices{};float positions[4][2]={{-.75f,-.65f},{.72f,-.65f},{.72f,.69f},{-.75f,.69f}};
         const float uniform[4]={.61f,.84f,.47f,.71f};
         for(unsigned i=0;i<4;i++){auto& v=vertices[i+1];v.p[0]=positions[i][0];v.p[1]=positions[i][1];v.p[2]=0;for(int j=0;j<4;j++)v.color[j]=sprite?uniform[j]:.35f+float((i+unsigned(j)*3)%5)*.12f;v.uv[0]=(i==1||i==2)?1.07f:-.09f;v.uv[1]=(i>=2)?(mode==1?1.85f:1.07f):(mode==1?1.05f:-.07f);v.uv1[0]=positions[i][0]*.81f;v.uv1[1]=positions[i][1]*.77f;}
-        if(sprite)std::memcpy(constants.data(),uniform,16);
+        if(sprite && floor<2)std::memcpy(constants.data(),uniform,16);
         std::array<uint32_t,9> indices={0,0,0,0,1,2,0,2,3};
         Attribute attributes[]={{0,0,6,0,0},{3,0,2,multi?1u:0u,multi?0u:12u},{4,0,16,0,28},{4,1,16,0,36}};
         GeometryIn geometry{};geometry.attributes=attributes;geometry.attributeCount=4;geometry.strides[0]=sizeof(Vertex);
@@ -75,8 +77,8 @@ int main(int argc,char** argv){try{
         if(sprite){geometry.vertices=vertices.data()+1;geometry.vertexBytes=4*sizeof(Vertex);geometry.cpuIndices=indices.data()+3;geometry.cpuIndexCount=6;}
         else {geometry.buffers[0]=vb.Get();if(multi){geometry.buffers[1]=colorBuffer.Get();geometry.strides[1]=16;}geometry.indices=ib.Get();geometry.indexFormat=DXGI_FORMAT_R32_UINT;geometry.indexStart=3;geometry.indexCount=6;geometry.baseVertex=1;}
         CreateIn create{target.Get(),16,1};int token=dispatch(Create,0,&create);int programId=dispatch(Program,token,&program),geometryId=dispatch(Geometry,token,&geometry);
-        std::vector<Texture> tex;for(const auto& t:texInputs)tex.push_back(Texture{textures[size_t(t.pattern)].Get(),t.stage,t.slot,t.sampler,filter,mode%2,mode%2,1,0});
-        DrawIn draw{};draw.program=UINT(programId);draw.geometry=UINT(geometryId);draw.buffers=bindings.data();draw.bufferCount=UINT(bindings.size());draw.patches=patches.data();draw.patchCount=UINT(patches.size());draw.textures=tex.data();draw.textureCount=UINT(tex.size());draw.constants=constants.data();draw.constantBytes=UINT(constants.size());draw.sprite=sprite?1u:0u;
+        std::vector<Texture> tex;for(const auto& t:texInputs)tex.push_back(Texture{t.pattern==5?nullptr:textures[size_t(t.pattern)].Get(),t.stage,t.slot,t.sampler,t.pattern==5?1:filter,t.pattern==5?1:mode%2,t.pattern==5?1:mode%2,1,t.pattern==5?-1:0});
+        DrawIn draw{};draw.program=UINT(programId);draw.geometry=UINT(geometryId);draw.buffers=bindings.data();draw.bufferCount=UINT(bindings.size());draw.patches=patches.data();draw.patchCount=UINT(patches.size());draw.textures=tex.data();draw.textureCount=UINT(tex.size());draw.constants=constants.data();draw.constantBytes=UINT(constants.size());draw.sprite=sprite?1u:0u;draw.grab=floor>=2?1u:0u;
         draw.extent[0]=draw.extent[1]=1;draw.extent[2]=.1f;
         int drawId=dispatch(Draw,token,&draw);uint32_t poseIds[]={0},drawIds[]={UINT(drawId)},offsets[]={0},list[]={UINT(drawId),UINT(drawId)},segs[]={0,mode==2?2u:1u};
         frame.poses=&pose;frame.poseIds=poseIds;frame.poseCount=1;frame.drawIds=drawIds;frame.constantOffsets=offsets;frame.constants=constants.data();frame.list=list;frame.segments=segs;frame.listCount=segs[1];frame.segmentCount=1;frame.listChanged=1;
@@ -96,14 +98,20 @@ int main(int argc,char** argv){try{
         std::array<ComPtr<ID3D11SamplerState>,5> samplers;for(size_t j=0;j<5;j++){D3D11_SAMPLER_DESC sd{};sd.Filter=filter?D3D11_FILTER_MIN_MAG_LINEAR_MIP_POINT:D3D11_FILTER_MIN_MAG_MIP_POINT;sd.AddressU=sd.AddressV=sd.AddressW=mode%2?D3D11_TEXTURE_ADDRESS_CLAMP:D3D11_TEXTURE_ADDRESS_WRAP;sd.MaxLOD=D3D11_FLOAT32_MAX;check(device->CreateSamplerState(&sd,&samplers[j]));ID3D11ShaderResourceView* srv=views[j].Get();context->PSSetShaderResources(UINT(j),1,&srv);ID3D11SamplerState* sm=samplers[j].Get();context->PSSetSamplers(UINT(j),1,&sm);}
         D3D11_BLEND_DESC bd{};auto& blend=bd.RenderTarget[0];blend.BlendEnable=TRUE;blend.SrcBlend=blend.SrcBlendAlpha=D3D11_BLEND_ONE;blend.DestBlend=blend.DestBlendAlpha=D3D11_BLEND_INV_SRC_ALPHA;blend.BlendOp=blend.BlendOpAlpha=D3D11_BLEND_OP_ADD;blend.RenderTargetWriteMask=15;ComPtr<ID3D11BlendState> blendState;check(device->CreateBlendState(&bd,&blendState));context->OMSetBlendState(blendState.Get(),nullptr,~0u);
         D3D11_RASTERIZER_DESC rd{};rd.FillMode=D3D11_FILL_SOLID;rd.CullMode=D3D11_CULL_NONE;rd.DepthClipEnable=TRUE;ComPtr<ID3D11RasterizerState> raster;check(device->CreateRasterizerState(&rd,&raster));context->RSSetState(raster.Get());D3D11_DEPTH_STENCIL_DESC dd{};dd.DepthEnable=FALSE;ComPtr<ID3D11DepthStencilState> depthState;check(device->CreateDepthStencilState(&dd,&depthState));context->OMSetDepthStencilState(depthState.Get(),0);
-        context->ClearRenderTargetView(rt,background);for(unsigned repeat=0;repeat<segs[1];repeat++)context->DrawIndexed(6,3,1);auto ref=readback(device.Get(),context.Get(),target.Get());
+        context->ClearRenderTargetView(rt,background);
+        ComPtr<ID3D11Texture2D> grab;ComPtr<ID3D11ShaderResourceView> grabSrv;
+        if(floor>=2){D3D11_TEXTURE2D_DESC desc{};target->GetDesc(&desc);desc.BindFlags=D3D11_BIND_SHADER_RESOURCE;check(device->CreateTexture2D(&desc,nullptr,&grab));check(device->CreateShaderResourceView(grab.Get(),nullptr,&grabSrv));}
+        for(unsigned repeat=0;repeat<segs[1];repeat++){
+            if(floor>=2){ID3D11ShaderResourceView* nil=nullptr;context->PSSetShaderResources(1,1,&nil);context->CopyResource(grab.Get(),target.Get());auto* srv=grabSrv.Get();context->PSSetShaderResources(1,1,&srv);}
+            context->DrawIndexed(6,3,1);
+        }auto ref=readback(device.Get(),context.Get(),target.Get());
         uint64_t changed=0,l1=0,nonBackground=0;unsigned maxChannel=0;for(size_t i=0;i<original.size();i+=4){bool diff=false,bg=false;for(size_t j=0;j<4;j++){unsigned delta=unsigned(std::abs(int(original[i+j])-int(ref[i+j])));maxChannel=std::max(maxChannel,delta);l1+=delta;diff|=delta!=0;bg|=original[i+j]!=uint8_t(std::round(background[j]*255));}changed+=diff;nonBackground+=bg;}
         csv<<label<<'\t'<<stats.draws<<'\t'<<nonBackground<<'\t'<<changed<<'\t'<<maxChannel<<'\t'<<l1<<'\n';csv.flush();
         if(caseIndex==0||maxChannel>2){ppm(out/(label+"-original.ppm"),original);ppm(out/(label+"-reference.ppm"),ref);}
         require(nonBackground>1000,"blank original falsely looks equal");
         std::cout<<label<<" nonblank="<<nonBackground<<" changed="<<changed<<" max="<<maxChannel<<" L1="<<l1<<"\n";
         require(maxChannel<=2,"original/reference pixel mismatch");globalMax=std::max(globalMax,maxChannel);allChanged+=changed;
-        if(caseIndex==0){
+        if(caseIndex==0 && floor<2){
             // Non-symmetric matrix transposition is a required negative control.
             auto bad=reference;float* matrix=reinterpret_cast<float*>(bad.data());for(int c=0;c<4;c++)for(int row=0;row<c;row++)std::swap(matrix[c*4+row],matrix[row*4+c]);context->UpdateSubresource(cb.Get(),0,nullptr,bad.data(),0,0);context->ClearRenderTargetView(rt,background);context->DrawIndexed(6,3,1);auto badImage=readback(device.Get(),context.Get(),target.Get());unsigned errors=0;for(size_t i=0;i<badImage.size();i+=4)if(std::memcmp(badImage.data()+i,original.data()+i,4)!=0)errors++;require(errors>1000,"matrix control failed to expose wrong layout");negative++;
             // ExecuteCommandList(TRUE) must restore Unity's immediate state.
@@ -120,10 +128,50 @@ int main(int argc,char** argv){try{
             pose.world[12]=savedX;program.state[16]=1;program.state[20]=3;draw.program=UINT(dispatch(Program,token,&program));int maskedDraw=dispatch(Draw,token,&draw);list[0]=UINT(maskedDraw);
             context->ClearDepthStencilView(dsv.Get(),D3D11_CLEAR_STENCIL,0,0);context->ClearRenderTargetView(rt,background);dispatch(Commit,token,&frame);event(token<<16);auto reject=readback(device.Get(),context.Get(),target.Get());visible=0;for(size_t i=0;i<reject.size();i+=4)for(size_t j=0;j<4;j++)visible+=reject[i+j]!=uint8_t(std::round(background[j]*255));require(visible==0,"unified stencil comparison ignored");
             context->ClearDepthStencilView(dsv.Get(),D3D11_CLEAR_STENCIL,0,1);context->ClearRenderTargetView(rt,background);dispatch(Commit,token,&frame);event(token<<16);require(readback(device.Get(),context.Get(),target.Get())==original,"matching unified stencil rejected original draw");negative++;
+            Performance perfBefore{},perfAfter{};dispatch(Perf,token,&perfBefore);
+            context->ClearRenderTargetView(rt,background);dispatch(Commit,token,&frame);event(token<<16);dispatch(Perf,token,&perfAfter);
+            require(perfBefore.uploads==perfAfter.uploads,"stable constants/color uploaded again");
+            require(readback(device.Get(),context.Get(),target.Get())==original,"stable skipped uploads changed pixels");
+            dispatch(Draw,token,&draw);Performance cache{};dispatch(Perf,token,&cache);
+            require(cache.layoutCreates==perfAfter.layoutCreates&&cache.layoutHits>perfAfter.layoutHits,"identical layout recreated");
+            std::cout<<"PASS stable-frame uploads=0 pixels=identical layout-cache-hit=1\n";
+            // Packed poses carry a dense value array and sparse native IDs.
+            // ID 5 intentionally cannot index the one-element CPU pose array.
+            draw.pose=5;int packedDraw=dispatch(Draw,token,&draw);list[0]=UINT(packedDraw);poseIds[0]=5;
+            context->ClearRenderTargetView(rt,background);dispatch(CommitPacked,token,&frame);event(token<<16);
+            require(readback(device.Get(),context.Get(),target.Get())==original,"dense packed pose / sparse native ID mismatch");
+            draw.pose=0;list[0]=UINT(maskedDraw);poseIds[0]=0;
+            context->ClearRenderTargetView(rt,background);dispatch(CommitPacked,token,&frame);event(token<<16);
+            std::cout<<"PASS packed-poses dense-count=1 sparse-native-id=5 pixels=identical legacy-commit=preserved\n";
+            // Exercise the production SPSC ring while a separate thread owns the
+            // D3D context. Every reused slot must retain its own color snapshot.
+            constexpr unsigned packets=128;std::atomic<unsigned> submitted{0},consumed{0};std::atomic<bool> valid{true};
+            frame.listChanged=0;frame.dirtyCount=1;frame.constantBytes=UINT(constants.size());frame.constantOffsets=dirtyOffsets;drawIds[0]=UINT(maskedDraw);
+            std::thread consumer([&](){
+                try {
+                    for(unsigned sequence=0;sequence<packets;sequence++){
+                        while(submitted.load(std::memory_order_acquire)<=sequence)std::this_thread::yield();
+                        context->ClearRenderTargetView(rt,background);event(token<<16);
+                        auto pixels=readback(device.Get(),context.Get(),target.Get());
+                        if(sequence%2){if(pixels!=original)valid=false;}
+                        else for(size_t i=0;i<pixels.size();i++)if(pixels[i]!=uint8_t(std::round(background[i%4]*255)))valid=false;
+                        consumed.store(sequence+1,std::memory_order_release);
+                    }
+                }catch(...){valid=false;consumed.store(packets,std::memory_order_release);}
+            });
+            for(unsigned sequence=0;sequence<packets;sequence++){
+                while(sequence-consumed.load(std::memory_order_acquire)>=4&&valid.load())std::this_thread::yield();
+                if(sequence%2)std::memcpy(constants.data(),savedColor.data(),16);else std::memset(constants.data(),0,16);
+                if(sf_z_drfull_v1(CommitPacked,token,&frame)!=1)valid=false;
+                submitted.store(sequence+1,std::memory_order_release);
+            }
+            consumer.join();Statistics concurrent{};dispatch(Stats,token,&concurrent);
+            require(valid&&concurrent.errors==0&&concurrent.dropped==0,"SPSC packet overwrite/color snapshot/concurrent render failed");
+            std::cout<<"PASS SPSC packets="<<packets<<" alternating-color-pixels=identical errors=0 dropped=0\n";
         }
         dispatch(Destroy,token,nullptr);event(token<<16); // stale command buffer lease is inert.
         passed++;
     }
-    require(passed==count&&count>=48&&negative==5,"fixture coverage");std::cout<<"PASS cases="<<passed<<" maxChannel="<<globalMax<<" differingPixels="<<allChanged<<" controls="<<negative<<" UnityCapture=UNMEASURED gameFPS=UNMEASURED\n";
+    require(passed==count&&count>=8&&(negative==5 || (negative==0 && count==8)),"fixture coverage");std::cout<<"PASS cases="<<passed<<" maxChannel="<<globalMax<<" differingPixels="<<allChanged<<" controls="<<negative<<" UnityCapture=UNMEASURED gameFPS=UNMEASURED\n";
     std::ofstream summary(out/"warp-summary.json");summary<<"{\"passed\":"<<passed<<",\"max_channel\":"<<globalMax<<",\"differing_pixels\":"<<allChanged<<",\"controls\":"<<negative<<",\"adapter\":\"WARP\",\"unity_capture\":\"UNMEASURED\",\"game_fps\":\"UNMEASURED\"}\n";return 0;
 }catch(HRESULT hr){std::cerr<<"FAIL HRESULT 0x"<<std::hex<<hr<<"\n";return 1;}catch(const std::exception& e){std::cerr<<"FAIL "<<e.what()<<"\n";return 1;}}

@@ -11,6 +11,7 @@ root=Path(__file__).resolve().parents[2]
 
 def main():
     p=argparse.ArgumentParser(description=__doc__)
+    p.add_argument('--milestone', choices=('m4d','m4e'), default='m4d')
     p.add_argument('--maps',default='hl50,wf,dd,sh')
     p.add_argument('--rt',default='3440x1440')
     p.add_argument('--output',type=Path,default=root/'out/direct-renderer/m4d/plans')
@@ -24,6 +25,7 @@ def main():
     settings,commands=bench.CFG2['ppGpuCam'];settings=dict(bench.CLEAN,**settings)
     assert settings['GpuDeco']==0 and settings['RunLod'] is False
     commands=list(commands)+['dr2 off','drfull off','drfull assert off']
+    if args.milestone == 'm4e':commands += ['drfull grab native']
     assert not any(c.startswith(('hidegroup','scriptskip','drx ','dr bench')) for c in commands)
     args.output.mkdir(parents=True,exist_ok=True)
     manifest=dict(workspace=str(root),branch='claude/drfull',launch=False,preset='ppGpuCam',rt=args.rt,
@@ -33,7 +35,7 @@ def main():
     for map_key in args.maps.split(','):
         path,at=bench.MAPS[map_key]
         for label in ('plan','pixel','A1','B1','B2','A2'):
-            candidate=label.startswith('B') or label=='pixel';name=f'm4d-{map_key}-{label}'
+            candidate=label.startswith('B') or label=='pixel';name=f'{args.milestone}-{map_key}-{label}'
             mid=list(bench.CFG_MID['ppGpuCam'])
             if label=='plan':
                 mid += ['drfull plan','drfull census','drfull assert off']
@@ -55,6 +57,21 @@ def main():
                 mid += ['drfull on' if candidate else 'drfull off','wait 2',assertion,'drfull state','cpuwindow begin']
                 post=['cpuwindow end',assertion,'drfull state','drfull off','drfull assert off','drfull state']+list(bench.CFG_POST['ppGpuCam'])
                 steps=bench.steps(path,at,name,commands,False,mid,post)
+            if args.milestone == 'm4e':
+                expanded=[]
+                for index, step in enumerate(steps):
+                    # Freeze the song during incremental setup. Without this,
+                    # candidate preparation advances to a different workload.
+                    freeze_setup = label not in ('plan','pixel') and step in ('drfull on','drfull off') and index > steps.index(f'waitsongpos {at} 400') and index < steps.index('fpsmark start')
+                    if freeze_setup:expanded.append('pause')
+                    if step == 'drfull on' and label == 'pixel':expanded.append('drfull colors')
+                    expanded.append(step)
+                    if step == 'drfull on':expanded.append('drfull wait')
+                    if freeze_setup:expanded.append('resume')
+                    if step == 'drfull plan':expanded.append('drfull colors')
+                    if step == 'framecmp grab d1':expanded.append('drfull colors')
+                    if step == 'drfull state':expanded.append('drfull why')
+                steps=expanded
             assert all(not (c.startswith('wait ') and float(c.split()[1])>=180) for c in steps)
             plan=dict(tag=name,steps=steps,settings=settings,timeout_min=15,
                       measurement=dict(scope='classification only; exclude from ABBA' if label=='plan' else 'paused pixels and off/off noise' if label=='pixel' else 'original shader native M4d' if candidate else 'Unity reference',

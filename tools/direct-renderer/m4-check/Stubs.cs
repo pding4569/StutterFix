@@ -110,6 +110,22 @@ namespace StutterFix
     }
     internal static partial class DirectFull
     {
+        static System.Collections.IEnumerator preparation;
+        static bool preparing, unityGrab;
+        static string ColorAudit() => "stub-color-audit";
+        static string WhyReplan() => "stub-order-reasons";
+        static string prepareStage = "stub";
+        static long prepareSlices, prepareMaxTicks, prepareWorkTicks;
+        static int prepareOriginal;
+        static readonly List<int> sources = new List<int>(), dormant = new List<int>();
+        internal static void FixturePrepare(System.Collections.IEnumerator steps, UnityEngine.Camera c)
+        {
+            preparation = steps; preparing = true; camera = preparationCamera = c; prepareOriginal = c.cullingMask;
+            hooks = new HarmonyLib.Harmony("fixture"); preparationObject = new UnityEngine.GameObject("prepare");
+            preparationDriver = preparationObject.AddComponent<DirectFullPreparation>();
+        }
+        internal static void FixturePublish() => preparing = false;
+        internal static bool FixturePreparing => preparing;
         static string Plan() => "fixture-plan-not-tested";
         static string Census() => "fixture-census-not-tested";
         internal static bool Rendering => false;
