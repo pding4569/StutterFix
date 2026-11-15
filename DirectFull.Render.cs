@@ -1,4 +1,4 @@
-#if DEV || AUTOTEST
+﻿#if DEV || AUTOTEST
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -137,7 +137,7 @@ namespace StutterFix
                 N.ValidateAbi();
                 int capacity = 0;
                 foreach (var r in renderers) if (InCameraScene(r, original)) capacity++;
-                capacity = Math.Max(1, capacity + canvasUnits.Count * 4);
+                capacity = Math.Max(1, capacity + canvasUnits.Count + 64); // 캔버스는 run 당 합성 1개(최대 캔버스 수)
                 var create = new N.Create { Resource = rt.GetNativeTexturePtr(), Capacity = (uint)capacity, Abi = 1 };
                 fullToken = N.Require(N.Op.Create, 0, &create);
                 foreach (var r in renderers)

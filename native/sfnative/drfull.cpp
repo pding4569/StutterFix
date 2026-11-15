@@ -71,12 +71,12 @@ struct Renderer {
     ComPtr<ID3D11Texture2D> grabTexture;ComPtr<ID3D11ShaderResourceView> grabView;D3D11_TEXTURE2D_DESC grabDesc{};DXGI_FORMAT grabFormat=DXGI_FORMAT_UNKNOWN;
     std::shared_ptr<Shader> compositor;
     Renderer(const CreateIn& in):capacity(in.capacity) {
-        require(in.resource&&in.abi==1&&capacity>0&&capacity<=100000);
+        require(in.resource&&in.abi==1&&capacity>0&&capacity<=4000000);
         static_cast<ID3D11DeviceChild*>(in.resource)->GetDevice(&device);require(device!=nullptr);
         require((device->GetCreationFlags()&D3D11_CREATE_DEVICE_SINGLETHREADED)==0);
         device->GetImmediateContext(&context);check(device->CreateDeferredContext(0,&deferred));
         poses.resize(capacity);list.reserve(capacity*4);segs.reserve(131072);draws.reserve(capacity*4);
-        for(auto& p:ring){p.poses.reserve(capacity);p.poseIds.reserve(capacity);p.ids.reserve(capacity*4);p.offsets.reserve(capacity*4+1);p.bytes.reserve(size_t(capacity)*1024);p.list.reserve(capacity*4);p.segs.reserve(131072);}
+        for(auto& p:ring){p.poses.reserve(capacity);p.poseIds.reserve(capacity);p.ids.reserve(capacity*4);p.offsets.reserve(capacity*4+1);p.bytes.reserve(size_t(std::min(capacity,8192u))*1024);p.list.reserve(capacity*4);p.segs.reserve(131072);}
     }
     int program(const ProgramIn& in) {
         auto s=std::make_shared<Shader>();require(in.vs&&in.ps&&in.vsBytes>=32&&in.psBytes>=32);
