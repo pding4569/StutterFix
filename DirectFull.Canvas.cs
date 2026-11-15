@@ -33,9 +33,12 @@ namespace StutterFix
             internal bool Moved => LayerLease.Moved;
             internal string Reason;
             internal Entry Entry;
-            internal bool FullDirty = true, VisibilityDirty;
+            internal bool FullDirty = true, VisibilityDirty, StateReady;
+            internal readonly HashSet<CanvasRenderer> PotentialSet = new HashSet<CanvasRenderer>();
             internal readonly HashSet<CanvasRenderer> DirtyGraphics = new HashSet<CanvasRenderer>();
             internal readonly Dictionary<CanvasRenderer, byte> GraphicState = new Dictionary<CanvasRenderer, byte>();
+            internal readonly Dictionary<Graphic, UnityEngine.Events.UnityAction> GraphicLocal = new Dictionary<Graphic, UnityEngine.Events.UnityAction>();
+            internal readonly Dictionary<Graphic, UnityEngine.Events.UnityAction<bool>> GraphicCull = new Dictionary<Graphic, UnityEngine.Events.UnityAction<bool>>();
         }
         sealed class CanvasRun
         {
@@ -68,6 +71,14 @@ namespace StutterFix
         static Matrix4x4 canvasView; static bool canvasViewValid;
         static readonly List<CanvasUnit> dirtyCanvases = new List<CanvasUnit>();
         static readonly Dictionary<UnityEngine.Object, List<CanvasUnit>> canvasOwners = new Dictionary<UnityEngine.Object, List<CanvasUnit>>();
+        static readonly Dictionary<string, long> canvasFullReasons = new Dictionary<string, long>();
+        static void QueueCanvasWhy(CanvasUnit u, string why) { canvasFullReasons.TryGetValue(why, out long n); canvasFullReasons[why] = n + 1; QueueCanvas(u); }
+        internal static string CanvasFullReasonsTop()
+        {
+            var list = new List<KeyValuePair<string, long>>(canvasFullReasons); list.Sort((a, b) => b.Value.CompareTo(a.Value));
+            var sb = new StringBuilder(); for (int i = 0; i < list.Count && i < 6; i++) sb.Append(list[i].Key).Append(':').Append(list[i].Value).Append(';');
+            return sb.Length == 0 ? "-" : sb.ToString();
+        }
         static void QueueCanvas(CanvasUnit u)
         {
             if (drawingAuxiliary) return;
@@ -79,12 +90,13 @@ namespace StutterFix
         static void QueueCanvasGraphic(CanvasUnit u, CanvasRenderer cr)
         {
             if (drawingAuxiliary) return;
+            canvasGraphicBounds.Remove(cr);
             if (!u.FullDirty) u.DirtyGraphics.Add(cr);
             canvasGraphicSignals++;
             if (u.Queued) return;
             u.Queued = true; dirtyCanvases.Add(u); canvasDirty = true;
         }
-        static long canvasGraphicSignals, canvasIncrementalReplans, canvasFullReplans, canvasVisibilityReplans;
+        static long canvasGraphicSignals, canvasIncrementalReplans, canvasFullReplans, canvasVisibilityReplans, canvasMaterialSignalsSkipped;
         // 캔버스 노드가 움직이기만 한 경우: 보임 여부만 다시 보고 재질 색인·사유는 다시 만들지 않는다.
         static void QueueCanvasVisibility(CanvasUnit u)
         {
@@ -128,9 +140,20 @@ namespace StutterFix
             var graphic = t.GetComponent<Graphic>();
             if (graphic)
             {
-                graphic.RegisterDirtyMaterialCallback(u.GraphicSignal); graphic.RegisterDirtyVerticesCallback(u.GraphicSignal);
-                graphic.RegisterDirtyLayoutCallback(u.GraphicSignal);
-                if (graphic is MaskableGraphic mg) mg.onCullStateChanged.AddListener(u.CullSignal);
+                // 재질이 바뀌면 캔버스 전체, 정점·배치·컬링 변화는 그 그래픽만(그래픽마다 콜백 하나씩).
+                graphic.RegisterDirtyMaterialCallback(u.GraphicSignal);
+                if (cr)
+                {
+                    var local = cr; UnityEngine.Events.UnityAction one = () => QueueCanvasGraphic(u, local); UnityEngine.Events.UnityAction<bool> cull = _ => QueueCanvasGraphic(u, local);
+                    u.GraphicLocal[graphic] = one; u.GraphicCull[graphic] = cull;
+                    graphic.RegisterDirtyVerticesCallback(one); graphic.RegisterDirtyLayoutCallback(one);
+                    if (graphic is MaskableGraphic mg) mg.onCullStateChanged.AddListener(cull);
+                }
+                else
+                {
+                    graphic.RegisterDirtyVerticesCallback(u.GraphicSignal); graphic.RegisterDirtyLayoutCallback(u.GraphicSignal);
+                    if (graphic is MaskableGraphic mg) mg.onCullStateChanged.AddListener(u.CullSignal);
+                }
                 IndexCanvas(graphic, u);
             }
             for (int i = 0; i < t.childCount; i++) GatherCanvas(u, t.GetChild(i), false);
@@ -152,12 +175,32 @@ namespace StutterFix
                 Mathf.Abs(w.m20) * e.x + Mathf.Abs(w.m21) * e.y + Mathf.Abs(w.m22) * e.z);
             return GeometryUtility.TestPlanesAABB(planes, new Bounds(w.MultiplyPoint3x4(bounds.center), extent * 2));
         }
+        static bool canvasFrustumTest = true;
+        static readonly List<(CanvasRenderer, byte)> canvasVisChanges = new List<(CanvasRenderer, byte)>();
+        // 그래픽의 월드 경계는 그래픽이 바뀌거나(정점) 움직일 때만 다시 구한다. 카메라 이동에는 저장한 경계로 평면 검사만.
+        static readonly Dictionary<CanvasRenderer, Bounds> canvasGraphicBounds = new Dictionary<CanvasRenderer, Bounds>();
+        static bool CanvasGraphicVisible(CanvasRenderer cr)
+        {
+            if (!canvasFrustumTest) return true;
+            if (!canvasGraphicBounds.TryGetValue(cr, out var b))
+            {
+                var mesh = cr.GetMesh(); if (!mesh) return false;
+                var bounds = mesh.bounds; var w = cr.transform.localToWorldMatrix; var e = bounds.extents;
+                var extent = new Vector3(Mathf.Abs(w.m00) * e.x + Mathf.Abs(w.m01) * e.y + Mathf.Abs(w.m02) * e.z,
+                    Mathf.Abs(w.m10) * e.x + Mathf.Abs(w.m11) * e.y + Mathf.Abs(w.m12) * e.z,
+                    Mathf.Abs(w.m20) * e.x + Mathf.Abs(w.m21) * e.y + Mathf.Abs(w.m22) * e.z);
+                b = new Bounds(w.MultiplyPoint3x4(bounds.center), extent * 2); canvasGraphicBounds[cr] = b;
+            }
+            return GeometryUtility.TestPlanesAABB(canvasPlanes, b);
+        }
         static void UpdateCanvasView(Camera view)
         {
             var signature = view.projectionMatrix * view.worldToCameraMatrix;
             if (canvasViewValid && canvasView.Equals(signature)) return;
             canvasView = signature; canvasViewValid = true; GeometryUtility.CalculateFrustumPlanes(signature, canvasPlanes);
-            foreach (var u in potentialCanvases) QueueCanvas(u);
+            // 카메라는 거의 매 프레임 움직인다. 화면 안/밖 판정을 하지 않고 "그릴 수 있는 그래픽이 있으면 live" 로 보수적으로 둔다
+            // (화면 밖 캔버스를 보조 카메라가 그려도 픽셀은 없다). 그래서 카메라 이동으로 캔버스를 다시 보지 않는다.
+            if (canvasFrustumTest) foreach (var u in potentialCanvases) QueueCanvasVisibility(u);
         }
         static bool CanvasInMask(Canvas c, int original)
         {
@@ -223,7 +266,7 @@ namespace StutterFix
                 if (!c.isActiveAndEnabled) { dormantCanvases.Add(c); canvasTotal++; continue; }
                 if (!CanvasInMask(c, original)) continue;
                 var u = new CanvasUnit { Canvas = c };
-                u.Signal = () => QueueCanvas(u); u.GraphicSignal = () => QueueCanvas(u); u.CullSignal = _ => QueueCanvas(u);
+                u.Signal = () => QueueCanvasWhy(u, "lifetime"); u.GraphicSignal = () => QueueCanvasWhy(u, "graphic-callback"); u.CullSignal = _ => QueueCanvasWhy(u, "cull-callback");
                 canvasUnits.Add(u); GatherCanvas(u, c.transform, true);
                 if ((u.OriginalMask & original) == 0) continue;
                 canvasTotal++; u.Active = c.isActiveAndEnabled; if (u.Active) canvasActive++;
@@ -232,7 +275,7 @@ namespace StutterFix
                     canvasGraphics++;
                     bool potential = c.isActiveAndEnabled && LiveGraphic(cr);
                     if (potential) { u.PotentialGraphics++; canvasPotentialGraphics++; }
-                    if (potential && VisibleCanvasGraphic(cr, canvasPlanes)) { canvasLiveGraphics++; u.LiveGraphics++; u.Live = true; }
+                    if (potential && CanvasGraphicVisible(cr)) { canvasLiveGraphics++; u.LiveGraphics++; u.Live = true; }
                     else canvasInactiveGraphics++;
                 }
                 if (u.PotentialGraphics != 0) potentialCanvases.Add(u);
@@ -280,9 +323,13 @@ namespace StutterFix
             if (obj is Canvas c && dormantCanvases.Contains(c) && c.isActiveAndEnabled) { pendingCanvasPromotions.Add(c); return; }
             if (canvasOwners.TryGetValue(obj, out var owners))
             {
-                if (obj is Transform && kind == DirectSequenceChanges.Pose) { canvasPoseSignals++; foreach (var u in owners) QueueCanvasVisibility(u); return; }
+                if (obj is Transform && kind == DirectSequenceChanges.Pose) { canvasPoseSignals++; foreach (var u in owners) { foreach (var pcr in u.PotentialSet) canvasGraphicBounds.Remove(pcr); QueueCanvasVisibility(u); } return; }
+                // 재질 속성·텍스처 쓰기는 캔버스의 보임/순서를 바꾸지 않는다(보조 카메라가 그대로 다시 그림) → 재확인하지 않는다.
+                if ((obj is Material || obj is UnityEngine.Texture) && kind != DirectSequenceChanges.Hierarchy) { canvasMaterialSignalsSkipped++; return; }
                 if (obj is CanvasRenderer crw && kind != DirectSequenceChanges.Hierarchy && writer == "SetAlpha") { foreach (var u in owners) QueueCanvasGraphic(u, crw); return; }
-                foreach (var u in owners) QueueCanvas(u);
+                if (obj is Graphic gw && kind != DirectSequenceChanges.Hierarchy && writer != null && writer.IndexOf("aterial", StringComparison.Ordinal) < 0 && gw.canvasRenderer) { var gcr = gw.canvasRenderer; foreach (var u in owners) QueueCanvasGraphic(u, gcr); return; }
+                string why = obj.GetType().Name + "." + writer;
+                foreach (var u in owners) QueueCanvasWhy(u, why);
                 if (kind == DirectSequenceChanges.Hierarchy) MarkRescan("Canvas:259");
             }
         }
@@ -295,7 +342,7 @@ namespace StutterFix
                 if (!CanvasInMask(c, removedMask)) continue;
                 dormantCanvases.Remove(c);
                 var u = new CanvasUnit { Canvas = c };
-                u.Signal = () => QueueCanvas(u); u.GraphicSignal = () => QueueCanvas(u); u.CullSignal = _ => QueueCanvas(u);
+                u.Signal = () => QueueCanvasWhy(u, "lifetime"); u.GraphicSignal = () => QueueCanvasWhy(u, "graphic-callback"); u.CullSignal = _ => QueueCanvasWhy(u, "cull-callback");
                 canvasUnits.Add(u); GatherCanvas(u, c.transform, true);
                 canvasGraphics += u.Graphics.Count; canvasInactiveGraphics += u.Graphics.Count;
                 IndexCanvasMaterials(u); u.Reason = CanvasReason(u); u.Isolated = PhysicsDependent(u);
@@ -312,31 +359,45 @@ namespace StutterFix
                 u.Queued = false;
                 if (!u.Canvas) { MarkRescan("Canvas:268"); continue; }
                 bool active = u.Canvas.isActiveAndEnabled; int graphics = 0, potential = 0;
-                bool incremental = !u.FullDirty && !u.VisibilityDirty && active == u.Active && u.GraphicState.Count == u.Graphics.Count && u.Graphics.Count != 0;
+                bool incremental = !u.FullDirty && active == u.Active && u.StateReady;
                 if (incremental)
                 {
                     potential = u.PotentialGraphics; graphics = u.LiveGraphics;
                     foreach (var cr in u.DirtyGraphics)
                     {
-                        if (!u.GraphicState.TryGetValue(cr, out byte was)) { incremental = false; break; }
-                        byte now = 0; if (active && cr && LiveGraphic(cr)) { now |= 1; if (VisibleCanvasGraphic(cr, canvasPlanes)) now |= 2; }
+                        if (!u.GraphicState.TryGetValue(cr, out byte was)) continue; // 이 캔버스가 추적하지 않는 그래픽(파괴됨·다른 캔버스 소속)은 보임 수에 들어가지 않는다
+                        byte now = 0; if (active && cr && LiveGraphic(cr)) { now |= 1; if (CanvasGraphicVisible(cr)) now |= 2; }
                         potential += ((now & 1) != 0 ? 1 : 0) - ((was & 1) != 0 ? 1 : 0);
                         graphics += ((now & 2) != 0 ? 1 : 0) - ((was & 2) != 0 ? 1 : 0);
-                        u.GraphicState[cr] = now;
+                        u.GraphicState[cr] = now; if ((now & 1) != 0) u.PotentialSet.Add(cr); else u.PotentialSet.Remove(cr);
+                    }
+                    if (u.VisibilityDirty)
+                    {
+                        // 카메라가 움직였다: 그릴 수 있는 그래픽(PotentialSet)만 화면 안/밖을 다시 본다.
+                        foreach (var cr in u.PotentialSet)
+                        {
+                            if (!cr || !u.GraphicState.TryGetValue(cr, out byte was)) continue;
+                            bool vis = CanvasGraphicVisible(cr); bool had = (was & 2) != 0;
+                            if (vis != had) { graphics += vis ? 1 : -1; canvasVisChanges.Add((cr, (byte)(vis ? (was | 2) : (was & ~2)))); }
+                        }
+                        foreach (var ch in canvasVisChanges) u.GraphicState[ch.Item1] = ch.Item2;
+                        canvasVisChanges.Clear(); canvasVisibilityReplans++;
                     }
                 }
                 if (!incremental)
                 {
-                    graphics = 0; potential = 0; u.GraphicState.Clear();
+                    foreach (var pcr in u.Graphics) if (!ReferenceEquals(pcr, null)) canvasGraphicBounds.Remove(pcr);
+                    graphics = 0; potential = 0; u.GraphicState.Clear(); u.PotentialSet.Clear();
                     foreach (var cr in u.Graphics)
                     {
-                        byte now = 0; if (active && LiveGraphic(cr)) { now |= 1; potential++; if (VisibleCanvasGraphic(cr, canvasPlanes)) { now |= 2; graphics++; } }
-                        if (cr) u.GraphicState[cr] = now;
+                        byte now = 0; if (active && LiveGraphic(cr)) { now |= 1; potential++; if (CanvasGraphicVisible(cr)) { now |= 2; graphics++; } }
+                        if (cr) { u.GraphicState[cr] = now; if ((now & 1) != 0) u.PotentialSet.Add(cr); }
                     }
-                    if (u.FullDirty || u.GraphicState.Count == 0) canvasFullReplans++; else canvasVisibilityReplans++;
+                    u.StateReady = true;
+                    canvasFullReplans++;
                 }
                 else canvasIncrementalReplans++;
-                u.DirtyGraphics.Clear(); bool wasFull = u.FullDirty || (!incremental && !u.VisibilityDirty); u.FullDirty = false; u.VisibilityDirty = false;
+                u.DirtyGraphics.Clear(); bool wasFull = u.FullDirty || !incremental; u.FullDirty = false; u.VisibilityDirty = false;
                 if (u.PotentialGraphics == 0 && potential != 0) potentialCanvases.Add(u);
                 else if (u.PotentialGraphics != 0 && potential == 0) potentialCanvases.Remove(u);
                 canvasPotentialGraphics += potential - u.PotentialGraphics; u.PotentialGraphics = potential;
@@ -519,14 +580,16 @@ namespace StutterFix
                     foreach (var cr in u.Graphics) if (cr)
                     {
                         var g = cr.GetComponent<Graphic>(); if (g) { g.UnregisterDirtyMaterialCallback(u.GraphicSignal); g.UnregisterDirtyVerticesCallback(u.GraphicSignal);
-                            g.UnregisterDirtyLayoutCallback(u.GraphicSignal); if (g is MaskableGraphic mg) mg.onCullStateChanged.RemoveListener(u.CullSignal); }
+                            g.UnregisterDirtyLayoutCallback(u.GraphicSignal); if (g is MaskableGraphic mg) mg.onCullStateChanged.RemoveListener(u.CullSignal);
+                            if (u.GraphicLocal.TryGetValue(g, out var one)) { g.UnregisterDirtyVerticesCallback(one); g.UnregisterDirtyLayoutCallback(one); }
+                            if (u.GraphicCull.TryGetValue(g, out var cull) && g is MaskableGraphic mg2) mg2.onCullStateChanged.RemoveListener(cull); }
                     }
                 }
                 foreach (var l in canvasLifetimes) if (l) { l.Changed = null; UnityEngine.Object.Destroy(l); }
                 foreach (var r in canvasRuns) { if (r.Black) { r.Black.Release(); UnityEngine.Object.Destroy(r.Black); } if (r.White) { r.White.Release(); UnityEngine.Object.Destroy(r.White); } }
                 if (auxiliaryObject) UnityEngine.Object.Destroy(auxiliaryObject);
                 if (canvasDepth) { canvasDepth.Release(); UnityEngine.Object.Destroy(canvasDepth); canvasDepth = null; }
-                auxiliary = null; auxiliaryObject = null; dormantCanvases.Clear(); canvasUnits.Clear(); canvasRuns.Clear(); canvasRendererSources.Clear(); canvasBlendReasons.Clear(); canvasOwned.Clear(); canvasIndex.Clear(); canvasOwners.Clear(); dirtyCanvases.Clear(); potentialCanvases.Clear(); canvasViewValid = false; canvasLifetimes.Clear();
+                auxiliary = null; auxiliaryObject = null; dormantCanvases.Clear(); canvasGraphicBounds.Clear(); canvasUnits.Clear(); canvasRuns.Clear(); canvasRendererSources.Clear(); canvasBlendReasons.Clear(); canvasOwned.Clear(); canvasIndex.Clear(); canvasOwners.Clear(); dirtyCanvases.Clear(); potentialCanvases.Clear(); canvasViewValid = false; canvasLifetimes.Clear();
                 auxiliaryLayer = parkingLayer = recordingRun = -1; runCount = 0; auxiliaryDraws = auxiliaryTicks = auxiliaryMaxTicks = 0;
             }
             finally { drawingAuxiliary = false; }
