@@ -81,6 +81,7 @@ namespace StutterFix
         internal static string Command(string arg)
         {
             if (arg.Trim().StartsWith("drawgpu", StringComparison.OrdinalIgnoreCase)) return DrawGpuCommand(arg.Trim().Substring(7).Trim());
+            if (arg.Trim().StartsWith("resources ", StringComparison.OrdinalIgnoreCase)) return ResourceCommand(arg.Trim().Substring(10).Trim());
             if (arg.Trim().StartsWith("probe ", StringComparison.OrdinalIgnoreCase)) return ProbeCommand(arg.Trim().Substring(6));
             if (arg.Trim().StartsWith("pressure mip ", StringComparison.OrdinalIgnoreCase)) return PressureMip(int.Parse(arg.Trim().Substring(13), System.Globalization.CultureInfo.InvariantCulture));
             switch (arg.Trim().ToLowerInvariant())

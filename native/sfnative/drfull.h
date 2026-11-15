@@ -5,7 +5,12 @@ namespace drfull {
 // All pointers are borrowed only for the duration of dispatch. Native owns copies
 // and COM references. Opcodes are versioned behind ONE appended export so old
 // export hints as well as ordinals remain stable.
-enum Op { Create, Program, Geometry, Draw, Commit, Event, Stats, Destroy, Error, Abi, Composite, Perf, CommitPacked, CommitActive, BatchPerf, GeometryCpu, CommitActiveWorld, UploadPerf, GpuPerf, TimelineEvent, TimelinePerf, MemoryPerf, Configure, SubmissionPerf, DrawProbeConfigure, DrawProbeRead, TextureProbe };
+enum Op { Create, Program, Geometry, Draw, Commit, Event, Stats, Destroy, Error, Abi, Composite, Perf, CommitPacked, CommitActive, BatchPerf, GeometryCpu, CommitActiveWorld, UploadPerf, GpuPerf, TimelineEvent, TimelinePerf, MemoryPerf, Configure, SubmissionPerf, DrawProbeConfigure, DrawProbeRead, TextureProbe, ResourceConfigure, ResourcePerf, DrawProbeDetailRead, DrawProbeStatus, ReplaceDraw };
+// M4k append-only payloads: old callers and export ordinals remain unchanged.
+struct ResourceConfiguration { uint32_t skipGrab,pretransform,stableUploads,trimBindings; };
+struct ResourcePerformance { uint64_t discardMaps,noOverwriteMaps,defaultUpdates,defaultBytes,grabSkips,srvUnbinds,constantCandidates,constantVisible,ringRotations,retiredDraws; };
+struct DrawProbeDetail { uint32_t index;double prepareGpuUs,prepareConstantsUs,grabUs; };
+struct DrawProbeState { uint64_t lastVisible,maxVisible,emptyWindows,sampledSegments,completedSegments; };
 struct DrawProbeConfiguration { uint32_t enabled,first,count,interval; };
 struct DrawProbeRow {
     uint64_t frame,usage,budget;double us,segmentUs;
@@ -44,6 +49,7 @@ struct DrawIn {
     uint32_t grab,sprite; // grab: 0 none, 1 unnamed/per-draw, >=2 frame/name ID; sprite bits: color, verified batch.
     float center[3],extent[3];
 };
+struct DrawReplacement { uint32_t previous; DrawIn draw; };
 struct Pose { float world[16],inverse[16]; };
 struct Frame {
     float vp[16],view[16],projection[16];

@@ -14,6 +14,7 @@ static class Program
     static unsafe void Main(string[] args)
     {
         string root=Path.GetFullPath(args[0]);
+        Check(sizeof(N.ResourceConfiguration)==16 && sizeof(N.ResourcePerformance)==80 && sizeof(N.DrawProbeDetail)==32 && sizeof(N.DrawProbeState)==40 && sizeof(N.DrawReplacement)==sizeof(N.Draw)+8,"M4k appended ABI layout");
         IntPtr library=NativeLibrary.Load(Path.Combine(root,"native/sfnative.dll"));
         NativeLibrary.SetDllImportResolver(typeof(N).Assembly,(name,assembly,path)=>name=="sfnative"?library:IntPtr.Zero);
         N.ValidateAbi();

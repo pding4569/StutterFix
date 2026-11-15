@@ -7,7 +7,11 @@ namespace StutterFix
 {
     internal static unsafe class DirectFullNative
     {
-        internal enum Op { Create, Program, Geometry, Draw, Commit, Event, Stats, Destroy, Error, Abi, Composite, Perf, CommitPacked, CommitActive, BatchPerf, GeometryCpu, CommitActiveWorld, UploadPerf, GpuPerf, TimelineEvent, TimelinePerf, MemoryPerf, Configure, SubmissionPerf, DrawProbeConfigure, DrawProbeRead, TextureProbe }
+        internal enum Op { Create, Program, Geometry, Draw, Commit, Event, Stats, Destroy, Error, Abi, Composite, Perf, CommitPacked, CommitActive, BatchPerf, GeometryCpu, CommitActiveWorld, UploadPerf, GpuPerf, TimelineEvent, TimelinePerf, MemoryPerf, Configure, SubmissionPerf, DrawProbeConfigure, DrawProbeRead, TextureProbe, ResourceConfigure, ResourcePerf, DrawProbeDetailRead, DrawProbeStatus, ReplaceDraw }
+        [StructLayout(LayoutKind.Sequential)] internal struct ResourceConfiguration { internal uint SkipGrab, Pretransform, StableUploads, TrimBindings; }
+        [StructLayout(LayoutKind.Sequential)] internal struct ResourcePerformance { internal ulong DiscardMaps, NoOverwriteMaps, DefaultUpdates, DefaultBytes, GrabSkips, SrvUnbinds, ConstantCandidates, ConstantVisible, RingRotations, RetiredDraws; }
+        [StructLayout(LayoutKind.Sequential)] internal struct DrawProbeDetail { internal uint Index; internal double PrepareGpuUs, PrepareConstantsUs, GrabUs; }
+        [StructLayout(LayoutKind.Sequential)] internal struct DrawProbeState { internal ulong LastVisible, MaxVisible, EmptyWindows, SampledSegments, CompletedSegments; }
         [StructLayout(LayoutKind.Sequential)] internal struct DrawProbeConfiguration { internal uint Enabled, First, Count, Interval; }
         [StructLayout(LayoutKind.Sequential)] internal struct DrawProbeRow
         {
@@ -67,6 +71,7 @@ namespace StutterFix
             internal byte* Constants; internal uint ConstantBytes, Pose, Grab, Sprite;
             internal fixed float Center[3], Extent[3];
         }
+        [StructLayout(LayoutKind.Sequential)] internal struct DrawReplacement { internal uint Previous; internal Draw Draw; }
         [StructLayout(LayoutKind.Sequential)] internal struct Pose { internal Matrix4x4 World, Inverse; }
         [StructLayout(LayoutKind.Sequential)] internal struct Frame
         {

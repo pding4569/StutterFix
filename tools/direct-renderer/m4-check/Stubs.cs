@@ -114,6 +114,7 @@ namespace StutterFix
         static System.Collections.IEnumerator preparation;
         static bool preparing, unityGrab, skipExplicit, allExplicitPasses, localPrecision, deferredSubmission, legacyConstants, bakedParticles;
         static string DrawGpuCommand(string arg) => "drawgpu stub";
+        static string ResourceCommand(string arg) => "resources stub";
         static string ProbeCommand(string arg) => "stub-probe";
         static readonly System.Collections.Generic.List<object> probeRenderers = new System.Collections.Generic.List<object>();
         static void RestoreProbe() { }

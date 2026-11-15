@@ -52,6 +52,9 @@ namespace StutterFix
             internal int[] States = new int[29]; internal long ConfigHash; internal bool HasRendererColor, HasFlip;
             internal S.Stage[] Stages; internal bool ConstantsQueued;
             internal Entry Entry;
+            internal (S.Variable Variable, int Offset)[] MaterialWrites;
+            internal int[] TintOffsets;
+            internal bool StatesInitialized;
         }
         sealed class Entry
         {
@@ -293,6 +296,7 @@ namespace StutterFix
             fullToken = N.Require(N.Op.Create, 0, &create);
             var config = new N.Configuration { Submission = deferredSubmission ? 1u : 0u, ConstantRing = legacyConstants ? 0u : 1u };
             N.Require(N.Op.Configure, fullToken, &config);
+            var resources = resourceConfig; N.Require(N.Op.ResourceConfigure, fullToken, &resources);
             var probe = drawProbeConfig; N.Require(N.Op.DrawProbeConfigure, fullToken, &probe);
         }
         static Source AddSource(Renderer r)
@@ -419,6 +423,15 @@ namespace StutterFix
             if (rendering && kind == DirectSequenceChanges.Hierarchy && !ReferenceEquals(obj, null)
                 && canvasIndex.Contains(obj)) MarkRescan("Render:312-canvas");
         }
+        static void RetirePasses(Source source)
+        {
+            if (source.Passes == null) return;
+            foreach (var old in source.Passes)
+            {
+                if (old.NativeId != 0) { nativeCount--; var retire = new N.DrawReplacement { Previous = (uint)old.NativeId }; N.Require(N.Op.ReplaceDraw, fullToken, &retire); }
+                else fallbackCount--;
+            }
+        }
         static void Refresh(Source s, bool initial)
         {
             if (!initial) { collectSignals++; if (s.TintOnly) collectTintSignals++; else collectFullSignals++; }
@@ -432,12 +445,7 @@ namespace StutterFix
                     fixed (byte* data = b.Bytes)
                     {
                         ((Vector4*)data)[0] = b.HasRendererColor ? Color.white : tint;
-                        int bi = 0;
-                        foreach (var stage in b.Stages) foreach (var cb in stage.Buffers)
-                        {
-                            int offset = (int)b.Buffers[bi++].Offset;
-                            foreach (var v in cb.Variables) if (v.Name == "_RendererColor") *(Vector4*)(data + offset + v.Offset) = tint;
-                        }
+                        foreach (int offset in b.TintOffsets) *(Vector4*)(data + offset) = tint;
                     }
                     if (!b.ConstantsQueued) { b.ConstantsQueued = true; changedConstants.Add(b); }
                 }
@@ -466,7 +474,7 @@ namespace StutterFix
             if (s.Filter && s.Filter.sharedMesh) Index(s.Filter.sharedMesh, s);
             if (s.Sprite && !s.Sprite.sprite)
             {
-                if (s.Passes != null) foreach (var old in s.Passes) { if (old.NativeId != 0) nativeCount--; else fallbackCount--; }
+                RetirePasses(s);
                 bool hadDraws = s.Passes != null && s.Passes.Length != 0;
                 s.Passes = Array.Empty<Bound>(); s.MaterialCount = s.Materials.Count;
                 if (hadDraws) DirtyOrder(s, "empty-draw"); else avoidedEmptyReplans++;
@@ -487,7 +495,7 @@ namespace StutterFix
                     }
                     if (!structure) { if (s.Mask) avoidedMaskReplans++; UpdateKey(s); return; }
                 }
-                if (!initial) { foreach (var old in s.Passes) { if (old.NativeId != 0) nativeCount--; else fallbackCount--; } DirtyOrder(s, "structure"); }
+                if (!initial) { RetirePasses(s); DirtyOrder(s, "structure"); }
             }
             var passes = new List<Bound>();
             if (s.Mask)
@@ -559,6 +567,7 @@ namespace StutterFix
             var b = new Bound { Source = s, Material = m, UnityShader = m ? m.shader : null, Shader = shader, Pass = pass, Slot = slot, MaskKind = maskKind, Variant = v, Stages = new[] { v.Vs, v.Ps } };
             b.Entry = new Entry { Source = s, Draw = b, Slot = slot };
             var buffers = new List<N.Buffer>(); var patches = new List<N.Patch>(); int offset = 16;
+            var writes = new List<(S.Variable Variable, int Offset)>(); var tintOffsets = new List<int>();
             foreach (var stage in b.Stages)
             {
                 uint kind = ReferenceEquals(stage, v.Vs) ? 0u : 1u;
@@ -569,6 +578,8 @@ namespace StutterFix
                     {
                         int dynamic = Dynamic(x.Name); if ((dynamic == 2 || dynamic == 7) && !s.NeedsInverse) { if (s.PoseIndex >= 0) inversePoseCount++; s.NeedsInverse = true; if (s.PoseIndex >= 0 && inverseRequired.IsCreated) { inverseRequired[s.PoseIndex] = 1; poses[s.PoseIndex] = default; } }
                         if (dynamic != 0) patches.Add(new N.Patch { Offset = (uint)(offset + x.Offset), Kind = (uint)dynamic });
+                        else writes.Add((x, offset + x.Offset));
+                        if (x.Name == "_RendererColor") tintOffsets.Add(offset + x.Offset);
                         if (x.Name == "_RendererColor") b.HasRendererColor = true;
                         if (shader.Name == "Sprites/Default" && s.Sprite && (x.Name == "_RendererColor" || x.Name == "_Flip")) patches.Add(new N.Patch { Offset = (uint)(offset + x.Offset), Kind = x.Name == "_RendererColor" ? 16u : 17u });
                         if (x.Name == "_Flip") b.HasFlip = true;
@@ -577,6 +588,7 @@ namespace StutterFix
                 }
             }
             b.Buffers = buffers.ToArray(); b.Patches = patches.ToArray(); b.Bytes = new byte[offset]; b.Previous = new byte[offset];
+            b.MaterialWrites = writes.ToArray(); b.TintOffsets = tintOffsets.ToArray();
             b.Textures = new N.Texture[v.Vs.Textures.Length + v.Ps.Textures.Length]; b.TextureObjects = new UnityEngine.Texture[b.Textures.Length];
             b.Geometry = GeometryFor(s, v, slot); Fill(b); return b;
         }
@@ -604,9 +616,13 @@ namespace StutterFix
             var s = b.Source; ReadBlock(s, b.Slot); var mpb = Block(s); long hash = 17;
             for (int i = 0; i < 29; i++)
             {
-                var state = b.Pass.States[i]; float value = state.Name.Length == 0 ? state.Value : Float(b, state.Id, state.Name, state.Value);
+                var state = b.Pass.States[i]; if (b.StatesInitialized && state.Name.Length == 0) continue;
+                float value = state.Name.Length == 0 ? state.Value : Float(b, state.Id, state.Name, state.Value);
                 b.States[i] = i == 11 ? checked((int)(value * 1000000f)) : checked((int)value);
             }
+            // Mask overrides modify these slots; restore their original values
+            // on the next refresh even when the serialized states are static.
+            b.StatesInitialized = b.MaskKind == 0 && !(s.Sprite && s.Sprite.maskInteraction != SpriteMaskInteraction.None);
             int interaction = s.Sprite ? (int)s.Sprite.maskInteraction : 0;
             if (b.MaskKind != 0 || interaction != 0)
             {
@@ -639,20 +655,17 @@ namespace StutterFix
             {
                 Color c = s.Sprite && !b.HasRendererColor ? s.Sprite.color : Color.white;
                 ((Vector4*)data)[0] = c;
-                int bi = 0;
                 foreach (var stage in b.Stages) foreach (var cb in stage.Buffers)
                 {
-                    if (mpb.HasConstantBuffer(Shader.PropertyToID(cb.Name))) throw new InvalidOperationException("external MPB constant buffer requires an explicit buffer lease: " + cb.Name);
-                    uint offset = b.Buffers[bi++].Offset;
-                    foreach (var x in cb.Variables)
-                    {
-                        if (Dynamic(x.Name) != 0) continue;
-                        void* dst = data + offset + x.Offset;
+                    if (mpb.HasConstantBuffer(cb.Id)) throw new InvalidOperationException("external MPB constant buffer requires an explicit buffer lease: " + cb.Name);
+                }
+                foreach (var write in b.MaterialWrites)
+                {
+                        var x = write.Variable; void* dst = data + write.Offset;
                         if (x.Matrix != 0) { if (x.Rows != 4 || x.Cols != 4) throw new InvalidOperationException("unverified matrix shape"); *(Matrix4x4*)dst = mpb.HasProperty(x.Id) ? mpb.GetMatrix(x.Id) : b.Material && b.Material.HasProperty(x.Id) ? b.Material.GetMatrix(x.Id) : Shader.GetGlobalMatrix(x.Id); continue; }
                         if (x.Type == 1) { if (x.Cols != 1) throw new InvalidOperationException("unverified integer vector"); *(int*)dst = Integer(b, x); continue; }
                         Vector4 value = Value(b, x);
                         for (int k = 0; k < x.Cols; k++) ((float*)dst)[k] = value[k];
-                    }
                 }
             }
             var localBounds = s.R.localBounds;
@@ -677,7 +690,9 @@ namespace StutterFix
                         Patches = patches, PatchCount = (uint)b.Patches.Length, Textures = textures, TextureCount = (uint)b.Textures.Length,
                         Constants = bytes, ConstantBytes = (uint)b.Bytes.Length, Pose = (uint)s.Index, Grab = b.Pass.Grab ? GrabId(b.Pass.GrabName) : 0u, Sprite = (s.Sprite || s.Mask ? 1u : 0u) | (Batchable(b) ? 2u : 0u) };
                     for (int i = 0; i < 3; i++) { draw.Center[i] = localBounds.center[i]; draw.Extent[i] = localBounds.extents[i]; }
-                    b.NativeId = N.Require(N.Op.Draw, fullToken, &draw); DirtyOrder(s, "draw-rebind"); drawRebinds++;
+                    if (b.NativeId != 0) { var replacement = new N.DrawReplacement { Previous = (uint)b.NativeId, Draw = draw }; b.NativeId = N.Require(N.Op.ReplaceDraw, fullToken, &replacement); }
+                    else b.NativeId = N.Require(N.Op.Draw, fullToken, &draw);
+                    DirtyOrder(s, "draw-rebind"); drawRebinds++;
                 }
                 Array.Copy(b.Bytes, b.Previous, b.Bytes.Length); // Config already owns its initial constants.
             }
@@ -701,7 +716,7 @@ namespace StutterFix
             var block = Block(b.Source);
             if (block.HasProperty(id)) return block.GetFloat(id);
             if (b.Material && b.Material.HasProperty(id)) return b.Material.GetFloat(id);
-            foreach (var p in b.Shader.Properties) if (p.Id == id) return p.Default.x;
+            if (b.Shader.PropertiesById.TryGetValue(id, out var p)) return p.Default.x;
             return name.StartsWith("unity_", StringComparison.Ordinal) ? fallback : Shader.GetGlobalFloat(id);
         }
         static int Integer(Bound b, S.Variable v)
@@ -709,7 +724,7 @@ namespace StutterFix
             var block = Block(b.Source);
             if (block.HasProperty(v.Id)) return block.HasInteger(v.Id) ? block.GetInteger(v.Id) : (int)block.GetFloat(v.Id);
             if (b.Material && b.Material.HasProperty(v.Id)) return b.Material.HasInteger(v.Id) ? b.Material.GetInteger(v.Id) : (int)b.Material.GetFloat(v.Id);
-            foreach (var p in b.Shader.Properties) if (p.Id == v.Id) return (int)p.Default.x;
+            if (b.Shader.PropertiesById.TryGetValue(v.Id, out var p)) return (int)p.Default.x;
             return Shader.GetGlobalInt(v.Id);
         }
         static Vector4 Value(Bound b, S.Variable v)
@@ -730,7 +745,7 @@ namespace StutterFix
                 int id = v.TextureId;
                 if (b.Material && b.Material.HasProperty(id)) { var a = b.Material.GetTextureScale(id); var o = b.Material.GetTextureOffset(id); return new Vector4(a.x, a.y, o.x, o.y); }
             }
-            foreach (var prop in b.Shader.Properties) if (prop.Id == v.Id)
+            if (b.Shader.PropertiesById.TryGetValue(v.Id, out var prop))
             {
                 if (!b.Material || !b.Material.HasProperty(v.Id)) return prop.Default;
                 if (prop.Type == 0) return b.Material.GetColor(v.Id);

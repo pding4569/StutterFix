@@ -13,7 +13,7 @@ namespace StutterFix
     internal static class DirectFullShaders
     {
         internal sealed class Variable { internal string Name, TextureName; internal int Id, Offset, Type, Rows, Cols, Matrix, TextureId; internal bool TextureST; }
-        internal sealed class Buffer { internal string Name; internal int Slot, Size, Declared; internal Variable[] Variables; }
+        internal sealed class Buffer { internal string Name; internal int Id, Slot, Size, Declared; internal Variable[] Variables; }
         internal sealed class Texture { internal string Name; internal int Id, Slot, Sampler; }
         internal sealed class Input { internal string Name; internal int Index, System, Type, Register, Mask; }
         internal sealed class Stage { internal byte[] Code; internal Buffer[] Buffers; internal Texture[] Textures; internal Input[] Inputs; }
@@ -21,7 +21,7 @@ namespace StutterFix
         internal sealed class State { internal float Value; internal string Name; internal int Id; }
         internal sealed class Pass { internal int Index; internal bool Grab; internal string GrabName = ""; internal State[] States; internal Variant[] Variants; }
         internal sealed class Property { internal string Name; internal int Id, Type; internal Vector4 Default; internal string DefaultTexture; }
-        internal sealed class ShaderData { internal string Name; internal string[] Keywords; internal Property[] Properties; internal Pass[] Passes; }
+        internal sealed class ShaderData { internal string Name; internal string[] Keywords; internal Property[] Properties; internal Pass[] Passes; internal readonly Dictionary<int, Property> PropertiesById = new Dictionary<int, Property>(); }
         static Dictionary<string, ShaderData> all;
         static int Count(BinaryReader r, int max = 10000) { int n = r.ReadInt32(); if (n < 0 || n > max) throw new InvalidDataException("DRF resource count"); return n; }
         static string Text(BinaryReader r) => Encoding.UTF8.GetString(r.ReadBytes(Count(r, 1048576)));
@@ -42,7 +42,7 @@ namespace StutterFix
                     for (int k = 0; k < s.Properties.Length; k++)
                     {
                         var p = new Property { Name = Text(r), Type = r.ReadInt32(), Default = new Vector4(r.ReadSingle(), r.ReadSingle(), r.ReadSingle(), r.ReadSingle()), DefaultTexture = Text(r) };
-                        p.Id = Shader.PropertyToID(p.Name); s.Properties[k] = p;
+                        p.Id = Shader.PropertyToID(p.Name); s.Properties[k] = p; s.PropertiesById.Add(p.Id, p);
                     }
                     s.Passes = new Pass[Count(r, 32)];
                     for (int k = 0; k < s.Passes.Length; k++)
@@ -67,6 +67,7 @@ namespace StutterFix
             for (int i = 0; i < s.Buffers.Length; i++)
             {
                 var b = new Buffer { Name = Text(r), Slot = r.ReadInt32(), Size = r.ReadInt32(), Declared = r.ReadInt32(), Variables = new Variable[Count(r)] };
+                b.Id = Shader.PropertyToID(b.Name);
                 if (b.Slot < 0 || b.Slot >= 14 || b.Size <= 0 || b.Size > 65536 || b.Size % 16 != 0 || b.Declared > b.Size) throw new InvalidDataException("DRF CB extent");
                 for (int k = 0; k < b.Variables.Length; k++)
                 {
