@@ -272,7 +272,7 @@ struct Renderer {
         check(device->CreateVertexShader(in.vs,in.vsBytes,nullptr,&s->vs));check(device->CreatePixelShader(in.ps,in.psBytes,nullptr,&s->ps));
         const int32_t* a=in.state;D3D11_BLEND_DESC b{};b.AlphaToCoverageEnable=a[13]!=0;auto& rt=b.RenderTarget[0];
         rt.BlendEnable=a[0]!=1||a[1]!=0||a[2]!=1||a[3]!=0;rt.SrcBlend=blend(a[0]);rt.DestBlend=blend(a[1]);rt.SrcBlendAlpha=blend(a[2]);rt.DestBlendAlpha=blend(a[3]);
-        require(a[4]>=0&&a[4]<=4&&a[5]>=0&&a[5]<=4);rt.BlendOp=D3D11_BLEND_OP(a[4]+1);rt.BlendOpAlpha=D3D11_BLEND_OP(a[5]+1);rt.RenderTargetWriteMask=UINT8(a[6]);check(device->CreateBlendState(&b,&s->blendState));
+        require(a[4]>=0&&a[4]<=4&&a[5]>=0&&a[5]<=4);rt.BlendOp=D3D11_BLEND_OP(a[4]+1);rt.BlendOpAlpha=D3D11_BLEND_OP(a[5]+1);{int m=a[6];/* Unity ColorWriteMask: A=1 B=2 G=4 R=8, D3D11: R=1 G=2 B=4 A=8 */rt.RenderTargetWriteMask=UINT8(((m&8)?1:0)|((m&4)?2:0)|((m&2)?4:0)|((m&1)?8:0));}check(device->CreateBlendState(&b,&s->blendState));
         D3D11_DEPTH_STENCIL_DESC dd{};dd.DepthEnable=a[8]!=0;dd.DepthWriteMask=a[9]?D3D11_DEPTH_WRITE_MASK_ALL:D3D11_DEPTH_WRITE_MASK_ZERO;
         // Unity reverses Z on D3D11; convert Less/Greater and their inclusive forms.
         int z=a[8];if(z==2)z=5;else if(z==5)z=2;else if(z==4)z=7;else if(z==7)z=4;
