@@ -1,4 +1,4 @@
-#if DEV || AUTOTEST
+﻿#if DEV || AUTOTEST
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -47,6 +47,7 @@ namespace StutterFix
             explicitDistancesDirty = true; explicitLayerDistances = null;
             explicitTests = explicitCulled = explicitVisibilityChanges = explicitSubmitted = explicitPassesRejected = 0;
         }
+        static long explicitUnknownPasses;
         static int[] ExplicitPasses(Material material)
         {
             if (allExplicitPasses) return new[] { -1 }; // Diagnostic only; same visibility as the candidate.
@@ -58,7 +59,7 @@ namespace StutterFix
                 if (!material.GetShaderPassEnabled(name)) { explicitPassesRejected++; continue; }
                 if (DirectFullExplicitPolicy.CameraPass(mode)) result.Add(i);
                 else if (DirectFullExplicitPolicy.NonCameraPass(mode)) explicitPassesRejected++;
-                else throw new InvalidOperationException("unverified explicit LightMode " + mode + " in " + material.shader.name);
+                else { explicitUnknownPasses++; return new[] { -1 }; } // 확인 안 된 LightMode(GRABPASS 등): M4d 처럼 모든 패스(-1)로 그린다
             }
             return result.ToArray();
         }
