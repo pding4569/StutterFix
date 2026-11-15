@@ -5,7 +5,15 @@ namespace drfull {
 // All pointers are borrowed only for the duration of dispatch. Native owns copies
 // and COM references. Opcodes are versioned behind ONE appended export so old
 // export hints as well as ordinals remain stable.
-enum Op { Create, Program, Geometry, Draw, Commit, Event, Stats, Destroy, Error, Abi, Composite, Perf, CommitPacked, CommitActive, BatchPerf, GeometryCpu, CommitActiveWorld, UploadPerf, GpuPerf, TimelineEvent, TimelinePerf, MemoryPerf, Configure, SubmissionPerf, DrawProbeConfigure, DrawProbeRead, TextureProbe, ResourceConfigure, ResourcePerf, DrawProbeDetailRead, DrawProbeStatus, ReplaceDraw, CacheConfigure, CachePerf };
+enum Op { Create, Program, Geometry, Draw, Commit, Event, Stats, Destroy, Error, Abi, Composite, Perf, CommitPacked, CommitActive, BatchPerf, GeometryCpu, CommitActiveWorld, UploadPerf, GpuPerf, TimelineEvent, TimelinePerf, MemoryPerf, Configure, SubmissionPerf, DrawProbeConfigure, DrawProbeRead, TextureProbe, ResourceConfigure, ResourcePerf, DrawProbeDetailRead, DrawProbeStatus, ReplaceDraw, CacheConfigure, CachePerf, CacheDetail, CacheTuning };
+// M4m: never enlarge CachePerformance (old callers own that payload).
+struct CacheDetails {
+    uint64_t sharedBindings,privateBindings,frameEvaluations,drawEvaluations,frameBytes,drawBytes;
+    uint64_t sameLists,sameRuns,orderPlans,batchPlans,directDraws,indirectDraws,cullItems,materialDetaches;
+    uint64_t variableEvaluations[18],variableChanges[18]; // 0 material, 1..17 Patch.kind
+};
+static_assert(sizeof(CacheDetails)==400,"M4m diagnostic ABI");
+struct CacheTune { uint32_t indirectBatches; };
 struct CacheConfiguration { uint32_t enabled,chunkSize; };
 struct CachePerformance {
     uint64_t available,segments,replays,records,planBuilds,constantPages,constantBytes,constantEvaluations,cullDispatches,indirectDraws,fallbackSegments;

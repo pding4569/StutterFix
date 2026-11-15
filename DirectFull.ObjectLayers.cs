@@ -52,6 +52,11 @@ namespace StutterFix
         // Reinsert changed keys first, then compare actual identities in order.
         // Co-moving keys and noncrossing distance edits do not rebuild commands.
         internal bool Matches(List<T> target) { int index = 0; return Same(root, target, ref index) && index == target.Count; }
+        // After a batch of in-place key edits, testing both neighbours of every
+        // edited entry proves the entire emitted sequence (and BST) still sorted.
+        internal bool OrderedAt(List<T> target, int index) => index >= 0 && index < target.Count
+            && (index == 0 || compare(target[index - 1], target[index]) < 0)
+            && (index + 1 == target.Count || compare(target[index], target[index + 1]) < 0);
         internal void Clear() { root = null; }
     }
 

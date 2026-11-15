@@ -24,7 +24,7 @@ namespace StutterFix
     internal static partial class DirectFull
     {
         const string Owner = "StutterFix.DirectFull";
-        static bool commandCache = true;
+        static bool commandCache = true, indirectCacheBatches;
         // Names verified against the installed game's TagManager, not sorting layers.
         static readonly string[] MapLayers = { "Foreground", "Planet", "Floor", "BG", "BG Static", "TopGlow", "FloorTemp", "textDeco" };
         static readonly DirectFullMaskLease lease = new DirectFullMaskLease();
@@ -87,8 +87,8 @@ namespace StutterFix
             {
                 if (Active || preparing) throw new InvalidOperationException("cache mode requires off");
                 string mode = arg.Trim().Substring(6).Trim().ToLowerInvariant();
-                if (mode != "on" && mode != "off") throw new ArgumentException("cache on/off");
-                commandCache = mode == "on"; return "cache=" + commandCache;
+                if (mode != "on" && mode != "off" && mode != "indirect") throw new ArgumentException("cache on/off/indirect");
+                commandCache = mode != "off"; indirectCacheBatches = mode == "indirect"; return "cache=" + commandCache + " indirect_batches=" + indirectCacheBatches;
             }
             if (arg.Trim().StartsWith("probe ", StringComparison.OrdinalIgnoreCase)) return ProbeCommand(arg.Trim().Substring(6));
             if (arg.Trim().StartsWith("pressure mip ", StringComparison.OrdinalIgnoreCase)) return PressureMip(int.Parse(arg.Trim().Substring(13), System.Globalization.CultureInfo.InvariantCulture));

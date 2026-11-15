@@ -36,7 +36,7 @@ namespace StutterFix
             internal readonly List<Material> Materials = new List<Material>();
             internal readonly MaterialPropertyBlock RendererBlock = new MaterialPropertyBlock(), SlotBlock = new MaterialPropertyBlock();
             internal DirectFullSourceLifetime Lifetime;
-            internal Bound[] OrderedPasses; internal bool OrderQueued, LiveQueued;
+            internal Bound[] OrderedPasses; internal bool OrderQueued, LiveQueued, DistanceOnly;
             internal int MaterialCount; internal Sprite MaskSprite; internal (bool,int,int,int,int) MaskOrder;
             internal readonly List<SortingGroup> GroupScratch = new List<SortingGroup>();
             internal SortingGroup[] Groups = Array.Empty<SortingGroup>();
@@ -63,6 +63,7 @@ namespace StutterFix
             internal int[] GroupIds = Array.Empty<int>(); internal SceneRenderOrder.Key[] GroupKeys = Array.Empty<SceneRenderOrder.Key>();
             internal int[] ExplicitPasses; internal bool RecordedVisible;
             internal DirectFullOrderTree<Entry>.Node Node;
+            internal int OrderIndex = -1; internal SceneRenderOrder.Key PreviousDistanceKey;
 
         }
         struct Capture : IJobParallelForTransform
@@ -131,7 +132,9 @@ namespace StutterFix
         static void DirtyOrder(Source s, string reason)
         {
             orderReasons.TryGetValue(reason, out long n); orderReasons[reason] = n + 1;
-            if (!s.OrderQueued) { s.OrderQueued = true; orderChanges.Add(s); }
+            bool distance = reason == "key-distance";
+            if (!s.OrderQueued) { s.OrderQueued = true; s.DistanceOnly = distance; orderChanges.Add(s); }
+            else s.DistanceOnly &= distance;
             orderDirty = true;
         }
         static void DirtyAllOrder(string reason) { foreach (var s in sources) DirtyOrder(s, reason); foreach (var u in canvasUnits) u.OrderDirty = true; orderDirty = true; }
@@ -301,7 +304,8 @@ namespace StutterFix
             var config = new N.Configuration { Submission = deferredSubmission ? 1u : 0u, ConstantRing = legacyConstants ? 0u : 1u };
             N.Require(N.Op.Configure, fullToken, &config);
             var resources = resourceConfig; N.Require(N.Op.ResourceConfigure, fullToken, &resources);
-            var cache = new N.CacheConfiguration { Enabled = commandCache ? 1u : 0u, ChunkSize = 32 }; N.Require(N.Op.CacheConfigure, fullToken, &cache);
+            var cache = new N.CacheConfiguration { Enabled = commandCache ? 1u : 0u, ChunkSize = 128 }; N.Require(N.Op.CacheConfigure, fullToken, &cache);
+            var tune = new N.CacheTune { IndirectBatches = indirectCacheBatches ? 1u : 0u }; N.Require(N.Op.CacheTuning, fullToken, &tune);
             var probe = drawProbeConfig; N.Require(N.Op.DrawProbeConfigure, fullToken, &probe);
         }
         static Source AddSource(Renderer r)
@@ -721,8 +725,7 @@ namespace StutterFix
         // Original SpritesDefault Grab programs project POSITION directly and
         // sample screen XY/W. Native additionally checks every indexed vertex.
         // Unknown/deformed shaders and pixel snapping keep full snapshots.
-        static bool ScreenGrab(Bound b) => b.Pass.Grab && b.Shader.Name == "Hidden/BlendModes/SpritesDefault/Grab"
-            && Array.IndexOf(b.Variant.Keywords, "PIXELSNAP_ON") < 0;
+        static bool ScreenGrab(Bound b) => false; // M4m: HELLO failed; use full snapshots until live pixel/noise gates pass.
         static bool Batchable(Bound b)
         {
             // These original vertex programs only transform POSITION, then use
@@ -879,6 +882,13 @@ namespace StutterFix
             }
             s.Key = key;
         }
+        static void UpdateDistanceKey(Source s)
+        {
+            if (s.Mask || s.Groups.Length != 0) { UpdateKey(s); return; }
+            var k = s.Key; float d = distances[s.PoseIndex]; if (k.Distance == d) return;
+            s.Key = new SceneRenderOrder.Key(k.Layer, k.Order, k.Queue, d, k.Material, k.Renderer, k.Slot, k.Shader);
+            if (s.Passes != null && s.Passes.Length != 0) { DirtyOrder(s, "key-distance"); orderKeyChanges++; }
+        }
         static Vector3 LocalCenter(Source s) => s.Sprite && s.Sprite.spriteSortPoint == SpriteSortPoint.Pivot ? Vector3.zero : s.R.localBounds.center;
         static Vector4 SortSignature()
         {
@@ -916,8 +926,42 @@ namespace StutterFix
             cb.IssuePluginEvent(new IntPtr(N.Call(N.Op.Event, 0)), (fullToken << 16) | segmentCount);
             segmentCount++; start = listCount;
         }
+        static long distanceOrderSkips, distanceOrderVisibility;
+        static bool TryDistanceOrder()
+        {
+            if (!orderCommandsReady || namedGrabOwnershipDirty || explicitVisibilityChanges != distanceOrderVisibility || orderChanges.Count == 0) return false;
+            foreach (var u in canvasUnits) if (u.OrderDirty || u.Entry != null && u.Entry.RecordedIsolated != u.Isolated) return false;
+            foreach (var s in orderChanges)
+            {
+                if (!s.DistanceOnly || s.Mask || s.Groups.Length != 0 || s.Passes == null || s.Passes != s.OrderedPasses) return false;
+                foreach (var b in s.Passes)
+                {
+                    var e = b.Entry;
+                    if (e.Node == null || !e.Node.Linked || e.OrderIndex < 0 || e.OrderIndex >= ordered.Count || !ReferenceEquals(ordered[e.OrderIndex], e)
+                        || e.Draw == null && (e.RecordedLive != s.Live || e.RecordedVisible != s.ExplicitVisible)) return false;
+                }
+            }
+            // Update every moved key before comparing neighbours. Common motion
+            // must not appear as an intermediate crossing between two edits.
+            foreach (var s in orderChanges) foreach (var b in s.Passes)
+            {
+                var e = b.Entry; var k = e.Key; e.PreviousDistanceKey = k;
+                e.Key = new SceneRenderOrder.Key(k.Layer, k.Order, k.Queue, s.Key.Distance, k.Material, k.Renderer, k.Slot, k.Shader);
+            }
+            bool same = true;
+            foreach (var s in orderChanges) foreach (var b in s.Passes) same &= orderTree.OrderedAt(ordered, b.Entry.OrderIndex);
+            if (!same)
+            {
+                // Restore BEFORE tree removal: its search uses the old keys.
+                foreach (var s in orderChanges) foreach (var b in s.Passes) b.Entry.Key = b.Entry.PreviousDistanceKey;
+                return false;
+            }
+            foreach (var s in orderChanges) s.OrderQueued = false;
+            orderChanges.Clear(); orderDirty = false; avoidedOrderReplans++; keyOnlyFrames++; distanceOrderSkips++; return true;
+        }
         static void RebuildFullOrder()
         {
+            if (TryDistanceOrder()) return;
             // Unity explicit draws have their own named-Grab cache. Sharing the
             // same name with our native cache would take two different snapshots.
             if (namedGrabOwnershipDirty) foreach (var source in sources) if (source.Live && source.Passes != null) foreach (var bound in source.Passes)
@@ -957,9 +1001,9 @@ namespace StutterFix
             if (same) foreach (var e in ordered)
                 if (e.RecordedPhase != FullPhase(e) || e.Draw == null && e.Source != null && (e.RecordedLive != e.Source.Live || e.RecordedVisible != e.Source.ExplicitVisible)
                     || e.Canvas != null && e.RecordedIsolated != e.Canvas.Isolated) { same = false; break; }
-            if (same) { avoidedOrderReplans++; keyOnlyFrames++; orderDirty = false; return; }
+            if (same) { distanceOrderVisibility = explicitVisibilityChanges; avoidedOrderReplans++; keyOnlyFrames++; orderDirty = false; return; }
             orderTree.CopyTo(ordered);
-            foreach (var e in ordered) { e.RecordedPhase = FullPhase(e); e.RecordedLive = e.Source != null && e.Source.Live; e.RecordedVisible = e.Source != null && e.Source.ExplicitVisible; e.RecordedIsolated = e.Canvas != null && e.Canvas.Isolated; }
+            for (int index = 0; index < ordered.Count; index++) { var e = ordered[index]; e.OrderIndex = index; e.RecordedPhase = FullPhase(e); e.RecordedLive = e.Source != null && e.Source.Live; e.RecordedVisible = e.Source != null && e.Source.ExplicitVisible; e.RecordedIsolated = e.Canvas != null && e.Canvas.Isolated; }
             before.Clear(); opaque.Clear(); listCount = segmentCount = 0; recordingExplicit = false;
             Timeline(opaque, 0); Timeline(opaque, 16); Timeline(before, 18);
             bool opaquePhase = ordered.Count != 0 && FullPhase(ordered[0]) == 0;
@@ -983,7 +1027,7 @@ namespace StutterFix
             if (maskDepth != 0) throw new InvalidOperationException("M4c unbalanced mask range");
             if (anyMasks && camera.targetTexture.depth < 24) throw new InvalidOperationException("M4c masks require a stencil-capable camera depth target");
             clearStencil = anyMasks;
-            sendList = true; orderDirty = false; orderCommandsReady = true; orderBuilds++;
+            distanceOrderVisibility = explicitVisibilityChanges; sendList = true; orderDirty = false; orderCommandsReady = true; orderBuilds++;
         }
         static void FullPreCull()
         {
@@ -1030,7 +1074,7 @@ namespace StutterFix
                     if (reordered[index] != 0)
                     {
                         for (int i = 0; i < source.Groups.Length; i++) if (source.GroupKeys[i].CompareTo(GroupKey(source, i)) != 0) { DirtyOrder(source, "group-distance"); break; }
-                        UpdateKey(source);
+                        UpdateDistanceKey(source);
                     }
                 }
                 if (transformsDirty) BuildPoseTracking();
@@ -1137,7 +1181,7 @@ namespace StutterFix
             if (centers.IsCreated) centers.Dispose(); if (distances.IsCreated) distances.Dispose(); if (reordered.IsCreated) reordered.Dispose();
             if (previousCenters.IsCreated) previousCenters.Dispose(); haveCaptureAxis = false;
             foreach (var l in sourceLifetimes) if (l) { l.Changed = null; UnityEngine.Object.Destroy(l); }
-            orderCommandsReady = false; avoidedOrderReplans = keyOnlyFrames = commitGrowths = commitGrowthBytes = 0;
+            distanceOrderSkips = distanceOrderVisibility = 0; orderCommandsReady = false; avoidedOrderReplans = keyOnlyFrames = commitGrowths = commitGrowthBytes = 0;
             maxCollect = maxPose = maxSort = maxCanvas = maxPacket = maxGc = maxFrameNumber = 0;
             peakPacketPoses = peakPacketDirty = peakPacketBytes = commitPeakGc = commitPeakGrowths = 0;
             orderTree.Clear(); orderChanges.Clear(); liveChanges.Clear(); orderReasons.Clear(); entrySerial = 0; poseAdds = poseRemoves = incrementalKeys = liveToggles = 0;

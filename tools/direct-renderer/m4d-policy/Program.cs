@@ -115,6 +115,21 @@ static class Program
         long matchesBefore=GC.GetAllocatedBytesForCurrentThread();for(int i=0;i<10000;i++)order.Matches(actual);
         Check(GC.GetAllocatedBytesForCurrentThread()==matchesBefore,"order identity gate allocates");
         Console.WriteLine("PASS M4g order identities common-drift=skip crossing=replan removed=replan stable_checks=10000 allocated=0");
+        // M4m production neighbour proof: mutate the entire co-moving set before
+        // checking. The tree stays valid without remove/reinsert or a full walk.
+        order.CopyTo(actual);
+        for(int i=0;i<size;i++)values[i].Key+=50000;
+        for(int i=0;i<size;i++)Check(order.OrderedAt(actual,i),"co-motion neighbour proof failed");
+        Check(order.Matches(actual),"in-place noncrossing update corrupted tree");
+        var moving=actual[size/2];int oldKey=moving.Key;moving.Key=int.MinValue;
+        Check(!order.OrderedAt(actual,size/2),"crossing passed neighbour proof");
+        moving.Key=oldKey; // rollback before tree search/removal
+        order.Remove(treeNodes[moving.Id]);moving.Key=int.MinValue;order.Add(treeNodes[moving.Id]);
+        Check(!order.Matches(actual),"crossing fallback failed");order.CopyTo(actual);
+        long neighbourBefore=GC.GetAllocatedBytesForCurrentThread();
+        for(int i=0;i<10000;i++)order.OrderedAt(actual,i%size);
+        Check(GC.GetAllocatedBytesForCurrentThread()==neighbourBefore,"neighbour proof allocates");
+        Console.WriteLine("PASS M4m distance neighbours sources=7000 common-motion=in_place crossing=rollback_reinsert checks=10000 allocated=0");
         foreach(var mode in new[]{"", "Always", "ForwardBase"})
             Check(DirectFullExplicitPolicy.CameraPass(mode)&&!DirectFullExplicitPolicy.NonCameraPass(mode),"forward explicit pass rejected: "+mode);
         foreach(var mode in new[]{"ShadowCaster", "Meta", "MotionVectors", "DepthOnly", "DepthNormals", "Deferred", "PrepassBase", "PrepassFinal"})

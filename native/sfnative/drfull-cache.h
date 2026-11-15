@@ -1,9 +1,14 @@
-// M4l. Included inside Renderer. Lists contain bindings/draws only: every upload,
+// M4m. Included inside Renderer. Lists contain bindings/draws only: every upload,
 // compute dispatch and query used for profiling stays outside reusable lists.
-CacheConfiguration cacheConfig{1,32};CachePerformance cachePerf{};
+CacheConfiguration cacheConfig{1,128};CachePerformance cachePerf{};CacheDetails cacheDetail{};CacheTune cacheTune{};
 ComPtr<ID3D11DeviceContext1> cacheDeferred1;
-struct CachePage {ComPtr<ID3D11Buffer> buffer;std::vector<uint8_t> bytes;UINT used=0;bool dirty=false;};
-struct CacheBinding {ConstantStorage value;UINT page=0,offset=0;};
+struct CachePage {ComPtr<ID3D11Buffer> buffer;std::vector<uint8_t> bytes;UINT used=0,category=0;bool dirty=false;};
+struct CacheUse {UINT draw,binding;bool batched;};
+struct CacheValue {ConstantStorage value;std::vector<uint8_t> bytes,material;std::vector<uint32_t> poolKey;std::vector<CacheUse> uses;Buffer binding{};UINT draw=0,page=0,offset=0,refs=0;bool batched=false,queued=false,privateMaterial=false;};
+struct CacheBinding {UINT value=0;};
+std::vector<CacheValue> cacheValues;std::map<std::vector<uint32_t>,UINT> cachePool;
+std::map<std::pair<UINT,UINT>,UINT> cacheDetached;
+std::vector<UINT> cacheValueDirty;
 struct CacheDraw {std::array<std::vector<CacheBinding>,2> bindings;std::array<bool,2> pose{};bool queued=false,active=false,batched=false;};
 struct CacheOp {UINT draw=0,first=0,end=0,indices=0,start=0;INT base=0;UINT batched=0,composite=0;uintptr_t black=0,white=0;};
 struct CacheCull {float center[4]{},extent[4]{};UINT pose=0,grab=0,end=0,indices=0,start=0;INT base=0;UINT composite=0,pad=0;};
@@ -13,9 +18,10 @@ struct CacheSegment {std::vector<CacheChunk> chunks;};
 std::vector<CachePage> cachePages;std::vector<CacheDraw> cacheDraws;
 std::vector<UINT> cacheDirty,cacheCamera,cacheTime;std::vector<CacheSegment> cacheSegments;
 std::vector<UINT> cacheDirtyPages;ID3D11RenderTargetView* cacheGrabTarget=nullptr;size_t cacheGrabCount=0;
-std::vector<CacheCull> cacheCullData;bool cachePlanDirty=true,cacheCullDirty=true;
+std::vector<CacheCull> cacheCullData;std::vector<UINT> cacheCullSlots;bool cachePlanDirty=true,cacheCullDirty=true;
 uint64_t cacheGeneration=1,cacheFrame=UINT64_MAX,cacheBounds=UINT64_MAX,cacheCameraEpoch=UINT64_MAX,cacheTimeEpoch=UINT64_MAX;
 ComPtr<ID3D11Buffer> cacheCullBuffer,cacheArgs,cacheControl;UINT cacheCullCapacity=0,cacheArgsCapacity=0;
+ComPtr<ID3D11Buffer> cacheWorkBuffer;ComPtr<ID3D11ShaderResourceView> cacheWorkView;UINT cacheWorkCapacity=0;
 ComPtr<ID3D11ShaderResourceView> cacheCullView;ComPtr<ID3D11UnorderedAccessView> cacheArgsUav;
 ComPtr<ID3D11ComputeShader> cacheCullShader;
 bool cacheEnabled(){
@@ -23,13 +29,47 @@ bool cacheEnabled(){
         if(context1&&SUCCEEDED(deferred.As(&cacheDeferred1))&&SUCCEEDED(device->CheckFeatureSupport(D3D11_FEATURE_D3D11_OPTIONS,&o,sizeof(o)))&&o.ConstantBufferOffsetting)cachePerf.available=1;}
     return cacheConfig.enabled&&cachePerf.available&&submission.immediateAvailable&&gpuBatch&&configuration.submission==0&&configuration.constantRing&&resourceConfiguration.pretransform&&resourceConfiguration.stableUploads&&!drawProbe.config.enabled;
 }
+void cacheQueueValue(UINT id){auto& v=cacheValues[id];if(!v.queued){v.queued=true;cacheValueDirty.push_back(id);}}
 void cacheQueue(UINT id){if(id<cacheDraws.size()&&cacheDraws[id].active&&!cacheDraws[id].queued){cacheDraws[id].queued=true;cacheDirty.push_back(id);}}
+void cacheInvalidateDraw(UINT id){for(auto& seg:cacheSegments)for(auto& chunk:seg.chunks)for(auto& op:chunk.ops)if(op.draw==id){chunk.commands.Reset();break;}}
+UINT cacheNewValue(UINT id,size_t k,bool batched,bool privateMaterial){
+    auto& d=*draws[id];const auto& binding=d.buffers[k].binding;CacheValue v;v.draw=id;v.binding=binding;v.batched=batched;v.privateMaterial=privateMaterial;
+    v.material=d.buffers[k].material;v.bytes.assign(d.bytes.begin()+binding.offset,d.bytes.begin()+binding.offset+binding.bytes);v.value.uploaded.resize(binding.bytes);
+    constantsChanged(v.value,d,binding,batched,id);
+    UINT category=(v.value.dependencies&(1|8))?2u:(v.value.dependencies&6)?1u:2u;
+    UINT bytes=(binding.bytes+255)&~255u,page=UINT(cachePages.size());
+    for(UINT i=0;i<cachePages.size();i++)if(cachePages[i].category==category&&cachePages[i].used+bytes<=cachePages[i].bytes.size()){page=i;break;}
+    if(page==cachePages.size()){CachePage fresh;fresh.category=category;fresh.bytes.resize(std::max(bytes,category?4096u:65536u));D3D11_BUFFER_DESC desc{};desc.ByteWidth=UINT(fresh.bytes.size());desc.Usage=D3D11_USAGE_DEFAULT;desc.BindFlags=D3D11_BIND_CONSTANT_BUFFER;check(device->CreateBuffer(&desc,nullptr,&fresh.buffer));cachePages.push_back(std::move(fresh));memoryDirty=true;}
+    v.page=page;v.offset=cachePages[page].used;cachePages[page].used+=bytes;
+    UINT result=UINT(cacheValues.size());cacheValues.push_back(std::move(v));
+    if(cacheValues[result].value.dependencies&2)cacheCamera.push_back(result);
+    if(cacheValues[result].value.dependencies&4)cacheTime.push_back(result);
+    cacheQueueValue(result);return result;
+}
+void cacheSyncBindings(UINT id){
+    auto& state=cacheDraws[id];if(!state.active||draws[id]->retired)return;auto& d=*draws[id];auto& bindings=state.bindings[state.batched?1:0];
+    for(size_t k=0;k<bindings.size();k++){
+        UINT index=bindings[k].value;auto& v=cacheValues[index];
+        if(v.material!=d.buffers[k].material){
+            cacheDetail.variableEvaluations[0]++;cacheDetail.variableChanges[0]++;
+            bool together=true;
+            for(const auto& use:v.uses){auto& user=cacheDraws[use.draw];if(!user.active||user.batched!=use.batched||user.bindings[use.batched?1:0][use.binding].value!=index)continue;
+                if(draws[use.draw]->buffers[use.binding].material!=d.buffers[k].material){together=false;break;}}
+            if(!together){v.refs--;auto key=std::make_pair(index,id);auto found=cacheDetached.find(key);
+                if(found==cacheDetached.end()||cacheValues[found->second].material!=d.buffers[k].material){index=cacheNewValue(id,k,state.batched,true);cacheDetached[key]=index;cacheDetail.materialDetaches++;}
+                else index=found->second;
+                bindings[k].value=index;cacheValues[index].refs++;cacheValues[index].uses.push_back({id,UINT(k),state.batched});cacheInvalidateDraw(id);}
+            else {if(!v.poolKey.empty()){cachePool.erase(v.poolKey);v.poolKey.clear();}v.material=d.buffers[k].material;std::memcpy(v.bytes.data(),d.bytes.data()+v.binding.offset,v.binding.bytes);cacheQueueValue(index);}
+        }
+        auto& current=cacheValues[index];if(!current.value.ready||constantsChanged(current.value,d,current.binding,state.batched,id))cacheQueueValue(index);
+    }
+}
 void cachePacket(const Packet& p){
     if(!cacheConfig.enabled)return;
-    if(cacheCameraEpoch!=cameraEpoch){for(auto id:cacheCamera)cacheQueue(id);cacheCameraEpoch=cameraEpoch;cacheCullDirty=true;}
-    if(cacheTimeEpoch!=timeEpoch){for(auto id:cacheTime)cacheQueue(id);cacheTimeEpoch=timeEpoch;}
-    for(auto id:p.poseIds)for(auto draw:poseDraws[id])if(draw<cacheDraws.size()&&cacheDraws[draw].pose[cacheDraws[draw].batched?1:0])cacheQueue(draw);
-    for(auto id:p.ids)cacheQueue(id-1);
+    if(cacheCameraEpoch!=cameraEpoch){for(auto id:cacheCamera)if(cacheValues[id].refs)cacheQueueValue(id);cacheCameraEpoch=cameraEpoch;cacheCullDirty=true;}
+    if(cacheTimeEpoch!=timeEpoch){for(auto id:cacheTime)if(cacheValues[id].refs)cacheQueueValue(id);cacheTimeEpoch=timeEpoch;}
+    for(auto id:p.poseIds)for(auto draw:poseDraws[id])if(draw<cacheDraws.size()&&cacheDraws[draw].active){auto& state=cacheDraws[draw];for(auto& b:state.bindings[state.batched?1:0])if(cacheValues[b.value].value.dependencies&1)cacheQueueValue(b.value);}
+    for(auto id:p.ids){cacheSyncBindings(id-1);cacheQueue(id-1);}
     cacheCullDirty|=!p.liveIds.empty()||cacheBounds!=boundsEpoch;cacheBounds=boundsEpoch;
 }
 void cacheInitialize(){
@@ -37,11 +77,11 @@ void cacheInitialize(){
     const char code[]=R"(
         struct P {float4x4 world;uint live;uint3 pad;};
         struct S {float4 center,extent;uint pose,grab,end,indices,start;int base;uint composite,pad;};
-        StructuredBuffer<S> items:register(t0);StructuredBuffer<P> poses:register(t1);
+        StructuredBuffer<S> items:register(t0);StructuredBuffer<P> poses:register(t1);StructuredBuffer<uint> work:register(t2);
         RWByteAddressBuffer args:register(u0);cbuffer C:register(b0){float4 planes[6];uint count;uint3 pad;};
-        [numthreads(64,1,1)] void cull(uint3 tid:SV_DispatchThreadID){uint i=tid.x+tid.y*65535*64;if(i>=count)return;S s=items[i];if(s.end==0)return;
+        [numthreads(64,1,1)] void cull(uint3 tid:SV_DispatchThreadID){uint i=tid.x+tid.y*65535*64;if(i>=count)return;uint slot=work[i];S s=items[slot];
             bool any=s.composite!=0,bounded=true;float3 lo=3.402823e38,hi=-3.402823e38;
-            for(uint j=i;j<s.end;j++){S v=items[j];P p=poses[v.pose];if(p.live==0)continue;any=true;
+            for(uint j=slot;j<s.end;j++){S v=items[j];P p=poses[v.pose];if(p.live==0)continue;any=true;
                 if(all(v.extent.xyz==0)){bounded=false;continue;}
                 precise float3 center=p.world._m00_m10_m20*v.center.x;
                 center=center+p.world._m01_m11_m21*v.center.y;center=center+p.world._m02_m12_m22*v.center.z;center=center+p.world._m03_m13_m23;
@@ -52,7 +92,7 @@ void cacheInitialize(){
                 for(uint k=0;k<6;k++){precise float distance=planes[k].w;precise float radius=0;
                     for(uint a=0;a<3;a++){distance=distance+planes[k][a]*center[a];radius=radius+abs(planes[k][a])*extent[a];}
                     if(distance+radius<0)visible=false;}}
-            args.Store4(i*40,uint4(s.indices,visible?1:0,s.start,asuint(s.base)));args.Store(i*40+16,0);
+            args.Store4(s.pad*40,uint4(s.indices,visible?1:0,s.start,asuint(s.base)));args.Store(s.pad*40+16,0);
         }
     )";
     auto compileCache=[&](const char* entry,const char* target){ComPtr<ID3DBlob>b,e;HRESULT hr=D3DCompile(code,sizeof(code)-1,nullptr,nullptr,nullptr,entry,target,D3DCOMPILE_OPTIMIZATION_LEVEL3|D3DCOMPILE_IEEE_STRICTNESS,0,&b,&e);check(hr);return b;};
@@ -60,19 +100,29 @@ void cacheInitialize(){
     D3D11_BUFFER_DESC cb{};cb.ByteWidth=112;cb.Usage=D3D11_USAGE_DEFAULT;cb.BindFlags=D3D11_BIND_CONSTANT_BUFFER;check(device->CreateBuffer(&cb,nullptr,&cacheControl));
 }
 void cacheAllocateBindings(UINT id,bool batched){
-    auto& state=cacheDraws[id];auto& d=*draws[id];auto& bindings=state.bindings[batched?1:0];if(!bindings.empty()||d.buffers.empty())return;
-    bindings.resize(d.buffers.size());bool cameraDependency=false,timeDependency=false;
-    for(size_t k=0;k<bindings.size();k++){
-        auto& b=bindings[k];UINT bytes=(d.buffers[k].binding.bytes+255)&~255u;
-        if(cachePages.empty()||cachePages.back().used+bytes>65536){CachePage page;page.bytes.resize(65536);D3D11_BUFFER_DESC desc{};desc.ByteWidth=65536;desc.Usage=D3D11_USAGE_DEFAULT;desc.BindFlags=D3D11_BIND_CONSTANT_BUFFER;check(device->CreateBuffer(&desc,nullptr,&page.buffer));cachePages.push_back(std::move(page));memoryDirty=true;}
-        b.page=UINT(cachePages.size()-1);b.offset=cachePages.back().used;cachePages.back().used+=bytes;b.value.uploaded.resize(d.buffers[k].binding.bytes);
-        constantsChanged(b.value,d,d.buffers[k].binding,batched,id);state.pose[batched?1:0]|=(b.value.dependencies&1)!=0;cameraDependency|=(b.value.dependencies&2)!=0;timeDependency|=(b.value.dependencies&4)!=0;
+    auto& state=cacheDraws[id];auto& d=*draws[id];auto& bindings=state.bindings[batched?1:0];
+    if(bindings.empty()&&!d.buffers.empty()){
+        bindings.resize(d.buffers.size());
+        for(size_t k=0;k<bindings.size();k++){
+            const auto& binding=d.buffers[k].binding;ConstantStorage dependencies;constantsChanged(dependencies,d,binding,batched,id);
+            if(!(dependencies.dependencies&6)||(dependencies.dependencies&(1|8))){bindings[k].value=cacheNewValue(id,k,batched,true);cacheDetail.privateBindings++;state.pose[batched?1:0]|=(dependencies.dependencies&1)!=0;continue;}
+            // Exact material + relative patch layout. Neither shader identity nor
+            // stage/slot changes the contents. Mixed $Globals are shared too.
+            std::vector<uint32_t> key(binding.bytes/4+4);key[0]=0;key[1]=(dependencies.dependencies&1)?d.pose+1:0;key[2]=(dependencies.dependencies&8)?id+1:0;key[3]=binding.bytes;
+            std::memcpy(key.data()+4,d.buffers[k].material.data(),binding.bytes);
+            for(const auto& patch:d.patches)if(patch.offset>=binding.offset&&patch.offset<binding.offset+binding.bytes){key.push_back(patch.offset-binding.offset);key.push_back(patch.kind);}
+            auto found=cachePool.find(key);UINT value;
+            if(found==cachePool.end()){value=cacheNewValue(id,k,batched,false);cacheValues[value].poolKey=key;cachePool.emplace(std::move(key),value);cacheDetail.privateBindings++;}
+            else {value=found->second;cacheDetail.sharedBindings++;}
+            bindings[k].value=value;state.pose[batched?1:0]|=(dependencies.dependencies&1)!=0;
+        }cacheQueue(id);
     }
-    if(cameraDependency)cacheCamera.push_back(id);if(timeDependency)cacheTime.push_back(id);cacheQueue(id);
+    for(size_t k=0;k<bindings.size();k++){auto& v=cacheValues[bindings[k].value];v.refs++;v.uses.push_back({id,UINT(k),batched});}
+    cacheSyncBindings(id);
 }
 void cacheBuildPlan(){
     const double at=now();cacheDraws.resize(draws.size());cacheDirty.reserve(draws.size());cacheCamera.reserve(draws.size());cacheTime.reserve(draws.size());
-    for(auto& d:cacheDraws)d.active=false;
+    for(auto& d:cacheDraws)d.active=false;for(auto& v:cacheValues){v.refs=0;v.uses.clear();}cacheCullSlots.clear();
     cacheSegments.resize(segs.size()/2);cacheCullData.assign(list.size(),CacheCull{});
     for(UINT seg=0;seg<segs.size()/2;seg++){
         auto& chunks=cacheSegments[seg].chunks;UINT first=segs[seg*2],end=first+segs[seg*2+1],chunk=0;std::vector<CacheOp> ops;ops.reserve(cacheConfig.chunkSize);
@@ -85,42 +135,48 @@ void cacheBuildPlan(){
             // Grab and Canvas are explicit barriers. No command list crosses them.
             if(d.grab||d.composite)flush();ops.push_back(op);if(ops.size()==cacheConfig.chunkSize||d.grab||d.composite)flush();
             auto& state=cacheDraws[id];bool modeChanged=state.batched!=batched;state.active=true;state.batched=batched;
-            if(!d.composite){cacheAllocateBindings(id,batched);cacheQueue(id);}(void)modeChanged;
-            for(UINT j=i;j<stop;j++){auto& source=*draws[list[j]-1];auto& c=cacheCullData[j];std::memcpy(c.center,source.center,12);std::memcpy(c.extent,source.extent,12);c.pose=source.pose;}
-            auto& c=cacheCullData[i];c.grab=d.grabId;c.end=stop;c.indices=op.indices;c.start=op.start;c.base=op.base;c.composite=op.composite;i=stop;
+            if(!d.composite){cacheAllocateBindings(id,batched);if(modeChanged)cacheQueue(id);}
+            for(UINT j=i;j<stop;j++){auto& source=*draws[list[j]-1];auto& c=cacheCullData[j];std::memcpy(c.center,source.center,12);std::memcpy(c.extent,source.extent,12);c.pose=source.pose;c.pad=j;}
+            auto& c=cacheCullData[i];if((!batched||cacheTune.indirectBatches)&&!d.composite)cacheCullSlots.push_back(i);c.grab=d.grabId;c.end=stop;c.indices=op.indices;c.start=op.start;c.base=op.base;c.composite=op.composite;i=stop;
         }flush();chunks.resize(chunk);
     }
-    bool fresh=!cacheCullBuffer||cacheCullCapacity<cacheCullData.size();structured(cacheCullBuffer,cacheCullView,cacheCullCapacity,UINT(cacheCullData.size()),sizeof(CacheCull),false);
+    structured(cacheCullBuffer,cacheCullView,cacheCullCapacity,UINT(cacheCullData.size()),sizeof(CacheCull),false);
     if(!cacheCullData.empty()){D3D11_BOX box{0,0,0,UINT(cacheCullData.size()*sizeof(CacheCull)),1,1};context->UpdateSubresource(cacheCullBuffer.Get(),0,&box,cacheCullData.data(),0,0);}
+    structured(cacheWorkBuffer,cacheWorkView,cacheWorkCapacity,UINT(cacheCullSlots.size()),sizeof(UINT),false);
+    if(!cacheCullSlots.empty()){D3D11_BOX box{0,0,0,UINT(cacheCullSlots.size()*sizeof(UINT)),1,1};context->UpdateSubresource(cacheWorkBuffer.Get(),0,&box,cacheCullSlots.data(),0,0);}
     if(!cacheArgs||cacheArgsCapacity<list.size()){
         cacheArgsCapacity=grow(UINT(list.size()));cacheArgs.Reset();cacheArgsUav.Reset();D3D11_BUFFER_DESC b{};b.ByteWidth=cacheArgsCapacity*40;b.Usage=D3D11_USAGE_DEFAULT;b.BindFlags=D3D11_BIND_UNORDERED_ACCESS;b.MiscFlags=D3D11_RESOURCE_MISC_DRAWINDIRECT_ARGS|D3D11_RESOURCE_MISC_BUFFER_ALLOW_RAW_VIEWS;
         check(device->CreateBuffer(&b,nullptr,&cacheArgs));D3D11_UNORDERED_ACCESS_VIEW_DESC u{};u.Format=DXGI_FORMAT_R32_TYPELESS;u.ViewDimension=D3D11_UAV_DIMENSION_BUFFER;u.Buffer.NumElements=b.ByteWidth/4;u.Buffer.Flags=D3D11_BUFFER_UAV_FLAG_RAW;check(device->CreateUnorderedAccessView(cacheArgs.Get(),&u,&cacheArgsUav));cacheGeneration++;memoryDirty=true;
     }
-    (void)fresh;cacheCullDirty=true;cachePlanDirty=false;cachePerf.planBuilds++;cachePerf.planUs+=now()-at;
+    cacheCullDirty=true;cachePlanDirty=false;cachePerf.planBuilds++;cachePerf.planUs+=now()-at;
 }
 void cacheConstants(){
     const double at=now();
-    for(auto id:cacheDirty){auto& state=cacheDraws[id];state.queued=false;if(!state.active||draws[id]->retired)continue;auto& d=*draws[id];auto& bindings=state.bindings[state.batched?1:0];
-        for(size_t k=0;k<bindings.size();k++){auto& b=bindings[k];const auto& binding=d.buffers[k].binding;
-            // Queued material/color notifications are exact byte comparisons, even
-            // for a normalized buffer shared by a changing batch head.
-            patch(d,binding,state.batched);const auto* bytes=d.bytes.data()+binding.offset;cachePerf.constantEvaluations++;
-            if(!b.value.ready||std::memcmp(b.value.uploaded.data(),bytes,binding.bytes)){std::memcpy(b.value.uploaded.data(),bytes,binding.bytes);auto& page=cachePages[b.page];std::memcpy(page.bytes.data()+b.offset,bytes,binding.bytes);if(!page.dirty){page.dirty=true;cacheDirtyPages.push_back(b.page);}b.value.ready=true;}
-        }
+    for(auto index:cacheValueDirty){auto& v=cacheValues[index];v.queued=false;if(!v.refs)continue;auto& d=*draws[v.draw];
+        patchInto(d,v.binding,v.batched,v.bytes.data());cachePerf.constantEvaluations++;
+        bool frameOnly=(v.value.dependencies&6)&&!(v.value.dependencies&(1|8));
+        if(frameOnly)cacheDetail.frameEvaluations++;else cacheDetail.drawEvaluations++;
+        for(const auto& p:d.patches)if(p.offset>=v.binding.offset&&p.offset<v.binding.offset+v.binding.bytes){UINT offset=p.offset-v.binding.offset,n=p.kind<=7?64u:16u;cacheDetail.variableEvaluations[p.kind]++;if(!v.value.ready||std::memcmp(v.value.uploaded.data()+offset,v.bytes.data()+offset,n))cacheDetail.variableChanges[p.kind]++;}
+        if(!v.value.ready||std::memcmp(v.value.uploaded.data(),v.bytes.data(),v.binding.bytes)){
+            std::memcpy(v.value.uploaded.data(),v.bytes.data(),v.binding.bytes);auto& page=cachePages[v.page];std::memcpy(page.bytes.data()+v.offset,v.bytes.data(),v.binding.bytes);
+            if(!page.dirty){page.dirty=true;cacheDirtyPages.push_back(v.page);}v.value.ready=true;
+        }rememberConstants(v.value,d,v.draw);
+    }cacheValueDirty.clear();
+    for(auto id:cacheDirty){auto& state=cacheDraws[id];state.queued=false;if(!state.active||draws[id]->retired)continue;auto& d=*draws[id];
         if(d.color&&!state.batched&&(!d.colorUploaded||std::memcmp(d.uploadedColor.data(),d.bytes.data(),16))){context->UpdateSubresource(d.color.Get(),0,nullptr,d.bytes.data(),0,0);std::memcpy(d.uploadedColor.data(),d.bytes.data(),16);d.colorUploaded=true;uploadPerf.colorBytes+=16;}
     }cacheDirty.clear();
-    // Whole DEFAULT pages provide ordered updates while previous frames are in
-    // flight. NO_OVERWRITE on a referenced stable slice would be a data race.
-    for(auto id:cacheDirtyPages){auto& p=cachePages[id];context->UpdateSubresource(p.buffer.Get(),0,nullptr,p.bytes.data(),0,0);p.dirty=false;cachePerf.constantPages++;cachePerf.constantBytes+=p.bytes.size();uploadPerf.constantBytes+=p.bytes.size();uploadPerf.constantUploads++;}cacheDirtyPages.clear();
+    // Frame and draw pages are separate. Whole DEFAULT updates are ordered
+    // against preceding GPU frames; never overwrite an in-flight mapped slice.
+    for(auto id:cacheDirtyPages){auto& p=cachePages[id];context->UpdateSubresource(p.buffer.Get(),0,nullptr,p.bytes.data(),0,0);p.dirty=false;cachePerf.constantPages++;cachePerf.constantBytes+=p.bytes.size();uploadPerf.constantBytes+=p.bytes.size();uploadPerf.constantUploads++;if(p.category==1)cacheDetail.frameBytes+=p.bytes.size();else cacheDetail.drawBytes+=p.bytes.size();}cacheDirtyPages.clear();
     cachePerf.constantsUs+=now()-at;
 }
 void cacheCull(){
-    if(!cacheCullDirty||list.empty()||gpuPoses.empty())return;const double at=now();cacheInitialize();
-    struct Control {float planes[6][4];UINT count,pad[3];} control{};std::memcpy(control.planes,frustum,sizeof(frustum));control.count=UINT(list.size());context->UpdateSubresource(cacheControl.Get(),0,nullptr,&control,0,0);
-    ID3D11ShaderResourceView* views[]={cacheCullView.Get(),worldView.Get()};ID3D11UnorderedAccessView* uav=cacheArgsUav.Get();ID3D11Buffer* cb=cacheControl.Get();
-    context->CSSetShaderResources(0,2,views);context->CSSetConstantBuffers(0,1,&cb);context->CSSetUnorderedAccessViews(0,1,&uav,nullptr);context->CSSetShader(cacheCullShader.Get(),nullptr,0);
-    UINT groups=(UINT(list.size())+63)/64;context->Dispatch(std::min(groups,65535u),(groups+65534)/65535,1);cachePerf.cullDispatches++;
-    uav=nullptr;views[0]=views[1]=nullptr;context->CSSetUnorderedAccessViews(0,1,&uav,nullptr);context->CSSetShaderResources(0,2,views);context->CSSetShader(nullptr,nullptr,0);cacheCullDirty=false;cachePerf.cullUs+=now()-at;
+    if(!cacheCullDirty||cacheCullSlots.empty()||gpuPoses.empty())return;const double at=now();cacheInitialize();
+    struct Control {float planes[6][4];UINT count,pad[3];} control{};std::memcpy(control.planes,frustum,sizeof(frustum));control.count=UINT(cacheCullSlots.size());context->UpdateSubresource(cacheControl.Get(),0,nullptr,&control,0,0);
+    ID3D11ShaderResourceView* views[]={cacheCullView.Get(),worldView.Get(),cacheWorkView.Get()};ID3D11UnorderedAccessView* uav=cacheArgsUav.Get();ID3D11Buffer* cb=cacheControl.Get();
+    context->CSSetShaderResources(0,3,views);context->CSSetConstantBuffers(0,1,&cb);context->CSSetUnorderedAccessViews(0,1,&uav,nullptr);context->CSSetShader(cacheCullShader.Get(),nullptr,0);
+    cacheDetail.cullItems+=cacheCullSlots.size();UINT groups=(UINT(cacheCullSlots.size())+63)/64;context->Dispatch(std::min(groups,65535u),(groups+65534)/65535,1);cachePerf.cullDispatches++;
+    uav=nullptr;views[0]=views[1]=views[2]=nullptr;context->CSSetUnorderedAccessViews(0,1,&uav,nullptr);context->CSSetShaderResources(0,3,views);context->CSSetShader(nullptr,nullptr,0);cacheCullDirty=false;cachePerf.cullUs+=now()-at;
 }
 void cacheGrabs(ID3D11RenderTargetView* rt){
     if(grabSurfaces.empty()||(cacheGrabTarget==rt&&cacheGrabCount==grabSurfaces.size()))return;ComPtr<ID3D11Resource> resource;rt->GetResource(&resource);ComPtr<ID3D11Texture2D> source;check(resource.As(&source));D3D11_TEXTURE2D_DESC td{};source->GetDesc(&td);D3D11_RENDER_TARGET_VIEW_DESC vd{};rt->GetDesc(&vd);require(td.SampleDesc.Count==1&&td.ArraySize==1&&vd.ViewDimension==D3D11_RTV_DIMENSION_TEXTURE2D&&vd.Texture2D.MipSlice==0);
@@ -171,9 +227,10 @@ size_t cacheGrabGroup(std::vector<CacheChunk>& chunks,size_t first,ID3D11RenderT
 }
 void cacheRecord(CacheChunk& chunk,ID3D11RenderTargetView* rt,ID3D11DepthStencilView* depth,const D3D11_VIEWPORT& viewport){
     const double at=now();auto* dc=deferred.Get();dc->ClearState();dc->SetPredication(nullptr,FALSE);dc->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-    std::array<std::array<bool,128>,2> bound{};
-    for(const auto& op:chunk.ops){auto& d=*draws[op.draw];auto& s=*d.shader;auto* target=rt;
-        dc->OMSetRenderTargets(1,&target,depth);dc->RSSetViewports(1,&viewport);dc->VSSetShader(s.vs.Get(),nullptr,0);dc->PSSetShader(s.ps.Get(),nullptr,0);dc->OMSetBlendState(s.blendState.Get(),nullptr,~0u);dc->OMSetDepthStencilState(s.depth.Get(),s.stencilRef);dc->RSSetState(s.raster.Get());
+    std::array<std::array<bool,128>,2> bound{};std::array<std::array<UINT,14>,2> constantBound;for(auto& stage:constantBound)stage.fill(UINT32_MAX);Shader* lastShader=nullptr;
+    auto* target=rt;dc->OMSetRenderTargets(1,&target,depth);dc->RSSetViewports(1,&viewport);
+    for(const auto& op:chunk.ops){auto& d=*draws[op.draw];auto& s=*d.shader;
+        if(lastShader!=&s){lastShader=&s;dc->VSSetShader(s.vs.Get(),nullptr,0);dc->PSSetShader(s.ps.Get(),nullptr,0);dc->OMSetBlendState(s.blendState.Get(),nullptr,~0u);dc->OMSetDepthStencilState(s.depth.Get(),s.stencilRef);dc->RSSetState(s.raster.Get());}
         // Lists start at ClearState. Unbind only slots used by earlier draws
         // in THIS list; no 128-slot sweeps or state queries in steady replay.
         for(UINT stage=0;stage<2;stage++)for(UINT slot=0;slot<128;slot++)if(bound[stage][slot]&&!s.textureSlots[stage][slot]){
@@ -184,12 +241,14 @@ void cacheRecord(CacheChunk& chunk,ID3D11RenderTargetView* rt,ID3D11DepthStencil
         if(op.batched){auto* buffer=gpuVertices.Get();UINT stride=sizeof(BatchVertex),offset=0;dc->IASetVertexBuffers(0,1,&buffer,&stride,&offset);dc->IASetIndexBuffer(orderBuffer.Get(),DXGI_FORMAT_R32_UINT,0);}
         else {ID3D11Buffer* buffers[8]{};for(UINT j=0;j<8;j++)buffers[j]=g.buffers[j].Get();dc->IASetVertexBuffers(0,8,buffers,g.strides.data(),g.offsets.data());dc->IASetIndexBuffer(g.indices.Get(),g.indexFormat,0);if(d.color){auto* color=d.color.Get();UINT zero=0;dc->IASetVertexBuffers(7,1,&color,&zero,&zero);}}
         auto& bindings=cacheDraws[op.draw].bindings[op.batched?1:0];
-        for(size_t k=0;k<bindings.size();k++){auto& b=bindings[k];auto& binding=d.buffers[k].binding;auto* buffer=cachePages[b.page].buffer.Get();UINT offset=b.offset/16,length=((binding.bytes+255)&~255u)/16;ID3D11Buffer* nullBuffer=nullptr;
+        for(size_t k=0;k<bindings.size();k++){auto& b=cacheValues[bindings[k].value];auto& binding=d.buffers[k].binding;if(constantBound[binding.stage][binding.slot]==bindings[k].value)continue;constantBound[binding.stage][binding.slot]=bindings[k].value;auto* buffer=cachePages[b.page].buffer.Get();UINT offset=b.offset/16,length=((binding.bytes+255)&~255u)/16;ID3D11Buffer* nullBuffer=nullptr;
             // Required workaround for software command-list offset emulation.
             if(binding.stage==0){dc->VSSetConstantBuffers(binding.slot,1,&nullBuffer);cacheDeferred1->VSSetConstantBuffers1(binding.slot,1,&buffer,&offset,&length);}
             else {dc->PSSetConstantBuffers(binding.slot,1,&nullBuffer);cacheDeferred1->PSSetConstantBuffers1(binding.slot,1,&buffer,&offset,&length);}}
         for(const auto& t:d.textures){bound[t.stage][t.slot]=true;auto* view=t.grab?grabSurfaces.at(t.grabId).view.Get():t.view.Get();auto* sampler=t.sampler.Get();if(t.stage==0){dc->VSSetShaderResources(UINT(t.slot),1,&view);if(t.samplerSlot>=0)dc->VSSetSamplers(UINT(t.samplerSlot),1,&sampler);}else{dc->PSSetShaderResources(UINT(t.slot),1,&view);if(t.samplerSlot>=0)dc->PSSetSamplers(UINT(t.samplerSlot),1,&sampler);}}
-        dc->DrawIndexedInstancedIndirect(cacheArgs.Get(),op.first*40);
+        // GPU world positions keep the original shader/clipper visibility. Only
+        // live changes degenerate vertices; camera motion never rebakes geometry.
+        if(op.batched&&!cacheTune.indirectBatches)dc->DrawIndexed(op.indices,op.start,op.base);else dc->DrawIndexedInstancedIndirect(cacheArgs.Get(),op.first*40);
     }
     check(dc->FinishCommandList(FALSE,&chunk.commands));chunk.target=rt;chunk.depth=depth;chunk.viewport=viewport;chunk.generation=cacheGeneration;cachePerf.records++;cachePerf.recordUs+=now()-at;
 }
@@ -219,7 +278,7 @@ void renderCached(UINT segment){
             auto& head=*draws[chunk.ops.front().draw];
             if(head.grab){if(!grabVisible(head)){timeline.perf.culledGrabs++;continue;}
                 timeline.perf.visibleGrabs++;if(ci>=groupedUntil)groupedUntil=cacheGrabGroup(chunks,ci,target.Get(),viewport);}
-            context->ExecuteCommandList(chunk.commands.Get(),FALSE);cachePerf.executeUs+=now()-at;cachePerf.replays++;cachePerf.indirectDraws+=chunk.ops.size();stats.draws+=chunk.ops.size();}}
+            context->ExecuteCommandList(chunk.commands.Get(),FALSE);cachePerf.executeUs+=now()-at;cachePerf.replays++;for(const auto& op:chunk.ops)if((op.batched&&!cacheTune.indirectBatches)||op.composite)cacheDetail.directDraws++;else {cachePerf.indirectDraws++;cacheDetail.indirectDraws++;}stats.draws+=chunk.ops.size();}}
         cachePerf.segments++;if(timing)context->End(timing->end.Get());timeline.mark(7);timelineOpen=false;endGpu(timing);timing=nullptr;
     }catch(HRESULT hr){stats.errors++;stats.lastHR=hr;cachePlanDirty=true;for(auto& seg:cacheSegments)for(auto& chunk:seg.chunks)chunk.commands.Reset();deferred->ClearState();ComPtr<ID3D11CommandList> discard;deferred->FinishCommandList(FALSE,&discard);}
     catch(...){stats.errors++;stats.lastHR=E_FAIL;cachePlanDirty=true;}

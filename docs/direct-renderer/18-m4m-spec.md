@@ -15,3 +15,8 @@
 - GPU native 4.19ms(M4k 1.49): 간접 draw 수(7.9M/2,269 = 프레임당 3,477) vs 이전 single_draws ~345 — 간접 draw 로 쪼개면서 GPU 비용이 늘었다. 묶을 수 있는 건 묶고, 화면 밖 draw 의 간접 인자 0 처리 비용 확인.
 - HELLO 회귀(PSNR 40.06, 잡음 대조 실패)와 Grab 사각형(Claude 수정이 HELLO 를 39.8 로 만든 것) — 확실하지 않은 Grab draw 는 전체 복사.
 - 4종 빌드 오류 0, export 보존, fixture. 계획 m4m 접두사. 남은 M4l 측정 결과는 `E:\StutterFixWork\night-results\m4l-*.txt/.log`.
+
+## 추가 (Claude, M4l 나머지 실측)
+- **DD 원래 크기(VRAM 14.6GB 초과) B1/B2 = 179.8/180.1 FPS (A 242.6/243.0)** — Grab 을 목록 밖 즉시 복사로 바꾼 M4l 이 VRAM 초과 붕괴를 해소했다(grab_copies 27,025 실제 복사, native GPU 4.38ms; 이전 24~68ms). 이 Grab 경로는 유지할 것.
+- DD 1024: A 237.1/242.7, B 178.4/202.8. DD 재생 중 cache_constants_us 0.78~0.91ms 가 렌더 스레드의 대부분.
+- **Exit cache off B1 = 205.7 FPS** (cache on 159.6/159.1, M4k 233). 즉 지금 캐시는 재생 중 손해이고, cache off 도 M4k 보다 느리다 → M4l 의 다른 변경(간접 draw 분할 프레임당 ~3,477개, Grab 경로 등)도 비용을 늘렸다. cache off: main 1,064, render 1,402, native GPU 2,089.

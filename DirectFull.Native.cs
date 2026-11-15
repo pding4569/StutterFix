@@ -7,7 +7,14 @@ namespace StutterFix
 {
     internal static unsafe class DirectFullNative
     {
-        internal enum Op { Create, Program, Geometry, Draw, Commit, Event, Stats, Destroy, Error, Abi, Composite, Perf, CommitPacked, CommitActive, BatchPerf, GeometryCpu, CommitActiveWorld, UploadPerf, GpuPerf, TimelineEvent, TimelinePerf, MemoryPerf, Configure, SubmissionPerf, DrawProbeConfigure, DrawProbeRead, TextureProbe, ResourceConfigure, ResourcePerf, DrawProbeDetailRead, DrawProbeStatus, ReplaceDraw, CacheConfigure, CachePerf }
+        internal enum Op { Create, Program, Geometry, Draw, Commit, Event, Stats, Destroy, Error, Abi, Composite, Perf, CommitPacked, CommitActive, BatchPerf, GeometryCpu, CommitActiveWorld, UploadPerf, GpuPerf, TimelineEvent, TimelinePerf, MemoryPerf, Configure, SubmissionPerf, DrawProbeConfigure, DrawProbeRead, TextureProbe, ResourceConfigure, ResourcePerf, DrawProbeDetailRead, DrawProbeStatus, ReplaceDraw, CacheConfigure, CachePerf, CacheDetail, CacheTuning }
+        [StructLayout(LayoutKind.Sequential)] internal struct CacheTune { internal uint IndirectBatches; }
+        [StructLayout(LayoutKind.Sequential)] internal struct CacheDetails
+        {
+            internal ulong SharedBindings, PrivateBindings, FrameEvaluations, DrawEvaluations, FrameBytes, DrawBytes;
+            internal ulong SameLists, SameRuns, OrderPlans, BatchPlans, DirectDraws, IndirectDraws, CullItems, MaterialDetaches;
+            internal fixed ulong VariableEvaluations[18], VariableChanges[18];
+        }
         [StructLayout(LayoutKind.Sequential)] internal struct CacheConfiguration { internal uint Enabled, ChunkSize; }
         [StructLayout(LayoutKind.Sequential)] internal struct CachePerformance
         {

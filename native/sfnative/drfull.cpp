@@ -125,7 +125,7 @@ struct Renderer {
         for(const auto& entry:constantPool)memory.buffer(entry.second->buffer.Get(),5);
         memory.buffer(constantRing.Get(),5);
         for(const auto& page:cachePages)memory.buffer(page.buffer.Get(),5);
-        memory.buffer(cacheCullBuffer.Get(),2);memory.buffer(cacheArgs.Get(),3);memory.buffer(cacheControl.Get(),5);
+        memory.buffer(cacheWorkBuffer.Get(),2);memory.buffer(cacheCullBuffer.Get(),2);memory.buffer(cacheArgs.Get(),3);memory.buffer(cacheControl.Get(),5);
         memory.buffer(orderControl.Get(),5);
         for(const auto& pair:grabSurfaces)memory.texture(pair.second.texture.Get(),7);
         memory.finish();
@@ -149,6 +149,7 @@ struct Renderer {
     std::vector<uint8_t> ringData;uint64_t ringSerial=1,ringVisit=0;UINT ringHead=0;
     bool ringActive=false;
     std::vector<uint8_t> segmentVisible;
+    std::vector<UINT> batchEdits;std::vector<std::vector<UINT>> drawPositions;
     std::vector<uint8_t> live;std::vector<uint64_t> poseVersions;std::vector<uint32_t> batchEnds;bool batchesDirty=true;
     struct RunBounds {float center[3]{},extent[3]{};uint64_t epoch=UINT64_MAX;UINT end=0;bool bounded=false,any=false;};
     std::vector<RunBounds> runBounds;uint64_t boundsEpoch=0;
@@ -239,7 +240,7 @@ struct Renderer {
         ringData.reserve(size_t(capacity)*512);
         poseDraws.resize(capacity);poseMarked.resize(capacity);drawMarked.resize(size_t(capacity)*8);dirtyPoses.reserve(capacity);dirtyDraws.reserve(size_t(capacity)*8);
         orderRanges.reserve(size_t(capacity)*4);orderOffsets.reserve(size_t(capacity)*4+1);
-        segmentVisible.reserve(size_t(capacity)*4);
+        batchEdits.reserve(size_t(capacity)*4);segmentVisible.reserve(size_t(capacity)*4);
         live.resize(capacity,1);poseVersions.resize(capacity);runBounds.reserve(size_t(capacity)*4);batchEnds.reserve(size_t(capacity)*4);batchVertices.resize(batchLimit);batchItems.reserve(size_t(capacity)*4);colorVersions.reserve(size_t(capacity)*8);poses.reserve(capacity);gpuPoses.reserve(capacity);gpuDraws.reserve(size_t(capacity)*8);vertexOffsets.reserve(size_t(capacity)*4+1);localVertices.reserve(size_t(capacity)*6);
         // CPU fallback VB is allocated only when used, sized to the actual run.
         if(device->GetFeatureLevel()>=D3D_FEATURE_LEVEL_11_0){
@@ -325,7 +326,7 @@ struct Renderer {
         auto view=[&](void* resource,ComPtr<ID3D11ShaderResourceView>& out){auto* t=static_cast<ID3D11Texture2D*>(resource);D3D11_TEXTURE2D_DESC td{};t->GetDesc(&td);require(td.SampleDesc.Count==1&&td.ArraySize==1);D3D11_SHADER_RESOURCE_VIEW_DESC sd{};sd.Format=format(td.Format,false);sd.ViewDimension=D3D11_SRV_DIMENSION_TEXTURE2D;sd.Texture2D.MipLevels=1;check(device->CreateShaderResourceView(t,&sd,&out));};
         view(in.black,d->black);view(in.white,d->white);
         for(size_t i=0;i<draws.size();i++)if(draws[i]->composite&&!draws[i]->black&&!draws[i]->white){draws[i]=d;return int(i+1);}
-        draws.push_back(d);colorVersions.push_back(0);gpuDraws.emplace_back();markDraw(UINT(draws.size()-1));geometryDirty=true;return int(draws.size());
+        draws.push_back(d);colorVersions.push_back(0);gpuDraws.emplace_back();markDraw(UINT(draws.size()-1));geometryDirty=true;batchesDirty=true;return int(draws.size());
     }
     int geometry(const GeometryIn& in) {
         memoryDirty=true;
@@ -393,7 +394,7 @@ struct Renderer {
         }
         d->batchKey.resize(d->bytes.size());d->nextBatchKey.resize(d->bytes.size());updateBatchKey(*d);
         GpuDraw info{};info.pose=d->pose;info.sprite=d->sprite?1u:0u;for(int c=0;c<4;c++)info.color[c]=reinterpret_cast<const float*>(d->bytes.data())[c]*d->rendererTint[c];info.flip[0]=d->flip[0];info.flip[1]=d->flip[1];
-        poseDraws[d->pose].push_back(UINT(draws.size()));draws.push_back(d);colorVersions.push_back(0);gpuDraws.push_back(info);markDraw(UINT(draws.size()-1));geometryDirty=true;return int(draws.size());
+        poseDraws[d->pose].push_back(UINT(draws.size()));draws.push_back(d);colorVersions.push_back(0);gpuDraws.push_back(info);markDraw(UINT(draws.size()-1));geometryDirty=true;batchesDirty=true;return int(draws.size());
     }
     void captureSpriteProperties(DrawCall& d) {
         for(const auto& p:d.patches){
@@ -405,7 +406,7 @@ struct Renderer {
         std::memcpy(d.nextBatchKey.data(),d.bytes.data(),d.bytes.size());
         if(d.sprite)std::memset(d.nextBatchKey.data(),0,16);
         for(const auto& p:d.patches)std::memset(d.nextBatchKey.data()+p.offset,0,p.kind<=7?64:16);
-        bool changed=d.batchKey!=d.nextBatchKey;if(changed&&d.batchable)batchesDirty=true;d.batchKey.swap(d.nextBatchKey);
+        bool changed=d.batchKey!=d.nextBatchKey;d.batchKey.swap(d.nextBatchKey);
         d.batchHash=1469598103934665603ull;for(auto x:d.batchKey){d.batchHash^=x;d.batchHash*=1099511628211ull;}
         return changed;
     }
@@ -433,20 +434,21 @@ struct Renderer {
             if(inverseChanged)poseVersions[id]++;
             if(std::memcmp(gpuPoses[id].world,p.poses[i].world,64)){std::memcpy(gpuPoses[id].world,p.poses[i].world,64);markPose(id);poseVersions[id]++;boundsEpoch++;}
         }
+        batchEdits.clear();
         for(size_t i=0;i<p.ids.size();i++){
             require(p.ids[i]&&p.ids[i]<=draws.size());uint32_t id=p.ids[i]-1;auto& d=*draws[id];require(p.offsets[i+1]-p.offsets[i]==d.bytes.size());
             if(d.sprite&&(d.spritePatches||std::memcmp(d.bytes.data(),p.bytes.data()+p.offsets[i],16)))colorVersions[id]++;
             std::memcpy(d.bytes.data(),p.bytes.data()+p.offsets[i],d.bytes.size());stats.bytes+=d.bytes.size();captureSpriteProperties(d);
             auto info=gpuDraws[id];for(int c=0;c<4;c++)info.color[c]=reinterpret_cast<const float*>(d.bytes.data())[c]*d.rendererTint[c];info.flip[0]=d.flip[0];info.flip[1]=d.flip[1];
             if(std::memcmp(&info,&gpuDraws[id],sizeof(info))){gpuDraws[id]=info;markDraw(id);}
-            if(updateBatchKey(d))for(auto& binding:d.buffers){
+            if(updateBatchKey(d)){if(d.batchable)batchEdits.push_back(id);for(auto& binding:d.buffers){
                 const auto* material=d.batchKey.data()+binding.binding.offset;
                 if(std::memcmp(material,binding.material.data(),binding.binding.bytes)){
                     if(!binding.privateMaterial){binding.storage=newConstants(binding.binding.bytes);binding.batchStorage=d.batchable?newConstants(binding.binding.bytes):binding.storage;binding.privateMaterial=true;}
                     std::memcpy(binding.material.data(),material,binding.binding.bytes);
                     binding.storage->materialDirty=true;binding.batchStorage->materialDirty=true;
                 }
-            }
+            }}
         }
         for(size_t i=0;i<p.liveIds.size();i++){
             uint32_t id=p.liveIds[i];live[id]=p.liveValues[i];if(gpuPoses.size()<=id)gpuPoses.resize(size_t(id)+1);
@@ -463,16 +465,31 @@ struct Renderer {
             }
             for(auto id:list)if(draws[id-1]->composite&&!compositeUsed[id-1]){draws[id-1]->black.Reset();draws[id-1]->white.Reset();}
             for(auto id:p.list)require(!draws[id-1]->retired);
-            bool reordered=list!=p.list;list=p.list;segs=p.segs;batchesDirty|=reordered;indexDirty|=reordered;
+            bool reordered=list!=p.list,boundaries=segs!=p.segs;
+            if(!reordered&&!boundaries)cacheDetail.sameLists++;
+            list=p.list;segs=p.segs;batchesDirty|=reordered;indexDirty|=reordered;
+            if(reordered||boundaries){cachePlanDirty=true;cacheDetail.orderPlans++;}
+            if(reordered||drawPositions.size()!=draws.size()){drawPositions.resize(draws.size());for(auto& positions:drawPositions)positions.clear();for(UINT position=0;position<list.size();position++)drawPositions[list[position]-1].push_back(position);}
         }
-        if(p.f.listChanged||batchesDirty||(geometryDirty&&hasBatches)||cacheDraws.size()!=draws.size())cachePlanDirty=true;
-        if(batchesDirty){buildBatchRuns();batchesDirty=false;}
+        if(!batchesDirty&&!batchEdits.empty()){
+            // Compare after ALL material edits. Co-changing neighbours may stay
+            // one run; a key notification alone is not a change in the plan.
+            bool different=false;
+            for(auto id:batchEdits)if(id<drawPositions.size())for(auto at:drawPositions[id]){
+                if(at>0)different|=(batchEnds[at-1]>at)!=(draws[list[at-1]-1]->batchable&&compatible(*draws[list[at-1]-1],*draws[id]));
+                if(at+1<list.size())different|=(batchEnds[at]>at+1)!=(draws[list[at+1]-1]->batchable&&compatible(*draws[id],*draws[list[at+1]-1]));
+            }
+            if(different)batchesDirty=true;else cacheDetail.sameRuns++;
+        }
+        if((geometryDirty&&hasBatches)||cacheDraws.size()!=draws.size())cachePlanDirty=true;
+        if(batchesDirty){if(buildBatchRuns()){cachePlanDirty=true;cacheDetail.batchPlans++;}else cacheDetail.sameRuns++;batchesDirty=false;}
         stats.frames++;
     }
-    void patch(DrawCall& d,const Buffer& binding,bool batched=false) {
+    void patch(DrawCall& d,const Buffer& binding,bool batched=false) {patchInto(d,binding,batched,d.bytes.data()+binding.offset);}
+    void patchInto(DrawCall& d,const Buffer& binding,bool batched,uint8_t* destination) {
         Pose identity{};for(int i=0;i<16;i++)identity.world[i]=identity.inverse[i]=i%5==0?1.f:0.f;
         const auto& pose=batched?identity:poses[d.pose];const float ones[4]={1,1,1,1};
-        for(const auto& p:d.patches){if(p.offset<binding.offset||p.offset>=binding.offset+binding.bytes)continue;void* out=d.bytes.data()+p.offset;const float* src=nullptr;float temp[16]{};
+        for(const auto& p:d.patches){if(p.offset<binding.offset||p.offset>=binding.offset+binding.bytes)continue;void* out=destination+p.offset-binding.offset;const float* src=nullptr;float temp[16]{};
             switch(p.kind){case 1:src=pose.world;break;case 2:src=pose.inverse;break;case 3:src=frame.vp;break;case 4:src=frame.view;break;case 5:src=frame.projection;break;
             case 6:multiply(temp,frame.vp,pose.world);src=temp;break;
             case 7:{float mv[16];multiply(mv,pose.inverse,frame.view);for(int c=0;c<4;c++)for(int r=0;r<4;r++)temp[c*4+r]=mv[r*4+c];src=temp;break;}
@@ -565,8 +582,8 @@ struct Renderer {
         for(int i=0;i<3;i++){center[i]=(low[i]+high[i])*.5f;extent[i]=(high[i]-low[i])*.5f+std::max(1.f,std::max(std::abs(low[i]),std::abs(high[i])))*1e-5f;}
         return outsideWorld(center,extent);
     }
-    void buildBatchRuns() {
-        hasBatches=false;
+    bool buildBatchRuns() {
+        bool changed=batchEnds.size()!=list.size();hasBatches=false;
         boundsEpoch++;runBounds.resize(list.size());batchEnds.resize(list.size());batchItems.resize(list.size());
         for(size_t i=0;i<list.size();i++){
             require(list[i]&&list[i]<=draws.size());auto& d=*draws[list[i]-1];auto& item=batchItems[i];item={};item.pose=d.pose;item.id=list[i]-1;
@@ -575,8 +592,9 @@ struct Renderer {
         for(size_t i=0;i<list.size();){
             require(list[i]&&list[i]<=draws.size());auto& head=*draws[list[i]-1];size_t end=i+1;
             if(head.batchable)for(;end<list.size();end++){require(list[end]&&list[end]<=draws.size());if(!compatible(head,*draws[list[end]-1]))break;}
-            if(end>i+1||(head.batchable&&cacheEnabled()))hasBatches=true;for(size_t j=i;j<end;j++)batchEnds[j]=uint32_t(end);i=end;
+            if(end>i+1||(head.batchable&&cacheEnabled()))hasBatches=true;for(size_t j=i;j<end;j++){changed|=batchEnds[j]!=uint32_t(end);batchEnds[j]=uint32_t(end);}i=end;
         }
+        return changed;
     }
     void appendBatch(size_t index) {
         auto& item=batchItems[index];
@@ -1036,6 +1054,8 @@ extern "C" intptr_t __cdecl sf_z_drfull_v1(int op,int token,const void* args) no
         if(op==drfull::ResourceConfigure){require(args&&r->stats.events==0&&r->draws.empty());auto c=*static_cast<const drfull::ResourceConfiguration*>(args);require(c.skipGrab<=1&&c.pretransform<=1&&c.stableUploads<=1&&c.trimBindings<=1);r->resourceConfiguration=c;return 1;}
         if(op==drfull::ResourcePerf){require(args);*const_cast<drfull::ResourcePerformance*>(static_cast<const drfull::ResourcePerformance*>(args))=r->resourcePerf;return 1;}
         if(op==drfull::CacheConfigure){require(args&&r->stats.events==0);auto c=*static_cast<const drfull::CacheConfiguration*>(args);require(c.enabled<=1&&c.chunkSize>0&&c.chunkSize<=256);r->cacheConfig=c;return 1;}
+        if(op==drfull::CacheTuning){require(args&&r->stats.events==0);auto t=*static_cast<const drfull::CacheTune*>(args);require(t.indirectBatches<=1);r->cacheTune=t;return 1;}
+        if(op==drfull::CacheDetail){require(args);*const_cast<drfull::CacheDetails*>(static_cast<const drfull::CacheDetails*>(args))=r->cacheDetail;return 1;}
         if(op==drfull::CachePerf){require(args);auto p=r->cachePerf;double n=double(std::max(uint64_t(1),r->stats.frames));p.applyUs/=n;p.poseUs/=n;p.constantsUs/=n;p.cullUs/=n;p.planUs/=n;p.recordUs/=n;p.executeUs/=n;*const_cast<drfull::CachePerformance*>(static_cast<const drfull::CachePerformance*>(args))=p;return 1;}
         if(op==drfull::ReplaceDraw){require(args);const auto& replacement=*static_cast<const drfull::DrawReplacement*>(args);require(replacement.previous>0&&replacement.previous<=r->draws.size()&&!r->draws[replacement.previous-1]->retired&&!r->draws[replacement.previous-1]->composite);
             // program=0 explicitly retires a replaced pass with no successor.

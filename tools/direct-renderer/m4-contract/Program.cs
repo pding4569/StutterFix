@@ -15,6 +15,7 @@ static class Program
     {
         string root=Path.GetFullPath(args[0]);
         Check((int)N.Op.CacheConfigure==32&&(int)N.Op.CachePerf==33&&sizeof(N.CacheConfiguration)==8&&sizeof(N.CachePerformance)==192,"M4l append-only cache ABI");
+        Check((int)N.Op.CacheDetail==34&&sizeof(N.CacheDetails)==400&&(int)N.Op.CacheTuning==35&&sizeof(N.CacheTune)==4,"M4m append-only cache detail ABI");
         Check(sizeof(N.ResourceConfiguration)==16 && sizeof(N.ResourcePerformance)==80 && sizeof(N.DrawProbeDetail)==32 && sizeof(N.DrawProbeState)==40 && sizeof(N.DrawReplacement)==sizeof(N.Draw)+8,"M4k appended ABI layout");
         IntPtr library=NativeLibrary.Load(Path.Combine(root,"native/sfnative.dll"));
         NativeLibrary.SetDllImportResolver(typeof(N).Assembly,(name,assembly,path)=>name=="sfnative"?library:IntPtr.Zero);
