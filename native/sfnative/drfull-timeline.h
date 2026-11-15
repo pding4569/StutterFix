@@ -6,7 +6,7 @@ struct GpuTimeline {
     struct Slot {
         ComPtr<ID3D11Query> disjoint;
         std::array<ComPtr<ID3D11Query>,limit> points;
-        std::array<unsigned,limit> categories{},phases{};
+        std::array<unsigned,limit> categories{},phases{},nativeStages{};
         unsigned count=0;bool pending=false,aux=false,valid=true;
         uint64_t usage=0,budget=0,nonLocal=0,serial=0;
     };
@@ -14,6 +14,8 @@ struct GpuTimeline {
     Slot* active=nullptr;size_t next=0;uint64_t mainSerial=0,auxSerial=0;
     ID3D11DeviceContext* context=nullptr;
     drfull::TimelinePerformance perf{};
+    drfull::NativeStagePerformance nativePerf{};
+    std::array<double,8> nativeSum{};unsigned native=0;
     std::array<double,4> categorySum{};std::array<double,6> phaseSum{};
     double cameraSum=0,auxSum=0;unsigned category=3,phase=0;
     void init(ID3D11Device* device,ID3D11DeviceContext* ctx) {
@@ -38,17 +40,21 @@ struct GpuTimeline {
             cameraSum+=total;perf.samples++;perf.intervals+=s.count-1;
             perf.lastCameraUs=total;perf.lastUsage=s.usage;perf.lastBudget=s.budget;perf.lastNonLocal=s.nonLocal;perf.lastSerial=s.serial;
             if(total>=perf.maxCameraUs){perf.maxCameraUs=total;perf.maxUsage=s.usage;perf.maxBudget=s.budget;perf.maxNonLocal=s.nonLocal;perf.maxSerial=s.serial;}
-            for(unsigned i=1;i<s.count;i++){double us=double(stamps[i]-stamps[i-1])*scale;categorySum[s.categories[i-1]]+=us;phaseSum[s.phases[i-1]]+=us;}
+            for(unsigned i=1;i<s.count;i++){double us=double(stamps[i]-stamps[i-1])*scale;categorySum[s.categories[i-1]]+=us;phaseSum[s.phases[i-1]]+=us;if(s.categories[i-1]==0)nativeSum[s.nativeStages[i-1]]+=us;}
             const double n=double(perf.samples);perf.cameraUs=cameraSum/n;
             perf.nativeUs=categorySum[0]/n;perf.explicitUs=categorySum[1]/n;perf.compositeUs=categorySum[2]/n;perf.otherUs=categorySum[3]/n;
             perf.opaqueUs=phaseSum[0]/n;perf.gapUs=phaseSum[1]/n;perf.alphaUs=phaseSum[2]/n;perf.postAlphaUs=phaseSum[3]/n;perf.effectsUs=phaseSum[4]/n;perf.tailUs=phaseSum[5]/n;
+            nativePerf.samples=perf.samples;nativePerf.overflow=perf.overflow;for(unsigned i=0;i<8;i++)nativePerf.us[i]=nativeSum[i]/n;
         }
     }
     void stamp() {
         if(!active)return;
         if(active->count==limit){active->valid=false;perf.overflow++;return;}
-        unsigned i=active->count++;active->categories[i]=category;active->phases[i]=phase;context->End(active->points[i].Get());
+        unsigned i=active->count++;active->categories[i]=category;active->phases[i]=phase;active->nativeStages[i]=native;context->End(active->points[i].Get());
     }
+    // Same camera/disjoint scope and sample denominator as nativeUs. These are
+    // timestamp elapsed intervals, including bubbles, not independent GPU busy.
+    void nativeStage(unsigned stage){if(!active||native==stage)return;stamp();native=stage;active->nativeStages[active->count-1]=stage;}
     void close(bool expectedAux) {
         if(!active)return;
         if(active->aux!=expectedAux)active->valid=false;
@@ -62,7 +68,7 @@ struct GpuTimeline {
             if(serial++%64)return;
             auto& s=slots[next];if(s.pending){perf.skipped++;return;}next=(next+1)%slots.size();
             s.count=0;s.aux=aux;s.valid=true;s.usage=usage;s.budget=budget;s.nonLocal=nonLocal;s.serial=serial;
-            active=&s;category=3;phase=0;context->Begin(s.disjoint.Get());stamp();
+            active=&s;category=3;phase=0;native=0;context->Begin(s.disjoint.Get());stamp();
         }else if(id==1||id==3)close(id==3);
         else if(active){
             if(id>=4&&id<=7){stamp();category=id-4;active->categories[active->count-1]=category;}

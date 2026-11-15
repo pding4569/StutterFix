@@ -93,7 +93,7 @@ static class Program
         {
             for(int j=0;j<7;j++){int i=random.Next(size);order.Remove(treeNodes[i]);values[i].Key=random.Next(-10000,10000);order.Add(treeNodes[i]);}
             order.CopyTo(actual);Array.Copy(values,expected,size);Array.Sort(expected,(a,b)=>{int c=a.Key.CompareTo(b.Key);return c!=0?c:a.Id.CompareTo(b.Id);});
-            for(int i=0;i<size;i++)Check(ReferenceEquals(actual[i],expected[i]),"incremental order differs from total order oracle");
+            for(int i=0;i<size;i++) { Check(ReferenceEquals(actual[i],expected[i]),"incremental order differs from total order oracle"); Check(order.Rank(actual[i])==i,"subtree rank differs from total order oracle"); }
         }
         long treeBefore=GC.GetAllocatedBytesForCurrentThread();var stamp=System.Diagnostics.Stopwatch.GetTimestamp();
         for(int iteration=0;iteration<10000;iteration++){int i=iteration%size;order.Remove(treeNodes[i]);values[i].Key=-iteration;order.Add(treeNodes[i]);}
@@ -130,6 +130,17 @@ static class Program
         for(int i=0;i<10000;i++)order.OrderedAt(actual,i%size);
         Check(GC.GetAllocatedBytesForCurrentThread()==neighbourBefore,"neighbour proof allocates");
         Console.WriteLine("PASS M4m distance neighbours sources=7000 common-motion=in_place crossing=rollback_reinsert checks=10000 allocated=0");
+        // Production crossing operation: repair only the old/new rank interval.
+        int repaired=0;
+        for(int iteration=0;iteration<1000;iteration++)
+        {
+            int at=100+iteration%(size-200);var entry=actual[at];var node=treeNodes[entry.Id];
+            order.Remove(node);entry.Key=actual[at+1].Key;order.Add(node);
+            int rank=order.Rank(entry),lo=Math.Min(at,rank),hi=Math.Max(at,rank);
+            actual.Sort(lo,hi-lo+1,System.Collections.Generic.Comparer<OrderValue>.Create((a,b)=>{int c=a.Key.CompareTo(b.Key);return c!=0?c:a.Id.CompareTo(b.Id);}));
+            Check(order.Matches(actual),"local crossing span differs from tree oracle");repaired+=hi-lo+1;
+        }
+        Console.WriteLine($"PASS M4n order rank_oracle=7000000 crossings=1000 local_entries={repaired} barriers=production_guard");
         foreach(var mode in new[]{"", "Always", "ForwardBase"})
             Check(DirectFullExplicitPolicy.CameraPass(mode)&&!DirectFullExplicitPolicy.NonCameraPass(mode),"forward explicit pass rejected: "+mode);
         foreach(var mode in new[]{"ShadowCaster", "Meta", "MotionVectors", "DepthOnly", "DepthNormals", "Deferred", "PrepassBase", "PrepassFinal"})

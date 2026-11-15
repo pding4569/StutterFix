@@ -17,3 +17,7 @@
 3. GPU native 1.8~3.2ms(M4k 1.49): 간접 draw/배치 방식이 GPU 를 더 쓰는지 cache-off 대조로 확인하고 더 싼 쪽.
 4. HELLO 픽셀 회귀(M4l PSNR 40.06, 기준 42.8) — 남은 측정 결과 `E:\StutterFixWork\night-results\m4m-*.txt/.log` 확인.
 - 4종 빌드 오류 0, export 보존, fixture. 계획 m4n 접두사. 막히면 비정상적인 아이디어도 빠르게 시도.
+
+## 추가 (Claude, M4m 나머지 실측)
+- Exit cache off B1 = **238.1 FPS** (cache on 224.5/217.3, cache indirect 217.9). cache off: main 925, render 1,107, native GPU 1,678. → 지금 캐시는 재계획 비용 + GPU 추가 비용 때문에 손해. 국소 재계획 후 다시 비교.
+- **DD 원래 크기 A1 243.3 / B1 160.2** (M4l 179.8). DD B1: main 912(collect 575!), render 799(plan 176, apply 158, pose 154, constants 106, record 75, execute 59), grab_copies 프레임당 ~11, **메인 카메라 GPU 5,482 / native 5,010**(A 카메라 전체 ~3,500), phase 합계 6.24ms(A 4.11). DD 는 **GPU 병목** — 우리 native 그리기 GPU 를 원본 수준(맵 내용 몫 ~1.5~2ms)으로 내려야 한다. 후보: Grab 복사 횟수/크기(원본 Unity 와 같은 장면에서 Grab draw 수 비교), 사전 변환 compute, 간접 인자/컬링 dispatch, 오버드로(화면 밖·완전 투명 draw), 상태 전환. GPU timeline 으로 항목별 µs 를 state 에.

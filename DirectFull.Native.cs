@@ -1,4 +1,4 @@
-﻿#if DEV || AUTOTEST
+#if DEV || AUTOTEST
 using System;
 using System.Runtime.InteropServices;
 using UnityEngine;
@@ -7,7 +7,13 @@ namespace StutterFix
 {
     internal static unsafe class DirectFullNative
     {
-        internal enum Op { Create, Program, Geometry, Draw, Commit, Event, Stats, Destroy, Error, Abi, Composite, Perf, CommitPacked, CommitActive, BatchPerf, GeometryCpu, CommitActiveWorld, UploadPerf, GpuPerf, TimelineEvent, TimelinePerf, MemoryPerf, Configure, SubmissionPerf, DrawProbeConfigure, DrawProbeRead, TextureProbe, ResourceConfigure, ResourcePerf, DrawProbeDetailRead, DrawProbeStatus, ReplaceDraw, CacheConfigure, CachePerf, CacheDetail, CacheTuning }
+        internal enum Op { Create, Program, Geometry, Draw, Commit, Event, Stats, Destroy, Error, Abi, Composite, Perf, CommitPacked, CommitActive, BatchPerf, GeometryCpu, CommitActiveWorld, UploadPerf, GpuPerf, TimelineEvent, TimelinePerf, MemoryPerf, Configure, SubmissionPerf, DrawProbeConfigure, DrawProbeRead, TextureProbe, ResourceConfigure, ResourcePerf, DrawProbeDetailRead, DrawProbeStatus, ReplaceDraw, CacheConfigure, CachePerf, CacheDetail, CacheTuning, LocalPlanPerf, NativeStagePerf }
+        [StructLayout(LayoutKind.Sequential)] internal struct NativeStagePerformance { internal fixed double Us[8]; internal ulong Samples, Overflow; }
+        [StructLayout(LayoutKind.Sequential)] internal struct LocalPlanPerformance
+        {
+            internal ulong FullPlans, SegmentPlans, VisitedSources, VisitedOps, UnchangedSegments, IndexSources;
+            internal double SegmentUs, MaxSegmentUs, BatchUs, IndexUs, MaxPlanUs, MaxRecordUs;
+        }
         [StructLayout(LayoutKind.Sequential)] internal struct CacheTune { internal uint IndirectBatches; }
         [StructLayout(LayoutKind.Sequential)] internal struct CacheDetails
         {

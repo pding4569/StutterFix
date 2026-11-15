@@ -5,7 +5,14 @@ namespace drfull {
 // All pointers are borrowed only for the duration of dispatch. Native owns copies
 // and COM references. Opcodes are versioned behind ONE appended export so old
 // export hints as well as ordinals remain stable.
-enum Op { Create, Program, Geometry, Draw, Commit, Event, Stats, Destroy, Error, Abi, Composite, Perf, CommitPacked, CommitActive, BatchPerf, GeometryCpu, CommitActiveWorld, UploadPerf, GpuPerf, TimelineEvent, TimelinePerf, MemoryPerf, Configure, SubmissionPerf, DrawProbeConfigure, DrawProbeRead, TextureProbe, ResourceConfigure, ResourcePerf, DrawProbeDetailRead, DrawProbeStatus, ReplaceDraw, CacheConfigure, CachePerf, CacheDetail, CacheTuning };
+enum Op { Create, Program, Geometry, Draw, Commit, Event, Stats, Destroy, Error, Abi, Composite, Perf, CommitPacked, CommitActive, BatchPerf, GeometryCpu, CommitActiveWorld, UploadPerf, GpuPerf, TimelineEvent, TimelinePerf, MemoryPerf, Configure, SubmissionPerf, DrawProbeConfigure, DrawProbeRead, TextureProbe, ResourceConfigure, ResourcePerf, DrawProbeDetailRead, DrawProbeStatus, ReplaceDraw, CacheConfigure, CachePerf, CacheDetail, CacheTuning, LocalPlanPerf, NativeStagePerf };
+struct LocalPlanPerformance {
+    uint64_t fullPlans,segmentPlans,visitedSources,visitedOps,unchangedSegments,indexSources;
+    double segmentUs,maxSegmentUs,batchUs,indexUs,maxPlanUs,maxRecordUs;
+};
+static_assert(sizeof(LocalPlanPerformance)==96,"M4n append-only diagnostic ABI");
+struct NativeStagePerformance { double us[8];uint64_t samples,overflow; };
+static_assert(sizeof(NativeStagePerformance)==80,"M4n GPU breakdown ABI");
 // M4m: never enlarge CachePerformance (old callers own that payload).
 struct CacheDetails {
     uint64_t sharedBindings,privateBindings,frameEvaluations,drawEvaluations,frameBytes,drawBytes;

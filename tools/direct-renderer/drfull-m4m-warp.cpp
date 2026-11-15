@@ -4,6 +4,7 @@
 #undef main
 ComPtr<ID3DBlob> compileMoving(const char* text,const char* entry,const char* target){ComPtr<ID3DBlob>b,e;check(D3DCompile(text,std::strlen(text),nullptr,nullptr,nullptr,entry,target,D3DCOMPILE_IEEE_STRICTNESS,0,&b,&e));return b;}
 int main(){try{
+    std::cout.setf(std::ios::unitbuf);
     ComPtr<ID3D11Device>d;ComPtr<ID3D11DeviceContext>c;D3D_FEATURE_LEVEL fl{};check(D3D11CreateDevice(nullptr,D3D_DRIVER_TYPE_WARP,nullptr,0,nullptr,0,D3D11_SDK_VERSION,&d,&fl,&c));
     D3D11_TEXTURE2D_DESC td{};td.Width=48;td.Height=32;td.MipLevels=td.ArraySize=td.SampleDesc.Count=1;td.Format=DXGI_FORMAT_R8G8B8A8_UNORM;td.BindFlags=D3D11_BIND_RENDER_TARGET;
     ComPtr<ID3D11Texture2D>target;ComPtr<ID3D11RenderTargetView>rt;check(d->CreateTexture2D(&td,nullptr,&target));check(d->CreateRenderTargetView(target.Get(),nullptr,&rt));
