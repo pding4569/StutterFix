@@ -66,6 +66,7 @@ int main(int argc,char** argv){try{
     std::ofstream csv(out/"warp-results.tsv");csv<<"case\tnative_draws\tnon_background_pixels\tchanged\tmax_channel\tl1\n";
     for(unsigned caseIndex=0;caseIndex<count;caseIndex++){
         std::string label=r.text();int floor=r.pod<int>(),snap=r.pod<int>(),point=r.pod<int>(),mode=r.pod<int>(),filter=r.pod<int>();
+        bool namedGrab=label.rfind("named",0)==0;
         auto originalVs=r.blob(),originalPs=r.blob();ProgramIn program{};program.vs=originalVs.data();program.ps=originalPs.data();program.vsBytes=UINT(originalVs.size());program.psBytes=UINT(originalPs.size());for(auto& x:program.state)x=r.pod<int>();
         ProgramIn baselineProgram=program;
         std::vector<Buffer> bindings(r.pod<uint32_t>());for(auto& x:bindings)x=r.pod<Buffer>();std::vector<Patch> patches(r.pod<uint32_t>());for(auto& x:patches)x=r.pod<Patch>();auto constants=r.blob();
@@ -84,8 +85,8 @@ int main(int argc,char** argv){try{
         if(sprite){geometry.vertices=vertices.data()+1;geometry.vertexBytes=4*sizeof(Vertex);geometry.cpuIndices=indices.data()+3;geometry.cpuIndexCount=6;}
         else {geometry.buffers[0]=vb.Get();if(multi){geometry.buffers[1]=colorBuffer.Get();geometry.strides[1]=16;}geometry.indices=ib.Get();geometry.indexFormat=DXGI_FORMAT_R32_UINT;geometry.indexStart=3;geometry.indexCount=6;geometry.baseVertex=1;}
         CreateIn create{target.Get(),16,1};int token=dispatch(Create,0,&create);int programId=dispatch(Program,token,&program),geometryId=dispatch(Geometry,token,&geometry);
-        std::vector<Texture> tex;for(const auto& t:texInputs)tex.push_back(Texture{t.pattern==5?nullptr:textures[size_t(t.pattern)].Get(),t.stage,t.slot,t.sampler,t.pattern==5?1:filter,t.pattern==5?1:mode%2,t.pattern==5?1:mode%2,1,t.pattern==5?-1:0});
-        DrawIn draw{};draw.program=UINT(programId);draw.geometry=UINT(geometryId);draw.buffers=bindings.data();draw.bufferCount=UINT(bindings.size());draw.patches=patches.data();draw.patchCount=UINT(patches.size());draw.textures=tex.data();draw.textureCount=UINT(tex.size());draw.constants=constants.data();draw.constantBytes=UINT(constants.size());draw.sprite=sprite?1u:0u;draw.grab=(floor==2||floor==3)?1u:0u;
+        std::vector<Texture> tex;for(const auto& t:texInputs)tex.push_back(Texture{t.pattern==5?nullptr:textures[size_t(t.pattern)].Get(),t.stage,t.slot,t.sampler,t.pattern==5?1:filter,t.pattern==5?1:mode%2,t.pattern==5?1:mode%2,1,t.pattern==5?(namedGrab?-2:-1):0});
+        DrawIn draw{};draw.program=UINT(programId);draw.geometry=UINT(geometryId);draw.buffers=bindings.data();draw.bufferCount=UINT(bindings.size());draw.patches=patches.data();draw.patchCount=UINT(patches.size());draw.textures=tex.data();draw.textureCount=UINT(tex.size());draw.constants=constants.data();draw.constantBytes=UINT(constants.size());draw.sprite=sprite?1u:0u;draw.grab=(floor==2||floor==3)?(namedGrab?2u:1u):0u;
         draw.extent[0]=draw.extent[1]=1;draw.extent[2]=.1f;
         int drawId=dispatch(Draw,token,&draw);uint32_t poseIds[]={0},drawIds[]={UINT(drawId)},offsets[]={0},list[]={UINT(drawId),UINT(drawId)},segs[]={0,mode==2?2u:1u};
         frame.poses=&pose;frame.poseIds=poseIds;frame.poseCount=1;frame.drawIds=drawIds;frame.constantOffsets=offsets;frame.constants=constants.data();frame.list=list;frame.segments=segs;frame.listCount=segs[1];frame.segmentCount=1;frame.listChanged=1;
@@ -109,7 +110,7 @@ int main(int argc,char** argv){try{
         ComPtr<ID3D11Texture2D> grab;ComPtr<ID3D11ShaderResourceView> grabSrv;
         if(floor==2||floor==3){D3D11_TEXTURE2D_DESC desc{};target->GetDesc(&desc);desc.BindFlags=D3D11_BIND_SHADER_RESOURCE;check(device->CreateTexture2D(&desc,nullptr,&grab));check(device->CreateShaderResourceView(grab.Get(),nullptr,&grabSrv));}
         for(unsigned repeat=0;repeat<segs[1];repeat++){
-            if(floor==2||floor==3){ID3D11ShaderResourceView* nil=nullptr;context->PSSetShaderResources(1,1,&nil);context->CopyResource(grab.Get(),target.Get());auto* srv=grabSrv.Get();context->PSSetShaderResources(1,1,&srv);}
+            if((floor==2||floor==3)&&(!namedGrab||repeat==0)){ID3D11ShaderResourceView* nil=nullptr;context->PSSetShaderResources(1,1,&nil);context->CopyResource(grab.Get(),target.Get());auto* srv=grabSrv.Get();context->PSSetShaderResources(1,1,&srv);}
             context->DrawIndexed(6,3,1);
         }auto ref=readback(device.Get(),context.Get(),target.Get());
         uint64_t changed=0,l1=0,nonBackground=0;unsigned maxChannel=0;for(size_t i=0;i<original.size();i+=4){bool diff=false,bg=false;for(size_t j=0;j<4;j++){unsigned delta=unsigned(std::abs(int(original[i+j])-int(ref[i+j])));maxChannel=std::max(maxChannel,delta);l1+=delta;diff|=delta!=0;bg|=original[i+j]!=uint8_t(std::round(background[j]*255));}changed+=diff;nonBackground+=bg;}
@@ -118,6 +119,26 @@ int main(int argc,char** argv){try{
         require(nonBackground>1000,"blank original falsely looks equal");
         std::cout<<label<<" nonblank="<<nonBackground<<" changed="<<changed<<" max="<<maxChannel<<" L1="<<l1<<"\n";
         require(maxChannel<=2,"original/reference pixel mismatch");globalMax=std::max(globalMax,maxChannel);allChanged+=changed;
+        if(floor==2||floor==3){
+            GpuPerformance gp{};dispatch(GpuPerf,token,&gp);uint64_t copies=namedGrab?1u:segs[1];
+            require(gp.grabCopies==copies&&gp.grabBytes==copies*192*128*4,"named/unnamed Grab copy count or bytes");
+            if(mode==2){
+                uint32_t split[]={0,1,1,1};frame.segments=split;frame.segmentCount=2;
+                context->ClearRenderTargetView(rt,background);dispatch(Commit,token,&frame);event(token<<16);event((token<<16)|1);
+                require(readback(device.Get(),context.Get(),target.Get())==original,"Grab cache did not reset per frame/persist across segments");
+                GpuPerformance after{};dispatch(GpuPerf,token,&after);require(after.grabCopies-gp.grabCopies==copies,"Grab frame/segment copy scope");
+                if(namedGrab){
+                    // A second name must take its own snapshot after the first draw.
+                    for(auto& t:tex)if(t.srgb==-2)t.srgb=-3;draw.grab=3;
+                    int other=dispatch(Draw,token,&draw);list[1]=UINT(other);
+                    context->ClearRenderTargetView(rt,background);dispatch(Commit,token,&frame);event(token<<16);event((token<<16)|1);
+                    GpuPerformance isolated{};dispatch(GpuPerf,token,&isolated);require(isolated.grabCopies-after.grabCopies==2,"two named Grabs incorrectly alias one surface");
+                    list[1]=UINT(drawId);draw.grab=2;for(auto& t:tex)if(t.srgb==-3)t.srgb=-2;
+                }
+                frame.segments=segs;frame.segmentCount=1;
+            }
+            std::cout<<"PASS M4g Grab "<<label<<" copies="<<copies<<" draws="<<segs[1]<<" bytes="<<copies*192*128*4<<" frame_reset=True segment_scope=True name_isolation=True pixels=identical\n";
+        }
         if(caseIndex==0 && floor<2){
             // Non-symmetric matrix transposition is a required negative control.
             auto bad=reference;float* matrix=reinterpret_cast<float*>(bad.data());for(int c=0;c<4;c++)for(int row=0;row<c;row++)std::swap(matrix[c*4+row],matrix[row*4+c]);context->UpdateSubresource(cb.Get(),0,nullptr,bad.data(),0,0);context->ClearRenderTargetView(rt,background);context->DrawIndexed(6,3,1);auto badImage=readback(device.Get(),context.Get(),target.Get());unsigned errors=0;for(size_t i=0;i<badImage.size();i+=4)if(std::memcmp(badImage.data()+i,original.data()+i,4)!=0)errors++;require(errors>1000,"matrix control failed to expose wrong layout");negative++;
@@ -232,6 +253,71 @@ int main(int argc,char** argv){try{
             auto boundaryImage=readback(device.Get(),context.Get(),target.Get());
             dirtyBatch=singleIds[1];bf.list=singleIds;context->ClearRenderTargetView(rt,background);dispatch(CommitPacked,batchToken,&bf);event(batchToken<<16);auto boundaryOracle=readback(device.Get(),context.Get(),target.Get());
             unsigned boundaryMax=0;for(size_t k=0;k<boundaryImage.size();k++)boundaryMax=std::max(boundaryMax,unsigned(std::abs(int(boundaryImage[k])-int(boundaryOracle[k]))));require(boundaryMax<=2,"MPB boundary pixels differ from original matrices");
+            // Restore the boundary constants, then permute a translucent draw list.
+            // Same geometry/poses, different painter order: only indices may upload.
+            dirtyBatch=batchedIds[1];bf.constants=colorsForBatch[1].data();bf.list=batchedIds;
+            dispatch(CommitPacked,batchToken,&bf);event(batchToken<<16);
+            dirtyBatch=singleIds[1];bf.list=singleIds;dispatch(CommitPacked,batchToken,&bf);event(batchToken<<16);
+            bf.dirtyCount=bf.constantBytes=0;bf.constantOffsets=zeroOffsets;bf.poseCount=0;
+            uint32_t reverseBatch[]={batchedIds[2],batchedIds[1],batchedIds[0]},reverseSingle[]={singleIds[2],singleIds[1],singleIds[0]};
+            UploadPerformance sortBefore{},sortAfter{};BatchPerformance sortBatchBefore{},sortBatchAfter{};
+            dispatch(UploadPerf,batchToken,&sortBefore);dispatch(BatchPerf,batchToken,&sortBatchBefore);
+            bf.list=reverseBatch;context->ClearRenderTargetView(rt,background);dispatch(CommitPacked,batchToken,&bf);event(batchToken<<16);auto reversed=readback(device.Get(),context.Get(),target.Get());
+            dispatch(UploadPerf,batchToken,&sortAfter);dispatch(BatchPerf,batchToken,&sortBatchAfter);
+            require(sortAfter.geometryBytes==sortBefore.geometryBytes&&sortBatchAfter.gpuGeometryUploads==sortBatchBefore.gpuGeometryUploads&&sortBatchAfter.gpuDispatches==sortBatchBefore.gpuDispatches,"reordering uploaded/recomputed geometry");
+            require(sortAfter.indexBytes-sortBefore.indexBytes==18*4,"reorder must upload only 18 uint indices");
+            bf.list=reverseSingle;context->ClearRenderTargetView(rt,background);dispatch(CommitPacked,batchToken,&bf);event(batchToken<<16);auto reversedOracle=readback(device.Get(),context.Get(),target.Get());
+            require(reversed==reversedOracle,"stable-geometry reorder pixels differ from singles");
+            // Change the LAST sparse pose (not slot zero), to catch boxed-source offsets.
+            bf.list=reverseBatch;bf.listChanged=1;dispatch(CommitPacked,batchToken,&bf);event(batchToken<<16);
+            batchPoses[2].world[13]+=.031f;uint32_t lastPose=2;bf.poseIds=&lastPose;bf.poses=&batchPoses[2];bf.poseCount=1;bf.listChanged=0;
+            UploadPerformance sparseBefore{},sparseAfter{};dispatch(UploadPerf,batchToken,&sparseBefore);
+            context->ClearRenderTargetView(rt,background);dispatch(CommitPacked,batchToken,&bf);event(batchToken<<16);auto sparseImage=readback(device.Get(),context.Get(),target.Get());dispatch(UploadPerf,batchToken,&sparseAfter);
+            require(sparseAfter.poseBytes-sparseBefore.poseBytes==80&&sparseAfter.geometryBytes==sparseBefore.geometryBytes&&sparseAfter.indexBytes==sparseBefore.indexBytes,"one changed pose must upload exactly 80 bytes");
+            bf.poseCount=0;bf.list=reverseSingle;bf.listChanged=1;context->ClearRenderTargetView(rt,background);dispatch(CommitPacked,batchToken,&bf);event(batchToken<<16);
+            require(sparseImage==readback(device.Get(),context.Get(),target.Get()),"sparse nonzero-offset upload corrupted pixels");
+            UploadPerformance steadyBefore{},steadyAfter{};dispatch(UploadPerf,batchToken,&steadyBefore);bf.listChanged=0;dispatch(CommitPacked,batchToken,&bf);event(batchToken<<16);dispatch(UploadPerf,batchToken,&steadyAfter);
+            require(steadyAfter.constantBytes==steadyBefore.constantBytes&&steadyAfter.colorBytes==steadyBefore.colorBytes,"stable alternating single draws reuploaded CB/color");
+            BatchPerformance reasonStats{};dispatch(BatchPerf,batchToken,&reasonStats);
+            require(steadyAfter.singleUnverified+steadyAfter.singleGeometry+steadyAfter.singleProgram+steadyAfter.singleConstants+steadyAfter.singleTextures+steadyAfter.singleSegment+steadyAfter.singleLimit==reasonStats.singleDraws,"single reason partition mismatch");
+            std::cout<<"PASS M4g delta "<<label<<" reorder_geometry=0 reorder_dispatches=0 reorder_indices=72 sparse_pose_bytes=80 stable_cb_color=0 pixels=identical\n";
+            if(sprite){
+                auto tint=colorsForBatch[0];float changedTint[4]{.23f,.45f,.67f,.89f};size_t tintOffset=0;
+                for(const auto& patch:patches)if(patch.kind==16)tintOffset=patch.offset;std::memcpy(tint.data()+tintOffset,changedTint,16);
+                dirtyBatch=batchedIds[0];bf.list=reverseBatch;bf.listChanged=1;bf.drawIds=&dirtyBatch;bf.dirtyCount=1;bf.constants=tint.data();bf.constantBytes=UINT(tint.size());bf.constantOffsets=dirtyEnds;
+                UploadPerformance tintBefore{},tintAfter{};dispatch(UploadPerf,batchToken,&tintBefore);
+                context->ClearRenderTargetView(rt,background);dispatch(CommitPacked,batchToken,&bf);event(batchToken<<16);auto tinted=readback(device.Get(),context.Get(),target.Get());dispatch(UploadPerf,batchToken,&tintAfter);
+                require(tintAfter.drawBytes-tintBefore.drawBytes==32&&tintAfter.geometryBytes==tintBefore.geometryBytes,"one tint must upload exactly one 32-byte draw slot");
+                dirtyBatch=singleIds[0];bf.list=reverseSingle;context->ClearRenderTargetView(rt,background);dispatch(CommitPacked,batchToken,&bf);event(batchToken<<16);require(tinted==readback(device.Get(),context.Get(),target.Get()),"sparse draw/color cache mismatch");
+                colorsForBatch[0]=tint;bf.dirtyCount=bf.constantBytes=0;bf.constantOffsets=zeroOffsets;
+                std::cout<<"PASS M4g tint "<<label<<" draw_bytes=32 geometry_bytes=0 pixels=identical\n";
+            }
+            // Subpixel thin geometry with nonsymmetric/sheared matrices and camera
+            // changes. Compare exactly against the SAME original per-object DXBC.
+            auto thinVertices=vertices;for(unsigned j=1;j<=4;j++)thinVertices[j].p[1]*=snap?.013f:.0007f;
+            GeometryIn thin=geometry;thin.vertices=thinVertices.data()+1;thin.vertexBytes=4*sizeof(Vertex);thin.cpuIndices=localIndices.data();thin.cpuIndexCount=6;thin.buffers[1]=nullptr;thin.strides[1]=0;
+            // Force the canonical interleaved layout even for the external multistream case.
+            Attribute thinAttrs[]={{0,0,6,0,0},{3,0,2,0,12},{4,0,16,0,28},{4,1,16,0,36}};thin.attributes=thinAttrs;
+            draw.geometry=UINT(dispatch(Geometry,batchToken,&thin));uint32_t thinSingle[3],thinBatch[3];
+            for(unsigned j=0;j<3;j++){draw.pose=j;draw.constants=colorsForBatch[j].data();draw.sprite=sprite?1u:0u;thinSingle[j]=UINT(dispatch(Draw,batchToken,&draw));draw.sprite|=2;thinBatch[j]=UINT(dispatch(Draw,batchToken,&draw));}
+            bf.poseIds=batchPoseIds;bf.poses=batchPoses.data();bf.poseCount=3;bf.listChanged=1;
+            uint64_t thinDiff=0,thinCoverage=0;
+            for(unsigned sample=0;sample<24;sample++){
+                for(unsigned j=0;j<3;j++){batchPoses[j].world[0]=.73f+.0031f*float(sample+j);batchPoses[j].world[1]=.000017f*float(sample+1);batchPoses[j].world[4]=-.13f;batchPoses[j].world[5]=1.07f;batchPoses[j].world[12]=-.12f+.00137f*float(sample+j);batchPoses[j].world[13]=.004901f+.000113f*float(sample+j);}
+                bf.vp[0]=.9137f;bf.vp[5]=-.8703f;bf.vp[12]=-.03719f+.00011f*float(sample);bf.vp[13]=.04331f;
+                bf.list=thinSingle;context->ClearRenderTargetView(rt,background);dispatch(CommitPacked,batchToken,&bf);event(batchToken<<16);auto thinOracle=readback(device.Get(),context.Get(),target.Get());
+                bf.list=thinBatch;context->ClearRenderTargetView(rt,background);dispatch(CommitPacked,batchToken,&bf);event(batchToken<<16);auto thinImage=readback(device.Get(),context.Get(),target.Get());
+                for(size_t k=0;k<thinImage.size();k++)thinDiff+=thinImage[k]!=thinOracle[k];
+                for(size_t k=0;k<thinOracle.size();k+=4){bool visible=false;for(size_t c=0;c<4;c++)visible|=thinOracle[k+c]!=uint8_t(std::round(background[c]*255));thinCoverage+=visible;}
+            }
+            require(thinDiff==0&&thinCoverage>50,"thin subpixel geometry precision/coverage differs from original DXBC");
+            std::cout<<"PASS M4g thin "<<label<<" transforms=24 differing_channels="<<thinDiff<<" covered_pixels="<<thinCoverage<<" original_DXBC=True\n";
+            // An entirely offscreen batch must not submit a draw, while a partially
+            // visible union must keep all its coverage.
+            Statistics cullBefore{},cullAfter{};dispatch(Stats,batchToken,&cullBefore);for(auto& pos:batchPoses)pos.world[12]+=100.f;
+            context->ClearRenderTargetView(rt,background);dispatch(CommitPacked,batchToken,&bf);event(batchToken<<16);dispatch(Stats,batchToken,&cullAfter);
+            require(cullAfter.draws==cullBefore.draws&&cullAfter.errors==0,"offscreen batch bypassed culling");
+            std::cout<<"PASS M4g batch-cull "<<label<<" offscreen_draws=0\n";
             dispatch(Destroy,batchToken,nullptr);
             if(caseIndex==0){
                 // A submission microbenchmark, never a claim about GPU/game FPS.
@@ -253,6 +339,29 @@ int main(int argc,char** argv){try{
                 uint64_t movingHeap=nativeHeapCalls.load()-beforeMoving;Statistics movingStats{};Performance movingPhases{};BatchPerformance movingBatch{};dispatch(Stats,large,&movingStats);dispatch(Perf,large,&movingPhases);dispatch(BatchPerf,large,&movingBatch);
                 require(movingHeap==0&&movingStats.errors==0&&movingStats.dropped==0&&movingStats.draws==513&&movingBatch.gpuDispatches==257&&movingBatch.gpuGeometryUploads==1,"moving 7000-source frame allocation/drop/draw mismatch");
                 std::cout<<"PASS M4f moving sources=7000 frames=256 draws_per_frame=1 cpp_heap_calls="<<movingHeap<<" render_us="<<(movingStats.renderUs*double(movingStats.frames)-largeStats.renderUs*double(largeStats.frames))/256.0<<" commit_us="<<(movingStats.commitUs*double(movingStats.frames)-largeStats.commitUs*double(largeStats.frames))/256.0<<" batch_build_us="<<(movingBatch.buildUs-largePerf.buildUs)/double(movingPhases.sampledFrames-phases.sampledFrames)<<" world_only=True gpu_pretransform=True tiny_geometry=True WARP_not_game=True\n";
+                // Exit-like sparse motion: 131 of 7000 poses, two disjoint ranges.
+                std::array<uint32_t,131> sparseIds{};std::array<std::array<float,16>,131> sparseWorlds{};
+                for(unsigned j=0;j<131;j++){sparseIds[j]=j<65?100+j:6000+j;std::memcpy(sparseWorlds[j].data(),movingWorlds[sparseIds[j]].data(),64);sparseWorlds[j][12]+=.00001f;}
+                many.poses=reinterpret_cast<const Pose*>(sparseWorlds.data());many.poseIds=sparseIds.data();many.poseCount=131;
+                FrameActive sparseFrame{many,nullptr,nullptr,0};UploadPerformance sparseStart{},sparseEnd{};dispatch(UploadPerf,large,&sparseStart);
+                uint64_t sparseHeapStart=nativeHeapCalls.load();
+                for(unsigned j=0;j<256;j++){for(auto& world:sparseWorlds)world[12]+=.000001f;dispatch(CommitActiveWorld,large,&sparseFrame);event(large<<16);}
+                uint64_t sparseHeap=nativeHeapCalls.load()-sparseHeapStart;dispatch(UploadPerf,large,&sparseEnd);Statistics sparseStats{};dispatch(Stats,large,&sparseStats);
+                require(sparseHeap==0&&sparseStats.errors==0&&sparseEnd.poseBytes-sparseStart.poseBytes==uint64_t(131)*80*256&&sparseEnd.geometryBytes==sparseStart.geometryBytes&&sparseEnd.drawBytes==sparseStart.drawBytes&&sparseEnd.constantBytes==sparseStart.constantBytes,"131 dirty poses uploaded unchanged data/allocated/errored");
+                require(sparseEnd.poseRanges-sparseStart.poseRanges==512,"dirty poses not coalesced into two ranges");
+                require(sparseEnd.bakedVertices-sparseStart.bakedVertices==uint64_t(14)*64*256,"sparse motion computed unchanged vertex blocks");
+                std::cout<<"PASS M4g sparse sources=7000 changed=131 frames=256 pose_bytes_per_frame=10480 pose_ranges_per_frame=2 geometry_bytes=0 draw_bytes=0 constant_bytes=0 cpp_heap_calls="<<sparseHeap<<" render_us="<<(sparseStats.renderUs*double(sparseStats.frames)-movingStats.renderUs*double(movingStats.frames))/256.0<<" work_bytes_per_frame="<<double(sparseEnd.workBytes-sparseStart.workBytes)/256.0<<" baked_vertices_per_frame="<<(sparseEnd.bakedVertices-sparseStart.bakedVertices)/256<<"\n";
+                // Reorder all 7000 every frame, with no new geometry or poses.
+                many.poseCount=0;many.listChanged=1;UploadPerformance reStart{},reEnd{};BatchPerformance rbStart{},rbEnd{};dispatch(UploadPerf,large,&reStart);dispatch(BatchPerf,large,&rbStart);
+                uint64_t reorderHeapStart=nativeHeapCalls.load();
+                for(unsigned j=0;j<64;j++){std::reverse(manyList.begin(),manyList.end());dispatch(CommitPacked,large,&many);event(large<<16);}
+                uint64_t reorderHeap=nativeHeapCalls.load()-reorderHeapStart;dispatch(UploadPerf,large,&reEnd);dispatch(BatchPerf,large,&rbEnd);Statistics reStats{};dispatch(Stats,large,&reStats);
+                require(reorderHeap==0&&reStats.errors==0&&reEnd.geometryBytes==reStart.geometryBytes&&rbEnd.gpuGeometryUploads==rbStart.gpuGeometryUploads&&rbEnd.gpuDispatches==rbStart.gpuDispatches&&reEnd.poseBytes==reStart.poseBytes&&reEnd.indexBytes-reStart.indexBytes==uint64_t(population)*6*4*64,"reorder uploaded geometry/pose or dispatched compute");
+                std::cout<<"PASS M4g reorder sources=7000 frames=64 geometry_bytes=0 pose_bytes=0 compute_dispatches=0 index_bytes_per_frame=168000 cpp_heap_calls="<<reorderHeap<<" render_us="<<(reStats.renderUs*double(reStats.frames)-sparseStats.renderUs*double(sparseStats.frames))/64.0<<"\n";
+                Performance accounting{};dispatch(Perf,large,&accounting);
+                require(accounting.uploadBytes==reEnd.geometryBytes+reEnd.poseBytes+reEnd.drawBytes+reEnd.indexBytes+reEnd.constantBytes+reEnd.colorBytes+reEnd.cpuBatchBytes+reEnd.workBytes,"upload category bytes do not sum to total");
+                GpuPerformance timing{};dispatch(GpuPerf,large,&timing);require(timing.samples>0&&timing.eventUs>=0&&timing.maxEventUs>=timing.eventUs,"GPU timestamp query sampling failed");
+                std::cout<<"PASS M4g accounting bytes="<<accounting.uploadBytes<<" categories=8 GPU_samples="<<timing.samples<<" gpu_event_us="<<timing.eventUs<<" gpu_max_us="<<timing.maxEventUs<<" adapter=WARP not_hardware=True\n";
                 dispatch(Destroy,large,nullptr);
             }
 

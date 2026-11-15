@@ -11,7 +11,7 @@ root=Path(__file__).resolve().parents[2]
 
 def main():
     p=argparse.ArgumentParser(description=__doc__)
-    p.add_argument('--milestone', choices=('m4d','m4e','m4f'), default='m4d')
+    p.add_argument('--milestone', choices=('m4d','m4e','m4f','m4g'), default='m4d')
     p.add_argument('--maps',default='hl50,wf,dd,sh')
     p.add_argument('--rt',default='3440x1440')
     p.add_argument('--output',type=Path,default=root/'out/direct-renderer/m4d/plans')
@@ -25,8 +25,8 @@ def main():
     settings,commands=bench.CFG2['ppGpuCam'];settings=dict(bench.CLEAN,**settings)
     assert settings['GpuDeco']==0 and settings['RunLod'] is False
     commands=list(commands)+['dr2 off','drfull off','drfull assert off']
-    if args.milestone in ('m4e','m4f'):commands += ['drfull grab native']
-    if args.milestone == 'm4f':commands += ['drfull warm']
+    if args.milestone in ('m4e','m4f','m4g'):commands += ['drfull grab native']
+    if args.milestone in ('m4f','m4g'):commands += ['drfull warm']
     assert not any(c.startswith(('hidegroup','scriptskip','drx ','dr bench')) for c in commands)
     args.output.mkdir(parents=True,exist_ok=True)
     manifest=dict(workspace=str(root),branch='claude/drfull',launch=False,preset='ppGpuCam',rt=args.rt,
@@ -58,7 +58,7 @@ def main():
                 mid += ['drfull on' if candidate else 'drfull off','wait 2',assertion,'drfull state','cpuwindow begin']
                 post=['cpuwindow end',assertion,'drfull state','drfull off','drfull assert off','drfull state']+list(bench.CFG_POST['ppGpuCam'])
                 steps=bench.steps(path,at,name,commands,False,mid,post)
-            if args.milestone in ('m4e','m4f'):
+            if args.milestone in ('m4e','m4f','m4g'):
                 expanded=[]
                 for index, step in enumerate(steps):
                     # Freeze the song during incremental setup. Without this,
@@ -73,10 +73,17 @@ def main():
                     if step == 'framecmp grab d1':expanded.append('drfull colors')
                     if step == 'drfull state':expanded.append('drfull why')
                 steps=expanded
-            if args.milestone == 'm4f':
+            if args.milestone in ('m4f','m4g'):
                 steps=[s for s in steps if s != 'drfull cold' and (candidate or s != 'drfull warm')]
                 at_quit=steps.index('quit')
                 steps.insert(at_quit,'drfull cold')
+            if args.milestone == 'm4g':
+                expanded=[]
+                for step in steps:
+                    if step in ('fpsmark start','pause') or step.startswith('fpsmark end '):expanded.append('drfull assert clean')
+                    expanded.append(step)
+                steps=expanded
+                manifest['validity'] += [] if 'safe=0 on A/B and pixel runs' in manifest['validity'] else ['safe=0 on A/B and pixel runs']
             assert all(not (c.startswith('wait ') and float(c.split()[1])>=180) for c in steps)
             plan=dict(tag=name,steps=steps,settings=settings,timeout_min=15,
                       measurement=dict(scope='classification only; exclude from ABBA' if label=='plan' else 'paused pixels and off/off noise' if label=='pixel' else 'original shader native M4d' if candidate else 'Unity reference',

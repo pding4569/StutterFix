@@ -19,7 +19,7 @@ namespace StutterFix
         internal sealed class Stage { internal byte[] Code; internal Buffer[] Buffers; internal Texture[] Textures; internal Input[] Inputs; }
         internal sealed class Variant { internal string[] Keywords; internal Stage Vs, Ps; }
         internal sealed class State { internal float Value; internal string Name; internal int Id; }
-        internal sealed class Pass { internal int Index; internal bool Grab; internal State[] States; internal Variant[] Variants; }
+        internal sealed class Pass { internal int Index; internal bool Grab; internal string GrabName = ""; internal State[] States; internal Variant[] Variants; }
         internal sealed class Property { internal string Name; internal int Id, Type; internal Vector4 Default; internal string DefaultTexture; }
         internal sealed class ShaderData { internal string Name; internal string[] Keywords; internal Property[] Properties; internal Pass[] Passes; }
         static Dictionary<string, ShaderData> all;
@@ -32,7 +32,8 @@ namespace StutterFix
             using (var stream = typeof(DirectFull).Assembly.GetManifestResourceStream("StutterFix.drfull.original"))
             using (var r = new BinaryReader(stream ?? throw new InvalidDataException("DRF original resource missing")))
             {
-                if (r.ReadInt32() != 0x34465244 || r.ReadInt32() != 1) throw new InvalidDataException("DRF schema");
+                if (r.ReadInt32() != 0x34465244) throw new InvalidDataException("DRF magic");
+                int schema = r.ReadInt32(); if (schema != 1 && schema != 2) throw new InvalidDataException("DRF schema");
                 int n = Count(r);
                 for (int i = 0; i < n; i++)
                 {
@@ -47,6 +48,7 @@ namespace StutterFix
                     for (int k = 0; k < s.Passes.Length; k++)
                     {
                         var p = new Pass { Index = r.ReadInt32(), Grab = r.ReadInt32() != 0, States = new State[29] };
+                        if (schema >= 2) p.GrabName = Text(r);
                         for (int j = 0; j < p.States.Length; j++) { var st = new State { Value = r.ReadSingle(), Name = Text(r) }; st.Id = Shader.PropertyToID(st.Name); p.States[j] = st; }
                         p.Variants = new Variant[Count(r)];
                         for (int j = 0; j < p.Variants.Length; j++) p.Variants[j] = new Variant { Keywords = Strings(r), Vs = ReadStage(r), Ps = ReadStage(r) };

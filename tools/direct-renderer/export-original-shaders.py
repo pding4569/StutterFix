@@ -194,7 +194,7 @@ def main():
                 for key in ('vs','ps'):
                     st=v[key];item[key]={k:st[k] for k in ('sha256','cbs','textures','inputs')}
                 vs.append(item)
-            passes.append(dict(index=p['index'],grab=p['grab_before'],state=state,variants=vs))
+            passes.append(dict(index=p['index'],grab=p['grab_before'],grab_name=p['grab_name'],state=state,variants=vs))
         return json.dumps(dict(name=s['name'],keywords=s['keywords'],properties=s['properties'],passes=passes),sort_keys=True)
     paths=[args.game_data/'Resources/unity_builtin_extra',args.game_data/'Resources/unity default resources',
            args.game_data/'globalgamemanagers.assets',args.game_data/'resources.assets']+sorted(args.game_data.glob('sharedassets*.assets'))
@@ -214,10 +214,10 @@ def main():
                     assert off+n<=len(blocks[segment]);entries.append(blocks[segment][off:off+n])
                 passes=[]
                 for si,sub in enumerate(parsed['m_SubShaders'][:1]):
-                    grab = False
+                    grab = False; grab_name = ''
                     for pi,ps in enumerate(sub['m_Passes']):
                         if ps['m_Type']==2:
-                            grab=True;continue
+                            grab=True;grab_name=ps['m_TextureName'];continue
                         if ps['m_Type']!=0: raise ValueError('UsePass requires Unity fallback')
                         names={v:k for k,v in ps['m_NameIndices']}; stages={}
                         for kind in ('progVertex','progFragment'):
@@ -236,7 +236,7 @@ def main():
                                 if x['system']: continue
                                 assert any(o['name']==x['name'] and o['index']==x['index'] and o['type']==x['type'] and o['mask']&x['mask']==x['mask'] for o in outs)
                             variants.append(dict(keywords=list(keywords),vs=v,ps=f))
-                        passes.append(dict(index=pi,grab_before=grab,state=ps['m_State'],variants=variants));grab=False
+                        passes.append(dict(index=pi,grab_before=grab,grab_name=grab_name,state=ps['m_State'],variants=variants));grab=False;grab_name=''
                 if not passes or any(not p['variants'] for p in passes): raise ValueError('no executable pass (UsePass/fallback)')
                 candidate=dict(name=name,source=asset.name,path_id=obj.path_id,keywords=parsed['m_KeywordNames'],properties=parsed['m_PropInfo']['m_Props'],passes=passes)
                 if name in shaders:
@@ -258,7 +258,7 @@ def main():
         x=s.encode('utf-8'); integer(len(x));b.extend(x)
     def stateval(x):
         b.extend(struct.pack('<f',float(x['val'])));string('' if x['name'] in ('','<noninit>') else x['name'])
-    integer(0x34465244);integer(1);integer(len(shaders))
+    integer(0x34465244);integer(2);integer(len(shaders))
     for sh in sorted(shaders.values(),key=lambda x:x['name']):
         string(sh['name']);integer(len(sh['keywords']))
         for kw in sh['keywords']:string(kw)
@@ -268,7 +268,7 @@ def main():
             b.extend(struct.pack('<4f',*[prop[f'm_DefValue[{i}]'] for i in range(4)]));string(prop['m_DefTexture']['m_DefaultName'])
         integer(len(sh['passes']))
         for ps in sh['passes']:
-            integer(ps['index']);integer(int(ps['grab_before']));s=ps['state'];blend=s['rtBlend0']
+            integer(ps['index']);integer(int(ps['grab_before']));string(ps['grab_name']);s=ps['state'];blend=s['rtBlend0']
             for k in ('srcBlend','destBlend','srcBlendAlpha','destBlendAlpha','blendOp','blendOpAlpha','colMask'):stateval(blend[k])
             for k in ('zClip','zTest','zWrite','culling','offsetFactor','offsetUnits','alphaToMask','stencilReadMask','stencilWriteMask','stencilRef'):stateval(s[k])
             for face in ('stencilOp','stencilOpFront','stencilOpBack'):

@@ -13,6 +13,7 @@
 #include <algorithm>
 #include <cstring>
 #include <cmath>
+#include <cfloat>
 #include <map>
 #include <tuple>
 #include <atomic>
@@ -58,13 +59,14 @@ struct Geometry {
     std::vector<D3D11_INPUT_ELEMENT_DESC> attributes;
     std::map<std::pair<const Shader*,bool>,ComPtr<ID3D11InputLayout>> layouts;
 };
-struct Sample { ComPtr<ID3D11ShaderResourceView> view;ComPtr<ID3D11SamplerState> sampler;int stage,slot,samplerSlot;bool grab=false; };
+struct Sample { ComPtr<ID3D11ShaderResourceView> view;ComPtr<ID3D11SamplerState> sampler;int stage,slot,samplerSlot;bool grab=false;uint32_t grabId=0; };
 struct ConstantStorage { ComPtr<ID3D11Buffer> buffer;std::vector<uint8_t> uploaded;bool ready=false; };
-struct Constants { Buffer binding;std::shared_ptr<ConstantStorage> storage; };
+struct Constants { Buffer binding;std::shared_ptr<ConstantStorage> storage,batchStorage;std::vector<uint8_t> material;bool privateMaterial=false; };
 struct DrawCall {
     std::shared_ptr<Shader> shader;std::shared_ptr<Geometry> geometry;ComPtr<ID3D11InputLayout> layout,batchLayout;
-    std::vector<Constants> buffers;std::vector<Patch> patches;std::vector<Sample> textures;std::vector<uint8_t> bytes;uint32_t pose;bool grab=false,batchable=false,sprite=false;ComPtr<ID3D11Buffer> color;
-    float center[3]{},extent[3]{};float rendererTint[4]{1,1,1,1},flip[4]{1,1,1,1};bool spritePatches=false;
+    std::vector<Constants> buffers;std::vector<Patch> patches;std::vector<Sample> textures;std::vector<uint8_t> bytes;uint32_t pose;bool grab=false,batchable=false,sprite=false;uint32_t grabId=0;ComPtr<ID3D11Buffer> color;
+    float center[3]{},extent[3]{},worldCenter[3]{},worldExtent[3]{};uint64_t boundsVersion=UINT64_MAX;float rendererTint[4]{1,1,1,1},flip[4]{1,1,1,1};bool spritePatches=false,batchRequested=false;
+    std::array<uint8_t,16> uploadedColor{};bool colorUploaded=false;
     std::vector<uint8_t> batchKey,nextBatchKey;uint64_t batchHash=0;std::vector<BatchVertex> baked;
     bool composite=false;ComPtr<ID3D11ShaderResourceView> black,white;
 };
@@ -80,23 +82,73 @@ struct Renderer {
     std::mutex mutex;std::vector<std::shared_ptr<Shader>> shaders;std::vector<std::shared_ptr<Geometry>> geometries;std::vector<std::shared_ptr<DrawCall>> draws;
     std::array<Packet,8> ring;std::atomic<uint64_t> read{0},write{0};std::vector<Pose> poses;
     std::vector<uint32_t> list,segs;Frame frame{};Statistics stats{};double renderSum=0,commitSum=0;uint64_t commits=0;
-    ComPtr<ID3D11Texture2D> grabTexture;ComPtr<ID3D11ShaderResourceView> grabView;D3D11_TEXTURE2D_DESC grabDesc{};DXGI_FORMAT grabFormat=DXGI_FORMAT_UNKNOWN;
+    struct GrabSurface {ComPtr<ID3D11Texture2D> texture;ComPtr<ID3D11ShaderResourceView> view;D3D11_TEXTURE2D_DESC desc{};DXGI_FORMAT format=DXGI_FORMAT_UNKNOWN;uint64_t frame=0;};
+    std::map<uint32_t,GrabSurface> grabSurfaces;
+    GpuPerformance gpuPerf{};double gpuSum=0;
+    struct Timing {ComPtr<ID3D11Query> disjoint,start,end;bool pending=false;};std::array<Timing,16> timings;size_t timingNext=0;
+    void pollGpu() {
+        gpuPerf.pending=0;
+        for(auto& t:timings)if(t.pending){
+            D3D11_QUERY_DATA_TIMESTAMP_DISJOINT d{};UINT64 begin=0,end=0;
+            if(context->GetData(t.disjoint.Get(),&d,sizeof(d),D3D11_ASYNC_GETDATA_DONOTFLUSH)!=S_OK||context->GetData(t.start.Get(),&begin,sizeof(begin),D3D11_ASYNC_GETDATA_DONOTFLUSH)!=S_OK||context->GetData(t.end.Get(),&end,sizeof(end),D3D11_ASYNC_GETDATA_DONOTFLUSH)!=S_OK){gpuPerf.pending++;continue;}
+            t.pending=false;if(d.Disjoint||d.Frequency==0||end<begin){gpuPerf.disjoint++;continue;}
+            double us=double(end-begin)*1e6/double(d.Frequency);gpuSum+=us;gpuPerf.samples++;gpuPerf.eventUs=gpuSum/double(gpuPerf.samples);gpuPerf.maxEventUs=std::max(gpuPerf.maxEventUs,us);
+        }
+    }
+    Timing* beginGpu() {pollGpu();auto& t=timings[timingNext];if(t.pending)return nullptr;timingNext=(timingNext+1)%timings.size();return &t;}
+    void endGpu(Timing* t){if(t){context->End(t->disjoint.Get());t->pending=true;}}
     std::shared_ptr<Shader> compositor;
-    Performance perf{};BatchPerformance batchPerf{};bool profile=false;
+    Performance perf{};BatchPerformance batchPerf{};UploadPerformance uploadPerf{};bool profile=false;
     std::vector<uint8_t> live;std::vector<uint64_t> poseVersions;std::vector<uint32_t> batchEnds;bool batchesDirty=true;
+    struct RunBounds {float center[3]{},extent[3]{};uint64_t epoch=UINT64_MAX;UINT end=0;bool bounded=false,any=false;};
+    std::vector<RunBounds> runBounds;uint64_t boundsEpoch=0;
     static constexpr UINT batchLimit=65532;
     ComPtr<ID3D11Buffer> batchBuffer,sharedColor;std::array<uint8_t,16> uploadedColor{};bool colorUploaded=false;
     std::vector<BatchVertex> batchVertices;size_t batchVertexCount=0;
     struct BatchItem { const BatchVertex* cpu=nullptr;const uint32_t* indices=nullptr;BatchVertex* baked=nullptr;const float* tint=nullptr;const float* rendererTint=nullptr;const float* flip=nullptr;uint32_t pose=0,id=0;size_t count=0;uint64_t poseVersion=UINT64_MAX,colorVersion=UINT64_MAX;bool sprite=false; };
-    bool gpuBatch=false,geometryDirty=true,gpuPoseDirty=true,gpuDrawDirty=true,gpuVerticesDirty=true,hasBatches=false;
+    bool gpuBatch=false,geometryDirty=true,indexDirty=true,gpuVerticesDirty=true,hasBatches=false;
     ComPtr<ID3D11ComputeShader> bakeShader;
+    ComPtr<ID3D11Buffer> bakeControl;UINT uploadedBakeCount=UINT32_MAX;
     ComPtr<ID3D11Buffer> gpuLocal,gpuWorld,gpuDraw,gpuVertices;
     ComPtr<ID3D11ShaderResourceView> localView,worldView,drawView;ComPtr<ID3D11UnorderedAccessView> verticesUav;
     UINT localCapacity=0,worldCapacity=0,drawCapacity=0;
-    std::vector<LocalVertex> localVertices;std::vector<uint32_t> vertexOffsets;
+    std::vector<LocalVertex> localVertices;std::vector<uint32_t> vertexOffsets,orderOffsets,orderIndices;
+    ComPtr<ID3D11Buffer> orderBuffer;UINT orderCapacity=0;size_t geometryDrawCount=0;
+    std::vector<std::vector<uint32_t>> poseDraws;
+    std::vector<uint32_t> bakeBlocks;std::vector<uint8_t> blockMarked;
+    ComPtr<ID3D11Buffer> blockUpload;ComPtr<ID3D11ShaderResourceView> blockView;UINT blockCapacity=0;
+    std::vector<uint32_t> dirtyPoses,dirtyDraws;std::vector<uint8_t> poseMarked,drawMarked;
     std::vector<GpuPose> gpuPoses;std::vector<GpuDraw> gpuDraws;
+    ComPtr<ID3D11Buffer> poseUpload,drawUpload;UINT poseUploadCapacity=0,drawUploadCapacity=0;
+    ComPtr<ID3D11ShaderResourceView> poseUploadView,drawUploadView;
+    bool poseDefaultCurrent=false,drawDefaultCurrent=false,poseDirect=false,drawDirect=false;
     std::vector<BatchItem> batchItems;std::vector<uint64_t> colorVersions;
-    std::map<std::tuple<const Shader*,uint32_t,uint32_t,uint32_t>,std::shared_ptr<ConstantStorage>> constantPool;
+    // Frame-only constants share storage; object/material constants own persistent
+    // storage. A batch has a separate normalized storage, never ping-pongs with singles.
+    std::map<std::tuple<const Shader*,uint32_t,uint32_t,std::vector<uint32_t>>,std::shared_ptr<ConstantStorage>> constantPool;
+    void markPose(uint32_t id) { if(!poseMarked[id]){poseMarked[id]=1;dirtyPoses.push_back(id);} }
+    void markDraw(uint32_t id) { if(!drawMarked[id]){drawMarked[id]=1;dirtyDraws.push_back(id);} }
+    std::shared_ptr<ConstantStorage> newConstants(UINT bytes) {
+        auto storage=std::make_shared<ConstantStorage>();D3D11_BUFFER_DESC b{};b.ByteWidth=bytes;b.Usage=D3D11_USAGE_DEFAULT;b.BindFlags=D3D11_BIND_CONSTANT_BUFFER;check(device->CreateBuffer(&b,nullptr,&storage->buffer));storage->uploaded.resize(bytes);batchPerf.constantCreates++;return storage;
+    }
+    std::shared_ptr<ConstantStorage> constantStorage(const DrawCall& d,const Buffer& binding,bool batched) {
+        std::vector<uint32_t> key(binding.bytes/4+2);key[0]=batched?1u:0u;
+        std::memcpy(key.data()+2,d.bytes.data()+binding.offset,binding.bytes);
+        bool object=false;
+        for(const auto& patch:d.patches)if(patch.offset>=binding.offset&&patch.offset<binding.offset+binding.bytes){
+            const uint32_t n=patch.kind<=7?64u:16u;require(patch.offset+n<=binding.offset+binding.bytes);
+            std::memset(reinterpret_cast<uint8_t*>(key.data()+2)+patch.offset-binding.offset,0,n);
+            key.push_back(patch.offset-binding.offset);key.push_back(patch.kind);
+            object|=(!batched&&(patch.kind==1||patch.kind==2||patch.kind==6||patch.kind==7||patch.kind==16||patch.kind==17));
+        }
+        // Share identical material bytes initially. A material edit detaches the
+        // affected binding once (copy-on-write), so animated MPBs cannot ping-pong.
+        key[1]=object?d.pose+1:0u;
+        auto poolKey=std::make_tuple(d.shader.get(),binding.stage,binding.slot,std::move(key));
+        auto& storage=constantPool[poolKey];
+        if(!storage)storage=newConstants(binding.bytes);
+        return storage;
+    }
     std::atomic<uint64_t> publishedFrames{0},publishedDraws{0},publishedErrors{0},publishedBytes{0},publishedEvents{0},dropped{0};
     std::atomic<int32_t> publishedHR{0};std::atomic<double> publishedRenderUs{0};
     Statistics snapshot() {
@@ -112,7 +164,10 @@ struct Renderer {
         static_cast<ID3D11DeviceChild*>(in.resource)->GetDevice(&device);require(device!=nullptr);
         require((device->GetCreationFlags()&D3D11_CREATE_DEVICE_SINGLETHREADED)==0);
         device->GetImmediateContext(&context);check(device->CreateDeferredContext(0,&deferred));
-        live.resize(capacity,1);poseVersions.resize(capacity);batchEnds.reserve(size_t(capacity)*4);batchVertices.resize(batchLimit);batchItems.reserve(size_t(capacity)*4);colorVersions.reserve(size_t(capacity)*8);poses.reserve(capacity);gpuPoses.reserve(capacity);gpuDraws.reserve(size_t(capacity)*8);vertexOffsets.reserve(size_t(capacity)*4+1);localVertices.reserve(size_t(capacity)*6);
+        for(auto& t:timings){D3D11_QUERY_DESC q{D3D11_QUERY_TIMESTAMP_DISJOINT,0};check(device->CreateQuery(&q,&t.disjoint));q.Query=D3D11_QUERY_TIMESTAMP;check(device->CreateQuery(&q,&t.start));check(device->CreateQuery(&q,&t.end));}
+        poseDraws.resize(capacity);poseMarked.resize(capacity);drawMarked.resize(size_t(capacity)*8);dirtyPoses.reserve(capacity);dirtyDraws.reserve(size_t(capacity)*8);
+        orderIndices.reserve(size_t(capacity)*6);orderOffsets.reserve(size_t(capacity)*4+1);
+        live.resize(capacity,1);poseVersions.resize(capacity);runBounds.reserve(size_t(capacity)*4);batchEnds.reserve(size_t(capacity)*4);batchVertices.resize(batchLimit);batchItems.reserve(size_t(capacity)*4);colorVersions.reserve(size_t(capacity)*8);poses.reserve(capacity);gpuPoses.reserve(capacity);gpuDraws.reserve(size_t(capacity)*8);vertexOffsets.reserve(size_t(capacity)*4+1);localVertices.reserve(size_t(capacity)*6);
         D3D11_BUFFER_DESC vb{};vb.ByteWidth=batchLimit*sizeof(BatchVertex);vb.Usage=D3D11_USAGE_DYNAMIC;vb.BindFlags=D3D11_BIND_VERTEX_BUFFER;vb.CPUAccessFlags=D3D11_CPU_ACCESS_WRITE;check(device->CreateBuffer(&vb,nullptr,&batchBuffer));
         vb.ByteWidth=16;vb.Usage=D3D11_USAGE_DEFAULT;vb.CPUAccessFlags=0;check(device->CreateBuffer(&vb,nullptr,&sharedColor));
         if(device->GetFeatureLevel()>=D3D_FEATURE_LEVEL_11_0){
@@ -121,19 +176,26 @@ struct Renderer {
                     struct V { float3 position;float4 color;float2 uv;float2 uv1;uint draw; };
                     struct P { float4x4 world;uint live;uint3 pad; };
                     struct D { float4 color;uint pose;uint sprite;float2 flip; };
-                    StructuredBuffer<V> source:register(t0);StructuredBuffer<P> poses:register(t1);StructuredBuffer<D> draws:register(t2);
-                    RWByteAddressBuffer output:register(u0);
-                    [numthreads(64,1,1)] void main(uint3 id:SV_DispatchThreadID){
-                        uint count,stride;source.GetDimensions(count,stride);if(id.x>=count)return;
-                        V v=source[id.x];D d=draws[v.draw];P p=poses[d.pose];
-                        float3 position=p.live!=0?mul(p.world,float4(v.position.xy*d.flip,v.position.z,1)).xyz:float3(0,0,0);
-                        uint at=id.x*44;output.Store3(at,asuint(position));output.Store4(at+12,asuint(d.sprite!=0?d.color:v.color));
+                    StructuredBuffer<V> source:register(t0);StructuredBuffer<P> poses:register(t1);StructuredBuffer<D> draws:register(t2);StructuredBuffer<uint> blocks:register(t3);
+                    RWByteAddressBuffer output:register(u0);cbuffer Control:register(b0){uint workCount;uint3 reserved;};
+                    [numthreads(64,1,1)] void main(uint3 group:SV_GroupID,uint3 thread:SV_GroupThreadID){
+                        uint work=group.x+group.y*65535;if(work>=workCount)return;uint index=blocks[work]*64+thread.x;
+                        uint count,stride;source.GetDimensions(count,stride);if(index>=count)return;
+                        V v=source[index];D d=draws[v.draw];P p=poses[d.pose];
+                        float3 local=float3(v.position.xy*d.flip,v.position.z);
+                        precise float3 position=p.world._m01_m11_m21*local.y;
+                        position=mad(p.world._m00_m10_m20,local.x,position);
+                        position=mad(p.world._m02_m12_m22,local.z,position);
+                        position=position+p.world._m03_m13_m23;
+                        if(p.live==0)position=0;
+                        uint at=index*44;output.Store3(at,asuint(position));output.Store4(at+12,asuint(d.sprite!=0?d.color:v.color));
                         output.Store2(at+28,asuint(v.uv));output.Store2(at+36,asuint(v.uv1));
                     }
                 )";
                 ComPtr<ID3DBlob> blob,error;check(D3DCompile(source,sizeof(source)-1,nullptr,nullptr,nullptr,"main","cs_5_0",D3DCOMPILE_OPTIMIZATION_LEVEL3|D3DCOMPILE_IEEE_STRICTNESS,0,&blob,&error));return blob;
             }();
-            check(device->CreateComputeShader(code->GetBufferPointer(),code->GetBufferSize(),nullptr,&bakeShader));gpuBatch=true;batchPerf.gpuAvailable=1;
+            check(device->CreateComputeShader(code->GetBufferPointer(),code->GetBufferSize(),nullptr,&bakeShader));
+            D3D11_BUFFER_DESC control{};control.ByteWidth=16;control.BindFlags=D3D11_BIND_CONSTANT_BUFFER;control.Usage=D3D11_USAGE_DEFAULT;check(device->CreateBuffer(&control,nullptr,&bakeControl));gpuBatch=true;batchPerf.gpuAvailable=1;
         }
         list.reserve(capacity*4);segs.reserve(131072);draws.reserve(capacity*4);
         for(auto& p:ring){p.liveIds.reserve(capacity);p.liveValues.reserve(capacity);p.poses.reserve(capacity);gpuPoses.reserve(capacity);gpuDraws.reserve(size_t(capacity)*8);vertexOffsets.reserve(size_t(capacity)*4+1);localVertices.reserve(size_t(capacity)*6);p.poseIds.reserve(capacity);p.ids.reserve(capacity*4);p.offsets.reserve(capacity*4+1);p.bytes.reserve(size_t(std::min(capacity,8192u))*1024);p.list.reserve(capacity*4);p.segs.reserve(131072);}
@@ -189,7 +251,7 @@ struct Renderer {
         }
         auto d=std::make_shared<DrawCall>();d->composite=true;d->shader=compositor;
         auto view=[&](void* resource,ComPtr<ID3D11ShaderResourceView>& out){auto* t=static_cast<ID3D11Texture2D*>(resource);D3D11_TEXTURE2D_DESC td{};t->GetDesc(&td);require(td.SampleDesc.Count==1&&td.ArraySize==1);D3D11_SHADER_RESOURCE_VIEW_DESC sd{};sd.Format=format(td.Format,false);sd.ViewDimension=D3D11_SRV_DIMENSION_TEXTURE2D;sd.Texture2D.MipLevels=1;check(device->CreateShaderResourceView(t,&sd,&out));};
-        view(in.black,d->black);view(in.white,d->white);draws.push_back(d);colorVersions.push_back(0);gpuDraws.emplace_back();gpuDrawDirty=true;return int(draws.size());
+        view(in.black,d->black);view(in.white,d->white);draws.push_back(d);colorVersions.push_back(0);gpuDraws.emplace_back();markDraw(UINT(draws.size()-1));geometryDirty=true;return int(draws.size());
     }
     int geometry(const GeometryIn& in) {
         auto g=std::make_shared<Geometry>();require(in.attributeCount&&in.attributeCount<=32&&in.attributes);
@@ -216,20 +278,27 @@ struct Renderer {
     int draw(const DrawIn& in) {
         require(in.program&&in.program<=shaders.size()&&in.geometry&&in.geometry<=geometries.size()&&in.pose<capacity);
         require(in.constantBytes<=16384&&in.constants&&in.bufferCount<=28&&in.textureCount<=32&&draws.size()<capacity*8);
-        auto d=std::make_shared<DrawCall>();d->shader=shaders[in.program-1];d->geometry=geometries[in.geometry-1];d->pose=in.pose;d->grab=in.grab!=0;d->sprite=(in.sprite&1)!=0;d->batchable=(in.sprite&2)!=0&&!d->grab&&!d->geometry->cpu.empty();
+        auto d=std::make_shared<DrawCall>();d->shader=shaders[in.program-1];d->geometry=geometries[in.geometry-1];d->pose=in.pose;d->grab=in.grab!=0;d->grabId=in.grab;if(in.grab)grabSurfaces.try_emplace(in.grab);d->sprite=(in.sprite&1)!=0;d->batchable=(in.sprite&2)!=0&&!d->grab&&!d->geometry->cpu.empty();
         std::memcpy(d->center,in.center,12);std::memcpy(d->extent,in.extent,12);for(int i=0;i<3;i++)require(std::isfinite(d->center[i])&&std::isfinite(d->extent[i])&&d->extent[i]>=0);
         auto& g=*d->geometry;auto attributes=g.attributes;
-        if(d->sprite){for(auto& a:attributes)if(std::strcmp(a.SemanticName,"COLOR")==0){a.InputSlot=7;a.AlignedByteOffset=0;a.Format=DXGI_FORMAT_R32G32B32A32_FLOAT;}d->color=sharedColor;}
+        d->batchRequested=(in.sprite&2)!=0;
+        if(d->sprite){for(auto& a:attributes)if(std::strcmp(a.SemanticName,"COLOR")==0){a.InputSlot=7;a.AlignedByteOffset=0;a.Format=DXGI_FORMAT_R32G32B32A32_FLOAT;}D3D11_BUFFER_DESC b{};b.ByteWidth=16;b.Usage=D3D11_USAGE_DEFAULT;b.BindFlags=D3D11_BIND_VERTEX_BUFFER;check(device->CreateBuffer(&b,nullptr,&d->color));}
         auto layoutKey=std::make_pair(d->shader.get(),d->sprite);auto cached=g.layouts.find(layoutKey);
         if(cached!=g.layouts.end()){d->layout=cached->second;perf.layoutHits++;}
         else {check(device->CreateInputLayout(attributes.data(),UINT(attributes.size()),d->shader->signature.data(),d->shader->signature.size(),&d->layout));g.layouts.emplace(layoutKey,d->layout);perf.layoutCreates++;}
-        if(poses.size()<=in.pose){poses.resize(size_t(in.pose)+1);gpuPoses.resize(poses.size());gpuPoseDirty=true;}
+        if(poses.size()<=in.pose){poses.resize(size_t(in.pose)+1);gpuPoses.resize(poses.size());markPose(in.pose);}
         const auto* bytes=static_cast<const uint8_t*>(in.constants);d->bytes.assign(bytes,bytes+in.constantBytes);
         if(in.patchCount)d->patches.assign(in.patches,in.patches+in.patchCount);
         captureSpriteProperties(*d);
         for(const auto& p:d->patches)require(p.kind>=1&&p.kind<=17&&p.offset+(p.kind<=7?64:16)<=in.constantBytes);
-        for(unsigned i=0;i<in.bufferCount;i++){Constants c{};c.binding=in.buffers[i];require(c.binding.slot<14&&c.binding.stage<2&&c.binding.bytes>0&&c.binding.bytes%16==0&&c.binding.offset+c.binding.bytes<=in.constantBytes);auto key=std::make_tuple(d->shader.get(),c.binding.stage,c.binding.slot,c.binding.bytes);auto& storage=constantPool[key];if(!storage){storage=std::make_shared<ConstantStorage>();D3D11_BUFFER_DESC b{};b.ByteWidth=c.binding.bytes;b.Usage=D3D11_USAGE_DEFAULT;b.BindFlags=D3D11_BIND_CONSTANT_BUFFER;check(device->CreateBuffer(&b,nullptr,&storage->buffer));storage->uploaded.resize(c.binding.bytes);batchPerf.constantCreates++;}c.storage=storage;d->buffers.push_back(std::move(c));}
-        for(unsigned i=0;i<in.textureCount;i++){const auto& t=in.textures[i];require((t.resource||t.srgb==-1)&&t.stage<2&&t.slot>=0&&t.slot<128&&t.sampler<16);Sample s{};s.stage=t.stage;s.slot=t.slot;s.samplerSlot=t.sampler;s.grab=t.srgb==-1;
+        for(unsigned i=0;i<in.bufferCount;i++){
+            Constants c{};c.binding=in.buffers[i];require(c.binding.slot<14&&c.binding.stage<2&&c.binding.bytes>0&&c.binding.bytes%16==0&&c.binding.offset+c.binding.bytes<=in.constantBytes);
+            c.storage=constantStorage(*d,c.binding,false);c.batchStorage=d->batchable?constantStorage(*d,c.binding,true):c.storage;
+            c.material.assign(d->bytes.begin()+c.binding.offset,d->bytes.begin()+c.binding.offset+c.binding.bytes);
+            for(const auto& patch:d->patches)if(patch.offset>=c.binding.offset&&patch.offset<c.binding.offset+c.binding.bytes)std::memset(c.material.data()+patch.offset-c.binding.offset,0,patch.kind<=7?64:16);
+            d->buffers.push_back(std::move(c));
+        }
+        for(unsigned i=0;i<in.textureCount;i++){const auto& t=in.textures[i];require((t.resource||t.srgb<0)&&t.stage<2&&t.slot>=0&&t.slot<128&&t.sampler<16);Sample s{};s.stage=t.stage;s.slot=t.slot;s.samplerSlot=t.sampler;s.grab=t.srgb<0;s.grabId=s.grab?uint32_t(-t.srgb):0;if(s.grab)grabSurfaces.try_emplace(s.grabId);
             if(!s.grab){auto* tex=static_cast<ID3D11Texture2D*>(t.resource);D3D11_TEXTURE2D_DESC td{};tex->GetDesc(&td);require(td.ArraySize==1&&td.SampleDesc.Count==1);
             auto key=std::make_pair(t.resource,t.srgb);auto found=textureViews.find(key);
             if(found!=textureViews.end())s.view=found->second;
@@ -242,10 +311,11 @@ struct Renderer {
         if(d->batchable) {
             auto& layout=d->geometry->batchLayouts[d->shader.get()];
             if(!layout){D3D11_INPUT_ELEMENT_DESC a[]={{"POSITION",0,DXGI_FORMAT_R32G32B32_FLOAT,0,0,D3D11_INPUT_PER_VERTEX_DATA,0},{"COLOR",0,DXGI_FORMAT_R32G32B32A32_FLOAT,0,12,D3D11_INPUT_PER_VERTEX_DATA,0},{"TEXCOORD",0,DXGI_FORMAT_R32G32_FLOAT,0,28,D3D11_INPUT_PER_VERTEX_DATA,0},{"TEXCOORD",1,DXGI_FORMAT_R32G32_FLOAT,0,36,D3D11_INPUT_PER_VERTEX_DATA,0}};check(device->CreateInputLayout(a,4,d->shader->signature.data(),d->shader->signature.size(),&layout));}
-            d->batchLayout=layout;d->batchKey.resize(d->bytes.size());d->nextBatchKey.resize(d->bytes.size());d->baked.resize(d->geometry->cpuIndices.size());updateBatchKey(*d);
+            d->batchLayout=layout;d->baked.resize(d->geometry->cpuIndices.size());
         }
+        d->batchKey.resize(d->bytes.size());d->nextBatchKey.resize(d->bytes.size());updateBatchKey(*d);
         GpuDraw info{};info.pose=d->pose;info.sprite=d->sprite?1u:0u;for(int c=0;c<4;c++)info.color[c]=reinterpret_cast<const float*>(d->bytes.data())[c]*d->rendererTint[c];info.flip[0]=d->flip[0];info.flip[1]=d->flip[1];
-        draws.push_back(d);colorVersions.push_back(0);gpuDraws.push_back(info);gpuDrawDirty=true;return int(draws.size());
+        poseDraws[d->pose].push_back(UINT(draws.size()));draws.push_back(d);colorVersions.push_back(0);gpuDraws.push_back(info);markDraw(UINT(draws.size()-1));geometryDirty=true;return int(draws.size());
     }
     void captureSpriteProperties(DrawCall& d) {
         for(const auto& p:d.patches){
@@ -253,13 +323,13 @@ struct Renderer {
             if(p.kind==17){require(p.offset+8<=d.bytes.size());std::memcpy(d.flip,d.bytes.data()+p.offset,8);d.spritePatches=true;}
         }
     }
-    void updateBatchKey(DrawCall& d) {
-        if(!d.batchable)return;
+    bool updateBatchKey(DrawCall& d) {
         std::memcpy(d.nextBatchKey.data(),d.bytes.data(),d.bytes.size());
         if(d.sprite)std::memset(d.nextBatchKey.data(),0,16);
         for(const auto& p:d.patches)std::memset(d.nextBatchKey.data()+p.offset,0,p.kind<=7?64:16);
-        if(d.batchKey!=d.nextBatchKey)batchesDirty=true;d.batchKey.swap(d.nextBatchKey);
+        bool changed=d.batchKey!=d.nextBatchKey;if(changed&&d.batchable)batchesDirty=true;d.batchKey.swap(d.nextBatchKey);
         d.batchHash=1469598103934665603ull;for(auto x:d.batchKey){d.batchHash^=x;d.batchHash*=1099511628211ull;}
+        return changed;
     }
     int commit(const Frame& f,bool packed=false,const FrameActive* active=nullptr,bool worldOnly=false) {
         const double start=now();require(f.poseCount<=capacity&&f.dirtyCount<=draws.size());
@@ -275,10 +345,30 @@ struct Renderer {
     }
     void apply(Packet& p) {
         frame=p.f;
-        for(size_t i=0;i<p.poseIds.size();i++){if(poses.size()<=p.poseIds[i]){poses.resize(size_t(p.poseIds[i])+1);gpuPoses.resize(poses.size());}if(p.worldOnly)std::memcpy(poses[p.poseIds[i]].world,p.poses[i].world,64);else poses[p.poseIds[i]]=p.poses[i];std::memcpy(gpuPoses[p.poseIds[i]].world,p.poses[i].world,64);poseVersions[p.poseIds[i]]++;gpuPoseDirty=true;}
-        for(size_t i=0;i<p.ids.size();i++){require(p.ids[i]&&p.ids[i]<=draws.size());auto& d=*draws[p.ids[i]-1];require(p.offsets[i+1]-p.offsets[i]==d.bytes.size());if(d.sprite&&(d.spritePatches||std::memcmp(d.bytes.data(),p.bytes.data()+p.offsets[i],16)))colorVersions[p.ids[i]-1]++;std::memcpy(d.bytes.data(),p.bytes.data()+p.offsets[i],d.bytes.size());stats.bytes+=d.bytes.size();captureSpriteProperties(d);auto& info=gpuDraws[p.ids[i]-1];for(int c=0;c<4;c++)info.color[c]=reinterpret_cast<const float*>(d.bytes.data())[c]*d.rendererTint[c];info.flip[0]=d.flip[0];info.flip[1]=d.flip[1];gpuDrawDirty=true;updateBatchKey(d);}
-        for(size_t i=0;i<p.liveIds.size();i++){live[p.liveIds[i]]=p.liveValues[i];if(gpuPoses.size()<=p.liveIds[i])gpuPoses.resize(size_t(p.liveIds[i])+1);gpuPoses[p.liveIds[i]].live=p.liveValues[i];gpuPoseDirty=true;}batchPerf.liveEdits+=p.liveIds.size();
-        if(p.f.listChanged){list=p.list;segs=p.segs;batchesDirty=true;geometryDirty=true;}
+        for(size_t i=0;i<p.poseIds.size();i++){
+            uint32_t id=p.poseIds[i];if(poses.size()<=id){poses.resize(size_t(id)+1);gpuPoses.resize(poses.size());}
+            if(p.worldOnly)std::memcpy(poses[id].world,p.poses[i].world,64);else poses[id]=p.poses[i];
+            if(std::memcmp(gpuPoses[id].world,p.poses[i].world,64)){std::memcpy(gpuPoses[id].world,p.poses[i].world,64);markPose(id);poseVersions[id]++;boundsEpoch++;}
+        }
+        for(size_t i=0;i<p.ids.size();i++){
+            require(p.ids[i]&&p.ids[i]<=draws.size());uint32_t id=p.ids[i]-1;auto& d=*draws[id];require(p.offsets[i+1]-p.offsets[i]==d.bytes.size());
+            if(d.sprite&&(d.spritePatches||std::memcmp(d.bytes.data(),p.bytes.data()+p.offsets[i],16)))colorVersions[id]++;
+            std::memcpy(d.bytes.data(),p.bytes.data()+p.offsets[i],d.bytes.size());stats.bytes+=d.bytes.size();captureSpriteProperties(d);
+            auto info=gpuDraws[id];for(int c=0;c<4;c++)info.color[c]=reinterpret_cast<const float*>(d.bytes.data())[c]*d.rendererTint[c];info.flip[0]=d.flip[0];info.flip[1]=d.flip[1];
+            if(std::memcmp(&info,&gpuDraws[id],sizeof(info))){gpuDraws[id]=info;markDraw(id);}
+            if(updateBatchKey(d))for(auto& binding:d.buffers){
+                const auto* material=d.batchKey.data()+binding.binding.offset;
+                if(std::memcmp(material,binding.material.data(),binding.binding.bytes)){
+                    if(!binding.privateMaterial){binding.storage=newConstants(binding.binding.bytes);binding.batchStorage=d.batchable?newConstants(binding.binding.bytes):binding.storage;binding.privateMaterial=true;}
+                    std::memcpy(binding.material.data(),material,binding.binding.bytes);
+                }
+            }
+        }
+        for(size_t i=0;i<p.liveIds.size();i++){
+            uint32_t id=p.liveIds[i];live[id]=p.liveValues[i];if(gpuPoses.size()<=id)gpuPoses.resize(size_t(id)+1);
+            if(gpuPoses[id].live!=p.liveValues[i]){gpuPoses[id].live=p.liveValues[i];markPose(id);boundsEpoch++;}
+        }batchPerf.liveEdits+=p.liveIds.size();
+        if(p.f.listChanged){list=p.list;segs=p.segs;batchesDirty=true;indexDirty=true;}
         if(batchesDirty){buildBatchRuns();batchesDirty=false;}
         stats.frames++;
     }
@@ -299,9 +389,52 @@ struct Renderer {
         for(size_t i=0;i<a.textures.size();i++){const auto& x=a.textures[i];const auto& y=b.textures[i];if(x.view!=y.view||x.sampler!=y.sampler||x.stage!=y.stage||x.slot!=y.slot||x.samplerSlot!=y.samplerSlot||x.grab||y.grab)return false;}
         return true;
     }
+    void countSingle(UINT index,UINT first,UINT end,const DrawCall& d) {
+        if(!d.batchRequested){uploadPerf.singleUnverified++;return;}
+        if(!d.batchable){uploadPerf.singleGeometry++;return;}
+        if(!gpuBatch&&d.baked.size()>batchLimit){uploadPerf.singleLimit++;return;}
+        if((index+1==end&&batchEnds[index]>end)||(index==first&&index>0&&batchEnds[index-1]>index)){uploadPerf.singleSegment++;return;}
+        const DrawCall* other=index+1<end?draws[list[index+1]-1].get():index>first?draws[list[index-1]-1].get():nullptr;
+        if(!other){uploadPerf.singleSegment++;return;}
+        if(!other->batchable||d.shader!=other->shader){uploadPerf.singleProgram++;return;}
+        if(d.batchHash!=other->batchHash||d.batchKey!=other->batchKey||d.buffers.size()!=other->buffers.size()){uploadPerf.singleConstants++;return;}
+        for(size_t i=0;i<d.buffers.size();i++)if(std::memcmp(&d.buffers[i].binding,&other->buffers[i].binding,sizeof(Buffer))){uploadPerf.singleConstants++;return;}
+        uploadPerf.singleTextures++;
+    }
+    bool outsideWorld(const float* center,const float* extent) const {
+        for(int plane=0;plane<6;plane++){
+            float p[4];int axis=plane/2;
+            for(int i=0;i<4;i++)p[i]=plane==4?frame.vp[i*4+2]:frame.vp[i*4+3]+(plane%2==0?1.f:-1.f)*frame.vp[i*4+axis];
+            float distance=p[3],radius=0;for(int i=0;i<3;i++){distance+=p[i]*center[i];radius+=std::abs(p[i])*extent[i];}
+            if(distance+radius<0)return true;
+        }return false;
+    }
+    bool outsideBatch(UINT first,UINT end) {
+        auto& cached=runBounds[first];
+        if(cached.epoch==boundsEpoch&&cached.end==end)return !cached.any||(cached.bounded&&outsideWorld(cached.center,cached.extent));
+        cached.epoch=boundsEpoch;cached.end=end;cached.bounded=true;cached.any=false;
+        float low[3]{FLT_MAX,FLT_MAX,FLT_MAX},high[3]{-FLT_MAX,-FLT_MAX,-FLT_MAX};bool any=false;
+        for(UINT i=first;i<end;i++){
+            auto& d=*draws[list[i]-1];if(!live[d.pose])continue;
+            if(d.extent[0]==0&&d.extent[1]==0&&d.extent[2]==0){cached.any=true;cached.bounded=false;return false;} // no trustworthy bounds
+            if(d.boundsVersion!=poseVersions[d.pose]){
+                const auto* m=poses[d.pose].world;
+                for(int row=0;row<3;row++){
+                    d.worldCenter[row]=m[row]*d.center[0]+m[4+row]*d.center[1]+m[8+row]*d.center[2]+m[12+row];
+                    d.worldExtent[row]=std::abs(m[row])*d.extent[0]+std::abs(m[4+row])*d.extent[1]+std::abs(m[8+row])*d.extent[2];
+                }d.boundsVersion=poseVersions[d.pose];
+            }
+            any=true;for(int row=0;row<3;row++){low[row]=std::min(low[row],d.worldCenter[row]-d.worldExtent[row]);high[row]=std::max(high[row],d.worldCenter[row]+d.worldExtent[row]);}
+        }
+        cached.any=any;if(!any)return true;float* center=cached.center;float* extent=cached.extent;
+        // Expand by floating-point error at world scale. A near-edge run remains
+        // visible; culling must not move a thin line across a pixel boundary.
+        for(int i=0;i<3;i++){center[i]=(low[i]+high[i])*.5f;extent[i]=(high[i]-low[i])*.5f+std::max(1.f,std::max(std::abs(low[i]),std::abs(high[i])))*1e-5f;}
+        return outsideWorld(center,extent);
+    }
     void buildBatchRuns() {
         hasBatches=false;
-        batchEnds.resize(list.size());batchItems.resize(list.size());
+        boundsEpoch++;runBounds.resize(list.size());batchEnds.resize(list.size());batchItems.resize(list.size());
         for(size_t i=0;i<list.size();i++){
             require(list[i]&&list[i]<=draws.size());auto& d=*draws[list[i]-1];auto& item=batchItems[i];item={};item.pose=d.pose;item.id=list[i]-1;
             if(d.batchable){auto& g=*d.geometry;item.cpu=g.cpu.data();item.indices=g.cpuIndices.data();item.baked=d.baked.data();item.tint=reinterpret_cast<const float*>(d.bytes.data());item.rendererTint=d.rendererTint;item.flip=d.flip;item.count=d.baked.size();item.sprite=d.sprite;}
@@ -331,40 +464,92 @@ struct Renderer {
         b.BindFlags=D3D11_BIND_SHADER_RESOURCE;b.CPUAccessFlags=dynamic?D3D11_CPU_ACCESS_WRITE:0;b.MiscFlags=D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;b.StructureByteStride=stride;check(device->CreateBuffer(&b,nullptr,&buffer));
         D3D11_SHADER_RESOURCE_VIEW_DESC v{};v.Format=DXGI_FORMAT_UNKNOWN;v.ViewDimension=D3D11_SRV_DIMENSION_BUFFER;v.Buffer.NumElements=capacityIn;check(device->CreateShaderResourceView(buffer.Get(),&v,&view));
     }
-    void uploadStructured(ID3D11Buffer* buffer,const void* bytes,size_t count) {
-        D3D11_MAPPED_SUBRESOURCE map{};check(deferred->Map(buffer,0,D3D11_MAP_WRITE_DISCARD,0,&map));std::memcpy(map.pData,bytes,count);deferred->Unmap(buffer,0);perf.uploads++;perf.uploadBytes+=count;
+    template<class T> bool uploadRanges(ComPtr<ID3D11Buffer>& buffer,ComPtr<ID3D11ShaderResourceView>& view,UINT& allocated,
+                      ComPtr<ID3D11Buffer>& staging,ComPtr<ID3D11ShaderResourceView>& stagingView,UINT& stagingCapacity,bool& defaultCurrent,bool& direct,
+                      const std::vector<T>& values,std::vector<uint32_t>& dirty,std::vector<uint8_t>& marked,uint64_t& bytes,uint64_t& ranges) {
+        if(dirty.empty()&&buffer&&allocated>=values.size())return false;
+        bool fresh=!buffer||allocated<values.size();structured(buffer,view,allocated,UINT(values.size()),sizeof(T),false);
+        UINT count=UINT(fresh?values.size():dirty.size());
+        bool dense=fresh||dirty.size()==values.size();
+        // Dense frames bind the renamed upload buffer directly. On the first sparse
+        // frame, synchronize the persistent cache on the GPU BEFORE renaming that
+        // upload buffer; host traffic still contains only changed slots.
+        if(!dense&&!defaultCurrent){deferred->CopyResource(buffer.Get(),staging.Get());defaultCurrent=true;}
+        if(!staging||stagingCapacity<count){stagingCapacity=grow(count);staging.Reset();stagingView.Reset();D3D11_BUFFER_DESC b{};b.ByteWidth=stagingCapacity*sizeof(T);b.Usage=D3D11_USAGE_DYNAMIC;b.BindFlags=D3D11_BIND_SHADER_RESOURCE;b.CPUAccessFlags=D3D11_CPU_ACCESS_WRITE;b.MiscFlags=D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;b.StructureByteStride=sizeof(T);check(device->CreateBuffer(&b,nullptr,&staging));D3D11_SHADER_RESOURCE_VIEW_DESC v{};v.Format=DXGI_FORMAT_UNKNOWN;v.ViewDimension=D3D11_SRV_DIMENSION_BUFFER;v.Buffer.NumElements=stagingCapacity;check(device->CreateShaderResourceView(staging.Get(),&v,&stagingView));}
+        std::sort(dirty.begin(),dirty.end());D3D11_MAPPED_SUBRESOURCE mapped{};check(deferred->Map(staging.Get(),0,D3D11_MAP_WRITE_DISCARD,0,&mapped));
+        if(dense)std::memcpy(mapped.pData,values.data(),size_t(count)*sizeof(T));
+        else for(size_t i=0;i<dirty.size();i++)std::memcpy(static_cast<uint8_t*>(mapped.pData)+i*sizeof(T),&values[dirty[i]],sizeof(T));
+        deferred->Unmap(staging.Get(),0);uint64_t n=uint64_t(count)*sizeof(T);bytes+=n;perf.uploads++;perf.uploadBytes+=n;
+        // One renamed upload allocation, then GPU copies only the changed ranges.
+        // No boxed UpdateSubresource on deferred contexts (legacy driver offset bug).
+        auto copy=[&](UINT first,UINT end,UINT source){D3D11_BOX box{source*UINT(sizeof(T)),0,0,(source+end-first)*UINT(sizeof(T)),1,1};deferred->CopySubresourceRegion(buffer.Get(),0,first*UINT(sizeof(T)),0,0,staging.Get(),0,&box);ranges++;};
+        if(dense){ranges++;defaultCurrent=false;direct=true;}
+        else {direct=false;for(size_t i=0;i<dirty.size();){UINT source=UINT(i),first=dirty[i],end=first+1;i++;while(i<dirty.size()&&dirty[i]==end){end++;i++;}copy(first,end,source);}}
+        for(auto id:dirty)marked[id]=0;dirty.clear();return true;
+    }
+    void markBake(uint32_t id) {
+        if(!draws[id]->batchable)return;
+        UINT first=vertexOffsets[id],end=vertexOffsets[id+1];
+        if(first==end)return;
+        for(UINT block=first/64;block<=(end-1)/64;block++)if(!blockMarked[block]){blockMarked[block]=1;bakeBlocks.push_back(block);}
     }
     void prepareGpu() {
         if(!gpuBatch||!hasBatches)return;
         const double bt=profile?now():0;
         if(geometryDirty){
-            localVertices.clear();vertexOffsets.resize(list.size()+1);
-            for(size_t i=0;i<list.size();i++){
-                vertexOffsets[i]=UINT(localVertices.size());const auto& item=batchItems[i];
-                for(size_t k=0;k<item.count;k++)localVertices.push_back(LocalVertex{item.cpu[item.indices[k]],item.id});
+            size_t oldSize=localVertices.size();
+            // Stable native draw slots. A new draw appends; reordering never touches
+            // these vertices or changes the world-VB address of an existing draw.
+            vertexOffsets.resize(draws.size()+1);
+            for(size_t i=geometryDrawCount;i<draws.size();i++){
+                vertexOffsets[i]=UINT(localVertices.size());const auto& d=*draws[i];
+                if(d.batchable)for(auto index:d.geometry->cpuIndices)localVertices.push_back(LocalVertex{d.geometry->cpu[index],UINT(i)});
             }
-            vertexOffsets.back()=UINT(localVertices.size());require(!localVertices.empty()&&localVertices.size()<=16777216);
-            UINT oldCapacity=localCapacity;structured(gpuLocal,localView,localCapacity,UINT(localVertices.size()),sizeof(LocalVertex),false);
-            // SRV exposes only populated elements, so the final compute group is bounded.
+            geometryDrawCount=draws.size();vertexOffsets.back()=UINT(localVertices.size());require(!localVertices.empty()&&localVertices.size()<=16777216);
+            bool fresh=!gpuLocal||localCapacity<localVertices.size();structured(gpuLocal,localView,localCapacity,UINT(localVertices.size()),sizeof(LocalVertex),false);
             D3D11_SHADER_RESOURCE_VIEW_DESC sv{};sv.ViewDimension=D3D11_SRV_DIMENSION_BUFFER;sv.Format=DXGI_FORMAT_UNKNOWN;sv.Buffer.NumElements=UINT(localVertices.size());localView.Reset();check(device->CreateShaderResourceView(gpuLocal.Get(),&sv,&localView));
-            D3D11_BOX box{0,0,0,UINT(localVertices.size()*sizeof(LocalVertex)),1,1};deferred->UpdateSubresource(gpuLocal.Get(),0,&box,localVertices.data(),0,0);perf.uploads++;perf.uploadBytes+=localVertices.size()*sizeof(LocalVertex);
-            if(!gpuVertices||oldCapacity!=localCapacity){
+            UINT first=UINT(fresh?0:oldSize);if(first<localVertices.size()){
+                D3D11_BOX box{first*UINT(sizeof(LocalVertex)),0,0,UINT(localVertices.size()*sizeof(LocalVertex)),1,1};context->UpdateSubresource(gpuLocal.Get(),0,&box,localVertices.data()+first,0,0);
+                uint64_t n=(localVertices.size()-first)*sizeof(LocalVertex);perf.uploads++;perf.uploadBytes+=n;uploadPerf.geometryBytes+=n;batchPerf.gpuGeometryUploads++;
+            }
+            if(!gpuVertices||fresh){
                 gpuVertices.Reset();verticesUav.Reset();D3D11_BUFFER_DESC b{};b.ByteWidth=localCapacity*sizeof(BatchVertex);b.Usage=D3D11_USAGE_DEFAULT;b.BindFlags=D3D11_BIND_VERTEX_BUFFER|D3D11_BIND_UNORDERED_ACCESS;b.MiscFlags=D3D11_RESOURCE_MISC_BUFFER_ALLOW_RAW_VIEWS;check(device->CreateBuffer(&b,nullptr,&gpuVertices));
                 D3D11_UNORDERED_ACCESS_VIEW_DESC v{};v.Format=DXGI_FORMAT_R32_TYPELESS;v.ViewDimension=D3D11_UAV_DIMENSION_BUFFER;v.Buffer.NumElements=b.ByteWidth/4;v.Buffer.Flags=D3D11_BUFFER_UAV_FLAG_RAW;check(device->CreateUnorderedAccessView(gpuVertices.Get(),&v,&verticesUav));
             }
-            geometryDirty=false;gpuVerticesDirty=true;batchPerf.gpuGeometryUploads++;
+            geometryDirty=false;gpuVerticesDirty=true;indexDirty=true;
+            blockMarked.resize((localVertices.size()+63)/64);bakeBlocks.reserve(blockMarked.size());
+            // Geometry growth may replace the output resource. Rebake once; a pure
+            // reorder never enters this branch and never dispatches compute.
+            for(UINT block=0;block<blockMarked.size();block++)if(!blockMarked[block]){blockMarked[block]=1;bakeBlocks.push_back(block);}
         }
-        if(gpuPoseDirty){structured(gpuWorld,worldView,worldCapacity,UINT(gpuPoses.size()),sizeof(GpuPose),true);uploadStructured(gpuWorld.Get(),gpuPoses.data(),gpuPoses.size()*sizeof(GpuPose));gpuPoseDirty=false;gpuVerticesDirty=true;batchPerf.gpuPoseUploads++;}
-        if(gpuDrawDirty){structured(gpuDraw,drawView,drawCapacity,UINT(gpuDraws.size()),sizeof(GpuDraw),true);uploadStructured(gpuDraw.Get(),gpuDraws.data(),gpuDraws.size()*sizeof(GpuDraw));gpuDrawDirty=false;gpuVerticesDirty=true;}
-        if(gpuVerticesDirty){
+        if(indexDirty){
+            orderIndices.clear();orderOffsets.resize(list.size()+1);
+            for(size_t i=0;i<list.size();i++){orderOffsets[i]=UINT(orderIndices.size());uint32_t id=list[i]-1;for(UINT k=vertexOffsets[id];k<vertexOffsets[id+1];k++)orderIndices.push_back(k);}
+            orderOffsets.back()=UINT(orderIndices.size());
+            if(!orderBuffer||orderCapacity<orderIndices.size()){orderCapacity=grow(UINT(orderIndices.size()));orderBuffer.Reset();D3D11_BUFFER_DESC b{};b.ByteWidth=orderCapacity*4;b.Usage=D3D11_USAGE_DYNAMIC;b.CPUAccessFlags=D3D11_CPU_ACCESS_WRITE;b.BindFlags=D3D11_BIND_INDEX_BUFFER;check(device->CreateBuffer(&b,nullptr,&orderBuffer));}
+            if(!orderIndices.empty()){D3D11_MAPPED_SUBRESOURCE map{};check(deferred->Map(orderBuffer.Get(),0,D3D11_MAP_WRITE_DISCARD,0,&map));std::memcpy(map.pData,orderIndices.data(),orderIndices.size()*4);deferred->Unmap(orderBuffer.Get(),0);perf.uploads++;perf.uploadBytes+=orderIndices.size()*4;uploadPerf.indexBytes+=orderIndices.size()*4;uploadPerf.indexUploads++;}indexDirty=false;
+        }
+        // Expand dirty source IDs into stable 64-vertex blocks BEFORE uploadRanges
+        // consumes those queues. Adjacent slots share a group; unchanged geometry
+        // outside the touched blocks stays in the persistent world vertex buffer.
+        for(auto id:dirtyPoses)for(auto draw:poseDraws[id])markBake(draw);
+        for(auto id:dirtyDraws)markBake(id);
+        if(uploadRanges(gpuWorld,worldView,worldCapacity,poseUpload,poseUploadView,poseUploadCapacity,poseDefaultCurrent,poseDirect,gpuPoses,dirtyPoses,poseMarked,uploadPerf.poseBytes,uploadPerf.poseRanges)){gpuVerticesDirty=true;batchPerf.gpuPoseUploads++;}
+        if(uploadRanges(gpuDraw,drawView,drawCapacity,drawUpload,drawUploadView,drawUploadCapacity,drawDefaultCurrent,drawDirect,gpuDraws,dirtyDraws,drawMarked,uploadPerf.drawBytes,uploadPerf.drawRanges))gpuVerticesDirty=true;
+        if(gpuVerticesDirty&&!bakeBlocks.empty()){
             auto* dc=deferred.Get();ID3D11Buffer* nilBuffer=nullptr;UINT zero=0;dc->IASetVertexBuffers(0,1,&nilBuffer,&zero,&zero);
-            dc->CSSetShader(bakeShader.Get(),nullptr,0);ID3D11ShaderResourceView* input[]={localView.Get(),worldView.Get(),drawView.Get()};dc->CSSetShaderResources(0,3,input);ID3D11UnorderedAccessView* uav=verticesUav.Get();dc->CSSetUnorderedAccessViews(0,1,&uav,nullptr);
-            dc->Dispatch((UINT(localVertices.size())+63)/64,1,1);batchPerf.gpuDispatches++;ID3D11UnorderedAccessView* nilUav=nullptr;dc->CSSetUnorderedAccessViews(0,1,&nilUav,nullptr);ID3D11ShaderResourceView* nilViews[3]{};dc->CSSetShaderResources(0,3,nilViews);dc->CSSetShader(nullptr,nullptr,0);gpuVerticesDirty=false;
+            structured(blockUpload,blockView,blockCapacity,UINT(bakeBlocks.size()),sizeof(uint32_t),true);
+            D3D11_MAPPED_SUBRESOURCE blocksMap{};check(dc->Map(blockUpload.Get(),0,D3D11_MAP_WRITE_DISCARD,0,&blocksMap));std::memcpy(blocksMap.pData,bakeBlocks.data(),bakeBlocks.size()*4);dc->Unmap(blockUpload.Get(),0);
+            perf.uploads++;perf.uploadBytes+=bakeBlocks.size()*4;uploadPerf.workBytes+=bakeBlocks.size()*4;uploadPerf.bakedVertices+=bakeBlocks.size()*64;
+            dc->CSSetShader(bakeShader.Get(),nullptr,0);ID3D11ShaderResourceView* input[]={localView.Get(),poseDirect?poseUploadView.Get():worldView.Get(),drawDirect?drawUploadView.Get():drawView.Get(),blockView.Get()};dc->CSSetShaderResources(0,4,input);ID3D11UnorderedAccessView* uav=verticesUav.Get();dc->CSSetUnorderedAccessViews(0,1,&uav,nullptr);
+            UINT work=UINT(bakeBlocks.size());if(work!=uploadedBakeCount){UINT control[4]{work,0,0,0};dc->UpdateSubresource(bakeControl.Get(),0,nullptr,control,0,0);uploadedBakeCount=work;perf.uploads++;perf.uploadBytes+=16;uploadPerf.workBytes+=16;}
+            ID3D11Buffer* control=bakeControl.Get();dc->CSSetConstantBuffers(0,1,&control);
+            dc->Dispatch(std::min(work,65535u),(work+65534)/65535,1);batchPerf.gpuDispatches++;ID3D11UnorderedAccessView* nilUav=nullptr;dc->CSSetUnorderedAccessViews(0,1,&nilUav,nullptr);ID3D11ShaderResourceView* nilViews[4]{};dc->CSSetShaderResources(0,4,nilViews);dc->CSSetShader(nullptr,nullptr,0);gpuVerticesDirty=false;for(auto block:bakeBlocks)blockMarked[block]=0;bakeBlocks.clear();
         }
         if(profile)batchPerf.buildUs+=now()-bt;
     }
     void render(unsigned segment) {
-        const double start=now();
+        const double start=now();Timing* timing=nullptr;
         try {
             if(segment==0){profile=stats.frames%64==0;if(profile)perf.sampledFrames++;const double at=profile?now():0;const uint64_t r=read.load(std::memory_order_relaxed);require(r!=write.load(std::memory_order_acquire));auto& p=ring[r%ring.size()];apply(p);read.store(r+1,std::memory_order_release);if(profile)perf.applyUs+=now()-at;}
             require(size_t(segment)*2+1<segs.size());
@@ -374,7 +559,7 @@ struct Renderer {
             UINT viewportCount=1;D3D11_VIEWPORT viewport{};context->RSGetViewports(&viewportCount,&viewport);require(viewportCount==1);
             auto* dc=deferred.Get();ID3D11RenderTargetView* rt=rtv.Get();dc->OMSetRenderTargets(1,&rt,dsv.Get());dc->RSSetViewports(1,&viewport);dc->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
             dc->GSSetShader(nullptr,nullptr,0);dc->HSSetShader(nullptr,nullptr,0);dc->DSSetShader(nullptr,nullptr,0);
-            prepareGpu();
+            timing=profile?beginGpu():nullptr;if(timing)dc->End(timing->start.Get());prepareGpu();
             for(UINT i=first;i<first+count;i++){
                 require(list[i]&&list[i]<=draws.size());auto& d=*draws[list[i]-1];if(!d.composite&&!live[d.pose])continue;auto& s=*d.shader;
                 if(d.composite){
@@ -384,10 +569,10 @@ struct Renderer {
                     ID3D11ShaderResourceView* nil[2]{};dc->PSSetShaderResources(0,2,nil);stats.draws++;continue;
                 }
                 auto& g=*d.geometry;
-                bool batched=false;
+                bool batched=false;UINT batchFirst=i;
                 UINT batchStart=0;
                 if(gpuBatch&&d.batchable&&batchEnds[i]>i+1){
-                    UINT end=std::min(first+count,batchEnds[i]);if(end>i+1){batched=true;batchStart=vertexOffsets[i];batchVertexCount=vertexOffsets[end]-batchStart;batchPerf.batches++;batchPerf.sources+=end-i;batchPerf.vertices+=batchVertexCount;i=end-1;}
+                    UINT end=std::min(first+count,batchEnds[i]);if(end>i+1){batched=true;batchStart=orderOffsets[i];batchVertexCount=orderOffsets[end]-batchStart;batchPerf.batches++;batchPerf.sources+=end-i;batchPerf.vertices+=batchVertexCount;i=end-1;}
                 }
                 else if(!gpuBatch&&d.batchable&&g.cpuIndices.size()<=batchLimit){
                     const double bt=profile?now():0;batchVertexCount=0;appendBatch(i);UINT end=i+1,used=1;
@@ -399,29 +584,39 @@ struct Renderer {
                     if(used>1){batched=true;i=end-1;batchPerf.batches++;batchPerf.sources+=used;batchPerf.vertices+=batchVertexCount;if(profile)batchPerf.buildUs+=now()-bt;}
                 }
                 const double cullStart=profile?now():0;
+                if(batched&&outsideBatch(batchFirst,i+1)){batchPerf.batches--;batchPerf.sources-=i+1-batchFirst;batchPerf.vertices-=batchVertexCount;gpuPerf.culledDraws++;gpuPerf.culledSources+=i+1-batchFirst;if(profile)perf.cullUs+=now()-cullStart;continue;}
                 if(!batched&&(d.extent[0]>0||d.extent[1]>0||d.extent[2]>0)){
                     float m[16];multiply(m,frame.vp,poses[d.pose].world);unsigned outside=63;
                     for(unsigned corner=0;corner<8&&outside;corner++){float p[3];for(unsigned axis=0;axis<3;axis++)p[axis]=d.center[axis]+((corner&(1u<<axis))?d.extent[axis]:-d.extent[axis]);float clip[4];for(unsigned row=0;row<4;row++)clip[row]=m[row]*p[0]+m[4+row]*p[1]+m[8+row]*p[2]+m[12+row];unsigned flags=(clip[0]<-clip[3]?1u:0u)|(clip[0]>clip[3]?2u:0u)|(clip[1]<-clip[3]?4u:0u)|(clip[1]>clip[3]?8u:0u)|(clip[2]<0?16u:0u)|(clip[2]>clip[3]?32u:0u);outside&=flags;}
-                    if(outside){if(profile)perf.cullUs+=now()-cullStart;continue;}
+                    if(outside){gpuPerf.culledDraws++;gpuPerf.culledSources++;if(profile)perf.cullUs+=now()-cullStart;continue;}
                 }
                 if(profile)perf.cullUs+=now()-cullStart;const double constantsStart=profile?now():0;
                 if(d.grab){
-                    ComPtr<ID3D11Resource> resource;rtv->GetResource(&resource);ComPtr<ID3D11Texture2D> source;check(resource.As(&source));D3D11_TEXTURE2D_DESC td{};source->GetDesc(&td);require(td.SampleDesc.Count==1&&td.ArraySize==1);
-                    D3D11_RENDER_TARGET_VIEW_DESC vd{};rtv->GetDesc(&vd);require(vd.ViewDimension==D3D11_RTV_DIMENSION_TEXTURE2D&&vd.Texture2D.MipSlice==0);
-                    if(!grabTexture||td.Width!=grabDesc.Width||td.Height!=grabDesc.Height||td.Format!=grabDesc.Format||vd.Format!=grabFormat){grabDesc=td;grabFormat=vd.Format;grabTexture.Reset();grabView.Reset();td.BindFlags=D3D11_BIND_SHADER_RESOURCE;td.Usage=D3D11_USAGE_DEFAULT;td.CPUAccessFlags=0;td.MiscFlags=0;check(device->CreateTexture2D(&td,nullptr,&grabTexture));D3D11_SHADER_RESOURCE_VIEW_DESC sv{};sv.Format=vd.Format;sv.ViewDimension=D3D11_SRV_DIMENSION_TEXTURE2D;sv.Texture2D.MipLevels=td.MipLevels;check(device->CreateShaderResourceView(grabTexture.Get(),&sv,&grabView));}
-                    ID3D11ShaderResourceView* nil[16]{};dc->PSSetShaderResources(0,16,nil);dc->OMSetRenderTargets(0,nullptr,nullptr);dc->CopyResource(grabTexture.Get(),source.Get());dc->OMSetRenderTargets(1,&rt,dsv.Get());
+                    auto& grab=grabSurfaces.at(d.grabId);
+                    if(d.grabId==1||grab.frame!=stats.frames){
+                        ComPtr<ID3D11Resource> resource;rtv->GetResource(&resource);ComPtr<ID3D11Texture2D> source;check(resource.As(&source));D3D11_TEXTURE2D_DESC td{};source->GetDesc(&td);require(td.SampleDesc.Count==1&&td.ArraySize==1);
+                        D3D11_RENDER_TARGET_VIEW_DESC vd{};rtv->GetDesc(&vd);require(vd.ViewDimension==D3D11_RTV_DIMENSION_TEXTURE2D&&vd.Texture2D.MipSlice==0);
+                        if(!grab.texture||td.Width!=grab.desc.Width||td.Height!=grab.desc.Height||td.Format!=grab.desc.Format||vd.Format!=grab.format){grab.desc=td;grab.format=vd.Format;grab.texture.Reset();grab.view.Reset();td.BindFlags=D3D11_BIND_SHADER_RESOURCE;td.Usage=D3D11_USAGE_DEFAULT;td.CPUAccessFlags=0;td.MiscFlags=0;check(device->CreateTexture2D(&td,nullptr,&grab.texture));D3D11_SHADER_RESOURCE_VIEW_DESC sv{};sv.Format=vd.Format;sv.ViewDimension=D3D11_SRV_DIMENSION_TEXTURE2D;sv.Texture2D.MipLevels=td.MipLevels;check(device->CreateShaderResourceView(grab.texture.Get(),&sv,&grab.view));}
+                        ID3D11ShaderResourceView* nil[16]{};dc->VSSetShaderResources(0,16,nil);dc->PSSetShaderResources(0,16,nil);dc->OMSetRenderTargets(0,nullptr,nullptr);dc->CopyResource(grab.texture.Get(),source.Get());dc->OMSetRenderTargets(1,&rt,dsv.Get());
+                        grab.frame=stats.frames;gpuPerf.grabCopies++;
+                        // camRT formats accepted here are 32/64/128-bit color formats.
+                        UINT pixelBytes=(td.Format==DXGI_FORMAT_R32G32B32A32_FLOAT||td.Format==DXGI_FORMAT_R32G32B32A32_TYPELESS)?16u:(td.Format==DXGI_FORMAT_R16G16B16A16_FLOAT||td.Format==DXGI_FORMAT_R16G16B16A16_TYPELESS||td.Format==DXGI_FORMAT_R16G16B16A16_UNORM)?8u:4u;
+                        gpuPerf.grabBytes+=uint64_t(td.Width)*td.Height*pixelBytes;
+                    }else gpuPerf.namedGrabHits++;
                 }
                 patch(d,batched);dc->VSSetShader(s.vs.Get(),nullptr,0);dc->PSSetShader(s.ps.Get(),nullptr,0);dc->IASetInputLayout(batched?d.batchLayout.Get():d.layout.Get());
-                ID3D11Buffer* vb[8]{};for(unsigned j=0;j<8;j++)vb[j]=g.buffers[j].Get();auto strides=g.strides;auto offsets=g.offsets;if(d.color&&!batched){if(!colorUploaded||std::memcmp(uploadedColor.data(),d.bytes.data(),16)){dc->UpdateSubresource(d.color.Get(),0,nullptr,d.bytes.data(),0,0);std::memcpy(uploadedColor.data(),d.bytes.data(),16);colorUploaded=true;perf.uploads++;perf.uploadBytes+=16;}vb[7]=d.color.Get();strides[7]=offsets[7]=0;}dc->IASetVertexBuffers(0,8,vb,strides.data(),offsets.data());dc->IASetIndexBuffer(g.indices.Get(),g.indexFormat,0);
-                if(batched&&!gpuBatch){D3D11_MAPPED_SUBRESOURCE map{};check(dc->Map(batchBuffer.Get(),0,D3D11_MAP_WRITE_DISCARD,0,&map));std::memcpy(map.pData,batchVertices.data(),batchVertexCount*sizeof(BatchVertex));dc->Unmap(batchBuffer.Get(),0);ID3D11Buffer* batch=batchBuffer.Get();UINT stride=sizeof(BatchVertex),offset=0;dc->IASetVertexBuffers(0,1,&batch,&stride,&offset);perf.uploads++;perf.uploadBytes+=batchVertexCount*sizeof(BatchVertex);}
-                if(batched&&gpuBatch){ID3D11Buffer* batch=gpuVertices.Get();UINT stride=sizeof(BatchVertex),offset=0;dc->IASetVertexBuffers(0,1,&batch,&stride,&offset);}
+                ID3D11Buffer* vb[8]{};for(unsigned j=0;j<8;j++)vb[j]=g.buffers[j].Get();auto strides=g.strides;auto offsets=g.offsets;if(d.color&&!batched){if(!d.colorUploaded||std::memcmp(d.uploadedColor.data(),d.bytes.data(),16)){dc->UpdateSubresource(d.color.Get(),0,nullptr,d.bytes.data(),0,0);std::memcpy(d.uploadedColor.data(),d.bytes.data(),16);d.colorUploaded=true;perf.uploads++;perf.uploadBytes+=16;uploadPerf.colorBytes+=16;}vb[7]=d.color.Get();strides[7]=offsets[7]=0;}dc->IASetVertexBuffers(0,8,vb,strides.data(),offsets.data());dc->IASetIndexBuffer(g.indices.Get(),g.indexFormat,0);
+                if(batched&&!gpuBatch){D3D11_MAPPED_SUBRESOURCE map{};check(dc->Map(batchBuffer.Get(),0,D3D11_MAP_WRITE_DISCARD,0,&map));std::memcpy(map.pData,batchVertices.data(),batchVertexCount*sizeof(BatchVertex));dc->Unmap(batchBuffer.Get(),0);ID3D11Buffer* batch=batchBuffer.Get();UINT stride=sizeof(BatchVertex),offset=0;dc->IASetVertexBuffers(0,1,&batch,&stride,&offset);perf.uploads++;perf.uploadBytes+=batchVertexCount*sizeof(BatchVertex);uploadPerf.cpuBatchBytes+=batchVertexCount*sizeof(BatchVertex);}
+                if(batched&&gpuBatch){ID3D11Buffer* batch=gpuVertices.Get();UINT stride=sizeof(BatchVertex),offset=0;dc->IASetVertexBuffers(0,1,&batch,&stride,&offset);dc->IASetIndexBuffer(orderBuffer.Get(),DXGI_FORMAT_R32_UINT,0);}
                 dc->OMSetBlendState(s.blendState.Get(),nullptr,~0u);dc->OMSetDepthStencilState(s.depth.Get(),s.stencilRef);dc->RSSetState(s.raster.Get());
-                for(auto& binding:d.buffers){auto& c=*binding.storage;const auto& cbBinding=binding.binding;const auto* data=d.bytes.data()+cbBinding.offset;if(!c.ready||std::memcmp(c.uploaded.data(),data,cbBinding.bytes)){dc->UpdateSubresource(c.buffer.Get(),0,nullptr,data,0,0);std::memcpy(c.uploaded.data(),data,cbBinding.bytes);c.ready=true;perf.uploads++;perf.uploadBytes+=cbBinding.bytes;}ID3D11Buffer* cb=c.buffer.Get();if(cbBinding.stage==0)dc->VSSetConstantBuffers(cbBinding.slot,1,&cb);else dc->PSSetConstantBuffers(cbBinding.slot,1,&cb);}
+                for(auto& binding:d.buffers){auto& c=*(batched?binding.batchStorage:binding.storage);const auto& cbBinding=binding.binding;const auto* data=d.bytes.data()+cbBinding.offset;if(!c.ready||std::memcmp(c.uploaded.data(),data,cbBinding.bytes)){dc->UpdateSubresource(c.buffer.Get(),0,nullptr,data,0,0);std::memcpy(c.uploaded.data(),data,cbBinding.bytes);c.ready=true;perf.uploads++;perf.uploadBytes+=cbBinding.bytes;uploadPerf.constantBytes+=cbBinding.bytes;uploadPerf.constantUploads++;}ID3D11Buffer* cb=c.buffer.Get();if(cbBinding.stage==0)dc->VSSetConstantBuffers(cbBinding.slot,1,&cb);else dc->PSSetConstantBuffers(cbBinding.slot,1,&cb);}
                 if(profile)perf.constantsUs+=now()-constantsStart;const double drawStart=profile?now():0;
-                for(const auto& t:d.textures){ID3D11ShaderResourceView* v=t.grab?grabView.Get():t.view.Get();ID3D11SamplerState* sm=t.sampler.Get();if(t.stage==0){dc->VSSetShaderResources(UINT(t.slot),1,&v);if(t.samplerSlot>=0)dc->VSSetSamplers(UINT(t.samplerSlot),1,&sm);}else{dc->PSSetShaderResources(UINT(t.slot),1,&v);if(t.samplerSlot>=0)dc->PSSetSamplers(UINT(t.samplerSlot),1,&sm);}}
-                if(batched)dc->Draw(UINT(batchVertexCount),batchStart);else{dc->DrawIndexed(g.indexCount,g.indexStart,g.baseVertex);batchPerf.singleDraws++;}stats.draws++;if(profile)perf.drawUs+=now()-drawStart;
+                for(const auto& t:d.textures){ID3D11ShaderResourceView* v=t.grab?grabSurfaces.at(t.grabId).view.Get():t.view.Get();ID3D11SamplerState* sm=t.sampler.Get();if(t.stage==0){dc->VSSetShaderResources(UINT(t.slot),1,&v);if(t.samplerSlot>=0)dc->VSSetSamplers(UINT(t.samplerSlot),1,&sm);}else{dc->PSSetShaderResources(UINT(t.slot),1,&v);if(t.samplerSlot>=0)dc->PSSetSamplers(UINT(t.samplerSlot),1,&sm);}}
+                if(batched){if(gpuBatch)dc->DrawIndexed(UINT(batchVertexCount),batchStart,0);else dc->Draw(UINT(batchVertexCount),0);}else{dc->DrawIndexed(g.indexCount,g.indexStart,g.baseVertex);batchPerf.singleDraws++;countSingle(i,first,first+count,d);}stats.draws++;if(profile)perf.drawUs+=now()-drawStart;
             }
-            const double executeStart=profile?now():0;ComPtr<ID3D11CommandList> command;check(dc->FinishCommandList(FALSE,&command));context->ExecuteCommandList(command.Get(),TRUE);if(profile)perf.executeUs+=now()-executeStart;
+            if(timing)dc->End(timing->end.Get());
+            const double executeStart=profile?now():0;ComPtr<ID3D11CommandList> command;check(dc->FinishCommandList(FALSE,&command));
+            if(timing)context->Begin(timing->disjoint.Get());context->ExecuteCommandList(command.Get(),TRUE);endGpu(timing);timing=nullptr;if(profile)perf.executeUs+=now()-executeStart;
         }catch(HRESULT hr){stats.errors++;stats.lastHR=hr;deferred->ClearState();ComPtr<ID3D11CommandList> discard;deferred->FinishCommandList(FALSE,&discard);}
         catch(...){stats.errors++;stats.lastHR=E_FAIL;}
         stats.events++;renderSum+=now()-start;
@@ -449,6 +644,6 @@ extern "C" intptr_t __cdecl sf_z_drfull_v1(int op,int token,const void* args) no
         if(op==drfull::Commit||op==drfull::CommitPacked)return r->commit(*static_cast<const drfull::Frame*>(args),op==drfull::CommitPacked);
         if(op==drfull::Stats){*const_cast<drfull::Statistics*>(static_cast<const drfull::Statistics*>(args))=r->snapshot();return 1;}
         std::lock_guard<std::mutex> lock(r->mutex);
-        switch(op){case drfull::GeometryCpu:return r->cpuGeometry(*static_cast<const drfull::CpuGeometry*>(args));case drfull::BatchPerf:*const_cast<drfull::BatchPerformance*>(static_cast<const drfull::BatchPerformance*>(args))=r->batchPerf;return 1;case drfull::Perf:{auto p=r->perf;const double n=double(std::max(uint64_t(1),r->perf.sampledFrames));p.applyUs/=n;p.cullUs/=n;p.constantsUs/=n;p.drawUs/=n;p.executeUs/=n;*const_cast<drfull::Performance*>(static_cast<const drfull::Performance*>(args))=p;return 1;}case drfull::Composite:return r->composite(*static_cast<const drfull::CompositeIn*>(args));case drfull::Program:return r->program(*static_cast<const drfull::ProgramIn*>(args));case drfull::Geometry:return r->geometry(*static_cast<const drfull::GeometryIn*>(args));case drfull::Draw:return r->draw(*static_cast<const drfull::DrawIn*>(args));default:throw E_INVALIDARG;}
+        switch(op){case drfull::GpuPerf:*const_cast<drfull::GpuPerformance*>(static_cast<const drfull::GpuPerformance*>(args))=r->gpuPerf;return 1;case drfull::UploadPerf:*const_cast<drfull::UploadPerformance*>(static_cast<const drfull::UploadPerformance*>(args))=r->uploadPerf;return 1;case drfull::GeometryCpu:return r->cpuGeometry(*static_cast<const drfull::CpuGeometry*>(args));case drfull::BatchPerf:*const_cast<drfull::BatchPerformance*>(static_cast<const drfull::BatchPerformance*>(args))=r->batchPerf;return 1;case drfull::Perf:{auto p=r->perf;const double n=double(std::max(uint64_t(1),r->perf.sampledFrames));p.applyUs/=n;p.cullUs/=n;p.constantsUs/=n;p.drawUs/=n;p.executeUs/=n;*const_cast<drfull::Performance*>(static_cast<const drfull::Performance*>(args))=p;return 1;}case drfull::Composite:return r->composite(*static_cast<const drfull::CompositeIn*>(args));case drfull::Program:return r->program(*static_cast<const drfull::ProgramIn*>(args));case drfull::Geometry:return r->geometry(*static_cast<const drfull::GeometryIn*>(args));case drfull::Draw:return r->draw(*static_cast<const drfull::DrawIn*>(args));default:throw E_INVALIDARG;}
     }catch(HRESULT hr){lastHR=hr;return 0;}catch(...){lastHR=E_FAIL;return 0;}
 }

@@ -88,6 +88,7 @@ namespace StutterFix
                 case "census": return Census();
                 case "colors": return ColorAudit();
                 case "why": return WhyReplan();
+                case "assert clean": if (Resilience.SafeMode) throw new InvalidOperationException("drfull INVALID: safe=1"); return "safe=0 PASS";
                 case "grab unity": case "grab native":
                     if (Active || preparing) throw new InvalidOperationException("drfull grab route requires off");
                     unityGrab = arg.Trim().Equals("grab unity", StringComparison.OrdinalIgnoreCase);

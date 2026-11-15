@@ -14,8 +14,9 @@ def text(s):blob(s.encode())
 def floats(v):data.extend(struct.pack('<'+'f'*len(v),*v))
 def identity():return [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]
 cases=[]
+NAMED='--named' in sys.argv
 for shader in audit['shaders']:
-    if shader['name'] != 'Hidden/BlendModes/SpritesDefault/Grab':continue
+    if shader['name'] != ('Hidden/BlendModes/SpritesDefault/UnifiedGrab' if NAMED else 'Hidden/BlendModes/SpritesDefault/Grab'):continue
     for variant in shader['passes'][0]['variants']:
         if variant['keywords'] not in (['BLENDMODES_MODE_MULTIPLY'], ['BLENDMODES_MODE_DIFFERENCE']):continue
         for mode in (0,2):
@@ -23,7 +24,7 @@ for shader in audit['shaders']:
 integer(0x34575244);integer(len(cases));manifest=[]
 for case_index,(shader,variant,mode,sampler) in enumerate(cases):
     floor=False; blend=2 if 'BLENDMODES_MODE_MULTIPLY' in variant['keywords'] else 3;snap='PIXELSNAP_ON' in variant['keywords'];point='USE_POINT_SAMPLING' in variant['keywords']
-    label=f"grab{blend}-{'-'.join(variant['keywords']) or 'base'}-mode{mode}-sampler{sampler}"
+    label=f"{'named' if NAMED else ''}grab{blend}-{'-'.join(variant['keywords']) or 'base'}-mode{mode}-sampler{sampler}"
     values={p['m_Name']:[p[f'm_DefValue[{i}]'] for i in range(4)] for p in shader['properties']}
     values.update(_Color=[.73,.51,.89,.62],RepeatX=[1.7],RepeatY=[.65],_FlashColor=[.19],_MainTex_TexelSize=[1/8,1/8,8,8],
                   _TileTex_ST=[1.2,.8,.41,.57],_Tint=[.81,.64,.47,.74],_ShadowColor=[.15,.26,.42,.68],
@@ -47,7 +48,7 @@ for case_index,(shader,variant,mode,sampler) in enumerate(cases):
                 kind={'unity_ObjectToWorld':1,'unity_MatrixVP':3,'_ScreenParams':9}.get(var['name'])
                 if kind:patches.append((offset+var['offset'],kind))
         for t in stage['textures']:
-            pattern={'_MainTex':0,'_PerlinTex':1,'_TileTex':2,'_IconTex':3,'_IconOutlineTex':4,'_GrabTexture':5}[t['name']]
+            pattern={'_MainTex':0,'_PerlinTex':1,'_TileTex':2,'_IconTex':3,'_IconOutlineTex':4,'_GrabTexture':5,'_BLENDMODES_UnifiedGrabTexture':5}[t['name']]
             textures.append((st_index,t['slot'],t['sampler'],pattern))
     text(label)
     for x in (blend,int(snap),int(point),mode,sampler):integer(x)
@@ -73,6 +74,6 @@ for case_index,(shader,variant,mode,sampler) in enumerate(cases):
     ref += [values['_IconFlipped'][0],values['_Sprite'][0],0,0]
     blob(struct.pack('<'+'f'*len(ref),*ref));floats(world);floats(vp);floats(screen)
     manifest.append(dict(case=label,shader=shader['name'],keywords=variant['keywords'],values=values))
-(DEST/'grab-cases.bin').write_bytes(data)
-(DEST/'grab-cases.json').write_text(json.dumps(manifest,indent=2),encoding='utf-8')
+(DEST/('named-grab-cases.bin' if NAMED else 'grab-cases.bin')).write_bytes(data)
+(DEST/('named-grab-cases.json' if NAMED else 'grab-cases.json')).write_text(json.dumps(manifest,indent=2),encoding='utf-8')
 print('WARP case inputs',len(cases),'bytes',len(data))

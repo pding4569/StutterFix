@@ -93,6 +93,7 @@ public class scnEditor { public void SwitchToEditMode() {} public void QuitToMen
 public class scnGame { public void ResetScene() {} public void PrepVfx(List<scrFloor> f, int n, List<ADOFAI.LevelEvent> e, bool b) {} }
 namespace StutterFix
 {
+    internal static class Resilience { internal static bool SafeMode; }
     public static class DrProbe { public static bool Active; }
     public static class DirectDeco { public static bool Enabled, Active; }
     public static class GpuDecoScene

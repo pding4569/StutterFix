@@ -65,6 +65,8 @@ static class Program
     }
     static void Run(string[] args)
     {
+        Resilience.SafeMode = false; Check(DirectFull.Command("assert clean")=="safe=0 PASS","clean measurement guard");
+        Resilience.SafeMode = true; Throws(()=>DirectFull.Command("assert clean")); Resilience.SafeMode = false;
         var c = Fresh(); DirectFull.Command("ceil"); int masked = c.cullingMask;
         Check(DirectFull.Command("assert ceil").Contains("PASS"), "active assertion");
         Throws(() => DirectFull.Command("assert off"));

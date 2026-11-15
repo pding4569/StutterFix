@@ -5,6 +5,7 @@ using System.IO;
 using System.Text;
 using UnityEngine;
 using UnityEngine.Rendering;
+using S = StutterFix.DirectFullShaders;
 
 namespace StutterFix
 {
@@ -17,6 +18,8 @@ namespace StutterFix
             int original = Active ? lease.Original : main.cullingMask;
             var rb = new MaterialPropertyBlock(); var sb = new MaterialPropertyBlock();
             int colorId = Shader.PropertyToID("_Color"), rendererId = Shader.PropertyToID("_RendererColor");
+            var constants = new StringBuilder("id\tpath\tshader\tmaterialSlot\tpass\tnativeId\tstage\tcb\tcbSlot\tcbOffset\tpacketOffset\tvariable\tcomponent\tsource\tmaterial\tmpb\texpected\tpacket\tstatus\n");
+            int constantVariables = 0, constantMismatches = 0;
             var text = new StringBuilder("id\tpath\tshader\tkeywords\tsortingLayer\torder\tqueue\tmask\tspriteColor\tmaterialColor\trendererMPBColor\tslotMPBColor\trendererMPBRendererColor\tslotMPBRendererColor\tbounds\tnativeCB\n");
             int count = 0;
             foreach (var r in Resources.FindObjectsOfTypeAll<Renderer>())
@@ -37,14 +40,80 @@ namespace StutterFix
                         .Append('\t').Append(r.bounds.ToString("R")).Append('\t');
                     if (rendererSources.TryGetValue(r, out var source) && source.Passes != null)
                         foreach (var b in source.Passes) if (b.Slot == slot && b.NativeId != 0)
+                        {
                             text.Append("pass=").Append(b.Pass.Index).Append(":id=").Append(b.NativeId).Append(":grab=").Append(b.Pass.Grab).Append(":bytes=").Append(Convert.ToBase64String(b.Bytes)).Append(';');
+                            AuditConstants(constants, r, path, b, rb, sb, ref constantVariables, ref constantMismatches);
+                        }
                     text.Append('\n'); count++;
                 }
             }
             string file = Path.Combine(Main.Entry.Path, "drfull-colors-" + DateTime.UtcNow.ToString("yyyyMMdd-HHmmss-fff") + ".tsv");
             File.WriteAllText(file, text.ToString(), new UTF8Encoding(false));
+            string constantFile = Path.ChangeExtension(file, ".constants.tsv");
+            File.WriteAllText(constantFile, constants.ToString(), new UTF8Encoding(false));
             Log("colors slots=" + count + " output=" + file + " actualTintAndMPB=True actualUnityCBuffer=UNMEASURED");
-            return "colors slots=" + count + " file=" + file;
+            return "colors slots=" + count + " file=" + file + " constants=" + constantFile + " variables=" + constantVariables + " mismatches=" + constantMismatches;
+        }
+        static string AuditNumber(float value) => value.ToString("R", System.Globalization.CultureInfo.InvariantCulture);
+        static float[] AuditVector(Vector4 value) => new[] { value.x, value.y, value.z, value.w };
+        static float[] AuditReference(Bound b, S.Variable v, MaterialPropertyBlock block, bool materialOnly, out string source)
+        {
+            // Independent typed Unity API reads. Do not call Value/Float/Integer/Fill:
+            // this is an oracle for packet packing and property lookup, not a replay.
+            var m = b.Material; source = "global";
+            if (!materialOnly && block.HasProperty(v.Id))
+            {
+                source = "mpb";
+                if (v.Matrix != 0) { var matrix = block.GetMatrix(v.Id); var values = new float[16]; for (int i=0;i<16;i++) values[i]=matrix[i]; return values; }
+                if (v.Cols == 1) return new[] { v.Type == 1 && block.HasInteger(v.Id) ? block.GetInteger(v.Id) : block.GetFloat(v.Id) };
+                int property = m && m.shader ? m.shader.FindPropertyIndex(v.Name) : -1;
+                return AuditVector(property >= 0 && m.shader.GetPropertyType(property) == ShaderPropertyType.Color ? (Vector4)block.GetColor(v.Id) : block.GetVector(v.Id));
+            }
+            if (v.TextureST)
+            {
+                source = "texture-ST";
+                if (m && m.HasProperty(v.TextureId)) { var scale=m.GetTextureScale(v.TextureId); var offset=m.GetTextureOffset(v.TextureId); return new[] {scale.x,scale.y,offset.x,offset.y}; }
+                return new[] {1f,1f,0f,0f};
+            }
+            if (m && m.HasProperty(v.Id))
+            {
+                source = "material";
+                if (v.Matrix != 0) { var matrix=m.GetMatrix(v.Id);var values=new float[16];for(int i=0;i<16;i++)values[i]=matrix[i];return values; }
+                if (v.Cols == 1) return new[] { v.Type == 1 && m.HasInteger(v.Id) ? m.GetInteger(v.Id) : m.GetFloat(v.Id) };
+                int property=m.shader.FindPropertyIndex(v.Name);
+                return AuditVector(property>=0&&m.shader.GetPropertyType(property)==ShaderPropertyType.Color?(Vector4)m.GetColor(v.Id):m.GetVector(v.Id));
+            }
+            foreach(var property in b.Shader.Properties) if(property.Id==v.Id){source="shader-default";return AuditVector(property.Default);}
+            if(v.Matrix!=0){var matrix=Shader.GetGlobalMatrix(v.Id);var values=new float[16];for(int i=0;i<16;i++)values[i]=matrix[i];return values;}
+            return v.Cols==1?new[]{v.Type==1?Shader.GetGlobalInt(v.Id):Shader.GetGlobalFloat(v.Id)}:AuditVector(Shader.GetGlobalVector(v.Id));
+        }
+        static void AuditConstants(StringBuilder text, Renderer renderer, string path, Bound b, MaterialPropertyBlock rb, MaterialPropertyBlock sb, ref int variables, ref int mismatches)
+        {
+            var block=sb.isEmpty?rb:sb;int bi=0;
+            foreach(var stage in b.Stages) foreach(var cb in stage.Buffers)
+            {
+                int start=(int)b.Buffers[bi++].Offset;
+                foreach(var v in cb.Variables)
+                {
+                    variables++;bool patched=Dynamic(v.Name)!=0;
+                    var material=AuditReference(b,v,block,true,out string materialSource);
+                    var expected=AuditReference(b,v,block,false,out string source);
+                    if(v.Name=="_RendererColor"&&renderer is SpriteRenderer sprite){expected=AuditVector(sprite.color);source="sprite.color";}
+                    else if(v.Name=="_Flip"){var sr=renderer as SpriteRenderer;expected=new[]{sr&&sr.flipX?-1f:1f,sr&&sr.flipY?-1f:1f,1f,1f};source="sprite.flip";}
+                    else if(v.Name=="_Cutoff"&&renderer is SpriteMask mask){expected=new[]{mask.alphaCutoff};source="mask.cutoff";}
+                    else if(v.TextureName!=null&&!v.TextureST){source="texture-size:inspect";patched=true;}
+                    else if(v.Name=="unity_SpriteProps"||v.Name=="unity_WorldTransformParams"){source="engine-built-in:inspect";patched=true;}
+                    for(int i=0;i<v.Rows*v.Cols;i++)
+                    {
+                        int offset=start+v.Offset+i*4;float actual=v.Type==1?BitConverter.ToInt32(b.Bytes,offset):BitConverter.ToSingle(b.Bytes,offset);
+                        float value=i<expected.Length?expected[i]:0;bool same=actual.Equals(value);if(!patched&&!same)mismatches++;
+                        text.Append(renderer.GetInstanceID()).Append('\t').Append(Clean(path)).Append('\t').Append(b.Shader.Name).Append('\t').Append(b.Slot).Append('\t').Append(b.Pass.Index).Append('\t').Append(b.NativeId)
+                            .Append('\t').Append(ReferenceEquals(stage,b.Variant.Vs)?"vs":"ps").Append('\t').Append(cb.Name).Append('\t').Append(cb.Slot).Append('\t').Append(v.Offset+i*4).Append('\t').Append(offset)
+                            .Append('\t').Append(v.Name).Append('\t').Append(i).Append('\t').Append(source+"/"+materialSource).Append('\t').Append(i<material.Length?AuditNumber(material[i]):"-")
+                            .Append('\t').Append(block.HasProperty(v.Id)?"present":"absent").Append('\t').Append(AuditNumber(value)).Append('\t').Append(AuditNumber(actual)).Append('\t').Append(patched?"GPU/engine-patched:uncompared":same?"match":"MISMATCH").Append('\n');
+                    }
+                }
+            }
         }
         sealed class CensusCount { internal int Total, Live, ForcedOff, CameraVisible, NativeCandidate; }
         static string Clean(string value) => (value ?? "-").Replace('\t', ' ').Replace('\r', ' ').Replace('\n', ' ');

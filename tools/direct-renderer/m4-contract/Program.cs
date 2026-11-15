@@ -19,6 +19,8 @@ static class Program
         N.ValidateAbi();
         Check(sizeof(N.FrameActive)==432&&sizeof(N.CpuGeometry)==40&&sizeof(N.BatchPerformance)==88,"M4f appended opcode payload ABI");
         Check((int)N.Op.CommitPacked==12&&(int)N.Op.CommitActiveWorld==16,"existing opcode values preserved");
+        Check((int)N.Op.UploadPerf==17&&sizeof(N.UploadPerformance)==160,"M4g appended upload counters ABI");
+        Check((int)N.Op.GpuPerf==18&&sizeof(N.GpuPerformance)==80,"M4g appended GPU counters ABI");
         Check(sizeof(N.Attribute)==20&&sizeof(N.Buffer)==16&&sizeof(N.Patch)==8&&sizeof(N.Texture)==40,"nested ABI");
         var shaders=S.Load();Check(shaders.Count==21,"shader count");Check(ReferenceEquals(shaders,S.Load()),"resource reload");
         using var doc=JsonDocument.Parse(File.ReadAllBytes(Path.Combine(root,"out/direct-renderer/m4bc/shaders/bindings.json")));
@@ -29,6 +31,7 @@ static class Program
             foreach(var p in a.GetProperty("passes").EnumerateArray())
             {
                 var pass=s.Passes[pi++];Check(pass.Index==p.GetProperty("index").GetInt32()&&pass.Grab==p.GetProperty("grab_before").GetBoolean(),"pass/Grab linkage");
+                Check(pass.GrabName==p.GetProperty("grab_name").GetString(),"named/unnamed GrabPass metadata");
                 int vi=0;
                 foreach(var v in p.GetProperty("variants").EnumerateArray())
                 {

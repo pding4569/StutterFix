@@ -98,8 +98,24 @@ static class Program
         long treeBefore=GC.GetAllocatedBytesForCurrentThread();var stamp=System.Diagnostics.Stopwatch.GetTimestamp();
         for(int iteration=0;iteration<10000;iteration++){int i=iteration%size;order.Remove(treeNodes[i]);values[i].Key=-iteration;order.Add(treeNodes[i]);}
         long treeAllocated=GC.GetAllocatedBytesForCurrentThread()-treeBefore;
+        double treeUs=(System.Diagnostics.Stopwatch.GetTimestamp()-stamp)*1e6/System.Diagnostics.Stopwatch.Frequency/10000;
         Check(treeAllocated==0,"sparse order edits allocate");
-        Console.WriteLine("PASS M4f incremental order sources="+size+" oracle_edits=7000 allocated="+treeAllocated+" edit_us="+((System.Diagnostics.Stopwatch.GetTimestamp()-stamp)*1e6/System.Diagnostics.Stopwatch.Frequency/10000).ToString("F3"));
+        order.CopyTo(actual);
+        Check(order.Matches(actual),"identical order must skip command rebuild");
+        // All keys move together without crossing. Reinsertions update the tree's
+        // search keys, but the emitted sequence and its command buffers stay valid.
+        for(int i=0;i<size;i++)order.Remove(treeNodes[i]);
+        for(int i=0;i<size;i++)values[i].Key+=20000;
+        foreach(var n in treeNodes)order.Add(n);
+        Check(order.Matches(actual),"common distance drift incorrectly replans");
+        var crossing=treeNodes[actual[size/2].Id];order.Remove(crossing);crossing.Value.Key=int.MinValue;order.Add(crossing);
+        Check(!order.Matches(actual),"actual relative-order crossing was skipped");
+        order.CopyTo(actual);Check(order.Matches(actual),"crossing sequence cannot stabilize");
+        order.Remove(crossing);Check(!order.Matches(actual),"removed node hidden by order gate");order.Add(crossing);
+        long matchesBefore=GC.GetAllocatedBytesForCurrentThread();for(int i=0;i<10000;i++)order.Matches(actual);
+        Check(GC.GetAllocatedBytesForCurrentThread()==matchesBefore,"order identity gate allocates");
+        Console.WriteLine("PASS M4g order identities common-drift=skip crossing=replan removed=replan stable_checks=10000 allocated=0");
+        Console.WriteLine("PASS M4f incremental order sources="+size+" oracle_edits=7000 allocated="+treeAllocated+" edit_us="+treeUs.ToString("F3"));
         Console.WriteLine($"PASS production per-object layer journal + nested group order: checks={legacyChecks} stable_layer_allocated={allocated}; Unity callbacks/physics=UNMEASURED");
     }
 }

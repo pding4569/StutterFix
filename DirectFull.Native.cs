@@ -7,7 +7,7 @@ namespace StutterFix
 {
     internal static unsafe class DirectFullNative
     {
-        internal enum Op { Create, Program, Geometry, Draw, Commit, Event, Stats, Destroy, Error, Abi, Composite, Perf, CommitPacked, CommitActive, BatchPerf, GeometryCpu, CommitActiveWorld }
+        internal enum Op { Create, Program, Geometry, Draw, Commit, Event, Stats, Destroy, Error, Abi, Composite, Perf, CommitPacked, CommitActive, BatchPerf, GeometryCpu, CommitActiveWorld, UploadPerf, GpuPerf }
         [StructLayout(LayoutKind.Sequential)] internal struct Performance { internal double ApplyUs, CullUs, ConstantsUs, DrawUs, ExecuteUs; internal ulong Uploads, UploadBytes, LayoutCreates, LayoutHits, SampledFrames; }
         [StructLayout(LayoutKind.Sequential)] internal struct Composite { internal IntPtr Black, White; }
         [StructLayout(LayoutKind.Sequential)] internal struct Abi { internal uint Version, Create, Program, Geometry, Draw, Frame, Stats, Pose; }
@@ -57,6 +57,14 @@ namespace StutterFix
         }
         [StructLayout(LayoutKind.Sequential)] internal struct CpuGeometry { internal uint Geometry; internal void* Vertices; internal uint Count; internal uint* Indices; internal uint IndexCount; }
         [StructLayout(LayoutKind.Sequential)] internal struct BatchPerformance { internal ulong Batches, Sources, Vertices, SingleDraws, LiveEdits, ConstantCreates; internal double BuildUs; internal ulong GpuDispatches, GpuPoseUploads, GpuGeometryUploads, GpuAvailable; }
+        [StructLayout(LayoutKind.Sequential)] internal struct UploadPerformance
+        {
+            internal ulong GeometryBytes, PoseBytes, DrawBytes, IndexBytes, ConstantBytes, ColorBytes, CpuBatchBytes;
+            internal ulong PoseRanges, DrawRanges, IndexUploads, ConstantUploads;
+            internal ulong SingleUnverified, SingleGeometry, SingleProgram, SingleConstants, SingleTextures, SingleSegment, SingleLimit;
+            internal ulong WorkBytes, BakedVertices;
+        }
+        [StructLayout(LayoutKind.Sequential)] internal struct GpuPerformance { internal ulong GrabCopies, GrabBytes, NamedGrabHits, CulledDraws, CulledSources; internal double EventUs, MaxEventUs; internal ulong Samples, Pending, Disjoint; }
         [StructLayout(LayoutKind.Sequential)] internal struct FrameActive { internal Frame Frame; internal uint* Ids; internal byte* Values; internal uint Count; }
         [StructLayout(LayoutKind.Sequential)] internal struct Stats { internal ulong Frames, Draws, Errors, Dropped, Bytes, Events; internal double RenderUs, CommitUs; internal int LastHr; }
     }

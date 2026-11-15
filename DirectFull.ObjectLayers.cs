@@ -43,6 +43,15 @@ namespace StutterFix
         internal void Remove(Node n) { if (!n.Linked) return; root = Erase(root, n); n.Linked = false; n.Left = n.Right = null; }
         static void Append(Node n, List<T> target) { if (n == null) return; Append(n.Left, target); target.Add(n.Value); Append(n.Right, target); }
         internal void CopyTo(List<T> target) { target.Clear(); Append(root, target); }
+        static bool Same(Node n, List<T> target, ref int index)
+        {
+            if (n == null) return true;
+            if (!Same(n.Left, target, ref index) || index == target.Count || !ReferenceEquals(n.Value, target[index++])) return false;
+            return Same(n.Right, target, ref index);
+        }
+        // Reinsert changed keys first, then compare actual identities in order.
+        // Co-moving keys and noncrossing distance edits do not rebuild commands.
+        internal bool Matches(List<T> target) { int index = 0; return Same(root, target, ref index) && index == target.Count; }
         internal void Clear() { root = null; }
     }
 

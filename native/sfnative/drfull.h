@@ -5,7 +5,7 @@ namespace drfull {
 // All pointers are borrowed only for the duration of dispatch. Native owns copies
 // and COM references. Opcodes are versioned behind ONE appended export so old
 // export hints as well as ordinals remain stable.
-enum Op { Create, Program, Geometry, Draw, Commit, Event, Stats, Destroy, Error, Abi, Composite, Perf, CommitPacked, CommitActive, BatchPerf, GeometryCpu, CommitActiveWorld };
+enum Op { Create, Program, Geometry, Draw, Commit, Event, Stats, Destroy, Error, Abi, Composite, Perf, CommitPacked, CommitActive, BatchPerf, GeometryCpu, CommitActiveWorld, UploadPerf, GpuPerf };
 struct Performance { double applyUs,cullUs,constantsUs,drawUs,executeUs; uint64_t uploads,uploadBytes,layoutCreates,layoutHits,sampledFrames; };
 struct CompositeIn { void *black, *white; };
 struct AbiInfo { uint32_t version,create,program,geometry,draw,frame,stats,pose; };
@@ -25,7 +25,8 @@ struct Texture { void* resource; int32_t stage,slot,sampler,filter,wrapU,wrapV,a
 struct DrawIn {
     uint32_t program,geometry; const Buffer* buffers; uint32_t bufferCount;
     const Patch* patches; uint32_t patchCount; const Texture* textures; uint32_t textureCount;
-    const void* constants; uint32_t constantBytes; uint32_t pose; uint32_t grab,sprite; // sprite bit 0: renderer color; bit 1: verified world-space batch program.
+    const void* constants; uint32_t constantBytes; uint32_t pose;
+    uint32_t grab,sprite; // grab: 0 none, 1 unnamed/per-draw, >=2 frame/name ID; sprite bits: color, verified batch.
     float center[3],extent[3];
 };
 struct Pose { float world[16],inverse[16]; };
@@ -41,6 +42,14 @@ struct CpuGeometry { uint32_t geometry; const void* vertices; uint32_t count; co
 // Caller guarantees active programs do not need inverse matrices; old Frame/Commit remain unchanged.
 struct FrameActive { Frame frame; const uint32_t* ids; const uint8_t* values; uint32_t count; };
 struct BatchPerformance { uint64_t batches,sources,vertices,singleDraws,liveEdits,constantCreates; double buildUs; uint64_t gpuDispatches,gpuPoseUploads,gpuGeometryUploads,gpuAvailable; };
+// Appended query: never enlarge an existing caller-owned ABI payload.
+struct UploadPerformance {
+    uint64_t geometryBytes,poseBytes,drawBytes,indexBytes,constantBytes,colorBytes,cpuBatchBytes;
+    uint64_t poseRanges,drawRanges,indexUploads,constantUploads;
+    uint64_t singleUnverified,singleGeometry,singleProgram,singleConstants,singleTextures,singleSegment,singleLimit;
+    uint64_t workBytes,bakedVertices;
+};
+struct GpuPerformance { uint64_t grabCopies,grabBytes,namedGrabHits,culledDraws,culledSources; double eventUs,maxEventUs; uint64_t samples,pending,disjoint; };
 struct Statistics { uint64_t frames,draws,errors,dropped,bytes,events; double renderUs,commitUs; int32_t lastHR; };
 }
 extern "C" intptr_t __cdecl sf_z_drfull_v1(int op,int token,const void* args) noexcept;
