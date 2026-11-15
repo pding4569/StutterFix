@@ -198,6 +198,7 @@ namespace StutterFix
             catch (Exception ex)
             {
                 string failure="단계 실패 '" + line + "': " + (ex.InnerException ?? ex).Message;
+                try { var st = (ex.InnerException ?? ex).StackTrace; if (!string.IsNullOrEmpty(st)) Main.Entry.Logger.Log("[자동 시험] 단계 실패 위치: " + st.Replace('\r', ' ').Replace('\n', '|')); } catch { }
                 Log(failure); Finish(failure);
             }
         }

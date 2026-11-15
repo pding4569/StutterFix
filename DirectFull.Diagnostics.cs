@@ -1,4 +1,4 @@
-#if DEV || AUTOTEST
+﻿#if DEV || AUTOTEST
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -32,17 +32,19 @@ namespace StutterFix
                 }
                 var textures = new StringBuilder("draw\ttexture_index\tstage\tslot\tsampler_slot\tpath\tshader\ttexture\tunity_width\tunity_height\tunity_filter\tunity_wrapU\tunity_wrapV\tunity_aniso\tunity_srgb\twidth\theight\tmips\tresource_format\tsrv_format\tmost_detailed_mip\tview_mips\tfilter\twrapU\twrapV\taniso\tmip_bias\tmin_lod\tmax_lod\n");
                 foreach (uint id in ids)
+                try
                 {
                     Bound bound = null;
-                    foreach (var source in sources) if (source.Passes != null) foreach (var b in source.Passes) if (b.NativeId == id) bound = b;
+                    foreach (var source in sources) if (source != null && source.Passes != null) foreach (var b in source.Passes) if (b != null && b.NativeId == id) bound = b;
                     N.TextureProbeInfo t = new N.TextureProbeInfo { Draw = id }; N.Require(N.Op.TextureProbe, fullToken, &t);
                     for (uint j = 0; j < t.Total; j++)
                     {
                         t.Index = j; N.Require(N.Op.TextureProbe, fullToken, &t);
-                        var tex = bound != null && j < bound.TextureObjects.Length ? bound.TextureObjects[j] : null;
-                        textures.AppendLine(FormattableString.Invariant($"{id}\t{j}\t{t.Stage}\t{t.Slot}\t{t.SamplerSlot}\t{(bound != null ? SafePath(bound.Source.R.transform) : "retired-or-composite")}\t{bound?.Shader?.Name}\t{tex?.name}\t{(tex ? tex.width : 0)}\t{(tex ? tex.height : 0)}\t{(tex ? (int)tex.filterMode : -1)}\t{(tex ? (int)tex.wrapModeU : -1)}\t{(tex ? (int)tex.wrapModeV : -1)}\t{(tex ? tex.anisoLevel : -1)}\t{(tex && tex.isDataSRGB)}\t{t.Width}\t{t.Height}\t{t.Mips}\t{t.ResourceFormat}\t{t.ViewFormat}\t{t.MostDetailedMip}\t{t.ViewMips}\t{t.Filter}\t{t.WrapU}\t{t.WrapV}\t{t.Aniso}\t{t.MipBias:R}\t{t.MinLod:R}\t{t.MaxLod:R}"));
+                        var tex = bound != null && bound.TextureObjects != null && j < bound.TextureObjects.Length ? bound.TextureObjects[j] : null;
+                        textures.AppendLine(FormattableString.Invariant($"{id}\t{j}\t{t.Stage}\t{t.Slot}\t{t.SamplerSlot}\t{(bound != null && bound.Source != null && bound.Source.R ? SafePath(bound.Source.R.transform) : "retired-or-composite")}\t{bound?.Shader?.Name}\t{tex?.name}\t{(tex ? tex.width : 0)}\t{(tex ? tex.height : 0)}\t{(tex ? (int)tex.filterMode : -1)}\t{(tex ? (int)tex.wrapModeU : -1)}\t{(tex ? (int)tex.wrapModeV : -1)}\t{(tex ? tex.anisoLevel : -1)}\t{(tex && tex.isDataSRGB)}\t{t.Width}\t{t.Height}\t{t.Mips}\t{t.ResourceFormat}\t{t.ViewFormat}\t{t.MostDetailedMip}\t{t.ViewMips}\t{t.Filter}\t{t.WrapU}\t{t.WrapV}\t{t.Aniso}\t{t.MipBias:R}\t{t.MinLod:R}\t{t.MaxLod:R}"));
                     }
                 }
+                catch (Exception e) { textures.AppendLine(id + "	error	" + e.GetType().Name + ": " + e.Message); }
                 File.WriteAllText(prefix + ".tsv", rows.ToString(), new UTF8Encoding(false));
                 File.WriteAllText(prefix + "-textures.tsv", textures.ToString(), new UTF8Encoding(false));
                 return FormattableString.Invariant($"drawgpu rows={q.Total} pending={q.Pending} skipped={q.Skipped} invalid={q.Invalid} overwritten_rows={q.Overflow} first={drawProbeConfig.First} count={drawProbeConfig.Count} interval={drawProbeConfig.Interval} output={prefix} quality_aniso={QualitySettings.anisotropicFiltering} color_space={QualitySettings.activeColorSpace} gpu_elapsed_not_busy=True Unity_actual_SRV=UNMEASURED");
