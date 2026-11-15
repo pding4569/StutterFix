@@ -3,6 +3,7 @@
 #define NOMINMAX
 #include <windows.h>
 #include <d3d11.h>
+#include <d3dcompiler.h>
 #include <wrl/client.h>
 #include <vector>
 #include <array>
@@ -22,6 +23,8 @@ double now() { LARGE_INTEGER c,f;QueryPerformanceCounter(&c);QueryPerformanceFre
 const char* semantics[]={"POSITION","NORMAL","TANGENT","COLOR","TEXCOORD"};
 DXGI_FORMAT format(DXGI_FORMAT f,bool srgb) {
     switch(f) {
+    case DXGI_FORMAT_R32G32B32A32_TYPELESS:return DXGI_FORMAT_R32G32B32A32_FLOAT;
+    case DXGI_FORMAT_R16G16B16A16_TYPELESS:return DXGI_FORMAT_R16G16B16A16_FLOAT;
     case DXGI_FORMAT_R8G8B8A8_TYPELESS:return srgb?DXGI_FORMAT_R8G8B8A8_UNORM_SRGB:DXGI_FORMAT_R8G8B8A8_UNORM;
     case DXGI_FORMAT_B8G8R8A8_TYPELESS:return srgb?DXGI_FORMAT_B8G8R8A8_UNORM_SRGB:DXGI_FORMAT_B8G8R8A8_UNORM;
     case DXGI_FORMAT_BC1_TYPELESS:return srgb?DXGI_FORMAT_BC1_UNORM_SRGB:DXGI_FORMAT_BC1_UNORM;
@@ -51,6 +54,7 @@ struct DrawCall {
     std::shared_ptr<Shader> shader;std::shared_ptr<Geometry> geometry;ComPtr<ID3D11InputLayout> layout;
     std::vector<Constants> buffers;std::vector<Patch> patches;std::vector<Sample> textures;std::vector<uint8_t> bytes;uint32_t pose;bool grab=false;ComPtr<ID3D11Buffer> color;
     float center[3]{},extent[3]{};
+    bool composite=false;ComPtr<ID3D11ShaderResourceView> black,white;
 };
 struct Packet {
     Frame f{};std::vector<Pose> poses;std::vector<uint32_t> poseIds,ids,offsets,list,segs;std::vector<uint8_t> bytes;
@@ -65,6 +69,7 @@ struct Renderer {
     std::array<Packet,8> ring;uint64_t read=0,write=0;std::vector<Pose> poses;
     std::vector<uint32_t> list,segs;Frame frame{};Statistics stats{};double renderSum=0,commitSum=0;uint64_t commits=0;
     ComPtr<ID3D11Texture2D> grabTexture;ComPtr<ID3D11ShaderResourceView> grabView;D3D11_TEXTURE2D_DESC grabDesc{};DXGI_FORMAT grabFormat=DXGI_FORMAT_UNKNOWN;
+    std::shared_ptr<Shader> compositor;
     Renderer(const CreateIn& in):capacity(in.capacity) {
         require(in.resource&&in.abi==1&&capacity>0&&capacity<=100000);
         static_cast<ID3D11DeviceChild*>(in.resource)->GetDevice(&device);require(device!=nullptr);
@@ -96,6 +101,35 @@ struct Renderer {
         D3D11_RASTERIZER_DESC rd{};rd.FillMode=D3D11_FILL_SOLID;require(a[10]>=0&&a[10]<=2);rd.CullMode=a[10]==0?D3D11_CULL_NONE:a[10]==1?D3D11_CULL_FRONT:D3D11_CULL_BACK;
         rd.FrontCounterClockwise=FALSE;rd.DepthClipEnable=a[7]!=0;rd.SlopeScaledDepthBias=-float(a[11])/1000000.f;rd.DepthBias=-a[12];check(device->CreateRasterizerState(&rd,&s->raster));
         shaders.push_back(s);return int(shaders.size());
+    }
+    int composite(const CompositeIn& in) {
+        require(in.black&&in.white&&draws.size()<capacity*8);
+        if(!compositor){
+            // Two backgrounds recover out = black + destination * (white-black)
+            // on all four channels. This also preserves UI alpha-squared blending.
+            static const char code[]=R"(
+                Texture2D<float4> b:register(t0);Texture2D<float4> w:register(t1);
+                float4 vs(uint i:SV_VertexID):SV_Position { return float4(i==1?3:-1,i==2?-3:1,0,1); }
+                struct O { float4 c:SV_Target0;float4 t:SV_Target1; };
+                O ps(float4 p:SV_Position) { O o;int2 xy=int2(p.xy);float4 a=b.Load(int3(xy,0));float4 z=w.Load(int3(xy,0));
+                    o.c=a;o.t=saturate(z-a);return o; }
+            )";
+            ComPtr<ID3DBlob> vs,ps,error;
+            check(D3DCompile(code,sizeof(code)-1,nullptr,nullptr,nullptr,"vs","vs_4_0",D3DCOMPILE_OPTIMIZATION_LEVEL3,0,&vs,&error));
+            check(D3DCompile(code,sizeof(code)-1,nullptr,nullptr,nullptr,"ps","ps_4_0",D3DCOMPILE_OPTIMIZATION_LEVEL3,0,&ps,&error));
+            auto s=std::make_shared<Shader>();
+            check(device->CreateVertexShader(vs->GetBufferPointer(),vs->GetBufferSize(),nullptr,&s->vs));
+            check(device->CreatePixelShader(ps->GetBufferPointer(),ps->GetBufferSize(),nullptr,&s->ps));
+            D3D11_BLEND_DESC bd{};auto& rt=bd.RenderTarget[0];rt.BlendEnable=TRUE;
+            rt.SrcBlend=rt.SrcBlendAlpha=D3D11_BLEND_ONE;rt.DestBlend=D3D11_BLEND_SRC1_COLOR;rt.DestBlendAlpha=D3D11_BLEND_SRC1_ALPHA;
+            rt.BlendOp=rt.BlendOpAlpha=D3D11_BLEND_OP_ADD;rt.RenderTargetWriteMask=15;
+            check(device->CreateBlendState(&bd,&s->blendState));
+            D3D11_DEPTH_STENCIL_DESC dd{};dd.DepthFunc=D3D11_COMPARISON_ALWAYS;check(device->CreateDepthStencilState(&dd,&s->depth));
+            D3D11_RASTERIZER_DESC rd{};rd.FillMode=D3D11_FILL_SOLID;rd.CullMode=D3D11_CULL_NONE;rd.DepthClipEnable=TRUE;check(device->CreateRasterizerState(&rd,&s->raster));compositor=s;
+        }
+        auto d=std::make_shared<DrawCall>();d->composite=true;d->shader=compositor;
+        auto view=[&](void* resource,ComPtr<ID3D11ShaderResourceView>& out){auto* t=static_cast<ID3D11Texture2D*>(resource);D3D11_TEXTURE2D_DESC td{};t->GetDesc(&td);require(td.SampleDesc.Count==1&&td.ArraySize==1);D3D11_SHADER_RESOURCE_VIEW_DESC sd{};sd.Format=format(td.Format,false);sd.ViewDimension=D3D11_SRV_DIMENSION_TEXTURE2D;sd.Texture2D.MipLevels=1;check(device->CreateShaderResourceView(t,&sd,&out));};
+        view(in.black,d->black);view(in.white,d->white);draws.push_back(d);return int(draws.size());
     }
     int geometry(const GeometryIn& in) {
         auto g=std::make_shared<Geometry>();require(in.attributeCount&&in.attributeCount<=32&&in.attributes);
@@ -167,7 +201,14 @@ struct Renderer {
             auto* dc=deferred.Get();ID3D11RenderTargetView* rt=rtv.Get();dc->OMSetRenderTargets(1,&rt,dsv.Get());dc->RSSetViewports(1,&viewport);dc->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
             dc->GSSetShader(nullptr,nullptr,0);dc->HSSetShader(nullptr,nullptr,0);dc->DSSetShader(nullptr,nullptr,0);
             for(UINT i=first;i<first+count;i++){
-                require(list[i]&&list[i]<=draws.size());auto& d=*draws[list[i]-1];auto& s=*d.shader;auto& g=*d.geometry;
+                require(list[i]&&list[i]<=draws.size());auto& d=*draws[list[i]-1];auto& s=*d.shader;
+                if(d.composite){
+                    dc->VSSetShader(s.vs.Get(),nullptr,0);dc->PSSetShader(s.ps.Get(),nullptr,0);dc->IASetInputLayout(nullptr);
+                    dc->OMSetBlendState(s.blendState.Get(),nullptr,~0u);dc->OMSetDepthStencilState(s.depth.Get(),0);dc->RSSetState(s.raster.Get());
+                    ID3D11ShaderResourceView* views[]={d.black.Get(),d.white.Get()};dc->PSSetShaderResources(0,2,views);dc->Draw(3,0);
+                    ID3D11ShaderResourceView* nil[2]{};dc->PSSetShaderResources(0,2,nil);stats.draws++;continue;
+                }
+                auto& g=*d.geometry;
                 if(d.extent[0]>0||d.extent[1]>0||d.extent[2]>0){
                     float m[16];multiply(m,frame.vp,poses[d.pose].world);unsigned outside=63;
                     for(unsigned corner=0;corner<8&&outside;corner++){float p[3];for(unsigned axis=0;axis<3;axis++)p[axis]=d.center[axis]+((corner&(1u<<axis))?d.extent[axis]:-d.extent[axis]);float clip[4];for(unsigned row=0;row<4;row++)clip[row]=m[row]*p[0]+m[4+row]*p[1]+m[8+row]*p[2]+m[12+row];unsigned flags=(clip[0]<-clip[3]?1u:0u)|(clip[0]>clip[3]?2u:0u)|(clip[1]<-clip[3]?4u:0u)|(clip[1]>clip[3]?8u:0u)|(clip[2]<0?16u:0u)|(clip[2]>clip[3]?32u:0u);outside&=flags;}
@@ -204,6 +245,6 @@ extern "C" intptr_t __cdecl sf_z_drfull_v1(int op,int token,const void* args) no
         if(op==drfull::Error)return lastHR;
         if(op==drfull::Destroy){std::lock_guard<std::mutex> lock(gate);if(current&&current->token==token)current.reset();return 1;}
         auto r=get(token);require(r!=nullptr);std::lock_guard<std::mutex> lock(r->mutex);
-        switch(op){case drfull::Program:return r->program(*static_cast<const drfull::ProgramIn*>(args));case drfull::Geometry:return r->geometry(*static_cast<const drfull::GeometryIn*>(args));case drfull::Draw:return r->draw(*static_cast<const drfull::DrawIn*>(args));case drfull::Commit:return r->commit(*static_cast<const drfull::Frame*>(args));case drfull::Stats:{auto* s=const_cast<drfull::Statistics*>(static_cast<const drfull::Statistics*>(args));*s=r->stats;s->renderUs=r->stats.frames?r->renderSum/double(r->stats.frames):0;s->commitUs=r->commits?r->commitSum/double(r->commits):0;return 1;}default:throw E_INVALIDARG;}
+        switch(op){case drfull::Composite:return r->composite(*static_cast<const drfull::CompositeIn*>(args));case drfull::Program:return r->program(*static_cast<const drfull::ProgramIn*>(args));case drfull::Geometry:return r->geometry(*static_cast<const drfull::GeometryIn*>(args));case drfull::Draw:return r->draw(*static_cast<const drfull::DrawIn*>(args));case drfull::Commit:return r->commit(*static_cast<const drfull::Frame*>(args));case drfull::Stats:{auto* s=const_cast<drfull::Statistics*>(static_cast<const drfull::Statistics*>(args));*s=r->stats;s->renderUs=r->stats.frames?r->renderSum/double(r->stats.frames):0;s->commitUs=r->commits?r->commitSum/double(r->commits):0;return 1;}default:throw E_INVALIDARG;}
     }catch(HRESULT hr){lastHR=hr;return 0;}catch(...){lastHR=E_FAIL;return 0;}
 }

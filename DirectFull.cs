@@ -40,11 +40,12 @@ namespace StutterFix
                 case "off": case "ceil off": Stop("command off"); return State();
                 case "state": return State();
                 case "census": return Census();
+                case "plan": return Plan();
                 case "assert ceil": CheckLease(); if (!Active || Rendering) throw new InvalidOperationException("drfull INVALID: ceiling lease not active"); return "assert ceil PASS";
                 case "assert on": CheckLease(); if (!Active || !Rendering) throw new InvalidOperationException("drfull INVALID: full renderer not active"); AssertFull(); return "assert on PASS";
                 case "assert off": CheckLease(); if (Active) throw new InvalidOperationException("drfull INVALID: ceiling lease still active"); return "assert off PASS";
                 case "on": StartFull(); return State();
-                default: throw new ArgumentException("drfull on|ceil|off|state|census|assert on|assert off");
+                default: throw new ArgumentException("drfull on|ceil|off|state|census|plan|assert on|assert off");
             }
         }
 

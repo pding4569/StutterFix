@@ -233,6 +233,15 @@ namespace StutterFix
                 Log("assertpixels passed; cross-shot renderer state equality not asserted");
                 return true;
             }
+            if ((a.Length == 5 || a.Length == 6 && a[5] == "png") && a[0] == "assertlimit")
+            {
+                double percent = double.Parse(a[3], Inv); int channel = int.Parse(a[4], Inv);
+                var r = p.Diff(a[1], a[2], 0);
+                if (a.Length == 6) { p.Save(a[1]); p.Save(a[2]); }
+                if (!FrameCompareMetrics.WithinLimit(r, percent, channel))
+                    throw new InvalidOperationException("candidate pixel gate failed (changed percent must be strictly below limit; max channel inclusive)");
+                Log("assertlimit passed; candidate renderer state equality not asserted"); return true;
+            }
             if (a.Length >= 3 && a[0] == "diff")
             {
                 int start = 3, threshold = 0;

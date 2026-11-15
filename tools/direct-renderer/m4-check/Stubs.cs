@@ -110,6 +110,7 @@ namespace StutterFix
     }
     internal static partial class DirectFull
     {
+        static string Plan() => "fixture-plan-not-tested";
         static string Census() => "fixture-census-not-tested";
         internal static bool Rendering => false;
         static void StartFull() => throw new InvalidOperationException("Native renderer is tested by the WARP fixture; this fixture tests the shared mask lease");

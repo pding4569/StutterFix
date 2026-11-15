@@ -28,17 +28,20 @@ namespace StutterFix
         sealed class Source
         {
             internal Renderer R; internal SpriteRenderer Sprite; internal SpriteMask Mask;
-            internal MeshFilter Filter; internal int Index; internal bool Queued, Live;
+            internal MeshFilter Filter; internal int Index; internal bool Queued, Live, GroupsDirty;
             internal SceneRenderOrder.Key Key; internal Bound[] Passes;
             internal readonly List<Material> Materials = new List<Material>();
             internal readonly MaterialPropertyBlock RendererBlock = new MaterialPropertyBlock(), SlotBlock = new MaterialPropertyBlock();
             internal DirectFullSourceLifetime Lifetime;
             internal int MaterialCount; internal Sprite MaskSprite;
+            internal SortingGroup[] Groups = Array.Empty<SortingGroup>();
+            internal int[] GroupIds = Array.Empty<int>();
+            internal SceneRenderOrder.Key[] GroupKeys = Array.Empty<SceneRenderOrder.Key>();
         }
         sealed class Bound
         {
             internal Source Source; internal int Slot, MaskKind, Geometry, Program, NativeId;
-            internal Material Material; internal S.ShaderData Shader; internal S.Pass Pass; internal S.Variant Variant;
+            internal Material Material; internal Shader UnityShader; internal S.ShaderData Shader; internal S.Pass Pass; internal S.Variant Variant;
             internal N.Buffer[] Buffers; internal N.Patch[] Patches; internal N.Texture[] Textures;
             internal UnityEngine.Texture[] TextureObjects; internal byte[] Bytes, Previous;
             internal int[] States = new int[29]; internal long ConfigHash; internal bool HasRendererColor, HasFlip;
@@ -48,7 +51,7 @@ namespace StutterFix
         sealed class Entry
         {
             internal Source Source; internal Bound Draw; internal Material Fallback; internal int Slot, Layer, Order, Sub;
-            internal SceneRenderOrder.Key Key;
+            internal SceneRenderOrder.Key Key; internal CanvasUnit Canvas;
         }
         struct Capture : IJobParallelForTransform
         {
@@ -80,19 +83,15 @@ namespace StutterFix
         static readonly Dictionary<(S.Variant,long), int> programs = new Dictionary<(S.Variant,long), int>();
         static readonly Dictionary<UnityEngine.Texture, IntPtr> texturePointers = new Dictionary<UnityEngine.Texture, IntPtr>();
         static readonly List<DirectFullSourceLifetime> sourceLifetimes = new List<DirectFullSourceLifetime>();
-        static readonly List<Canvas> retainedCanvases = new List<Canvas>();
-        static readonly List<Renderer> retainedRenderers = new List<Renderer>();
-        static readonly HashSet<UnityEngine.Object> retainedIndex = new HashSet<UnityEngine.Object>();
         static readonly Dictionary<Renderer, Source> rendererSources = new Dictionary<Renderer, Source>();
-        static CommandBuffer before, after;
+        static CommandBuffer before, opaque;
         static TransformAccessArray transforms;
         static NativeArray<N.Pose> poses;
         static NativeArray<Vector3> centers;
         static NativeArray<float> distances;
         static NativeQueue<int> moved, reordered;
         static bool haveNativeFrame;
-        static bool islandPrepared, hasIsland;
-        static SceneRenderOrder.Key islandLo, islandHi;
+        static long commitMaxTicks, replanMaxTicks;
         static RenderTexture fullTarget;
         static int fullWidth, fullHeight;
         static uint[] poseIds, dirtyIds, constantOffsets, drawList, segments;
@@ -103,10 +102,11 @@ namespace StutterFix
         static readonly Dictionary<string, int> fallbackReasons = new Dictionary<string, int>(StringComparer.Ordinal);
         internal static bool Rendering => rendering;
 
-        static void StartFull()
+        static void StartFull() => StartFull(false);
+        static void StartFull(bool replan)
         {
-            if (rendering) { CheckLease(); return; }
-            if (Active) Stop("switch ceiling to full");
+            if (!replan && rendering) { CheckLease(); return; }
+            if (!replan && Active) Stop("switch ceiling to full");
             if (SystemInfo.graphicsDeviceType != GraphicsDeviceType.Direct3D11) throw new InvalidOperationException("drfull requires D3D11");
             if (DrProbe.Active || DirectDeco.Enabled || DirectDeco.Active || Main.Config.GpuDeco != 0 || Main.Config.RunLod)
                 throw new InvalidOperationException("drfull requires drx off, dr2 off, GpuDeco=0, RunLod=false");
@@ -115,56 +115,43 @@ namespace StutterFix
             if (QualitySettings.activeColorSpace != ColorSpace.Gamma) throw new InvalidOperationException("M4c linear color transfer needs Unity pixel validation");
             var rt = main.targetTexture;
             if (!rt || rt.antiAliasing != 1 || !rt.IsCreated()) throw new InvalidOperationException("M4c requires created, non-MSAA camRT");
-            foreach (CameraEvent evt in Enum.GetValues(typeof(CameraEvent)))
+            if (!replan) foreach (CameraEvent evt in Enum.GetValues(typeof(CameraEvent)))
                 foreach (var cb in main.GetCommandBuffers(evt))
                     if (cb.name.StartsWith("DR", StringComparison.Ordinal) || cb.name.StartsWith("StutterFix.Direct", StringComparison.Ordinal))
                         throw new InvalidOperationException("drfull competing command buffer: " + cb.name);
             fullStartTicks = Stopwatch.GetTimestamp();
             try
             {
-                camera = main; int original = main.cullingMask;
+                camera = main; int original = replan ? lease.Original : main.cullingMask;
                 fullTarget = rt; fullWidth = rt.width; fullHeight = rt.height;
-                removedMask = original & ResolveMapMask(); retainedMask = original & ~removedMask;
-                // CanvasRenderer cannot be replayed by CommandBuffer.DrawRenderer.
-                // Preserve every layer containing a potential root canvas, including
-                // inactive canvases, and reserve its entire sorting interval.
-                foreach (var c in Resources.FindObjectsOfTypeAll<Canvas>())
-                    if (c && c.gameObject.scene.IsValid() && (c.isRootCanvas || c.overrideSorting)
-                        && (c.renderMode == RenderMode.WorldSpace || c.renderMode == RenderMode.ScreenSpaceCamera && c.worldCamera == main) && (original & 1 << c.gameObject.layer) != 0)
-                    {
-                        retainedCanvases.Add(c); retainedIndex.Add(c); removedMask &= ~(1 << c.gameObject.layer);
-                        foreach (var cr in c.GetComponentsInChildren<CanvasRenderer>(true)) removedMask &= ~(1 << cr.gameObject.layer);
-                    }
-                // SortingGroups stay on Unity's path as complete layers until M4d.
-                // Their outer AND inner keys are reserved below, never flattened.
+                // Own every main-camera Renderer, including mask/Flash objects on
+                // non-map layers. A whole layer is NEVER retained for one object.
+                // All original main-camera layers are removed, including currently
+                // empty ones. Later OnEnable cannot create an unowned Unity island.
+                removedMask = original;
                 var renderers = Resources.FindObjectsOfTypeAll<Renderer>();
-                foreach (var r in renderers) if (r && r.gameObject.scene.IsValid() && r.GetComponentInParent<SortingGroup>()) removedMask &= ~(1 << r.gameObject.layer);
-                if (removedMask == 0) throw new InvalidOperationException("M4c no removable map layers (canvas layers reserved)");
-                retainedMask = original & ~removedMask;
+                PrepareCanvases(main, original);
+                if (removedMask == 0) throw new InvalidOperationException("M4d empty original camera mask");
+                retainedMask = 0;
                 S.Load();
                 N.ValidateAbi();
                 int capacity = 0;
-                foreach (var r in renderers) if (r && r.gameObject.scene.IsValid() && (removedMask & 1 << r.gameObject.layer) != 0) capacity++;
-                if (capacity == 0) throw new InvalidOperationException("M4c no map renderers");
+                foreach (var r in renderers) if (InCameraScene(r, original)) capacity++;
+                capacity = Math.Max(1, capacity + canvasUnits.Count * 4);
                 var create = new N.Create { Resource = rt.GetNativeTexturePtr(), Capacity = (uint)capacity, Abi = 1 };
                 fullToken = N.Require(N.Op.Create, 0, &create);
                 foreach (var r in renderers)
                 {
-                    if (r && r.gameObject.scene.IsValid() && (retainedMask & 1 << r.gameObject.layer) != 0)
-                    {
-                        retainedRenderers.Add(r); retainedIndex.Add(r);
-                        for (Transform t = r.transform; t; t = t.parent) { retainedIndex.Add(t); retainedIndex.Add(t.gameObject); var g = t.GetComponent<SortingGroup>(); if (g) retainedIndex.Add(g); }
-                    }
-                    if (!r || !r.gameObject.scene.IsValid() || !r.gameObject.scene.isLoaded || (removedMask & 1 << r.gameObject.layer) == 0) continue;
-                    if (r.GetComponentInParent<SortingGroup>()) throw new InvalidOperationException("M4c SortingGroup requires grouped ordering: " + r.name);
+                    if (!InCameraScene(r, original)) continue;
                     var s = new Source { R = r, Sprite = r as SpriteRenderer, Mask = r as SpriteMask, Filter = r.GetComponent<MeshFilter>(), Index = sources.Count };
                     sources.Add(s); rendererSources.Add(r, s); Index(s.R, s);
-                    for (Transform t = r.transform; t; t = t.parent) { Index(t, s); Index(t.gameObject, s); }
-                    var l = r.gameObject.AddComponent<DirectFullSourceLifetime>(); l.Changed = () => Queue(s); s.Lifetime = l; sourceLifetimes.Add(l);
+                    for (Transform t = r.transform; t; t = t.parent) { Index(t, s); Index(t.gameObject, s); var g = t.GetComponent<SortingGroup>(); if (g) Index(g, s); }
+                    var l = r.gameObject.AddComponent<DirectFullSourceLifetime>(); l.Changed = () => { s.GroupsDirty = true; Queue(s); }; s.Lifetime = l; sourceLifetimes.Add(l);
                     Refresh(s, true);
                 }
-                if (nativeCount == 0) throw new InvalidOperationException("M4c admitted zero original native draws");
-                changed.Capacity = sources.Count; changedConstants.Capacity = Math.Max(changedConstants.Capacity, capacity * 4);
+
+                ParkLiveCanvases();
+                changed.Capacity = Math.Max(changed.Capacity, sources.Count); changedConstants.Capacity = Math.Max(changedConstants.Capacity, capacity * 4);
                 transforms = new TransformAccessArray(sources.Count);
                 poses = new NativeArray<N.Pose>(sources.Count, Allocator.Persistent);
                 centers = new NativeArray<Vector3>(sources.Count, Allocator.Persistent);
@@ -175,18 +162,21 @@ namespace StutterFix
                 poseIds = new uint[sources.Count]; dirtyIds = new uint[capacity * 8]; constantOffsets = new uint[capacity * 8 + 1];
                 drawList = new uint[capacity * 4]; segments = new uint[131072]; constantBytes = new byte[Math.Max(4096, capacity * 2048)];
                 before = new CommandBuffer { name = "StutterFix.DirectFull.BeforeAlpha" };
-                after = new CommandBuffer { name = "StutterFix.DirectFull.AfterAlpha" };
-                main.AddCommandBuffer(CameraEvent.BeforeForwardAlpha, before); main.AddCommandBuffer(CameraEvent.AfterForwardAlpha, after);
+                opaque = new CommandBuffer { name = "StutterFix.DirectFull.BeforeOpaque" };
+                main.AddCommandBuffer(CameraEvent.BeforeForwardOpaque, opaque); main.AddCommandBuffer(CameraEvent.BeforeForwardAlpha, before);
                 // Install managed write-site observers. Native Unity setters themselves
                 // are never patched. Existing game transforms/materials keep updating.
-                BeginLease(main, removedMask, "StutterFix.DirectFull.Render");
+                if (!replan) BeginLease(main, removedMask, "StutterFix.DirectFull.Render");
                 rendering = true;
-                DirectSequenceChanges.Install(hooks);
+                if (!replan) DirectSequenceChanges.Install(hooks);
                 sortSignature = SortSignature(); orderDirty = true; globalsDirty = false;
-                fullFrames = fullTicks = fullMaxTicks = orderBuilds = 0; haveNativeFrame = false;
+                if (!replan) { fullFrames = fullTicks = fullMaxTicks = orderBuilds = commitMaxTicks = replanMaxTicks = rescans = 0; }
+                haveNativeFrame = false;
                 // Every pose is initialized in the first immutable frame packet.
                 poseCount = sources.Count; for (int i = 0; i < poseCount; i++) poseIds[i] = (uint)i;
                 RebuildFullOrder();
+                if (replan) { RenderCanvases(); CommitFull(); haveNativeFrame = true; }
+                LogCanvasSummary("on");
                 Log("FULL ON native=" + nativeCount + " unityExplicit=" + fallbackCount + " sources=" + sources.Count + " removedMask=" + removedMask + " retainedMask=" + retainedMask +
                     " setup_ms=" + ((Stopwatch.GetTimestamp() - fullStartTicks) * 1000.0 / Stopwatch.Frequency).ToString("F2") + " originalDXBC=True parity=UNMEASURED");
                 foreach (var pair in fallbackReasons) Log("fallback " + pair.Key + " count=" + pair.Value);
@@ -203,20 +193,21 @@ namespace StutterFix
         {
             if (!rendering) return;
             if (ReferenceEquals(obj, null)) return;
-            if (!obj) { if (sourceIndex.ContainsKey(obj) || retainedIndex.Contains(obj)) Stop("owned object destroyed; re-arm drfull on"); return; }
+            NotifyCanvasWrite(obj, kind, writer);
+            if (!obj) { if (sourceIndex.ContainsKey(obj) || canvasIndex.Contains(obj)) fullRescan = true; return; }
             if (kind == DirectSequenceChanges.Hierarchy)
             {
-                if (sourceIndex.ContainsKey(obj) || retainedIndex.Contains(obj)) { Stop("owned hierarchy changed; re-arm drfull on"); return; }
+                if (sourceIndex.ContainsKey(obj) || canvasIndex.Contains(obj)) { fullRescan = true; return; }
                 var go = obj as GameObject; if (!go && obj is Component component) go = component.gameObject;
                 if (go) foreach (var r in go.GetComponentsInChildren<Renderer>(true))
-                    if ((lease.Original & 1 << r.gameObject.layer) != 0) { Stop("new visible renderer; re-arm drfull on"); return; }
+                    if ((lease.Original & 1 << r.gameObject.layer) != 0) { fullRescan = true; return; }
+                if (go) foreach (var c in go.GetComponentsInChildren<Canvas>(true)) if (Relevant(c, camera)) { fullRescan = true; break; }
                 return;
             }
+            if (obj is SortingGroup && sourceIndex.TryGetValue(obj, out var grouped)) { foreach (var s in grouped) { s.GroupsDirty = true; Queue(s); } orderDirty = true; return; }
             if (obj is Transform) return; // TransformAccessArray job observes parents and uninstrumented tweens.
             if (obj is Mesh mesh) { meshVersions.TryGetValue(mesh, out int v); meshVersions[mesh] = v + 1; }
             if (obj is Shader) { globalsDirty = true; return; }
-            if (retainedIndex.Contains(obj) && (writer == "set_layer" || writer == "set_maskInteraction" || writer != null && writer.StartsWith("set_sorting", StringComparison.Ordinal)
-                || obj is SortingGroup || obj is Canvas && writer != "set_enabled")) { Stop("retained Unity order boundary changed; re-arm drfull on"); return; }
             if (obj is MeshFilter filter) { var renderer = filter.GetComponent<Renderer>(); if (renderer && rendererSources.TryGetValue(renderer, out var owner)) Queue(owner); }
             if (obj is UnityEngine.Texture texture && texturePointers.ContainsKey(texture)) { globalsDirty = true; texturePointers.Remove(texture); }
             if (sourceIndex.TryGetValue(obj, out var list)) foreach (var s in list) Queue(s);
@@ -224,15 +215,17 @@ namespace StutterFix
         internal static void NotifyFullGlobal() { if (rendering) globalsDirty = true; }
         internal static void BeforeFullWrite(UnityEngine.Object obj, int kind)
         {
-            if (rendering && kind == DirectSequenceChanges.Hierarchy && obj && (sourceIndex.ContainsKey(obj) || retainedIndex.Contains(obj) || obj is UnityEngine.Texture texture && texturePointers.ContainsKey(texture))) Stop("owned hierarchy mutation; restored before write");
+            if (rendering && kind == DirectSequenceChanges.Hierarchy && !ReferenceEquals(obj, null)
+                && (sourceIndex.ContainsKey(obj) || canvasIndex.Contains(obj) || obj is UnityEngine.Texture texture && texturePointers.ContainsKey(texture))) fullRescan = true;
         }
         static void Refresh(Source s, bool initial)
         {
             if (!s.R) throw new InvalidOperationException("owned renderer destroyed");
-            if ((removedMask & 1 << s.R.gameObject.layer) == 0) throw new InvalidOperationException("owned renderer moved to retained layer");
-            bool live = s.R.enabled && s.R.gameObject.activeInHierarchy && !s.R.forceRenderingOff;
+            if (initial || s.GroupsDirty) { RefreshGroups(s); s.GroupsDirty = false; }
+            bool live = s.R.enabled && s.R.gameObject.activeInHierarchy && !s.R.forceRenderingOff && (CanvasOwns(s.R.transform) || (removedMask & 1 << s.R.gameObject.layer) != 0);
             if (s.Live != live) orderDirty = true; s.Live = live;
             s.R.GetSharedMaterials(s.Materials); s.R.GetPropertyBlock(s.RendererBlock);
+            if (!live) { UpdateKey(s); return; }
             if (centers.IsCreated) centers[s.Index] = LocalCenter(s);
             foreach (var mat in s.Materials) if (mat) Index(mat, s);
             if (s.Filter && s.Filter.sharedMesh) Index(s.Filter.sharedMesh, s);
@@ -245,15 +238,16 @@ namespace StutterFix
             {
                 // Rebind only when structure changes. Constant-only writes reuse all
                 // arrays, D3D objects, layouts and texture COM references.
-                bool structure = !StructureMatches(s);
+                bool structure;
+                try { structure = !StructureMatches(s); } catch { structure = true; }
                 if (!structure)
                 {
                     foreach (var b in s.Passes)
                     {
-                        if (b.NativeId != 0) Fill(b);
+                        try { if (b.NativeId != 0) Fill(b); } catch { structure = true; break; }
                         if (!s.Mask && b.Entry.Key.CompareTo(FullKey(s.R, b.Material, b.Slot)) != 0) orderDirty = true;
                     }
-                    if (s.Mask) orderDirty = true; UpdateKey(s); return;
+                    if (!structure) { if (s.Mask) orderDirty = true; UpdateKey(s); return; }
                 }
                 if (!initial) { foreach (var old in s.Passes) { if (old.NativeId != 0) nativeCount--; else fallbackCount--; } orderDirty = true; }
             }
@@ -269,29 +263,37 @@ namespace StutterFix
                 for (int slot = 0; slot < s.Materials.Count; slot++)
                 {
                     var m = s.Materials[slot]; if (!m || !m.shader) continue;
-                    if (m.renderQueue < 2501) throw new InvalidOperationException("M4c opaque queue needs a separate opaque phase: " + m.shader.name);
-                    string reason = null;
-                    if (!(s.Sprite || s.R is MeshRenderer && s.Filter && s.Filter.sharedMesh)) reason = "renderer:" + s.R.GetType().Name;
+
+                    string reason = m.renderQueue < 2501 ? "opaque:explicit" : null;
+                    if (reason == null && !(s.Sprite || s.R is MeshRenderer && s.Filter && s.Filter.sharedMesh)) reason = "renderer:" + s.R.GetType().Name;
                     else if (s.R.isPartOfStaticBatch) reason = "mesh:Unity-static-batch";
                     else if (s.R is MeshRenderer mr && mr.additionalVertexStreams) reason = "mesh:additional-vertex-streams";
                     else if (s.Sprite && s.Sprite.drawMode != SpriteDrawMode.Simple) reason = "non-simple sprite";
                     else if (!S.Load().TryGetValue(m.shader.name, out var shader)) reason = "shader:" + m.shader.name;
                     if (reason != null)
                     {
-                        if (s.R is ParticleSystemRenderer ps && ps.maskInteraction != SpriteMaskInteraction.None) throw new InvalidOperationException("M4c masked particle requires auxiliary composition");
-                        if (s.Sprite && s.Sprite.maskInteraction != SpriteMaskInteraction.None) throw new InvalidOperationException("M4c unsupported masked sprite requires auxiliary composition");
-                        if (m.passCount != 1) throw new InvalidOperationException("M4c unsupported multipass " + m.shader.name);
-                        fallbackReasons.TryGetValue(reason, out int n); fallbackReasons[reason] = n + 1; fallbackCount++;
-                        var fallback = new Bound { Source = s, Slot = slot, Material = m }; fallback.Entry = new Entry { Source = s, Fallback = m, Slot = slot }; passes.Add(fallback); continue;
+                        passes.Add(Fallback(s, m, slot, reason)); continue;
                     }
                     var data = S.Load()[m.shader.name];
                     if (s.Sprite && !s.Sprite.sprite) continue;
-                    foreach (var pass in data.Passes) passes.Add(Bind(s, m, data, pass, slot, 0));
+                    int first = passes.Count;
+                    try { foreach (var pass in data.Passes) passes.Add(Bind(s, m, data, pass, slot, 0)); }
+                    catch (Exception ex)
+                    {
+                        passes.RemoveRange(first, passes.Count - first);
+                        passes.Add(Fallback(s, m, slot, "bind:" + ex.Message));
+                    }
                 }
             }
             s.Passes = passes.ToArray(); s.MaterialCount = s.Materials.Count; s.MaskSprite = s.Mask ? s.Mask.sprite : null;
             foreach (var b in s.Passes) if (b.NativeId != 0) nativeCount++;
             orderDirty = true; UpdateKey(s);
+        }
+        static Bound Fallback(Source s, Material m, int slot, string reason)
+        {
+            fallbackReasons.TryGetValue(reason, out int n); fallbackReasons[reason] = n + 1; fallbackCount++;
+            var b = new Bound { Source = s, Slot = slot, Material = m };
+            b.Entry = new Entry { Source = s, Fallback = m, Slot = slot }; return b;
         }
         static bool StructureMatches(Source s)
         {
@@ -303,7 +305,7 @@ namespace StutterFix
                 if (b.Slot >= s.Materials.Count || !ReferenceEquals(b.Material, s.Materials[b.Slot])) return false;
                 if (b.NativeId == 0) continue;
                 if (s.R.isPartOfStaticBatch || s.R is MeshRenderer mr && mr.additionalVertexStreams) return false;
-                if (b.Material.shader.name != b.Shader.Name || !ReferenceEquals(S.Select(b.Shader, b.Pass, b.Material), b.Variant)) return false;
+                if (b.Material.shader != b.UnityShader || !ReferenceEquals(S.Select(b.Shader, b.Pass, b.Material), b.Variant)) return false;
                 if (GeometryFor(s, b.Variant, b.Slot) != b.Geometry) return false;
             }
             return true;
@@ -311,7 +313,7 @@ namespace StutterFix
         static Bound Bind(Source s, Material m, S.ShaderData shader, S.Pass pass, int slot, int maskKind)
         {
             var v = s.Mask ? pass.Variants[0] : S.Select(shader, pass, m);
-            var b = new Bound { Source = s, Material = m, Shader = shader, Pass = pass, Slot = slot, MaskKind = maskKind, Variant = v, Stages = new[] { v.Vs, v.Ps } };
+            var b = new Bound { Source = s, Material = m, UnityShader = m ? m.shader : null, Shader = shader, Pass = pass, Slot = slot, MaskKind = maskKind, Variant = v, Stages = new[] { v.Vs, v.Ps } };
             b.Entry = new Entry { Source = s, Draw = b, Slot = slot };
             var buffers = new List<N.Buffer>(); var patches = new List<N.Patch>(); int offset = 16;
             foreach (var stage in b.Stages)
@@ -574,18 +576,20 @@ namespace StutterFix
             var signature = SortSignature(); float d;
             if (distances.IsCreated && rendererSources.TryGetValue(r, out var source)) d = distances[source.Index];
             else { var p = r.bounds.center; if (r is SpriteRenderer sr && sr.spriteSortPoint == SpriteSortPoint.Pivot) p = r.transform.position; d = p.x * signature.x + p.y * signature.y + p.z * signature.z; }
+            if (rendererSources.TryGetValue(r, out var groupedSource) && groupedSource.Groups.Length != 0) d = 0;
             return new SceneRenderOrder.Key(SortingLayer.GetLayerValueFromID(r.sortingLayerID), r.sortingOrder, m ? m.renderQueue : 3000, d, m ? m.GetInstanceID() : 0, r.GetInstanceID(), slot, SceneRenderOrder.ShaderRank(m));
         }
+        static int FullPhase(Entry e) => e.Sub == 0 && e.Canvas == null && e.Key.Queue <= 2500 ? 0 : 1;
         static int CompareFull(Entry a, Entry b)
         {
+            int phase = FullPhase(a).CompareTo(FullPhase(b)); if (phase != 0) return phase;
+            int grouped = CompareGroups(a, b); if (grouped != 0) return grouped;
             int c = a.Layer.CompareTo(b.Layer); if (c != 0) return c;
             c = a.Order.CompareTo(b.Order); if (c != 0) return c;
             c = a.Sub.CompareTo(b.Sub); if (c != 0) return c;
             if (a.Sub != 0) return a.Source.Index.CompareTo(b.Source.Index);
             c = a.Key.CompareTo(b.Key); return c != 0 ? c : (a.Draw?.Pass.Index ?? 0).CompareTo(b.Draw?.Pass.Index ?? 0);
         }
-        static void ReserveKey(ref bool island, ref SceneRenderOrder.Key lo, ref SceneRenderOrder.Key hi, SceneRenderOrder.Key key)
-        { if (!island || key.CompareTo(lo) < 0) lo = key; if (!island || key.CompareTo(hi) > 0) hi = key; island = true; }
         static void RecordSegment(CommandBuffer cb, ref int start)
         {
             if (segmentCount >= 65535) throw new InvalidOperationException("M4c segment limit");
@@ -596,9 +600,10 @@ namespace StutterFix
         static void RebuildFullOrder()
         {
             ordered.Clear();
+            foreach (var s in sources) for (int i = 0; i < s.Groups.Length; i++) s.GroupKeys[i] = GroupKey(s, i);
             foreach (var s in sources)
             {
-                if (!s.Live) continue;
+                if (!s.Live || s.Passes == null) continue;
                 foreach (var b in s.Passes)
                 {
                     if (s.Mask)
@@ -617,48 +622,24 @@ namespace StutterFix
                     }
                 }
             }
+            AddCanvasEntries();
             ordered.Sort(CompareFull);
-            if (!islandPrepared)
-            {
-            foreach (var r in retainedRenderers)
-                if (r && r.gameObject.scene.IsValid() && (retainedMask & 1 << r.gameObject.layer) != 0)
-                {
-                    if (r is SpriteMask || r is SpriteRenderer sr && sr.maskInteraction != SpriteMaskInteraction.None) throw new InvalidOperationException("retained Unity masks cannot share native stencil");
-                    // Reserve inactive objects as well; enabling them cannot insert a new island.
-                    int layer = SortingLayer.GetLayerValueFromID(r.sortingLayerID), order = r.sortingOrder;
-                    ReserveKey(ref hasIsland, ref islandLo, ref islandHi, new SceneRenderOrder.Key(layer, order, int.MinValue, float.MaxValue, int.MinValue, int.MinValue));
-                    ReserveKey(ref hasIsland, ref islandLo, ref islandHi, new SceneRenderOrder.Key(layer, order, int.MaxValue, float.MinValue, int.MaxValue, int.MaxValue));
-                    for (Transform t = r.transform; t; t = t.parent)
-                    {
-                        var group = t.GetComponent<SortingGroup>(); if (!group) continue;
-                        int gl = SortingLayer.GetLayerValueFromID(group.sortingLayerID), go = group.sortingOrder;
-                        ReserveKey(ref hasIsland, ref islandLo, ref islandHi, new SceneRenderOrder.Key(gl, go, int.MinValue, float.MaxValue, int.MinValue, int.MinValue));
-                        ReserveKey(ref hasIsland, ref islandLo, ref islandHi, new SceneRenderOrder.Key(gl, go, int.MaxValue, float.MinValue, int.MaxValue, int.MaxValue));
-                    }
-                }
-            foreach (var c in retainedCanvases)
-            {
-                int layer = SortingLayer.GetLayerValueFromID(c.sortingLayerID), order = c.sortingOrder;
-                ReserveKey(ref hasIsland, ref islandLo, ref islandHi, new SceneRenderOrder.Key(layer, order, int.MinValue, float.MaxValue, int.MinValue, int.MinValue));
-                ReserveKey(ref hasIsland, ref islandLo, ref islandHi, new SceneRenderOrder.Key(layer, order, int.MaxValue, float.MinValue, int.MaxValue, int.MaxValue));
-            }
-            islandPrepared = true;
-            }
-            before.Clear(); after.Clear(); listCount = segmentCount = 0;
-            var cb = before; bool switched = false; int start = 0;
+            before.Clear(); opaque.Clear(); listCount = segmentCount = 0;
+            bool opaquePhase = ordered.Count != 0 && FullPhase(ordered[0]) == 0;
+            var cb = opaquePhase ? opaque : before; int start = 0;
+            BeginCanvasRuns();
             bool anyMasks = false; int maskDepth = 0;
             foreach (var e in ordered)
             {
-                if (hasIsland)
-                {
-                    if (e.Key.CompareTo(islandLo) >= 0 && e.Key.CompareTo(islandHi) <= 0) throw new InvalidOperationException("M4c order intersects retained Unity interval: " + e.Source.R.name + " layer=" + e.Layer + " order=" + e.Order);
-                    if (!switched && e.Key.CompareTo(islandHi) > 0) { if (maskDepth != 0) throw new InvalidOperationException("M4c mask spans retained Unity island; requires M4d"); RecordSegment(cb, ref start); cb = after; switched = true; }
-                }
+                if (opaquePhase && FullPhase(e) != 0) { RecordSegment(cb, ref start); cb = before; opaquePhase = false; }
                 if (e.Sub == -2) maskDepth++; else if (e.Sub == -1) maskDepth--;
                 if (maskDepth < 0 || maskDepth > 254) throw new InvalidOperationException("M4c invalid/saturated mask nesting");
+                if (e.Canvas != null) { RecordCanvasEntry(cb, e, ref start); continue; }
+                EndCanvasRun();
                 if (e.Draw != null) { if (listCount == drawList.Length) throw new InvalidOperationException("M4c draw list capacity"); drawList[listCount++] = (uint)e.Draw.NativeId; if (e.Sub != 0) anyMasks = true; }
                 else { RecordSegment(cb, ref start); cb.DrawRenderer(e.Source.R, e.Fallback, e.Source.Filter && e.Source.Filter.sharedMesh ? Math.Min(e.Slot, e.Source.Filter.sharedMesh.subMeshCount - 1) : 0, -1); }
             }
+            EndCanvasRun();
             RecordSegment(cb, ref start);
             if (maskDepth != 0) throw new InvalidOperationException("M4c unbalanced mask range");
             if (anyMasks && camera.targetTexture.depth < 24) throw new InvalidOperationException("M4c masks require a stencil-capable camera depth target");
@@ -670,6 +651,9 @@ namespace StutterFix
             long t = Stopwatch.GetTimestamp();
             try
             {
+                if (fullRescan) { RecreateFull(); return; }
+                UpdateCanvasView(camera);
+                if (canvasDirty) ReplanCanvases();
                 if (camera.targetTexture != fullTarget || !fullTarget || fullTarget.width != fullWidth || fullTarget.height != fullHeight || fullTarget.antiAliasing != 1) throw new InvalidOperationException("camRT changed");
                 N.Stats stats = default; N.Require(N.Op.Stats, fullToken, &stats);
                 if (stats.Errors != 0 || stats.Dropped != 0) throw new InvalidOperationException("native frame invalid errors=" + stats.Errors + " dropped=" + stats.Dropped + " hr=" + stats.LastHr.ToString("X8"));
@@ -678,15 +662,24 @@ namespace StutterFix
                 bool first = !haveNativeFrame;
                 poseCount = first ? sources.Count : 0;
                 if (first) for (int i = 0; i < poseCount; i++) poseIds[i] = (uint)i;
-                while (moved.TryDequeue(out int index)) { var s = sources[index]; if (!s.R) throw new InvalidOperationException("renderer destroyed"); if (!first) poseIds[poseCount++] = (uint)index; }
-                while (reordered.TryDequeue(out int index)) UpdateKey(sources[index]);
+                while (moved.TryDequeue(out int index)) { var s = sources[index]; if (!s.R) { fullRescan = true; continue; } if (!first) poseIds[poseCount++] = (uint)index; }
+                if (fullRescan) { RecreateFull(); return; }
+                while (reordered.TryDequeue(out int index)) if (sources[index].R) { if (sources[index].Groups.Length != 0) orderDirty = true; UpdateKey(sources[index]); }
                 if (sortSignature != SortSignature()) { sortSignature = SortSignature(); orderDirty = true; }
                 if (globalsDirty) { foreach (var s in sources) Queue(s); globalsDirty = false; }
-                foreach (var s in changed) { s.Queued = false; Refresh(s, false); } changed.Clear();
-                if (orderDirty) RebuildFullOrder(); CommitFull(); haveNativeFrame = true;
-                long ticks = Stopwatch.GetTimestamp() - t; fullFrames++; fullTicks += ticks; if (ticks > fullMaxTicks) fullMaxTicks = ticks;
+                foreach (var s in changed) { s.Queued = false; if (!s.R) fullRescan = true; else Refresh(s, false); } changed.Clear();
+                if (fullRescan) { RecreateFull(); return; }
+                if (orderDirty) { long rp = Stopwatch.GetTimestamp(); RebuildFullOrder(); replanMaxTicks = Math.Max(replanMaxTicks, Stopwatch.GetTimestamp() - rp); }
+                RenderCanvases();
+                long commit = Stopwatch.GetTimestamp(); CommitFull(); commitMaxTicks = Math.Max(commitMaxTicks, Stopwatch.GetTimestamp() - commit); haveNativeFrame = true;
             }
             catch (Exception e) { Log("FULL frame failed: " + e); Stop("full frame invalid; restored"); }
+            finally
+            {
+                // Include notification rescans and visibility replans, even when
+                // their branch returns early after committing the replacement.
+                if (rendering) { long ticks = Stopwatch.GetTimestamp() - t; fullFrames++; fullTicks += ticks; if (ticks > fullMaxTicks) fullMaxTicks = ticks; }
+            }
         }
         static void CommitFull()
         {
@@ -723,29 +716,31 @@ namespace StutterFix
         static string FullState()
         {
             N.Stats s = default; N.Require(N.Op.Stats, fullToken, &s);
-            return FormattableString.Invariant($"mode=M4c-original active=True native={nativeCount} unityExplicit={fallbackCount} sources={sources.Count} removedMask={removedMask} retainedMask={retainedMask} frames={s.Frames} draws={s.Draws} errors={s.Errors} dropped={s.Dropped} main_us={(fullFrames != 0 ? fullTicks * 1e6 / Stopwatch.Frequency / fullFrames : 0):F3} main_max_us={fullMaxTicks * 1e6 / Stopwatch.Frequency:F3} render_us={s.RenderUs:F3} commit_us={s.CommitUs:F3} replans={orderBuilds} parity=UNMEASURED");
+            return FormattableString.Invariant($"mode=M4d-original active=True native={nativeCount} unityExplicit={fallbackCount} sources={sources.Count} removedMask={removedMask} retainedMask={retainedMask} frames={s.Frames} draws={s.Draws} errors={s.Errors} dropped={s.Dropped} main_us={(fullFrames != 0 ? fullTicks * 1e6 / Stopwatch.Frequency / fullFrames : 0):F3} main_max_us={fullMaxTicks * 1e6 / Stopwatch.Frequency:F3} render_us={s.RenderUs:F3} commit_us={s.CommitUs:F3} replans={orderBuilds} commit_max_us={commitMaxTicks * 1e6 / Stopwatch.Frequency:F3} replan_max_us={replanMaxTicks * 1e6 / Stopwatch.Frequency:F3} {CanvasState()} parity=UNMEASURED");
         }
         static void AssertFull()
         {
             N.Stats s = default; N.Require(N.Op.Stats, fullToken, &s);
-            if (s.Frames == 0 || s.Draws == 0 || s.Errors != 0 || s.Dropped != 0 || s.Frames + 8 < (ulong)fullFrames || Time.frameCount - startedFrame > cameraFrames + 8)
+            if (uncertainCanvases != 0) throw new InvalidOperationException("drfull INVALID: unverified canvas blend; " + CanvasState());
+            if (s.Frames == 0 || s.Draws == 0 || s.Errors != 0 || s.Dropped != 0 || Time.frameCount - startedFrame > cameraFrames + 8)
                 throw new InvalidOperationException("drfull INVALID: missing/stale native draws or errors/drops; " + FullState());
         }
         static void ReleaseFull()
         {
             rendering = false;
             if (before != null) { if (camera) camera.RemoveCommandBuffer(CameraEvent.BeforeForwardAlpha, before); before.Release(); before = null; }
-            if (after != null) { if (camera) camera.RemoveCommandBuffer(CameraEvent.AfterForwardAlpha, after); after.Release(); after = null; }
+            if (opaque != null) { if (camera) camera.RemoveCommandBuffer(CameraEvent.BeforeForwardOpaque, opaque); opaque.Release(); opaque = null; }
+            ReleaseCanvases();
             if (fullToken != 0) { N.Call(N.Op.Destroy, fullToken); fullToken = 0; }
             if (transforms.isCreated) transforms.Dispose(); if (poses.IsCreated) poses.Dispose(); if (moved.IsCreated) moved.Dispose();
             if (centers.IsCreated) centers.Dispose(); if (distances.IsCreated) distances.Dispose(); if (reordered.IsCreated) reordered.Dispose();
             foreach (var l in sourceLifetimes) if (l) { l.Changed = null; UnityEngine.Object.Destroy(l); }
-            sourceLifetimes.Clear(); sources.Clear(); changed.Clear(); changedConstants.Clear(); ordered.Clear(); sourceIndex.Clear(); retainedCanvases.Clear();
+            sourceLifetimes.Clear(); sources.Clear(); changed.Clear(); changedConstants.Clear(); ordered.Clear(); sourceIndex.Clear();
             geometryCache.Clear(); meshVersions.Clear(); programs.Clear(); texturePointers.Clear(); fallbackReasons.Clear();
-            retainedRenderers.Clear(); retainedIndex.Clear(); rendererSources.Clear();
+            rendererSources.Clear();
             poseIds = dirtyIds = constantOffsets = drawList = segments = null; constantBytes = null;
             fullTarget = null;
-            islandPrepared = hasIsland = false;
+            fullRescan = canvasDirty = false;
             nativeCount = fallbackCount = 0; orderDirty = sendList = globalsDirty = false;
         }
     }

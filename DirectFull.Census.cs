@@ -112,6 +112,7 @@ namespace StutterFix
                     { canvases++; Log("census canvas=" + Clean(c.name) + " layer=" + c.gameObject.layer + " mode=" + c.renderMode + " active=" + c.isActiveAndEnabled); }
             foreach (var m in Resources.FindObjectsOfTypeAll<SpriteMask>())
                 if (m && m.gameObject.scene.IsValid()) { masks++; Log("census mask=" + Clean(m.name) + " layer=" + m.gameObject.layer + " active=" + (m.enabled && m.gameObject.activeInHierarchy) + " customRange=" + m.isCustomRangeActive); }
+            Log("census " + CanvasCensus(main, original));
             string prefix = Path.Combine(Main.Entry.Path, "drfull-census-" + DateTime.UtcNow.ToString("yyyyMMdd-HHmmss-fff"));
             File.WriteAllText(prefix + "-renderers.tsv", details.ToString(), new UTF8Encoding(false));
             var summary = new StringBuilder("layer\ttype\tshader\tkeywords\tvertexFormat\troute\tmaterialSlots\tlive\tforceOff\tcameraVisible\tnativeCandidateUnverified\n");

@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework>
+    <DefineConstants>DRAWCOLLAPSE_CHECK</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../../../DirectFull.ObjectLayers.cs" Link="DirectFull.ObjectLayers.cs" />
+    <Compile Include="../../../SceneRenderOrder.cs" Link="SceneRenderOrder.cs" />
+  </ItemGroup>
+</Project>

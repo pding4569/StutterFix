@@ -33,6 +33,16 @@ foreach (int bad in new[] { -1, 256 })
 }
 bool mismatch = false; try { FrameCompareMetrics.Compare(a, new byte[4], 65, 35, 0); } catch (ArgumentException) { mismatch = true; }
 Check(mismatch, "dimensions guard");
+var gate = new FrameCompareMetrics.Result { OutsidePixels = 10000, Ratio = 0.0009 }; gate.Max[0] = 3;
+Check(FrameCompareMetrics.WithinLimit(gate, 0.1, 3), "M4d candidate below 0.1 percent and inclusive channel 3");
+gate.Ratio = 0.001; Check(!FrameCompareMetrics.WithinLimit(gate, 0.1, 3), "strict ratio boundary");
+gate.Ratio = 0; gate.Max[3] = 4; Check(!FrameCompareMetrics.WithinLimit(gate, 0.1, 3), "alpha channel gate");
+gate.Max[3] = 0; gate.OutsidePixels = 0; Check(!FrameCompareMetrics.WithinLimit(gate, 0.1, 3), "empty comparison rejected");
+foreach (double limit in new[] { 0.0, -1.0, double.NaN, double.PositiveInfinity })
+{
+    bool rejected = false; try { FrameCompareMetrics.WithinLimit(gate, limit, 3); } catch (ArgumentException) { rejected = true; }
+    Check(rejected, "invalid candidate pixel limit");
+}
 Console.WriteLine($"FrameCompareMetrics: {n} checks passed (offline RGBA8 only; no live GPU evidence)");
 int maskStart = n;
 var pixels = new byte[100 * 100 * 4]; var altered = (byte[])pixels.Clone();

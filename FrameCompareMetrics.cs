@@ -40,6 +40,14 @@ namespace StutterFix
             internal double Ratio, Psnr;
             internal string Regions;
         }
+        internal static bool WithinLimit(Result r, double percent, int channel)
+        {
+            if (double.IsNaN(percent) || double.IsInfinity(percent) || percent <= 0 || percent > 100 || channel < 0 || channel > 255)
+                throw new ArgumentException("pixel gate limits out of range");
+            if (r == null || double.IsNaN(r.Ratio) || r.OutsidePixels == 0 || r.Ratio * 100 >= percent) return false;
+            for (int i = 0; i < 4; i++) if (r.Max[i] > channel) return false;
+            return true;
+        }
         internal static Result Compare(byte[] a, byte[] b, int width, int height, int threshold, Mask[] masks = null)
         {
             if (width <= 0 || height <= 0 || threshold < 0 || threshold > 255 ||
