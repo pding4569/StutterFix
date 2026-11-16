@@ -14,7 +14,7 @@ namespace StutterFix
             internal ulong FullPlans, SegmentPlans, VisitedSources, VisitedOps, UnchangedSegments, IndexSources;
             internal double SegmentUs, MaxSegmentUs, BatchUs, IndexUs, MaxPlanUs, MaxRecordUs;
         }
-        [StructLayout(LayoutKind.Sequential)] internal struct CacheTune { internal uint IndirectBatches; }
+        [StructLayout(LayoutKind.Sequential)] internal struct CacheTune { internal uint IndirectBatches; internal uint DirectSingles; }
         [StructLayout(LayoutKind.Sequential)] internal struct CacheDetails
         {
             internal ulong SharedBindings, PrivateBindings, FrameEvaluations, DrawEvaluations, FrameBytes, DrawBytes;

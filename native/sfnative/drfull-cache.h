@@ -10,7 +10,7 @@ std::vector<CacheValue> cacheValues;std::map<std::vector<uint32_t>,UINT> cachePo
 std::map<std::pair<UINT,UINT>,UINT> cacheDetached;
 std::vector<UINT> cacheValueDirty;
 struct CacheDraw {std::array<std::vector<CacheBinding>,2> bindings;std::array<bool,2> pose{};UINT heads=0;int headDelta=0;bool deltaQueued=false,queued=false,active=false,batched=false;};
-struct CacheOp {UINT draw=0,first=0,end=0,indices=0,start=0;INT base=0;UINT batched=0,composite=0;uintptr_t black=0,white=0;};
+struct CacheOp {UINT draw=0,first=0,end=0,indices=0,start=0;INT base=0;UINT batched=0,composite=0,live=1,direct=0;uintptr_t black=0,white=0;};
 struct CacheCull {float center[4]{},extent[4]{};UINT pose=0,grab=0,end=0,indices=0,start=0;INT base=0;UINT composite=0,pad=0;};
 static_assert(sizeof(CacheCull)==64,"M4l cull ABI");
 struct CacheChunk {std::vector<CacheOp> ops;ComPtr<ID3D11CommandList> commands;ID3D11RenderTargetView* target=nullptr;ID3D11DepthStencilView* depth=nullptr;D3D11_VIEWPORT viewport{};uint64_t generation=0;};
@@ -25,7 +25,7 @@ std::vector<UINT> cacheHeadChanges;
 std::vector<CachePage> cachePages;std::vector<CacheDraw> cacheDraws;
 std::vector<UINT> cacheDirty,cacheCamera,cacheTime;std::vector<CacheSegment> cacheSegments;
 std::vector<UINT> cacheDirtyPages;ID3D11RenderTargetView* cacheGrabTarget=nullptr;size_t cacheGrabCount=0;
-std::vector<CacheCull> cacheCullData;std::vector<UINT> cacheCullSlots;bool cachePlanDirty=true,cacheCullDirty=true;
+std::unordered_map<UINT,CacheChunk> cacheReuse;bool cachePrepared=false;ID3D11RenderTargetView* cacheLastTarget=nullptr;ID3D11DepthStencilView* cacheLastDepth=nullptr;D3D11_VIEWPORT cacheLastViewport{};std::vector<CacheCull> cacheCullData;std::vector<UINT> cacheCullSlots;bool cachePlanDirty=true,cacheCullDirty=true;
 uint64_t cacheGeneration=1,cacheFrame=UINT64_MAX,cacheBounds=UINT64_MAX,cacheCameraEpoch=UINT64_MAX,cacheTimeEpoch=UINT64_MAX;
 ComPtr<ID3D11Buffer> cacheCullBuffer,cacheArgs,cacheControl;UINT cacheCullCapacity=0,cacheArgsCapacity=0;
 ComPtr<ID3D11Buffer> cacheWorkBuffer;ComPtr<ID3D11ShaderResourceView> cacheWorkView;UINT cacheWorkCapacity=0;
@@ -145,8 +145,12 @@ void cacheBuildPlan(){
     cacheDraws.resize(draws.size());cacheDirty.reserve(draws.size());cacheCamera.reserve(draws.size());cacheTime.reserve(draws.size());
     if(full){
         for(auto& seg:cacheSegments)for(auto& chunk:seg.chunks)for(auto& op:chunk.ops)cacheReleaseHead(op);
+        // Keep recorded lists by absolute first position. A boundary-only change
+        // (explicit/canvas split moved) leaves most chunks byte-identical.
+        cacheReuse.clear();
+        for(auto& seg:cacheSegments){for(auto& c:seg.chunks){if(!c.ops.empty()&&c.commands)cacheReuse.emplace(c.ops.front().first,std::move(c));}seg.chunks.clear();}
         cacheSegments.resize(segs.size()/2);cacheCullData.resize(list.size());
-        for(auto& seg:cacheSegments){seg.dirty=true;for(auto& c:seg.chunks)c.ops.clear();}
+        for(auto& seg:cacheSegments){seg.dirty=true;seg.chunks.clear();seg.indirect.clear();seg.lo=UINT32_MAX;seg.hi=0;}
         localPlanPerf.fullPlans++;
     }
     cacheCullSlots.clear();cacheCullRanges.clear();
@@ -170,11 +174,13 @@ void cacheBuildPlan(){
         auto flush=[&](){if(ops.empty())return;
             CacheChunk c;
             if(from+chunk<to)c=std::move(chunks[from+chunk]);
+            else if(full){auto it=cacheReuse.find(ops.front().first);if(it!=cacheReuse.end()){c=std::move(it->second);cacheReuse.erase(it);}}
             if(c.ops.size()!=ops.size()||std::memcmp(c.ops.data(),ops.data(),ops.size()*sizeof(CacheOp))){c.commands.Reset();c.ops=ops;}
             cacheReplacement.push_back(std::move(c));chunk++;ops.clear();};
         for(UINT i=first;i<end;){UINT id=list[i]-1;auto& d=*draws[id];bool batched=gpuBatch&&d.batchable;UINT stop=batched?std::min(end,batchEnds[i]):i+1;
             CacheOp op{};op.draw=id;op.first=i;op.end=stop;op.batched=batched?1u:0u;op.composite=d.composite?1u:0u;
             op.black=reinterpret_cast<uintptr_t>(d.black.Get());op.white=reinterpret_cast<uintptr_t>(d.white.Get());
+            if(cacheTune.directSingles&&!batched&&!d.composite){op.direct=1;op.live=live[d.pose]?1u:0u;}
             op.indices=d.composite?3u:batched?orderOffsets[stop]-orderOffsets[i]:d.geometry->indexCount;op.start=batched?orderOffsets[i]:d.composite?0u:d.geometry->indexStart;op.base=batched||d.composite?0:d.geometry->baseVertex;
             if(d.grab||d.composite)flush();ops.push_back(op);if(ops.size()==cacheConfig.chunkSize||d.grab||d.composite)flush();
             if(full){auto& state=cacheDraws[id];bool modeChanged=state.batched!=batched;
@@ -182,7 +188,7 @@ void cacheBuildPlan(){
             else cacheHeadDelta(id,1);
             if(!batched||cacheTune.indirectBatches)for(UINT j=i;j<stop;j++){auto& source=*draws[list[j]-1];auto& c=cacheCullData[j];c={};std::memcpy(c.center,source.center,12);std::memcpy(c.extent,source.extent,12);c.pose=source.pose;c.pad=j;}
             auto& c=cacheCullData[i];c.grab=d.grabId;c.end=stop;c.indices=op.indices;c.start=op.start;c.base=op.base;c.composite=op.composite;
-            if((!batched||cacheTune.indirectBatches)&&!d.composite)segment.indirect.push_back(i);
+            if((!batched||cacheTune.indirectBatches)&&!d.composite&&!op.direct)segment.indirect.push_back(i);
             localPlanPerf.visitedSources+=stop-i;localPlanPerf.visitedOps++;i=stop;
         }flush();
         chunks.erase(chunks.begin()+from,chunks.begin()+to);
@@ -212,7 +218,7 @@ void cacheBuildPlan(){
         cacheArgsCapacity=grow(UINT(list.size()));cacheArgs.Reset();cacheArgsUav.Reset();D3D11_BUFFER_DESC b{};b.ByteWidth=cacheArgsCapacity*40;b.Usage=D3D11_USAGE_DEFAULT;b.BindFlags=D3D11_BIND_UNORDERED_ACCESS;b.MiscFlags=D3D11_RESOURCE_MISC_DRAWINDIRECT_ARGS|D3D11_RESOURCE_MISC_BUFFER_ALLOW_RAW_VIEWS;
         check(device->CreateBuffer(&b,nullptr,&cacheArgs));D3D11_UNORDERED_ACCESS_VIEW_DESC u{};u.Format=DXGI_FORMAT_R32_TYPELESS;u.ViewDimension=D3D11_UAV_DIMENSION_BUFFER;u.Buffer.NumElements=b.ByteWidth/4;u.Buffer.Flags=D3D11_BUFFER_UAV_FLAG_RAW;check(device->CreateUnorderedAccessView(cacheArgs.Get(),&u,&cacheArgsUav));cacheGeneration++;memoryDirty=true;
     }
-    changedSegments.clear();cacheCullDirty=true;cachePlanDirty=false;cachePerf.planBuilds++;double elapsed=now()-at;cachePerf.planUs+=elapsed;if(!full)localPlanPerf.maxPlanUs=std::max(localPlanPerf.maxPlanUs,elapsed);
+    cacheReuse.clear();changedSegments.clear();cacheCullDirty=true;cachePlanDirty=false;cachePerf.planBuilds++;double elapsed=now()-at;cachePerf.planUs+=elapsed;if(!full)localPlanPerf.maxPlanUs=std::max(localPlanPerf.maxPlanUs,elapsed);
 }
 void cacheConstants(){
     timeline.nativeStage(5);
@@ -295,7 +301,7 @@ void cacheRecord(CacheChunk& chunk,ID3D11RenderTargetView* rt,ID3D11DepthStencil
     const double at=now();auto* dc=deferred.Get();dc->ClearState();dc->SetPredication(nullptr,FALSE);dc->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     std::array<std::array<bool,128>,2> bound{};std::array<std::array<UINT,14>,2> constantBound;for(auto& stage:constantBound)stage.fill(UINT32_MAX);Shader* lastShader=nullptr;
     auto* target=rt;dc->OMSetRenderTargets(1,&target,depth);dc->RSSetViewports(1,&viewport);
-    for(const auto& op:chunk.ops){auto& d=*draws[op.draw];auto& s=*d.shader;
+    for(const auto& op:chunk.ops){if(op.direct&&!op.live)continue;auto& d=*draws[op.draw];auto& s=*d.shader;
         if(lastShader!=&s){lastShader=&s;dc->VSSetShader(s.vs.Get(),nullptr,0);dc->PSSetShader(s.ps.Get(),nullptr,0);dc->OMSetBlendState(s.blendState.Get(),nullptr,~0u);dc->OMSetDepthStencilState(s.depth.Get(),s.stencilRef);dc->RSSetState(s.raster.Get());}
         // Lists start at ClearState. Unbind only slots used by earlier draws
         // in THIS list; no 128-slot sweeps or state queries in steady replay.
@@ -314,28 +320,46 @@ void cacheRecord(CacheChunk& chunk,ID3D11RenderTargetView* rt,ID3D11DepthStencil
         for(const auto& t:d.textures){bound[t.stage][t.slot]=true;auto* view=t.grab?grabSurfaces.at(t.grabId).view.Get():t.view.Get();auto* sampler=t.sampler.Get();if(t.stage==0){dc->VSSetShaderResources(UINT(t.slot),1,&view);if(t.samplerSlot>=0)dc->VSSetSamplers(UINT(t.samplerSlot),1,&sampler);}else{dc->PSSetShaderResources(UINT(t.slot),1,&view);if(t.samplerSlot>=0)dc->PSSetSamplers(UINT(t.samplerSlot),1,&sampler);}}
         // GPU world positions keep the original shader/clipper visibility. Only
         // live changes degenerate vertices; camera motion never rebakes geometry.
-        if(op.batched&&!cacheTune.indirectBatches)dc->DrawIndexed(op.indices,op.start,op.base);else dc->DrawIndexedInstancedIndirect(cacheArgs.Get(),op.first*40);
+        if((op.batched&&!cacheTune.indirectBatches)||op.direct)dc->DrawIndexed(op.indices,op.start,op.base);else dc->DrawIndexedInstancedIndirect(cacheArgs.Get(),op.first*40);
     }
     check(dc->FinishCommandList(FALSE,&chunk.commands));bool replayedBefore=chunk.generation!=0;chunk.target=rt;chunk.depth=depth;chunk.viewport=viewport;chunk.generation=cacheGeneration;cachePerf.records++;double elapsed=now()-at;cachePerf.recordUs+=elapsed;if(replayedBefore)localPlanPerf.maxRecordUs=std::max(localPlanPerf.maxRecordUs,elapsed);
+}
+void cacheApplyPacket(){const double at=now();profile=stats.frames%64==0;if(profile)perf.sampledFrames++;const uint64_t r=read.load(std::memory_order_relaxed);require(r!=write.load(std::memory_order_acquire));auto& packet=ring[r%ring.size()];apply(packet);cachePacket(packet);read.store(r+1,std::memory_order_release);cachePerf.applyUs+=now()-at;}
+void cachePrepareFrame(){const double at=now();auto* oldVertices=gpuVertices.Get();auto* oldOrder=orderBuffer.Get();prepareGpu();
+    // Singles still need GPU live/pose data for indirect visibility.
+    // A Canvas-only list has no pose stream or indirect geometry draws.
+    // Never issue an empty UpdateSubresource box for that stream.
+    if(!gpuPoses.empty())uploadRanges(gpuWorld,worldView,worldCapacity,poseUpload,poseUploadView,poseUploadCapacity,poseDefaultCurrent,poseDirect,gpuPoses,dirtyPoses,poseMarked,uploadPerf.poseBytes,uploadPerf.poseRanges);
+    if(oldVertices!=gpuVertices.Get()||oldOrder!=orderBuffer.Get())cacheGeneration++;
+    cachePerf.poseUs+=now()-at;timeline.nativeStage(0);if(cachePlanDirty||!changedSegments.empty())cacheBuildPlan();cacheConstants();cacheCull();timeline.nativeStage(0);cacheFrame=stats.frames;}
+// Early event (before the main camera): do all CPU-side preparation and
+// re-record stale chunks while the GPU still works on earlier passes, so the
+// camera interval only executes lists (no GPU bubble from render-thread CPU).
+void prepareCached(){
+    if(read.load(std::memory_order_relaxed)==write.load(std::memory_order_acquire))return;
+    StateScope state(*this);
+    try{
+        recording=context.Get();state.begin(true);cacheApplyPacket();cachePrepared=true;
+        if(cacheFrame!=stats.frames)cachePrepareFrame();
+        if(cacheLastTarget)for(auto& seg:cacheSegments)for(auto& chunk:seg.chunks)
+            if(!chunk.commands||chunk.generation!=cacheGeneration||chunk.target!=cacheLastTarget||chunk.depth!=cacheLastDepth)cacheRecord(chunk,cacheLastTarget,cacheLastDepth,cacheLastViewport);
+        cachePerf.grabMerged++; // grab merge is disabled (cacheGrabMerge=false): grab_merged now counts early prepares
+    }catch(HRESULT hr){stats.errors++;stats.lastHR=hr;cachePlanDirty=true;for(auto& seg:cacheSegments)for(auto& chunk:seg.chunks)chunk.commands.Reset();deferred->ClearState();ComPtr<ID3D11CommandList> discard;deferred->FinishCommandList(FALSE,&discard);}
+    catch(...){stats.errors++;stats.lastHR=E_FAIL;cachePlanDirty=true;}
+    state.restore();
 }
 void renderCached(UINT segment){
     const double start=now();StateScope state(*this);Timing* timing=nullptr;bool timelineOpen=false;
     try {
         recording=context.Get();
-        if(segment==0){const double at=now();profile=stats.frames%64==0;if(profile)perf.sampledFrames++;const uint64_t r=read.load(std::memory_order_relaxed);require(r!=write.load(std::memory_order_acquire));auto& packet=ring[r%ring.size()];apply(packet);cachePacket(packet);read.store(r+1,std::memory_order_release);cachePerf.applyUs+=now()-at;}
+        if(segment==0){if(cachePrepared)cachePrepared=false;else cacheApplyPacket();}
         require(size_t(segment)*2+1<segs.size());UINT count=segs[segment*2+1];
         if(count==0&&!frame.clearStencil&&segment!=0){timeline.perf.emptySegments++;finishRender(start);return;}
         ComPtr<ID3D11RenderTargetView> target;ComPtr<ID3D11DepthStencilView> depth;context->OMGetRenderTargets(1,&target,&depth);UINT viewports=1;D3D11_VIEWPORT viewport{};context->RSGetViewports(&viewports,&viewport);require(target&&viewports==1);
         if(segment==0&&frame.clearStencil){require(depth!=nullptr);context->ClearDepthStencilView(depth.Get(),D3D11_CLEAR_STENCIL,0,0);}
         state.begin(true);timing=profile?beginGpu():nullptr;if(timing){context->Begin(timing->disjoint.Get());context->End(timing->start.Get());}timeline.mark(4);timelineOpen=true;
-        if(cacheFrame!=stats.frames){const double at=now();auto* oldVertices=gpuVertices.Get();auto* oldOrder=orderBuffer.Get();prepareGpu();
-            // Singles still need GPU live/pose data for indirect visibility.
-            // A Canvas-only list has no pose stream or indirect geometry draws.
-            // Never issue an empty UpdateSubresource box for that stream.
-            if(!gpuPoses.empty())uploadRanges(gpuWorld,worldView,worldCapacity,poseUpload,poseUploadView,poseUploadCapacity,poseDefaultCurrent,poseDirect,gpuPoses,dirtyPoses,poseMarked,uploadPerf.poseBytes,uploadPerf.poseRanges);
-            if(oldVertices!=gpuVertices.Get()||oldOrder!=orderBuffer.Get())cacheGeneration++;
-            cachePerf.poseUs+=now()-at;timeline.nativeStage(0);if(cachePlanDirty||!changedSegments.empty())cacheBuildPlan();cacheConstants();cacheCull();timeline.nativeStage(0);cacheFrame=stats.frames;}
-        cacheGrabs(target.Get());
+        if(cacheFrame!=stats.frames)cachePrepareFrame();
+        cacheGrabs(target.Get());cacheLastTarget=target.Get();cacheLastDepth=depth.Get();cacheLastViewport=viewport;
         if(count){require(segment<cacheSegments.size());auto& chunks=cacheSegments[segment].chunks;size_t groupedUntil=0;for(size_t ci=0;ci<chunks.size();ci++){auto& chunk=chunks[ci];
             if(!chunk.commands||chunk.target!=target.Get()||chunk.depth!=depth.Get()||chunk.generation!=cacheGeneration||std::memcmp(&chunk.viewport,&viewport,sizeof(viewport)))cacheRecord(chunk,target.Get(),depth.Get(),viewport);
             const double at=now();// A Grab is a CPU-visible barrier, never a predicated CopyResource.
@@ -344,7 +368,7 @@ void renderCached(UINT segment){
             auto& head=*draws[chunk.ops.front().draw];
             if(head.grab){if(!grabVisible(head)){timeline.perf.culledGrabs++;continue;}
                 timeline.perf.visibleGrabs++;if(ci>=groupedUntil)groupedUntil=cacheGrabGroup(chunks,ci,target.Get(),viewport);}
-            timeline.nativeStage(7);context->ExecuteCommandList(chunk.commands.Get(),FALSE);cachePerf.executeUs+=now()-at;cachePerf.replays++;for(const auto& op:chunk.ops)if((op.batched&&!cacheTune.indirectBatches)||op.composite)cacheDetail.directDraws++;else {cachePerf.indirectDraws++;cacheDetail.indirectDraws++;}stats.draws+=chunk.ops.size();}}
+            timeline.nativeStage(7);context->ExecuteCommandList(chunk.commands.Get(),FALSE);cachePerf.executeUs+=now()-at;cachePerf.replays++;for(const auto& op:chunk.ops)if((op.batched&&!cacheTune.indirectBatches)||op.composite||op.direct)cacheDetail.directDraws++;else {cachePerf.indirectDraws++;cacheDetail.indirectDraws++;}stats.draws+=chunk.ops.size();}}
         cachePerf.segments++;if(timing)context->End(timing->end.Get());timeline.mark(7);timelineOpen=false;endGpu(timing);timing=nullptr;
     }catch(HRESULT hr){stats.errors++;stats.lastHR=hr;cachePlanDirty=true;for(auto& seg:cacheSegments)for(auto& chunk:seg.chunks)chunk.commands.Reset();deferred->ClearState();ComPtr<ID3D11CommandList> discard;deferred->FinishCommandList(FALSE,&discard);}
     catch(...){stats.errors++;stats.lastHR=E_FAIL;cachePlanDirty=true;}

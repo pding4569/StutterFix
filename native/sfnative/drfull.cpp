@@ -8,6 +8,7 @@
 #include <d3dcompiler.h>
 #include <wrl/client.h>
 #include <vector>
+#include <unordered_map>
 #include <array>
 #include <memory>
 #include <mutex>
@@ -453,7 +454,8 @@ struct Renderer {
         }
         for(size_t i=0;i<p.liveIds.size();i++){
             uint32_t id=p.liveIds[i];live[id]=p.liveValues[i];if(gpuPoses.size()<=id)gpuPoses.resize(size_t(id)+1);
-            if(gpuPoses[id].live!=p.liveValues[i]){gpuPoses[id].live=p.liveValues[i];markPose(id);boundsEpoch++;}
+            if(gpuPoses[id].live!=p.liveValues[i]){gpuPoses[id].live=p.liveValues[i];markPose(id);boundsEpoch++;
+                if(cacheTune.directSingles&&id<poseDraws.size())for(auto draw:poseDraws[id])if(!draws[draw]->batchable&&draw<drawPositions.size())for(auto at:drawPositions[draw])if(at<positionSegment.size())cacheMarkPosition(at);}
         }batchPerf.liveEdits+=p.liveIds.size();
         if(p.f.listChanged){
             // Retirement happens on the render thread after the replacement
@@ -893,6 +895,7 @@ struct Renderer {
     }
     #include "drfull-cache.h"
     void render(unsigned segment) {
+        if(segment==0xFFFE){if(cacheEnabled())prepareCached();return;}
         if(cacheEnabled()){renderCached(segment);return;}
         cachePerf.fallbackSegments++;
         const double start=now();Timing* timing=nullptr;
@@ -1117,7 +1120,7 @@ extern "C" intptr_t __cdecl sf_z_drfull_v1(int op,int token,const void* args) no
         if(op==drfull::ResourceConfigure){require(args&&r->stats.events==0&&r->draws.empty());auto c=*static_cast<const drfull::ResourceConfiguration*>(args);require(c.skipGrab<=1&&c.pretransform<=1&&c.stableUploads<=1&&c.trimBindings<=1);r->resourceConfiguration=c;return 1;}
         if(op==drfull::ResourcePerf){require(args);*const_cast<drfull::ResourcePerformance*>(static_cast<const drfull::ResourcePerformance*>(args))=r->resourcePerf;return 1;}
         if(op==drfull::CacheConfigure){require(args&&r->stats.events==0);auto c=*static_cast<const drfull::CacheConfiguration*>(args);require(c.enabled<=1&&c.chunkSize>0&&c.chunkSize<=256);r->cacheConfig=c;return 1;}
-        if(op==drfull::CacheTuning){require(args&&r->stats.events==0);auto t=*static_cast<const drfull::CacheTune*>(args);require(t.indirectBatches<=1);r->cacheTune=t;return 1;}
+        if(op==drfull::CacheTuning){require(args&&r->stats.events==0);auto t=*static_cast<const drfull::CacheTune*>(args);require(t.indirectBatches<=1&&t.directSingles<=1);r->cacheTune=t;return 1;}
         if(op==drfull::NativeStagePerf){require(args);*const_cast<drfull::NativeStagePerformance*>(static_cast<const drfull::NativeStagePerformance*>(args))=r->timeline.nativePerf;return 1;}
         if(op==drfull::LocalPlanPerf){require(args);*const_cast<drfull::LocalPlanPerformance*>(static_cast<const drfull::LocalPlanPerformance*>(args))=r->localPlanPerf;return 1;}
         if(op==drfull::CacheDetail){require(args);*const_cast<drfull::CacheDetails*>(static_cast<const drfull::CacheDetails*>(args))=r->cacheDetail;return 1;}

@@ -20,7 +20,7 @@ struct CacheDetails {
     uint64_t variableEvaluations[18],variableChanges[18]; // 0 material, 1..17 Patch.kind
 };
 static_assert(sizeof(CacheDetails)==400,"M4m diagnostic ABI");
-struct CacheTune { uint32_t indirectBatches; };
+struct CacheTune { uint32_t indirectBatches; uint32_t directSingles; };
 struct CacheConfiguration { uint32_t enabled,chunkSize; };
 struct CachePerformance {
     uint64_t available,segments,replays,records,planBuilds,constantPages,constantBytes,constantEvaluations,cullDispatches,indirectDraws,fallbackSegments;
