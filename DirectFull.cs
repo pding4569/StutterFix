@@ -100,6 +100,7 @@ namespace StutterFix
                 case "census": return Census();
                 case "colors": return ColorAudit();
                 case "why": return WhyReplan();
+                case "residency": return ResidencyState();
                 case "pressure restore": return PressureMip(-1);
                 case "particles baked": case "particles explicit":
                     if (Active || preparing) throw new InvalidOperationException("particle route requires off");

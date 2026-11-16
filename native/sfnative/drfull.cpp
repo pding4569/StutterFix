@@ -116,6 +116,27 @@ struct Renderer {
     bool memoryDirty=true;
     uint64_t memoryFrame=UINT64_MAX;
     std::vector<uint8_t> compositeUsed;
+    drfull::ResidencyInfo residencyInfo{};
+    drfull::ResidencyInfo residency(){
+        auto& out=residencyInfo;out.queries++;
+        sampleMemory();
+        auto resources=memory.resources;
+        for(const auto& d:draws){if(d->retired||!live[d->pose])continue;for(const auto& t:d->textures)if(!t.grab&&t.view){ComPtr<ID3D11Resource> res;t.view->GetResource(&res);ComPtr<ID3D11Texture2D> tex;if(SUCCEEDED(res.As(&tex))){size_t before=memory.resources.size();memory.texture(tex.Get(),9);resources.push_back(memory.resources.back());resources.back().category=9;memory.resources.resize(before);}}}
+        std::sort(resources.begin(),resources.end(),[](const GpuMemory::Resource& a,const GpuMemory::Resource& b){return std::less<ID3D11Resource*>{}(a.pointer,b.pointer);});
+        resources.erase(std::unique(resources.begin(),resources.end(),[](const GpuMemory::Resource& a,const GpuMemory::Resource& b){return a.pointer==b.pointer;}),resources.end());
+        ComPtr<IDXGIDevice> dxgi;if(FAILED(device->QueryInterface(IID_PPV_ARGS(&dxgi)))){out.failures++;return out;}
+        for(int c=0;c<10;c++)out.resident[c]=out.shared[c]=out.evicted[c]=out.count[c]=0;
+        std::vector<IUnknown*> objs;std::vector<DXGI_RESIDENCY> st;
+        for(size_t i=0;i<resources.size();i+=256){size_t n=std::min<size_t>(256,resources.size()-i);objs.clear();st.assign(n,DXGI_RESIDENCY_FULLY_RESIDENT);
+            for(size_t k=0;k<n;k++){ComPtr<IDXGIResource> dr;if(SUCCEEDED(resources[i+k].pointer->QueryInterface(IID_PPV_ARGS(&dr))))objs.push_back(dr.Get());else objs.push_back(nullptr);}
+            std::vector<IUnknown*> valid;std::vector<size_t> idx;for(size_t k=0;k<n;k++)if(objs[k]){valid.push_back(objs[k]);idx.push_back(k);}
+            std::vector<DXGI_RESIDENCY> vs(valid.size());
+            if(valid.empty()||FAILED(dxgi->QueryResourceResidency(valid.data(),vs.data(),UINT(valid.size())))){out.failures++;continue;}
+            for(size_t v=0;v<valid.size();v++){const auto& r=resources[i+idx[v]];unsigned c=std::min(9u,r.category);out.count[c]++;
+                if(vs[v]==DXGI_RESIDENCY_FULLY_RESIDENT)out.resident[c]+=r.bytes;else if(vs[v]==DXGI_RESIDENCY_RESIDENT_IN_SHARED_MEMORY)out.shared[c]+=r.bytes;else out.evicted[c]+=r.bytes;}
+        }
+        return out;
+    }
     void sampleMemory() {
         memory.begin();
         for(const auto& g:geometries)if(g->owned){memory.buffer(g->buffers[0].Get(),0);memory.buffer(g->indices.Get(),0);}
@@ -894,8 +915,21 @@ struct Renderer {
         if(profile)perf.cullUs+=now()-at;return visible;
     }
     #include "drfull-cache.h"
+    bool immediatePrepared=false;
+    void immediateApply(){profile=stats.frames%64==0;if(profile)perf.sampledFrames++;const double at=profile?now():0;const uint64_t r=read.load(std::memory_order_relaxed);require(r!=write.load(std::memory_order_acquire));auto& p=ring[r%ring.size()];apply(p);read.store(r+1,std::memory_order_release);if(profile)perf.applyUs+=now()-at;}
+    // Early event for the immediate (uncached) path: apply the packet and run
+    // uploads/bake before the main camera, so the camera interval only culls,
+    // writes constants and draws.
+    void prepareImmediate(){
+        if(!(configuration.submission==0&&submission.immediateAvailable))return;
+        if(read.load(std::memory_order_relaxed)==write.load(std::memory_order_acquire))return;
+        StateScope state(*this);
+        try{recording=context.Get();state.begin(true);immediateApply();immediatePrepared=true;prepareGpu();cachePerf.grabMerged++;}
+        catch(HRESULT hr){stats.errors++;stats.lastHR=hr;}catch(...){stats.errors++;stats.lastHR=E_FAIL;}
+        state.restore();
+    }
     void render(unsigned segment) {
-        if(segment==0xFFFE){if(cacheEnabled())prepareCached();return;}
+        if(segment==0xFFFE){if(cacheEnabled())prepareCached();else prepareImmediate();return;}
         if(cacheEnabled()){renderCached(segment);return;}
         cachePerf.fallbackSegments++;
         const double start=now();Timing* timing=nullptr;
@@ -906,7 +940,7 @@ struct Renderer {
         StateScope state(*this);recording=immediate?context.Get():deferred.Get();
         bool timelineOpen=false;
         try {
-            if(segment==0){profile=stats.frames%64==0;if(profile)perf.sampledFrames++;const double at=profile?now():0;const uint64_t r=read.load(std::memory_order_relaxed);require(r!=write.load(std::memory_order_acquire));auto& p=ring[r%ring.size()];apply(p);read.store(r+1,std::memory_order_release);if(profile)perf.applyUs+=now()-at;}
+            if(segment==0){if(immediatePrepared)immediatePrepared=false;else immediateApply();}
             require(size_t(segment)*2+1<segs.size());
             if(segment==0)drawProbe.newFrame(context.Get()); // poll even if the leading segment is empty
             UINT first=segs[segment*2],count=segs[segment*2+1];require(first+count<=list.size());
@@ -1121,6 +1155,7 @@ extern "C" intptr_t __cdecl sf_z_drfull_v1(int op,int token,const void* args) no
         if(op==drfull::ResourcePerf){require(args);*const_cast<drfull::ResourcePerformance*>(static_cast<const drfull::ResourcePerformance*>(args))=r->resourcePerf;return 1;}
         if(op==drfull::CacheConfigure){require(args&&r->stats.events==0);auto c=*static_cast<const drfull::CacheConfiguration*>(args);require(c.enabled<=1&&c.chunkSize>0&&c.chunkSize<=256);r->cacheConfig=c;return 1;}
         if(op==drfull::CacheTuning){require(args&&r->stats.events==0);auto t=*static_cast<const drfull::CacheTune*>(args);require(t.indirectBatches<=1&&t.directSingles<=1);r->cacheTune=t;return 1;}
+        if(op==drfull::Residency){require(args);*const_cast<drfull::ResidencyInfo*>(static_cast<const drfull::ResidencyInfo*>(args))=r->residency();return 1;}
         if(op==drfull::NativeStagePerf){require(args);*const_cast<drfull::NativeStagePerformance*>(static_cast<const drfull::NativeStagePerformance*>(args))=r->timeline.nativePerf;return 1;}
         if(op==drfull::LocalPlanPerf){require(args);*const_cast<drfull::LocalPlanPerformance*>(static_cast<const drfull::LocalPlanPerformance*>(args))=r->localPlanPerf;return 1;}
         if(op==drfull::CacheDetail){require(args);*const_cast<drfull::CacheDetails*>(static_cast<const drfull::CacheDetails*>(args))=r->cacheDetail;return 1;}
