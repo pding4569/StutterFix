@@ -181,7 +181,7 @@ namespace StutterFix
         {
             if (explicitSources.Count == 0) return;
             if (explicitDistancesDirty) { explicitLayerDistances = camera.layerCullDistances; explicitDistancesDirty = false; }
-            GeometryUtility.CalculateFrustumPlanes(camera, explicitPlanes);
+            if (canvasViewValid) Array.Copy(canvasPlanes, explicitPlanes, 6); else GeometryUtility.CalculateFrustumPlanes(camera.projectionMatrix * camera.worldToCameraMatrix, explicitPlanes);
             foreach (var source in explicitSources)
             {
                 explicitTests++; bool visible = ExplicitVisible(source); if (!visible) explicitCulled++;

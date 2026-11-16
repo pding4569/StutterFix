@@ -35,7 +35,7 @@ namespace StutterFix
             internal Entry Entry;
             internal bool FullDirty = true, VisibilityDirty, StateReady;
             internal readonly HashSet<CanvasRenderer> PotentialSet = new HashSet<CanvasRenderer>();
-            internal readonly HashSet<CanvasRenderer> DirtyGraphics = new HashSet<CanvasRenderer>();
+            internal readonly HashSet<CanvasRenderer> DirtyGraphics = new HashSet<CanvasRenderer>(), DirtyAlpha = new HashSet<CanvasRenderer>();
             internal readonly Dictionary<CanvasRenderer, byte> GraphicState = new Dictionary<CanvasRenderer, byte>();
             internal readonly Dictionary<Graphic, UnityEngine.Events.UnityAction> GraphicLocal = new Dictionary<Graphic, UnityEngine.Events.UnityAction>();
             internal readonly Dictionary<Graphic, UnityEngine.Events.UnityAction<bool>> GraphicCull = new Dictionary<Graphic, UnityEngine.Events.UnityAction<bool>>();
@@ -91,12 +91,12 @@ namespace StutterFix
         {
             if (drawingAuxiliary) return;
             if (!alphaOnly) canvasGraphicBounds.Remove(cr);
-            if (!u.FullDirty) u.DirtyGraphics.Add(cr);
+            if (!u.FullDirty) { if (alphaOnly) { if (!u.DirtyGraphics.Contains(cr)) u.DirtyAlpha.Add(cr); } else { u.DirtyGraphics.Add(cr); u.DirtyAlpha.Remove(cr); } }
             canvasGraphicSignals++;
             if (u.Queued) return;
             u.Queued = true; dirtyCanvases.Add(u); canvasDirty = true;
         }
-        static long canvasGraphicSignals, canvasIncrementalReplans, canvasFullReplans, canvasVisibilityReplans, canvasMaterialSignalsSkipped;
+        static long canvasAlphaFast; static long canvasGraphicSignals, canvasIncrementalReplans, canvasFullReplans, canvasVisibilityReplans, canvasMaterialSignalsSkipped;
         // 캔버스 노드가 움직이기만 한 경우: 보임 여부만 다시 보고 재질 색인·사유는 다시 만들지 않는다.
         static void QueueCanvasVisibility(CanvasUnit u)
         {
@@ -159,10 +159,12 @@ namespace StutterFix
             for (int i = 0; i < t.childCount; i++) GatherCanvas(u, t.GetChild(i), false);
         }
         static readonly Dictionary<CanvasRenderer, Graphic> canvasGraphicOf = new Dictionary<CanvasRenderer, Graphic>();
-        static bool LiveGraphic(CanvasRenderer cr)
+        static bool LiveGraphic(CanvasRenderer cr) => LiveGraphicStruct(cr) && AlphaVisible(cr);
+        static bool AlphaVisible(CanvasRenderer cr) => cr.GetAlpha() * cr.GetInheritedAlpha() > 0.00001f;
+        // 알파를 뺀 구조 판정(활성·재질·그래픽 켜짐/색·메시). SetAlpha 만 바뀐 그래픽은 이것을 다시 하지 않는다.
+        static bool LiveGraphicStruct(CanvasRenderer cr)
         {
-            if (!cr || !cr.gameObject.activeInHierarchy || cr.cull || cr.materialCount == 0
-                || cr.GetAlpha() * cr.GetInheritedAlpha() <= 0.00001f) return false;
+            if (!cr || !cr.gameObject.activeInHierarchy || cr.cull || cr.materialCount == 0) return false;
             if (!canvasGraphicOf.TryGetValue(cr, out var graphic)) { graphic = cr.GetComponent<Graphic>(); canvasGraphicOf[cr] = graphic; }
             if (graphic && (!graphic.isActiveAndEnabled || graphic.color.a <= 0.00001f)) return false;
             var mesh = cr.GetMesh(); return mesh && mesh.vertexCount > 0;
@@ -367,10 +369,21 @@ namespace StutterFix
                 if (incremental)
                 {
                     potential = u.PotentialGraphics; graphics = u.LiveGraphics;
+                    foreach (var cr in u.DirtyAlpha)
+                    {
+                        if (u.DirtyGraphics.Contains(cr) || !u.GraphicState.TryGetValue(cr, out byte was)) continue;
+                        if ((was & 8) == 0) { u.DirtyGraphics.Add(cr); continue; } // 구조 판정이 저장되지 않은 옛 상태: 일반 경로
+                        byte now = (byte)(was & 12); if (active && (was & 4) != 0 && cr && AlphaVisible(cr)) { now |= 1; if (CanvasGraphicVisible(cr)) now |= 2; }
+                        potential += ((now & 1) != 0 ? 1 : 0) - ((was & 1) != 0 ? 1 : 0);
+                        graphics += ((now & 2) != 0 ? 1 : 0) - ((was & 2) != 0 ? 1 : 0);
+                        u.GraphicState[cr] = now; if ((now & 1) != 0) u.PotentialSet.Add(cr); else u.PotentialSet.Remove(cr);
+                        canvasAlphaFast++;
+                    }
                     foreach (var cr in u.DirtyGraphics)
                     {
                         if (!u.GraphicState.TryGetValue(cr, out byte was)) continue; // 이 캔버스가 추적하지 않는 그래픽(파괴됨·다른 캔버스 소속)은 보임 수에 들어가지 않는다
-                        byte now = 0; if (active && cr && LiveGraphic(cr)) { now |= 1; if (CanvasGraphicVisible(cr)) now |= 2; }
+                        byte now = 8; bool st = active && cr && LiveGraphicStruct(cr); if (st) now |= 4;
+                        if (st && AlphaVisible(cr)) { now |= 1; if (CanvasGraphicVisible(cr)) now |= 2; }
                         potential += ((now & 1) != 0 ? 1 : 0) - ((was & 1) != 0 ? 1 : 0);
                         graphics += ((now & 2) != 0 ? 1 : 0) - ((was & 2) != 0 ? 1 : 0);
                         u.GraphicState[cr] = now; if ((now & 1) != 0) u.PotentialSet.Add(cr); else u.PotentialSet.Remove(cr);
@@ -395,14 +408,15 @@ namespace StutterFix
                     graphics = 0; potential = 0; u.GraphicState.Clear(); u.PotentialSet.Clear();
                     foreach (var cr in u.Graphics)
                     {
-                        byte now = 0; if (active && LiveGraphic(cr)) { now |= 1; potential++; if (CanvasGraphicVisible(cr)) { now |= 2; graphics++; } }
+                        byte now = 8; bool st = active && LiveGraphicStruct(cr); if (st) now |= 4;
+                        if (st && AlphaVisible(cr)) { now |= 1; potential++; if (CanvasGraphicVisible(cr)) { now |= 2; graphics++; } }
                         if (cr) { u.GraphicState[cr] = now; if ((now & 1) != 0) u.PotentialSet.Add(cr); }
                     }
                     u.StateReady = true;
                     canvasFullReplans++;
                 }
                 else canvasIncrementalReplans++;
-                u.DirtyGraphics.Clear(); bool wasFull = u.FullDirty || !incremental; u.FullDirty = false; u.VisibilityDirty = false;
+                u.DirtyGraphics.Clear(); u.DirtyAlpha.Clear(); bool wasFull = u.FullDirty || !incremental; u.FullDirty = false; u.VisibilityDirty = false;
                 if (u.PotentialGraphics == 0 && potential != 0) potentialCanvases.Add(u);
                 else if (u.PotentialGraphics != 0 && potential == 0) potentialCanvases.Remove(u);
                 canvasPotentialGraphics += potential - u.PotentialGraphics; u.PotentialGraphics = potential;
