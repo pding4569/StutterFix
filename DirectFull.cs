@@ -101,6 +101,12 @@ namespace StutterFix
                 case "colors": return ColorAudit();
                 case "why": return WhyReplan();
                 case "residency": return ResidencyState();
+                case "floors":
+                {
+                    int total = 0, enabled = 0, visibleUnity = 0;
+                    foreach (var f in Resources.FindObjectsOfTypeAll<scrFloor>()) { if (!f || !f.gameObject.scene.IsValid() || !f.gameObject.activeInHierarchy) continue; total++; if (f.enabled) enabled++; var fr = f.GetComponent<Renderer>(); if (fr && fr.isVisible) visibleUnity++; }
+                    string r = "floors active=" + total + " enabled=" + enabled + " unity_visible=" + visibleUnity + " rendering=" + Rendering; Log(r); return r;
+                }
                 case "stale": return StaleAudit();
                 case "poke constants": return Poke("constants");
                 case "poke order": return Poke("order");

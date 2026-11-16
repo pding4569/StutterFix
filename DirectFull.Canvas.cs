@@ -87,10 +87,10 @@ namespace StutterFix
             u.Queued = true; dirtyCanvases.Add(u); canvasDirty = true;
         }
         // 한 그래픽의 알파만 바뀐 경우(CanvasRenderer.SetAlpha): 캔버스 전체가 아니라 그 그래픽만 다시 본다.
-        static void QueueCanvasGraphic(CanvasUnit u, CanvasRenderer cr)
+        static void QueueCanvasGraphic(CanvasUnit u, CanvasRenderer cr, bool alphaOnly = false)
         {
             if (drawingAuxiliary) return;
-            canvasGraphicBounds.Remove(cr);
+            if (!alphaOnly) canvasGraphicBounds.Remove(cr);
             if (!u.FullDirty) u.DirtyGraphics.Add(cr);
             canvasGraphicSignals++;
             if (u.Queued) return;
@@ -158,11 +158,12 @@ namespace StutterFix
             }
             for (int i = 0; i < t.childCount; i++) GatherCanvas(u, t.GetChild(i), false);
         }
+        static readonly Dictionary<CanvasRenderer, Graphic> canvasGraphicOf = new Dictionary<CanvasRenderer, Graphic>();
         static bool LiveGraphic(CanvasRenderer cr)
         {
             if (!cr || !cr.gameObject.activeInHierarchy || cr.cull || cr.materialCount == 0
                 || cr.GetAlpha() * cr.GetInheritedAlpha() <= 0.00001f) return false;
-            var graphic = cr.GetComponent<Graphic>();
+            if (!canvasGraphicOf.TryGetValue(cr, out var graphic)) { graphic = cr.GetComponent<Graphic>(); canvasGraphicOf[cr] = graphic; }
             if (graphic && (!graphic.isActiveAndEnabled || graphic.color.a <= 0.00001f)) return false;
             var mesh = cr.GetMesh(); return mesh && mesh.vertexCount > 0;
         }
@@ -329,7 +330,7 @@ namespace StutterFix
                 if (obj is Transform && kind == DirectSequenceChanges.Pose) { canvasPoseSignals++; foreach (var u in owners) { foreach (var pcr in u.PotentialSet) canvasGraphicBounds.Remove(pcr); QueueCanvasVisibility(u); } return; }
                 // 재질 속성·텍스처 쓰기는 캔버스의 보임/순서를 바꾸지 않는다(보조 카메라가 그대로 다시 그림) → 재확인하지 않는다.
                 if ((obj is Material || obj is UnityEngine.Texture) && kind != DirectSequenceChanges.Hierarchy) { canvasMaterialSignalsSkipped++; return; }
-                if (obj is CanvasRenderer crw && kind != DirectSequenceChanges.Hierarchy && writer == "SetAlpha") { foreach (var u in owners) QueueCanvasGraphic(u, crw); return; }
+                if (obj is CanvasRenderer crw && kind != DirectSequenceChanges.Hierarchy && writer == "SetAlpha") { foreach (var u in owners) QueueCanvasGraphic(u, crw, true); return; }
                 if (obj is Graphic gw && kind != DirectSequenceChanges.Hierarchy && writer != null && writer.IndexOf("aterial", StringComparison.Ordinal) < 0 && gw.canvasRenderer) { var gcr = gw.canvasRenderer; foreach (var u in owners) QueueCanvasGraphic(u, gcr); return; }
                 string why = obj.GetType().Name + "." + writer;
                 foreach (var u in owners) QueueCanvasWhy(u, why);
@@ -593,7 +594,7 @@ namespace StutterFix
                 foreach (var r in canvasRuns) { if (r.Black) { r.Black.Release(); UnityEngine.Object.Destroy(r.Black); } if (r.White) { r.White.Release(); UnityEngine.Object.Destroy(r.White); } }
                 if (auxiliaryObject) UnityEngine.Object.Destroy(auxiliaryObject);
                 if (canvasDepth) { canvasDepth.Release(); UnityEngine.Object.Destroy(canvasDepth); canvasDepth = null; }
-                auxiliary = null; auxiliaryObject = null; dormantCanvases.Clear(); canvasGraphicBounds.Clear(); canvasUnits.Clear(); canvasRuns.Clear(); canvasRendererSources.Clear(); canvasBlendReasons.Clear(); canvasOwned.Clear(); canvasIndex.Clear(); canvasOwners.Clear(); dirtyCanvases.Clear(); potentialCanvases.Clear(); canvasViewValid = false; canvasLifetimes.Clear();
+                auxiliary = null; auxiliaryObject = null; dormantCanvases.Clear(); canvasGraphicBounds.Clear(); canvasGraphicOf.Clear(); canvasUnits.Clear(); canvasRuns.Clear(); canvasRendererSources.Clear(); canvasBlendReasons.Clear(); canvasOwned.Clear(); canvasIndex.Clear(); canvasOwners.Clear(); dirtyCanvases.Clear(); potentialCanvases.Clear(); canvasViewValid = false; canvasLifetimes.Clear();
                 auxiliaryLayer = parkingLayer = recordingRun = -1; runCount = 0; auxiliaryDraws = auxiliaryTicks = auxiliaryMaxTicks = 0;
             }
             finally { drawingAuxiliary = false; }

@@ -720,7 +720,7 @@ namespace StutterFix
                     }
                     if (!FillConstants(b, s.MaterialAll ? null : s.MaterialProps)) { ok = false; break; }
                 }
-                if (ok) { materialFastHits++; UpdateKey(s); return; }
+                if (ok) { materialFastHits++; return; }
                 materialFastMisses++;
             }
             s.MaterialOnly = false;
@@ -1251,6 +1251,20 @@ namespace StutterFix
         // 처음 켜진 장식/타일(새 source, 단순 native 패스만)은 전체 순서를 다시 만들지 않고
         // 그 자리에 끼워 넣는다: 트리 삽입 → 순위 → ordered/drawList 한 칸 밀기, 그 구간 길이 +1.
         // 이웃이 같은 구간의 native draw 가 아니면(구간 경계·명시 draw·캔버스) 전체 재구성으로 넘긴다.
+        static readonly List<int> insertSlots = new List<int>(); static readonly Dictionary<Entry, int> insertStep = new Dictionary<Entry, int>();
+        // 이번 프레임 앞선 끼워 넣기만큼 밀린 현재 번호(그 항목이 번호를 받은 뒤의 끼워 넣기만 적용).
+        static int CurrentListIndex(Entry x)
+        {
+            int cur = x.NativeListIndex, from = insertStep.TryGetValue(x, out int st) ? st + 1 : 0;
+            for (int k = from; k < insertSlots.Count; k++) if (insertSlots[k] <= cur) cur++;
+            return cur;
+        }
+        static void ReindexAfterInserts()
+        {
+            if (insertSlots.Count == 0) return;
+            int list = 0; for (int i = 0; i < ordered.Count; i++) { var x = ordered[i]; x.OrderIndex = i; if (x.Draw != null) x.NativeListIndex = list++; }
+            insertSlots.Clear(); insertStep.Clear();
+        }
         static long canvasChildPromotions; static long nativeInserts, nativeInsertFallbacks, addIndexTicks, addComponentTicks, addRefreshTicks, addCount;
         static bool TryNativeInsert()
         {
@@ -1274,8 +1288,8 @@ namespace StutterFix
                     int rank = orderTree.Rank(e);
                     Entry prev = rank > 0 ? ordered[rank - 1] : null, next = rank < ordered.Count ? ordered[rank] : null;
                     int phase = FullPhase(e), slot = -1, segment = -1;
-                    if (prev != null && prev.Draw != null && prev.Canvas == null && prev.NativeListIndex >= 0 && FullPhase(prev) == phase) { slot = prev.NativeListIndex + 1; segment = prev.NativeSegment; }
-                    else if (next != null && next.Draw != null && next.Canvas == null && next.NativeListIndex >= 0 && FullPhase(next) == phase) { slot = next.NativeListIndex; segment = next.NativeSegment; }
+                    if (prev != null && prev.Draw != null && prev.Canvas == null && prev.NativeListIndex >= 0 && FullPhase(prev) == phase) { slot = CurrentListIndex(prev) + 1; segment = prev.NativeSegment; }
+                    else if (next != null && next.Draw != null && next.Canvas == null && next.NativeListIndex >= 0 && FullPhase(next) == phase) { slot = CurrentListIndex(next); segment = next.NativeSegment; }
                     if (slot < 0 || listCount == drawList.Length || (next != null && next.Draw != null && next.NativeListIndex >= 0 && next.NativeSegment != segment && prev != null && prev.Draw != null && prev.NativeSegment != segment))
                     {
                         // 이 프레임 앞서 끼운 것까지 포함해 전체 재구성이 처리한다(트리에는 이미 들어 있음).
@@ -1283,18 +1297,20 @@ namespace StutterFix
                         // 트리에서만 빼 두면(아래 일반 경로가 다시 넣음) 결과가 같다.
                         foreach (var b3 in source.Passes) if (b3.Entry.Node != null && b3.Entry.Node.Linked) orderTree.Remove(b3.Entry.Node);
                         nativeInsertFallbacks++;
+                        ReindexAfterInserts();
                         if (inserted == 0) return false;
                         sendList = true; return FinishInsertFallback();
                     }
                     ordered.Insert(rank, e);
                     Array.Copy(drawList, slot, drawList, slot + 1, listCount - slot); drawList[slot] = (uint)b.NativeId; listCount++;
-                    for (int i = 0; i < ordered.Count; i++) { var x = ordered[i]; x.OrderIndex = i; if (!ReferenceEquals(x, e) && x.Draw != null && x.NativeListIndex >= slot) x.NativeListIndex++; }
+                    insertSlots.Add(slot); insertStep[e] = insertSlots.Count - 1;
                     e.NativeListIndex = slot; e.NativeSegment = segment; e.RecordedPhase = phase; e.RecordedLive = source.Live; e.RecordedVisible = source.ExplicitVisible; e.RecordedIsolated = false;
                     segments[segment * 2 + 1]++; for (int g = segment + 1; g < segmentCount; g++) segments[g * 2]++;
                     inserted++;
                 }
                 source.OrderedPasses = source.Passes; source.OrderQueued = false;
             }
+            ReindexAfterInserts();
             orderChanges.Clear(); orderDirty = false; sendList = true; orderBuilds++; nativeInserts += inserted;
             prevListCount = listCount; Array.Copy(segments, prevSegments, Math.Min(prevSegments.Length, segmentCount * 2));
             return true;
