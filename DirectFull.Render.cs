@@ -120,7 +120,7 @@ namespace StutterFix
         static readonly HashSet<Renderer> dormant = new HashSet<Renderer>();
         static readonly List<Renderer> rendererScratch = new List<Renderer>(); static readonly List<Canvas> canvasScratch = new List<Canvas>();
         static readonly HashSet<Renderer> pendingPromotions = new HashSet<Renderer>();
-        static readonly HashSet<Canvas> pendingCanvasPromotions = new HashSet<Canvas>(); static bool posePark = true; static long poseParks, poseUnparks; static bool prebuildDormant, earlyPrepare, prebuildMeshes, countSignalWriters, noInsert, materialFast = true; static long materialFastHits, materialFastMisses; internal static int PendingMaterialProperty = -1; static bool materialVerify; static long materialVerifyChecks, materialVerifyMismatch; static readonly System.Text.StringBuilder materialVerifyExamples = new System.Text.StringBuilder(); static readonly int colorPropertyId = Shader.PropertyToID("_Color"); static long prebuiltSources;
+        static readonly HashSet<Canvas> pendingCanvasPromotions = new HashSet<Canvas>(); static bool posePark = false; static long poseParks, poseUnparks; static bool prebuildDormant, earlyPrepare, prebuildMeshes, countSignalWriters, noInsert, materialFast = true; static long materialFastHits, materialFastMisses; internal static int PendingMaterialProperty = -1; static bool materialVerify; static long materialVerifyChecks, materialVerifyMismatch; static readonly System.Text.StringBuilder materialVerifyExamples = new System.Text.StringBuilder(); static readonly int colorPropertyId = Shader.PropertyToID("_Color"); static long prebuiltSources;
         // 미리 만들 대상: 우리가 원래 셰이더로 직접 그릴 수 있는 단순 스프라이트만(유니티 대체 그리기가 되는 것은 제외).
         static bool PrebuildEligible(Renderer r)
         {
@@ -377,7 +377,7 @@ namespace StutterFix
             earlyPrepare = System.IO.File.Exists(System.IO.Path.Combine(Main.Entry.Path, "drfull-early.txt"));
             prebuildMeshes = System.IO.File.Exists(System.IO.Path.Combine(Main.Entry.Path, "drfull-prebuild-mesh.txt"));
             noInsert = System.IO.File.Exists(System.IO.Path.Combine(Main.Entry.Path, "drfull-noinsert.txt"));
-            posePark = !System.IO.File.Exists(System.IO.Path.Combine(Main.Entry.Path, "drfull-nopark.txt")); poseParks = poseUnparks = 0;
+            posePark = System.IO.File.Exists(System.IO.Path.Combine(Main.Entry.Path, "drfull-park.txt")); poseParks = poseUnparks = 0;
             materialFast = !System.IO.File.Exists(System.IO.Path.Combine(Main.Entry.Path, "drfull-nomatfast.txt")); materialFastHits = materialFastMisses = 0;
             materialVerify = System.IO.File.Exists(System.IO.Path.Combine(Main.Entry.Path, "drfull-matverify.txt")); materialVerifyChecks = materialVerifyMismatch = 0; materialVerifyExamples.Clear();
             countSignalWriters = System.IO.File.Exists(System.IO.Path.Combine(Main.Entry.Path, "drfull-signals.txt"));
