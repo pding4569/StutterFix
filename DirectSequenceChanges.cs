@@ -15,14 +15,16 @@ namespace StutterFix
     internal static class DirectSequenceChanges
     {
         internal const int State = 0, Shape = 1, Pose = 2, Hierarchy = 3, Script = 4;
-        sealed class Binding { internal Delegate Call, Read; internal int Kind; internal string Writer; }
+        sealed class Binding { internal Delegate Call, Read; internal int Kind; internal string Writer, Site; internal long Count; }
         internal static long EqualityReads, UnchangedWrites, PoseDirect;
         // 위치·회전·크기 쓰기(Pose)는 알림 없이 바로 원래 함수를 부른다(2026-11-16 Claude).
         // 직통 렌더러는 위치를 TransformAccessArray 잡으로 읽고, 캔버스는 transform.hasChanged 로 본다.
         // 알림·같은 값 읽기(get_position 등)가 게임 스크립트 시간을 키웠다(장식 LateUpdate 0.15 -> 0.40ms).
         internal static bool PoseNotify = false;
+        // 조사용(drfull-census.txt): Transform 쓰기도 감싸서 호출 지점별로 센다(알림은 보내지 않음).
+        internal static bool CensusTransforms;
         static readonly List<Binding> bindings = new List<Binding>();
-        static readonly Dictionary<MethodInfo, int> bound = new Dictionary<MethodInfo, int>();
+        static readonly Dictionary<(MethodInfo, MethodBase), int> bound = new Dictionary<(MethodInfo, MethodBase), int>();
         static readonly MethodInfo readCode = typeof(PatchProcessor).GetMethods().Single(m => m.Name == "GetOriginalInstructions"
             && m.GetParameters().Length == 2 && !m.GetParameters()[1].IsOut);
         internal static int Methods, Sites;
@@ -109,7 +111,7 @@ namespace StutterFix
                     || n == "set_localRotation" || n == "set_eulerAngles" || n == "set_localEulerAngles"
                     || n == "set_localScale" || n == "SetPositionAndRotation" || n == "SetLocalPositionAndRotation"
                     || n == "Translate" || n == "Rotate" || n == "RotateAround" || n == "LookAt"
-                    || n == "set_forward" || n == "set_right" || n == "set_up") return PoseNotify ? Pose : -1;
+                    || n == "set_forward" || n == "set_right" || n == "set_up") return PoseNotify || CensusTransforms ? Pose : -1;
             }
             return -1;
         }
@@ -124,6 +126,17 @@ namespace StutterFix
                 ushort value = unchecked((ushort)code.Value);
                 if (value < 256) shortOperands[value] = code.OperandType; else if ((value >> 8) == 0xfe) longOperands[value & 255] = code.OperandType;
             }
+        }
+        // 진단: 호출 지점(게임 함수)별 쓰기 횟수. 측정 구간 시작에 reset, 끝에 top.
+        internal static void ResetSiteCounts() { foreach (var b in bindings) b.Count = 0; }
+        internal static string SiteTop(int n, long frames)
+        {
+            var list = new List<Binding>(bindings); list.Sort((x, y) => y.Count.CompareTo(x.Count));
+            var sb = new System.Text.StringBuilder();
+            for (int i = 0; i < list.Count && i < n && list[i].Count > 0; i++)
+                sb.Append(list[i].Site).Append(" -> ").Append(list[i].Call.Method.DeclaringType?.Name).Append('.').Append(list[i].Writer)
+                  .Append(" = ").Append((list[i].Count / (double)Math.Max(1, frames)).ToString("F1")).Append("/f").Append((char)10);
+            return sb.ToString();
         }
         static bool MightWrite(MethodInfo method)
         {
@@ -164,6 +177,7 @@ namespace StutterFix
         internal static IEnumerable<int> InstallSteps(Harmony h)
         {
             Methods = Sites = 0;
+            try { CensusTransforms = System.IO.File.Exists(System.IO.Path.Combine(Main.Entry.Path, "drfull-census.txt")); } catch { CensusTransforms = false; }
             // These two assemblies contain the game and our competing optimizations.
             // Own writes/restoration and diagnostics are intentionally not instrumented.
             // DOTween.dll 의 재질 트윈 람다(Material.DOColor/DOFade 등)도 쓰기 지점이다.
@@ -199,7 +213,7 @@ namespace StutterFix
 
         }
 
-        internal static IEnumerable<CodeInstruction> Instrument(IEnumerable<CodeInstruction> instructions)
+        internal static IEnumerable<CodeInstruction> Instrument(IEnumerable<CodeInstruction> instructions, MethodBase __originalMethod)
         {
             foreach (var instruction in instructions)
             {
@@ -212,12 +226,12 @@ namespace StutterFix
                     .Concat(target.GetParameters().Select(p => p.ParameterType))
                     .Concat(returns ? new[] { target.ReturnType } : Type.EmptyTypes).ToArray();
                 if (signature.Length > 9) throw new NotSupportedException("change writer arity: " + target);
-                if (!bound.TryGetValue(target, out int id))
+                if (!bound.TryGetValue((target, __originalMethod), out int id))
                 {
                     Type delegateType = returns ? System.Linq.Expressions.Expression.GetFuncType(signature)
                         : System.Linq.Expressions.Expression.GetActionType(signature);
                     var binding = new Binding { Call = target.CreateDelegate(delegateType), Read = EqualityReader(target), Kind = kind, Writer = target.Name };
-                    id = bindings.Count; bindings.Add(binding); bound.Add(target, id);
+                    binding.Site = (__originalMethod?.DeclaringType?.Name ?? "?") + "." + (__originalMethod?.Name ?? "?"); id = bindings.Count; bindings.Add(binding); bound.Add((target, __originalMethod), id);
                 }
                 bool materialRead = !target.IsStatic && returns && (target.Name == "get_material" || target.Name == "get_materials");
                 string name = target.IsStatic ? (target.DeclaringType == typeof(Shader) ? "Global" : returns ? "Spawn" : "Destroy") : materialRead ? "Mat" : returns ? "Add" : "Call";
@@ -236,7 +250,7 @@ namespace StutterFix
         }
         static void Call0<T>(T obj, int id) where T : UnityEngine.Object
         {
-            var b = bindings[id]; DirectDeco.BeforeSequenceWrite(obj, b.Kind);
+            var b = bindings[id]; b.Count++; DirectDeco.BeforeSequenceWrite(obj, b.Kind);
             ((Action<T>)b.Call)(obj); DirectDeco.AfterSequenceWrite(obj, b.Kind, b.Writer);
         }
         static void GlobalChanged()
@@ -245,7 +259,7 @@ namespace StutterFix
             DirectFull.NotifyFullGlobal();
 #endif
         }
-        static void Global1<A>(A a, int id) { ((Action<A>)bindings[id].Call)(a); GlobalChanged(); }
+        static void Global1<A>(A a, int id) { bindings[id].Count++; ((Action<A>)bindings[id].Call)(a); GlobalChanged(); }
         static void Global2<A, B>(A a, B b, int id) { ((Action<A, B>)bindings[id].Call)(a, b); GlobalChanged(); }
         static void Global3<A, B, C>(A a, B b, C c, int id) { ((Action<A, B, C>)bindings[id].Call)(a, b, c); GlobalChanged(); }
         static void Global4<A, B, C, D>(A a, B b, C c, D d, int id) { ((Action<A, B, C, D>)bindings[id].Call)(a, b, c, d); GlobalChanged(); }
@@ -253,7 +267,7 @@ namespace StutterFix
         static void Global6<A, B, C, D, E, F>(A a, B b, C c, D d, E e, F f, int id) { ((Action<A, B, C, D, E, F>)bindings[id].Call)(a, b, c, d, e, f); GlobalChanged(); }
         static void Call1<T, A>(T obj, A a, int id) where T : UnityEngine.Object
         {
-            var b = bindings[id];
+            var b = bindings[id]; b.Count++;
             if (b.Kind == Pose && !PoseNotify) { PoseDirect++; ((Action<T, A>)b.Call)(obj, a); return; }
 #if DEV || AUTOTEST
             // 우리가 그리지 않는 UI(화면 HUD 등)의 쓰기는 감시 경로 앞에서 버린다.
@@ -266,7 +280,7 @@ namespace StutterFix
         }
         static void Call2<T, A, B>(T obj, A a, B c, int id) where T : UnityEngine.Object
         {
-            var b = bindings[id];
+            var b = bindings[id]; b.Count++;
             if (b.Kind == Pose && !PoseNotify) { PoseDirect++; ((Action<T, A, B>)b.Call)(obj, a, c); return; }
             DirectDeco.BeforeSequenceWrite(obj, b.Kind);
             ((Action<T, A, B>)b.Call)(obj, a, c);
@@ -282,57 +296,57 @@ namespace StutterFix
         }
         static void Call3<T, A, B, C>(T obj, A a, B c, C d, int id) where T : UnityEngine.Object
         {
-            var b = bindings[id];
+            var b = bindings[id]; b.Count++;
             if (b.Kind == Pose && !PoseNotify) { PoseDirect++; ((Action<T, A, B, C>)b.Call)(obj, a, c, d); return; }
             DirectDeco.BeforeSequenceWrite(obj, b.Kind);
             ((Action<T, A, B, C>)b.Call)(obj, a, c, d); DirectDeco.AfterSequenceWrite(obj, b.Kind, b.Writer);
         }
         static void Call4<T, A, B, C, D>(T obj, A a, B c, C d, D e, int id) where T : UnityEngine.Object
         {
-            var b = bindings[id]; DirectDeco.BeforeSequenceWrite(obj, b.Kind);
+            var b = bindings[id]; b.Count++; DirectDeco.BeforeSequenceWrite(obj, b.Kind);
             ((Action<T, A, B, C, D>)b.Call)(obj, a, c, d, e); DirectDeco.AfterSequenceWrite(obj, b.Kind, b.Writer);
         }
         static void Call5<T,A,B,C,D,E>(T obj,A a,B b,C c,D d,E e,int id) where T : UnityEngine.Object
-        { var x=bindings[id];DirectDeco.BeforeSequenceWrite(obj,x.Kind);((Action<T,A,B,C,D,E>)x.Call)(obj,a,b,c,d,e);DirectDeco.AfterSequenceWrite(obj,x.Kind,x.Writer); }
+        { var x=bindings[id];x.Count++;DirectDeco.BeforeSequenceWrite(obj,x.Kind);((Action<T,A,B,C,D,E>)x.Call)(obj,a,b,c,d,e);DirectDeco.AfterSequenceWrite(obj,x.Kind,x.Writer); }
         static void Call6<T,A,B,C,D,E,F>(T obj,A a,B b,C c,D d,E e,F f,int id) where T : UnityEngine.Object
-        { var x=bindings[id];DirectDeco.BeforeSequenceWrite(obj,x.Kind);((Action<T,A,B,C,D,E,F>)x.Call)(obj,a,b,c,d,e,f);DirectDeco.AfterSequenceWrite(obj,x.Kind,x.Writer); }
+        { var x=bindings[id];x.Count++;DirectDeco.BeforeSequenceWrite(obj,x.Kind);((Action<T,A,B,C,D,E,F>)x.Call)(obj,a,b,c,d,e,f);DirectDeco.AfterSequenceWrite(obj,x.Kind,x.Writer); }
         static void Call7<T,A,B,C,D,E,F,G>(T obj,A a,B b,C c,D d,E e,F f,G g,int id) where T : UnityEngine.Object
-        { var x=bindings[id];DirectDeco.BeforeSequenceWrite(obj,x.Kind);((Action<T,A,B,C,D,E,F,G>)x.Call)(obj,a,b,c,d,e,f,g);DirectDeco.AfterSequenceWrite(obj,x.Kind,x.Writer); }
+        { var x=bindings[id];x.Count++;DirectDeco.BeforeSequenceWrite(obj,x.Kind);((Action<T,A,B,C,D,E,F,G>)x.Call)(obj,a,b,c,d,e,f,g);DirectDeco.AfterSequenceWrite(obj,x.Kind,x.Writer); }
         static void Call8<T,A,B,C,D,E,F,G,H>(T obj,A a,B b,C c,D d,E e,F f,G g,H h,int id) where T : UnityEngine.Object
-        { var x=bindings[id];DirectDeco.BeforeSequenceWrite(obj,x.Kind);((Action<T,A,B,C,D,E,F,G,H>)x.Call)(obj,a,b,c,d,e,f,g,h);DirectDeco.AfterSequenceWrite(obj,x.Kind,x.Writer); }
+        { var x=bindings[id];x.Count++;DirectDeco.BeforeSequenceWrite(obj,x.Kind);((Action<T,A,B,C,D,E,F,G,H>)x.Call)(obj,a,b,c,d,e,f,g,h);DirectDeco.AfterSequenceWrite(obj,x.Kind,x.Writer); }
         static R Spawn1<A, R>(A original, int id) where A : UnityEngine.Object where R : UnityEngine.Object
         {
-            var b = bindings[id]; DirectDeco.BeforeSequenceWrite(original, b.Kind);
+            var b = bindings[id]; b.Count++; DirectDeco.BeforeSequenceWrite(original, b.Kind);
             R result = ((Func<A, R>)b.Call)(original); DirectDeco.AfterSequenceSpawn(original, result); DirectDeco.AfterSequenceWrite(result, b.Kind, b.Writer); return result;
         }
         static R Spawn2<A, B, R>(A original, B a, int id) where A : UnityEngine.Object where R : UnityEngine.Object
         {
-            var b = bindings[id]; DirectDeco.BeforeSequenceWrite(original, b.Kind);
+            var b = bindings[id]; b.Count++; DirectDeco.BeforeSequenceWrite(original, b.Kind);
             R result = ((Func<A, B, R>)b.Call)(original, a); DirectDeco.AfterSequenceSpawn(original, result); DirectDeco.AfterSequenceWrite(result, b.Kind, b.Writer); return result;
         }
         static R Spawn3<A, B, C, R>(A original, B a, C c, int id) where A : UnityEngine.Object where R : UnityEngine.Object
         {
-            var b = bindings[id]; DirectDeco.BeforeSequenceWrite(original, b.Kind);
+            var b = bindings[id]; b.Count++; DirectDeco.BeforeSequenceWrite(original, b.Kind);
             R result = ((Func<A, B, C, R>)b.Call)(original, a, c); DirectDeco.AfterSequenceSpawn(original, result); DirectDeco.AfterSequenceWrite(result, b.Kind, b.Writer); return result;
         }
         static R Spawn4<A, B, C, D, R>(A original, B a, C c, D d, int id) where A : UnityEngine.Object where R : UnityEngine.Object
         {
-            var b = bindings[id]; DirectDeco.BeforeSequenceWrite(original, b.Kind);
+            var b = bindings[id]; b.Count++; DirectDeco.BeforeSequenceWrite(original, b.Kind);
             R result = ((Func<A, B, C, D, R>)b.Call)(original, a, c, d); DirectDeco.AfterSequenceSpawn(original, result); DirectDeco.AfterSequenceWrite(result, b.Kind, b.Writer); return result;
         }
         static void Destroy1<A>(A obj, int id) where A : UnityEngine.Object
         {
-            var b = bindings[id]; DirectDeco.BeforeSequenceWrite(obj, b.Kind);
+            var b = bindings[id]; b.Count++; DirectDeco.BeforeSequenceWrite(obj, b.Kind);
             ((Action<A>)b.Call)(obj); DirectDeco.AfterSequenceWrite(obj, b.Kind, b.Writer);
         }
         static void Destroy2<A, B>(A obj, B a, int id) where A : UnityEngine.Object
         {
-            var b = bindings[id]; DirectDeco.BeforeSequenceWrite(obj, b.Kind);
+            var b = bindings[id]; b.Count++; DirectDeco.BeforeSequenceWrite(obj, b.Kind);
             ((Action<A, B>)b.Call)(obj, a); DirectDeco.AfterSequenceWrite(obj, b.Kind, b.Writer);
         }
         static R Mat0<T, R>(T obj, int id) where T : UnityEngine.Object
         {
-            var b = bindings[id]; var r = obj as Renderer;
+            var b = bindings[id]; b.Count++; var r = obj as Renderer;
             Material before = r ? r.sharedMaterial : null;
             R result = ((Func<T, R>)b.Call)(obj);
             if (r && !ReferenceEquals(before, r.sharedMaterial)) DirectDeco.AfterSequenceWrite(obj, b.Kind, "set_sharedMaterial");
@@ -340,12 +354,12 @@ namespace StutterFix
         }
         static R Add0<T, R>(T obj, int id) where T : UnityEngine.Object where R : UnityEngine.Object
         {
-            var b = bindings[id]; DirectDeco.BeforeSequenceWrite(obj, b.Kind);
+            var b = bindings[id]; b.Count++; DirectDeco.BeforeSequenceWrite(obj, b.Kind);
             R result = ((Func<T, R>)b.Call)(obj); DirectDeco.AfterSequenceWrite(result, b.Kind, b.Writer); return result;
         }
         static R Add1<T, A, R>(T obj, A a, int id) where T : UnityEngine.Object where R : UnityEngine.Object
         {
-            var b = bindings[id]; DirectDeco.BeforeSequenceWrite(obj, b.Kind);
+            var b = bindings[id]; b.Count++; DirectDeco.BeforeSequenceWrite(obj, b.Kind);
             R result = ((Func<T, A, R>)b.Call)(obj, a); DirectDeco.AfterSequenceWrite(result, b.Kind, b.Writer); return result;
         }
     }

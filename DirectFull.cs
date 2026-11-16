@@ -72,6 +72,7 @@ namespace StutterFix
         {
             if (ReferenceEquals(source, preparationDriver)) Stop("preparation lifetime ended");
         }
+        static int siteStartFrame;
         static bool subscribed;
         static int startedFrame;
         static double startedAt;
@@ -108,6 +109,8 @@ namespace StutterFix
                     string r = "floors active=" + total + " enabled=" + enabled + " unity_visible=" + visibleUnity + " rendering=" + Rendering; Log(r); return r;
                 }
                 case "stale": return StaleAudit();
+                case "sites reset": DirectSequenceChanges.ResetSiteCounts(); siteStartFrame = Time.frameCount; return "sites reset frame=" + siteStartFrame;
+                case "sites": { long f = Time.frameCount - siteStartFrame; string top = DirectSequenceChanges.SiteTop(60, f); foreach (var line in top.Split((char)10)) if (line.Length > 0) Log("site " + line); return "sites frames=" + f; }
                 case "constcheck": return ConstCheck();
                 case "poke constants": return Poke("constants");
                 case "poke order": return Poke("order");
