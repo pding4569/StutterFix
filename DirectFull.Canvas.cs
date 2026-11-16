@@ -196,6 +196,8 @@ namespace StutterFix
         static void UpdateCanvasView(Camera view)
         {
             var signature = view.projectionMatrix * view.worldToCameraMatrix;
+            // 위치 쓰기 알림을 끈 뒤에는(PoseNotify=false) 그래픽 이동을 hasChanged 로 매 프레임 본다: 그릴 수 있는 그래픽만이라 싸다.
+            if (!DirectSequenceChanges.PoseNotify) foreach (var u in potentialCanvases) QueueCanvasVisibility(u);
             if (canvasViewValid && canvasView.Equals(signature)) return;
             canvasView = signature; canvasViewValid = true; GeometryUtility.CalculateFrustumPlanes(signature, canvasPlanes);
             // 카메라는 거의 매 프레임 움직인다. 화면 안/밖 판정을 하지 않고 "그릴 수 있는 그래픽이 있으면 live" 로 보수적으로 둔다
@@ -377,6 +379,7 @@ namespace StutterFix
                         foreach (var cr in u.PotentialSet)
                         {
                             if (!cr || !u.GraphicState.TryGetValue(cr, out byte was)) continue;
+                            var ct = cr.transform; if (ct.hasChanged) { canvasGraphicBounds.Remove(cr); ct.hasChanged = false; }
                             bool vis = CanvasGraphicVisible(cr); bool had = (was & 2) != 0;
                             if (vis != had) { graphics += vis ? 1 : -1; canvasVisChanges.Add((cr, (byte)(vis ? (was | 2) : (was & ~2)))); }
                         }

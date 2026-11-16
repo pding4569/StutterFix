@@ -1,4 +1,4 @@
-#if AUTOTEST
+﻿#if AUTOTEST
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -17,13 +17,16 @@ namespace StutterFix
         const string SkipId = "StutterFix.scriptpath.skip";
         const string ExactId = "StutterFix.scriptpath.exact";
         const string GameHash = "EC0D7C3889696C5605D6DB4F443FD387F8668A90BA7B4DD2A1A2DA64B5ADA5BC";
-        static readonly string[] Names = { "floor", "conductor", "canvas" };
+        static readonly string[] Names = { "floor", "conductor", "canvas", "deco", "floorlate", "planet" };
         static readonly MethodInfo[] Targets = {
             AccessTools.DeclaredMethod(typeof(scrFloor), "Update"),
             AccessTools.DeclaredMethod(typeof(scrConductor), "Update"),
-            AccessTools.DeclaredMethod(typeof(Canvas), "SendWillRenderCanvases") };
-        static readonly bool[] skip = new bool[3];
-        static readonly long[] skipped = new long[3];
+            AccessTools.DeclaredMethod(typeof(Canvas), "SendWillRenderCanvases"),
+            AccessTools.DeclaredMethod(typeof(scrDecorationManager), "LateUpdate"),
+            AccessTools.DeclaredMethod(typeof(scrFloor), "LateUpdate"),
+            AccessTools.DeclaredMethod(typeof(scrPlanet), "Update") };
+        static readonly bool[] skip = new bool[6];
+        static readonly long[] skipped = new long[6];
         static Harmony skipHarmony, exactHarmony;
         static bool exact, verify, applied;
         static long calls, eligible, fast, checkedCalls, diffs;

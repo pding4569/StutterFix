@@ -16,7 +16,11 @@ namespace StutterFix
     {
         internal const int State = 0, Shape = 1, Pose = 2, Hierarchy = 3, Script = 4;
         sealed class Binding { internal Delegate Call, Read; internal int Kind; internal string Writer; }
-        internal static long EqualityReads, UnchangedWrites;
+        internal static long EqualityReads, UnchangedWrites, PoseDirect;
+        // 위치·회전·크기 쓰기(Pose)는 알림 없이 바로 원래 함수를 부른다(2026-11-16 Claude).
+        // 직통 렌더러는 위치를 TransformAccessArray 잡으로 읽고, 캔버스는 transform.hasChanged 로 본다.
+        // 알림·같은 값 읽기(get_position 등)가 게임 스크립트 시간을 키웠다(장식 LateUpdate 0.15 -> 0.40ms).
+        internal static bool PoseNotify = false;
         static readonly List<Binding> bindings = new List<Binding>();
         static readonly Dictionary<MethodInfo, int> bound = new Dictionary<MethodInfo, int>();
         static readonly MethodInfo readCode = typeof(PatchProcessor).GetMethods().Single(m => m.Name == "GetOriginalInstructions"
@@ -245,19 +249,25 @@ namespace StutterFix
         static void Global6<A, B, C, D, E, F>(A a, B b, C c, D d, E e, F f, int id) { ((Action<A, B, C, D, E, F>)bindings[id].Call)(a, b, c, d, e, f); GlobalChanged(); }
         static void Call1<T, A>(T obj, A a, int id) where T : UnityEngine.Object
         {
-            var b = bindings[id]; bool notify = Notify(b, obj, a);
+            var b = bindings[id];
+            if (b.Kind == Pose && !PoseNotify) { PoseDirect++; ((Action<T, A>)b.Call)(obj, a); return; }
+            bool notify = Notify(b, obj, a);
             if (notify) DirectDeco.BeforeSequenceWrite(obj, b.Kind);
             ((Action<T, A>)b.Call)(obj, a);
             if (notify) DirectDeco.AfterSequenceWrite(obj, b.Kind, b.Writer);
         }
         static void Call2<T, A, B>(T obj, A a, B c, int id) where T : UnityEngine.Object
         {
-            var b = bindings[id]; DirectDeco.BeforeSequenceWrite(obj, b.Kind);
+            var b = bindings[id];
+            if (b.Kind == Pose && !PoseNotify) { PoseDirect++; ((Action<T, A, B>)b.Call)(obj, a, c); return; }
+            DirectDeco.BeforeSequenceWrite(obj, b.Kind);
             ((Action<T, A, B>)b.Call)(obj, a, c); DirectDeco.AfterSequenceWrite(obj, b.Kind, b.Writer);
         }
         static void Call3<T, A, B, C>(T obj, A a, B c, C d, int id) where T : UnityEngine.Object
         {
-            var b = bindings[id]; DirectDeco.BeforeSequenceWrite(obj, b.Kind);
+            var b = bindings[id];
+            if (b.Kind == Pose && !PoseNotify) { PoseDirect++; ((Action<T, A, B, C>)b.Call)(obj, a, c, d); return; }
+            DirectDeco.BeforeSequenceWrite(obj, b.Kind);
             ((Action<T, A, B, C>)b.Call)(obj, a, c, d); DirectDeco.AfterSequenceWrite(obj, b.Kind, b.Writer);
         }
         static void Call4<T, A, B, C, D>(T obj, A a, B c, C d, D e, int id) where T : UnityEngine.Object
