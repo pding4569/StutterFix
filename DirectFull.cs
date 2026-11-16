@@ -108,6 +108,7 @@ namespace StutterFix
                     string r = "floors active=" + total + " enabled=" + enabled + " unity_visible=" + visibleUnity + " rendering=" + Rendering; Log(r); return r;
                 }
                 case "stale": return StaleAudit();
+                case "constcheck": return ConstCheck();
                 case "poke constants": return Poke("constants");
                 case "poke order": return Poke("order");
                 case "poke refresh": return Poke("refresh");

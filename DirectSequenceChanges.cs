@@ -255,6 +255,10 @@ namespace StutterFix
         {
             var b = bindings[id];
             if (b.Kind == Pose && !PoseNotify) { PoseDirect++; ((Action<T, A>)b.Call)(obj, a); return; }
+#if DEV || AUTOTEST
+            // 우리가 그리지 않는 UI(화면 HUD 등)의 쓰기는 감시 경로 앞에서 버린다.
+            if ((obj is CanvasRenderer || obj is UnityEngine.UI.Graphic) && DirectFull.UntrackedUi(obj)) { ((Action<T, A>)b.Call)(obj, a); return; }
+#endif
             bool notify = Notify(b, obj, a);
             if (notify) DirectDeco.BeforeSequenceWrite(obj, b.Kind);
             ((Action<T, A>)b.Call)(obj, a);
@@ -267,7 +271,12 @@ namespace StutterFix
             DirectDeco.BeforeSequenceWrite(obj, b.Kind);
             ((Action<T, A, B>)b.Call)(obj, a, c);
 #if DEV || AUTOTEST
-            if (obj is Material) DirectFull.PendingMaterialProperty = a is int pid ? pid : a is string pname ? Shader.PropertyToID(pname) : -1;
+            if (obj is Material mat)
+            {
+                int pid = a is int ip ? ip : a is string pname ? Shader.PropertyToID(pname) : -1;
+                if (b.Writer.StartsWith("Set", StringComparison.Ordinal) && (b.Writer == "SetColor" || b.Writer == "SetFloat" || b.Writer == "SetVector") && DirectFull.FastMaterialWrite(mat, pid)) return;
+                DirectFull.PendingMaterialProperty = pid;
+            }
 #endif
             DirectDeco.AfterSequenceWrite(obj, b.Kind, b.Writer);
         }
