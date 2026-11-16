@@ -37,3 +37,20 @@
 - DD 픽셀: 미리 만들기 판 431픽셀 최대 4(전에는 비트 동일). 원인 미확인.
 - WF: A 220.7/218.3, B 194.8/174.8.
 - `gx-cacheoff`/`gx-graboff` 는 계획의 `drfull assert cache` 로 실패 → `*2.json` 으로 다시.
+
+## 6. 정정 (저녁): 보임 판정 버그 → 낮의 FPS 이득 일부는 가짜
+- 켜자마자 멈춘 픽셀 대조만 했던 탓에 못 봤다. **재생 8초 뒤 멈춘 대조**(gx-plans/pp-*-st.json)에서 Exit PSNR 24.8, HELLO 약 35.
+- 원인: 유니티 카메라가 맵 레이어를 안 그려 scrFloor/ToggleVisible/Mawaru_Sprite 의 OnBecameVisible/Invisible, scrVisualDecoration.UpdateShader 등의 renderer.isVisible 이 "안 보임"으로 굳음 → 타일 Update(아이콘·색)·필터 장식 갱신 정지. 끄고 다시 켜면 맞음(Exit d0 대 d2 63.2)이 단서. 포즈·상수·순서·캐시·캔버스·파티클 컬링은 모두 강제 갱신해도 그대로라 배제.
+- 고침: DirectFull.Visibility.cs — 메인 카메라 CullingGroup(경계 구)로 보임 대행, 위 콜백은 우리 판정으로만 호출, isVisible 호출 4곳 바꿔치기. 결과 Exit 63.2(최대 2), HELLO 43.4.
+- 정직한 FPS: HELLO 119.9(146~152 는 가짜) → 재질 값 빠른 경로 135.3, Exit 141 → 190. 원본 HELLO 약 204, Exit 348.
+- 재질 값 빠른 경로: Material.SetColor/SetFloat/SetVector/SetInt/set_color 는 바뀐 속성 상수만(속성 기반 상태가 바뀌면 일반 경로). DOTween.dll 도 감시(재질 트윈 람다). 검증 192,819번 불일치 0.
+
+## 7. 엔진 내부 프로파일(HELLO, 기호 풀기: E:\StutterFixWork\tools-sym\symb.py)
+| | 원본 | 직통 |
+|---|---|---|
+| 카메라 그리기(Camera::CustomRender) | 약 1.5ms | 약 0.7ms |
+| 출력 대기(WaitForPendingPresent) | 0.82ms | 0.12ms |
+| 우리 PreCull | 0 | 1.9ms |
+| 스크립트 Update+LateUpdate | 약 2.0ms | 약 3.0ms |
+- 우리 비용이 0 이어도 렌더러 교체만으로 HELLO 상한 약 +10%. 압도적(2배)은 장식·타일·효과·DOTween 스크립트(약 0.85ms)를 대체하고 그 결과를 유니티 오브젝트 대신 GPU 로 직접 보내야(감시 비용도 사라짐) 가능: 추정 약 2.45ms.
+- PreCull 1.9ms 내역: Refresh 28%(FillConstants·Bind·UpdateKey), ReplanCanvases 21%(LiveGraphic·CanvasGraphicVisible — 캔버스 SetAlpha 마다), RebuildFullOrder 12%(TryNativeInsert 의 O(n) 번호 갱신), PromoteSources 10%.
