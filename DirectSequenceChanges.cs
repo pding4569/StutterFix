@@ -107,7 +107,7 @@ namespace StutterFix
                     || n == "set_localRotation" || n == "set_eulerAngles" || n == "set_localEulerAngles"
                     || n == "set_localScale" || n == "SetPositionAndRotation" || n == "SetLocalPositionAndRotation"
                     || n == "Translate" || n == "Rotate" || n == "RotateAround" || n == "LookAt"
-                    || n == "set_forward" || n == "set_right" || n == "set_up") return Pose;
+                    || n == "set_forward" || n == "set_right" || n == "set_up") return PoseNotify ? Pose : -1;
             }
             return -1;
         }
