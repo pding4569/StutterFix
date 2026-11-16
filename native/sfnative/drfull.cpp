@@ -374,6 +374,7 @@ struct Renderer {
         auto& g=*geometries[in.geometry-1];require(g.layouts.empty()&&in.indexCount==g.indexCount);const auto* vertices=static_cast<const BatchVertex*>(in.vertices);
         g.cpu.assign(vertices,vertices+in.count);g.cpuIndices.assign(in.indices,in.indices+in.indexCount);for(auto i:g.cpuIndices)require(i<in.count);return 1;
     }
+    std::map<std::pair<Shader*,std::string>,ComPtr<ID3D11InputLayout>> sharedLayouts;
     int draw(const DrawIn& in) {
         memoryDirty=true;
         require(in.program&&in.program<=shaders.size()&&in.geometry&&in.geometry<=geometries.size()&&in.pose<capacity);
@@ -385,7 +386,15 @@ struct Renderer {
         if(d->sprite){for(auto& a:attributes)if(std::strcmp(a.SemanticName,"COLOR")==0){a.InputSlot=7;a.AlignedByteOffset=0;a.Format=DXGI_FORMAT_R32G32B32A32_FLOAT;}D3D11_BUFFER_DESC b{};b.ByteWidth=16;b.Usage=D3D11_USAGE_DEFAULT;b.BindFlags=D3D11_BIND_VERTEX_BUFFER;memoryDirty=true;check(device->CreateBuffer(&b,nullptr,&d->color));}
         auto layoutKey=std::make_pair(d->shader.get(),d->sprite);auto cached=g.layouts.find(layoutKey);
         if(cached!=g.layouts.end()){d->layout=cached->second;perf.layoutHits++;}
-        else {check(device->CreateInputLayout(attributes.data(),UINT(attributes.size()),d->shader->signature.data(),d->shader->signature.size(),&d->layout));g.layouts.emplace(layoutKey,d->layout);perf.layoutCreates++;}
+        else {
+            // 형상이 달라도 정점 속성 배치가 같으면 같은 입력 레이아웃(타일 메시마다 CreateInputLayout 하던 비용 제거).
+            std::string sig;sig.reserve(attributes.size()*32);
+            for(const auto& a:attributes){sig+=a.SemanticName;sig+='|';sig.append(reinterpret_cast<const char*>(&a.SemanticIndex),sizeof(a.SemanticIndex));sig.append(reinterpret_cast<const char*>(&a.Format),sizeof(a.Format));sig.append(reinterpret_cast<const char*>(&a.InputSlot),sizeof(a.InputSlot));sig.append(reinterpret_cast<const char*>(&a.AlignedByteOffset),sizeof(a.AlignedByteOffset));sig.append(reinterpret_cast<const char*>(&a.InputSlotClass),sizeof(a.InputSlotClass));sig.append(reinterpret_cast<const char*>(&a.InstanceDataStepRate),sizeof(a.InstanceDataStepRate));}
+            auto gk=std::make_pair(d->shader.get(),sig);auto shared=sharedLayouts.find(gk);
+            if(shared!=sharedLayouts.end()){d->layout=shared->second;perf.layoutHits++;}
+            else {check(device->CreateInputLayout(attributes.data(),UINT(attributes.size()),d->shader->signature.data(),d->shader->signature.size(),&d->layout));sharedLayouts.emplace(gk,d->layout);perf.layoutCreates++;}
+            g.layouts.emplace(layoutKey,d->layout);
+        }
         if(poses.size()<=in.pose){poses.resize(size_t(in.pose)+1);gpuPoses.resize(poses.size());markPose(in.pose);}
         const auto* bytes=static_cast<const uint8_t*>(in.constants);d->bytes.assign(bytes,bytes+in.constantBytes);
         if(in.patchCount)d->patches.assign(in.patches,in.patches+in.patchCount);

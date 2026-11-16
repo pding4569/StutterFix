@@ -24,6 +24,14 @@ namespace StutterFix
         void OnDestroy() { Changed?.Invoke(); Changed = null; }
     }
 
+    // 유니티 오브젝트 키 사전용: 재정의된 Equals(CompareBaseObjects)·살아있음 확인 없이 참조로만 비교한다.
+    // 같은 네이티브 오브젝트는 같은 관리 객체로 오므로 의미가 같다(파괴된 오브젝트도 같은 참조로 찾힌다).
+    internal sealed class RefEq<T> : IEqualityComparer<T> where T : class
+    {
+        internal static readonly RefEq<T> I = new RefEq<T>();
+        public bool Equals(T a, T b) => ReferenceEquals(a, b);
+        public int GetHashCode(T o) => System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(o);
+    }
     internal static unsafe partial class DirectFull
     {
         sealed class Source
@@ -32,7 +40,7 @@ namespace StutterFix
             internal bool ExplicitVisible;
             internal MeshFilter Filter; internal int Index, PoseIndex = -1; internal bool Queued, Live, GroupsDirty, TintOnly, KeyOnly, HierarchyDirty, NeedsInverse, Prebuild;
             internal SceneRenderOrder.Key Key; internal Bound[] Passes;
-            internal readonly HashSet<UnityEngine.Object> Indexed = new HashSet<UnityEngine.Object>();
+            internal readonly HashSet<UnityEngine.Object> Indexed = new HashSet<UnityEngine.Object>(RefEq<UnityEngine.Object>.I);
             internal readonly List<Material> Materials = new List<Material>();
             internal readonly MaterialPropertyBlock RendererBlock = new MaterialPropertyBlock(), SlotBlock = new MaterialPropertyBlock();
             internal DirectFullSourceLifetime Lifetime;
@@ -117,10 +125,10 @@ namespace StutterFix
         static long prepareSlices, prepareMaxTicks, prepareWorkTicks, preparationFinishedTicks, firstReadyTicks;
         static string prepareStage;
         static int prepareOriginal;
-        static readonly HashSet<Renderer> dormant = new HashSet<Renderer>();
+        static readonly HashSet<Renderer> dormant = new HashSet<Renderer>(RefEq<Renderer>.I);
         static readonly List<Renderer> rendererScratch = new List<Renderer>(); static readonly List<Canvas> canvasScratch = new List<Canvas>();
-        static readonly HashSet<Renderer> pendingPromotions = new HashSet<Renderer>();
-        static readonly HashSet<Canvas> pendingCanvasPromotions = new HashSet<Canvas>(); static bool posePark = false; static long poseParks, poseUnparks; static bool prebuildDormant, earlyPrepare, prebuildMeshes, countSignalWriters, noInsert, materialFast = true; static long materialFastHits, materialFastMisses; internal static int PendingMaterialProperty = -1; static bool materialVerify; static long materialVerifyChecks, materialVerifyMismatch; static readonly System.Text.StringBuilder materialVerifyExamples = new System.Text.StringBuilder(); static readonly int colorPropertyId = Shader.PropertyToID("_Color"); static long prebuiltSources;
+        static readonly HashSet<Renderer> pendingPromotions = new HashSet<Renderer>(RefEq<Renderer>.I);
+        static readonly HashSet<Canvas> pendingCanvasPromotions = new HashSet<Canvas>(RefEq<Canvas>.I); static bool posePark = false; static long poseParks, poseUnparks; static bool prebuildDormant, earlyPrepare, prebuildMeshes, countSignalWriters, noInsert, materialFast = true; static long materialFastHits, materialFastMisses; internal static int PendingMaterialProperty = -1; static bool materialVerify; static long materialVerifyChecks, materialVerifyMismatch; static readonly System.Text.StringBuilder materialVerifyExamples = new System.Text.StringBuilder(); static readonly int colorPropertyId = Shader.PropertyToID("_Color"); static long prebuiltSources;
         // 미리 만들 대상: 우리가 원래 셰이더로 직접 그릴 수 있는 단순 스프라이트만(유니티 대체 그리기가 되는 것은 제외).
         static bool PrebuildEligible(Renderer r)
         {
@@ -306,15 +314,15 @@ namespace StutterFix
         static readonly List<Source> sources = new List<Source>(), changed = new List<Source>();
         static readonly List<Entry> ordered = new List<Entry>();
         static readonly List<Bound> changedConstants = new List<Bound>();
-        static readonly Dictionary<UnityEngine.Object, List<Source>> sourceIndex = new Dictionary<UnityEngine.Object, List<Source>>();
+        static readonly Dictionary<UnityEngine.Object, List<Source>> sourceIndex = new Dictionary<UnityEngine.Object, List<Source>>(RefEq<UnityEngine.Object>.I);
         static readonly Dictionary<(int,int,int), int> geometryCache = new Dictionary<(int,int,int), int>();
-        static readonly Dictionary<Mesh, int> meshVersions = new Dictionary<Mesh, int>();
+        static readonly Dictionary<Mesh, int> meshVersions = new Dictionary<Mesh, int>(RefEq<Mesh>.I);
         static readonly Dictionary<(S.Variant,long), int> programs = new Dictionary<(S.Variant,long), int>();
-        static readonly Dictionary<UnityEngine.Texture, IntPtr> texturePointers = new Dictionary<UnityEngine.Texture, IntPtr>();
+        static readonly Dictionary<UnityEngine.Texture, IntPtr> texturePointers = new Dictionary<UnityEngine.Texture, IntPtr>(RefEq<UnityEngine.Texture>.I);
         static readonly Dictionary<string, uint> grabNames = new Dictionary<string, uint>(StringComparer.Ordinal);
         static uint GrabId(string name) { if (string.IsNullOrEmpty(name)) return 1; if (!grabNames.TryGetValue(name, out uint id)) { id = (uint)grabNames.Count + 2; grabNames.Add(name, id); namedGrabOwnershipDirty = true; } return id; }
         static readonly List<DirectFullSourceLifetime> sourceLifetimes = new List<DirectFullSourceLifetime>();
-        static readonly Dictionary<Renderer, Source> rendererSources = new Dictionary<Renderer, Source>();
+        static readonly Dictionary<Renderer, Source> rendererSources = new Dictionary<Renderer, Source>(RefEq<Renderer>.I);
         static CommandBuffer before, opaque;
         static TransformAccessArray transforms;
         static NativeArray<N.Pose> poses;

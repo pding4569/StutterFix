@@ -34,9 +34,9 @@ namespace StutterFix
             internal string Reason;
             internal Entry Entry;
             internal bool FullDirty = true, VisibilityDirty, StateReady;
-            internal readonly HashSet<CanvasRenderer> PotentialSet = new HashSet<CanvasRenderer>();
-            internal readonly HashSet<CanvasRenderer> DirtyGraphics = new HashSet<CanvasRenderer>(), DirtyAlpha = new HashSet<CanvasRenderer>();
-            internal readonly Dictionary<CanvasRenderer, byte> GraphicState = new Dictionary<CanvasRenderer, byte>();
+            internal readonly HashSet<CanvasRenderer> PotentialSet = new HashSet<CanvasRenderer>(RefEq<CanvasRenderer>.I);
+            internal readonly HashSet<CanvasRenderer> DirtyGraphics = new HashSet<CanvasRenderer>(RefEq<CanvasRenderer>.I), DirtyAlpha = new HashSet<CanvasRenderer>(RefEq<CanvasRenderer>.I);
+            internal readonly Dictionary<CanvasRenderer, byte> GraphicState = new Dictionary<CanvasRenderer, byte>(RefEq<CanvasRenderer>.I);
             internal readonly Dictionary<Graphic, UnityEngine.Events.UnityAction> GraphicLocal = new Dictionary<Graphic, UnityEngine.Events.UnityAction>();
             internal readonly Dictionary<Graphic, UnityEngine.Events.UnityAction<bool>> GraphicCull = new Dictionary<Graphic, UnityEngine.Events.UnityAction<bool>>();
         }
@@ -49,13 +49,13 @@ namespace StutterFix
         }
         struct SuppressedRenderer { internal Renderer Renderer; internal bool Forced; }
         struct SuppressedGraphic { internal CanvasRenderer Renderer; internal bool Culled; }
-        static readonly HashSet<Canvas> dormantCanvases = new HashSet<Canvas>();
+        static readonly HashSet<Canvas> dormantCanvases = new HashSet<Canvas>(RefEq<Canvas>.I);
         static readonly List<CanvasUnit> canvasUnits = new List<CanvasUnit>();
         static readonly List<Source> canvasRendererSources = new List<Source>();
         static readonly Dictionary<Shader, string> canvasBlendReasons = new Dictionary<Shader, string>();
         static readonly List<CanvasRun> canvasRuns = new List<CanvasRun>();
         static readonly HashSet<Transform> canvasOwned = new HashSet<Transform>();
-        static readonly HashSet<UnityEngine.Object> canvasIndex = new HashSet<UnityEngine.Object>();
+        static readonly HashSet<UnityEngine.Object> canvasIndex = new HashSet<UnityEngine.Object>(RefEq<UnityEngine.Object>.I);
         static readonly List<DirectFullSourceLifetime> canvasLifetimes = new List<DirectFullSourceLifetime>();
         static readonly List<SuppressedRenderer> suppressedRenderers = new List<SuppressedRenderer>();
         static readonly List<SuppressedGraphic> suppressedGraphics = new List<SuppressedGraphic>();
@@ -70,7 +70,7 @@ namespace StutterFix
         static readonly Plane[] canvasPlanes = new Plane[6];
         static Matrix4x4 canvasView; static bool canvasViewValid;
         static readonly List<CanvasUnit> dirtyCanvases = new List<CanvasUnit>();
-        static readonly Dictionary<UnityEngine.Object, List<CanvasUnit>> canvasOwners = new Dictionary<UnityEngine.Object, List<CanvasUnit>>();
+        static readonly Dictionary<UnityEngine.Object, List<CanvasUnit>> canvasOwners = new Dictionary<UnityEngine.Object, List<CanvasUnit>>(RefEq<UnityEngine.Object>.I);
         static readonly Dictionary<string, long> canvasFullReasons = new Dictionary<string, long>();
         static void QueueCanvasWhy(CanvasUnit u, string why) { canvasFullReasons.TryGetValue(why, out long n); canvasFullReasons[why] = n + 1; QueueCanvas(u); }
         internal static string CanvasFullReasonsTop()
@@ -158,7 +158,7 @@ namespace StutterFix
             }
             for (int i = 0; i < t.childCount; i++) GatherCanvas(u, t.GetChild(i), false);
         }
-        static readonly Dictionary<CanvasRenderer, Graphic> canvasGraphicOf = new Dictionary<CanvasRenderer, Graphic>();
+        static readonly Dictionary<CanvasRenderer, Graphic> canvasGraphicOf = new Dictionary<CanvasRenderer, Graphic>(RefEq<CanvasRenderer>.I);
         static bool LiveGraphic(CanvasRenderer cr) => LiveGraphicStruct(cr) && AlphaVisible(cr);
         static bool AlphaVisible(CanvasRenderer cr) => cr.GetAlpha() * cr.GetInheritedAlpha() > 0.00001f;
         // 알파를 뺀 구조 판정(활성·재질·그래픽 켜짐/색·메시). SetAlpha 만 바뀐 그래픽은 이것을 다시 하지 않는다.
@@ -181,7 +181,7 @@ namespace StutterFix
         static bool canvasFrustumTest = true;
         static readonly List<(CanvasRenderer, byte)> canvasVisChanges = new List<(CanvasRenderer, byte)>();
         // 그래픽의 월드 경계는 그래픽이 바뀌거나(정점) 움직일 때만 다시 구한다. 카메라 이동에는 저장한 경계로 평면 검사만.
-        static readonly Dictionary<CanvasRenderer, Bounds> canvasGraphicBounds = new Dictionary<CanvasRenderer, Bounds>();
+        static readonly Dictionary<CanvasRenderer, Bounds> canvasGraphicBounds = new Dictionary<CanvasRenderer, Bounds>(RefEq<CanvasRenderer>.I);
         static bool CanvasGraphicVisible(CanvasRenderer cr)
         {
             if (!canvasFrustumTest) return true;

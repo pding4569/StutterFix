@@ -25,7 +25,7 @@ namespace StutterFix
         static Vector3[] visLocalCenter = new Vector3[0]; static float[] visLocalRadius = new float[0];
         static Action[][] visOn = new Action[0][], visOff = new Action[0][];
         static int visCount;
-        static readonly Dictionary<Renderer, int> visIndex = new Dictionary<Renderer, int>();
+        static readonly Dictionary<Renderer, int> visIndex = new Dictionary<Renderer, int>(RefEq<Renderer>.I);
         static readonly List<int> visDirty = new List<int>();
         static bool visEmulating, visEnabled;
         static long visCallbacks, visShimHits, visRegistered;
