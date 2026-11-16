@@ -252,7 +252,7 @@ void cacheCull(){
 void cacheGrabs(ID3D11RenderTargetView* rt){
     if(grabSurfaces.empty()||(cacheGrabTarget==rt&&cacheGrabCount==grabSurfaces.size()))return;ComPtr<ID3D11Resource> resource;rt->GetResource(&resource);ComPtr<ID3D11Texture2D> source;check(resource.As(&source));D3D11_TEXTURE2D_DESC td{};source->GetDesc(&td);D3D11_RENDER_TARGET_VIEW_DESC vd{};rt->GetDesc(&vd);require(td.SampleDesc.Count==1&&td.ArraySize==1&&vd.ViewDimension==D3D11_RTV_DIMENSION_TEXTURE2D&&vd.Texture2D.MipSlice==0);
     for(auto& pair:grabSurfaces){auto& g=pair.second;if(g.texture&&g.desc.Width==td.Width&&g.desc.Height==td.Height&&g.desc.Format==td.Format&&g.format==vd.Format)continue;
-        g.desc=td;g.format=vd.Format;g.texture.Reset();g.view.Reset();auto desc=td;desc.BindFlags=D3D11_BIND_SHADER_RESOURCE;desc.Usage=D3D11_USAGE_DEFAULT;desc.CPUAccessFlags=desc.MiscFlags=0;check(device->CreateTexture2D(&desc,nullptr,&g.texture));g.texture->SetEvictionPriority(DXGI_RESOURCE_PRIORITY_MAXIMUM);D3D11_SHADER_RESOURCE_VIEW_DESC sv{};sv.Format=vd.Format;sv.ViewDimension=D3D11_SRV_DIMENSION_TEXTURE2D;sv.Texture2D.MipLevels=desc.MipLevels;check(device->CreateShaderResourceView(g.texture.Get(),&sv,&g.view));cacheGeneration++;memoryDirty=true;}
+        g.desc=td;g.format=vd.Format;g.texture.Reset();g.view.Reset();auto desc=td;desc.BindFlags=D3D11_BIND_SHADER_RESOURCE;desc.Usage=D3D11_USAGE_DEFAULT;desc.CPUAccessFlags=desc.MiscFlags=0;check(device->CreateTexture2D(&desc,nullptr,&g.texture));grabPriority(g.texture.Get());D3D11_SHADER_RESOURCE_VIEW_DESC sv{};sv.Format=vd.Format;sv.ViewDimension=D3D11_SRV_DIMENSION_TEXTURE2D;sv.Texture2D.MipLevels=desc.MipLevels;check(device->CreateShaderResourceView(g.texture.Get(),&sv,&g.view));cacheGeneration++;memoryDirty=true;}
     cacheGrabTarget=rt;cacheGrabCount=grabSurfaces.size();
 }
 bool grabVisible(DrawCall& d){
@@ -264,7 +264,7 @@ bool grabVisible(DrawCall& d){
 void cacheCopyGrabRegion(DrawCall& d,ID3D11RenderTargetView* target,const D3D11_BOX* box){
     auto& g=grabSurfaces.at(d.grabId);
     if(d.grabId>1&&g.frame==stats.frames){gpuPerf.namedGrabHits++;return;}
-    if(resourceConfiguration.skipGrab){resourcePerf.grabSkips++;g.frame=stats.frames;return;}
+    if(resourceConfiguration.skipGrab==1){resourcePerf.grabSkips++;g.frame=stats.frames;return;}
     ComPtr<ID3D11Resource> source;target->GetResource(&source);
     timeline.nativeStage(6);
     if(box)context->CopySubresourceRegion(g.texture.Get(),0,box->left,box->top,0,source.Get(),0,box);
@@ -277,8 +277,8 @@ size_t cacheGrabGroup(std::vector<CacheChunk>& chunks,size_t first,ID3D11RenderT
     bool fullViewport=viewport.TopLeftX==0&&viewport.TopLeftY==0&&viewport.Width==g.desc.Width&&viewport.Height==g.desc.Height;
     // A partial mip-0 snapshot cannot preserve sampling from other mip levels.
     bool rectTarget=fullViewport&&g.desc.MipLevels==1;
-    if(!resourceConfiguration.skipGrab&&d.grabId==1&&!rectTarget)cachePerf.rectFallbacks++;
-    bool partial=!resourceConfiguration.skipGrab&&d.grabId==1&&rectTarget&&grabRect(d,g.desc.Width,g.desc.Height,box);
+    if(resourceConfiguration.skipGrab!=1&&d.grabId==1&&!rectTarget)cachePerf.rectFallbacks++;
+    bool partial=resourceConfiguration.skipGrab!=1&&d.grabId==1&&rectTarget&&grabRect(d,g.desc.Width,g.desc.Height,box);
     // A later screen-space Grab may share this snapshot ONLY when all prior
     // writes are disjoint from its read rectangle. Each accepted rectangle also
     // contains its raster footprint. Never cross a normal draw, name, segment,

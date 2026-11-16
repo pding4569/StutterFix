@@ -21,13 +21,14 @@ namespace StutterFix
             if (Active || preparing) throw new InvalidOperationException("resource configuration requires off");
             string[] a = arg.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
             if (arg == "default") resourceConfig = new N.ResourceConfiguration { Pretransform = 1, StableUploads = 1, TrimBindings = 1 };
+            else if (a.Length == 2 && a[0] == "grabprio" && (a[1] == "max" || a[1] == "none" || a[1] == "high")) resourceConfig.SkipGrab = a[1] == "max" ? 0u : a[1] == "none" ? 10u : 11u;
             else if (a.Length == 2 && (a[1] == "on" || a[1] == "off"))
             {
                 uint value = a[1] == "on" ? 1u : 0u;
                 switch (a[0]) { case "grab": resourceConfig.SkipGrab = 1-value; break; case "pretransform": resourceConfig.Pretransform = value; break; case "stable": resourceConfig.StableUploads = value; break; case "trim": resourceConfig.TrimBindings = value; break; default: throw new ArgumentException("resources default | grab/pretransform/stable/trim on/off"); }
             }
             else throw new ArgumentException("resources default | grab/pretransform/stable/trim on/off");
-            return $"resources skip_grab={resourceConfig.SkipGrab} pretransform={resourceConfig.Pretransform} stable={resourceConfig.StableUploads} trim={resourceConfig.TrimBindings} diagnostic_skip_grab_changes_pixels={resourceConfig.SkipGrab != 0}";
+            return $"resources skip_grab={resourceConfig.SkipGrab} pretransform={resourceConfig.Pretransform} stable={resourceConfig.StableUploads} trim={resourceConfig.TrimBindings} diagnostic_skip_grab_changes_pixels={resourceConfig.SkipGrab == 1}";
         }
         static string SafePath(Transform t) { string path = t.name; for (t = t.parent; t; t = t.parent) path = t.name + "/" + path; return Clean(path); }
         static string DrawGpuCommand(string arg)

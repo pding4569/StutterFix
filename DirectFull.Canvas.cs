@@ -266,7 +266,8 @@ namespace StutterFix
                 yield return 0;
                 if (!Relevant(c, main)) continue;
                 if (!c.isActiveAndEnabled) { dormantCanvases.Add(c); canvasTotal++; continue; }
-                if (!CanvasInMask(c, original)) continue;
+                // 지금 맵 레이어 그래픽이 없는 캔버스도 대기로 둔다(재생 중 자식이 붙으면 올림, 예: WorldCanvas).
+                if (!CanvasInMask(c, original)) { dormantCanvases.Add(c); continue; }
                 var u = new CanvasUnit { Canvas = c };
                 u.Signal = () => QueueCanvasWhy(u, "lifetime"); u.GraphicSignal = () => QueueCanvasWhy(u, "graphic-callback"); u.CullSignal = _ => QueueCanvasWhy(u, "cull-callback");
                 canvasUnits.Add(u); GatherCanvas(u, c.transform, true);

@@ -101,6 +101,16 @@ namespace StutterFix
                 case "colors": return ColorAudit();
                 case "why": return WhyReplan();
                 case "residency": return ResidencyState();
+                case "stale": return StaleAudit();
+                case "poke constants": return Poke("constants");
+                case "poke order": return Poke("order");
+                case "poke refresh": return Poke("refresh");
+                case "poke poses": return Poke("poses");
+                case "poke textures": return Poke("textures");
+                case "poke geometry": return Poke("geometry");
+                case "poke rebind": return Poke("rebind");
+                case "poke canvases": return Poke("canvases");
+                case "poke canvasunits": return Poke("canvasunits");
                 case "pressure restore": return PressureMip(-1);
                 case "particles baked": case "particles explicit":
                     if (Active || preparing) throw new InvalidOperationException("particle route requires off");
@@ -243,6 +253,8 @@ namespace StutterFix
             bool cameraAlive = wasActive && camera;
             int restoredMask = 0;
             // A destroyed camera uses Unity's fake-null semantics. Never write to it.
+            try { RestoreVisibilityCulling(); } catch (Exception e) { Log("culling restore failed: " + e.Message); }
+            try { StopVisibility(); } catch (Exception e) { Log("visibility stop failed: " + e.Message); }
             try { ReleaseFull(); }
             finally
             {

@@ -36,7 +36,7 @@ namespace StutterFix
             internal readonly List<Material> Materials = new List<Material>();
             internal readonly MaterialPropertyBlock RendererBlock = new MaterialPropertyBlock(), SlotBlock = new MaterialPropertyBlock();
             internal DirectFullSourceLifetime Lifetime;
-            internal Bound[] OrderedPasses; internal bool OrderQueued, LiveQueued, DistanceOnly, StateOnly;
+            internal Bound[] OrderedPasses; internal bool OrderQueued, LiveQueued, DistanceOnly, StateOnly, MaterialOnly;
             internal int MaterialCount; internal Sprite MaskSprite; internal (bool,int,int,int,int) MaskOrder;
             internal readonly List<SortingGroup> GroupScratch = new List<SortingGroup>();
             internal SortingGroup[] Groups = Array.Empty<SortingGroup>();
@@ -120,7 +120,7 @@ namespace StutterFix
         static readonly HashSet<Renderer> dormant = new HashSet<Renderer>();
         static readonly List<Renderer> rendererScratch = new List<Renderer>(); static readonly List<Canvas> canvasScratch = new List<Canvas>();
         static readonly HashSet<Renderer> pendingPromotions = new HashSet<Renderer>();
-        static readonly HashSet<Canvas> pendingCanvasPromotions = new HashSet<Canvas>(); static bool prebuildDormant, earlyPrepare, prebuildMeshes, countSignalWriters = true; static long prebuiltSources;
+        static readonly HashSet<Canvas> pendingCanvasPromotions = new HashSet<Canvas>(); static bool prebuildDormant, earlyPrepare, prebuildMeshes, countSignalWriters = true, noInsert, materialFast = true; static long materialFastHits, materialFastMisses; static long prebuiltSources;
         // 미리 만들 대상: 우리가 원래 셰이더로 직접 그릴 수 있는 단순 스프라이트만(유니티 대체 그리기가 되는 것은 제외).
         static bool PrebuildEligible(Renderer r)
         {
@@ -170,6 +170,122 @@ namespace StutterFix
             sb.Append(" queries=").Append(r.Queries).Append(" failures=").Append(r.Failures);
             return sb.ToString();
         }
+        // 진단: 재생 뒤 우리 기록과 실제 Unity 상태 비교(보임, 스프라이트, 색, 재질).
+        static unsafe string StaleAudit()
+        {
+            if (!Rendering) return "stale requires on";
+            int liveWrong = 0, liveMissing = 0, liveExtra = 0, colorWrong = 0, spriteWrong = 0, materialWrong = 0, dormantVisible = 0, checkedN = 0, poseWrong = 0, poseMissing = 0;
+            var examples = new System.Text.StringBuilder();
+            void Ex(string kind, Renderer r, string extra) { if (examples.Length > 1500) return; string path = r ? r.name : "null"; if (r) for (var t = r.transform.parent; t; t = t.parent) path = t.name + "/" + path; examples.Append(kind).Append(':').Append(Clean(path)).Append(extra).Append(" | "); }
+            foreach (var src in sources)
+            {
+                if (!src.R) continue; checkedN++;
+                var r = src.R;
+                bool actual = r.enabled && r.gameObject.activeInHierarchy && !r.forceRenderingOff && (CanvasOwns(r.transform) || (removedMask & 1 << r.gameObject.layer) != 0);
+                if (actual != src.Live) { liveWrong++; if (actual) liveMissing++; else liveExtra++; Ex(actual ? "missing" : "extra", r, ""); continue; }
+                if (!actual || src.Passes == null) continue;
+                r.GetSharedMaterials(staleMaterials);
+                bool matSame = staleMaterials.Count == src.Materials.Count; for (int i = 0; matSame && i < staleMaterials.Count; i++) matSame = ReferenceEquals(staleMaterials[i], src.Materials[i]);
+                if (!matSame) { materialWrong++; Ex("material", r, ""); }
+                foreach (var b in src.Passes)
+                {
+                    if (b.NativeId == 0) continue;
+                    if (src.Sprite && !b.HasRendererColor)
+                    {
+                        Color c = src.Sprite.color; Vector4 have; fixed (byte* d = b.Bytes) have = ((Vector4*)d)[0];
+                        Vector4 want = c; if ((have - want).sqrMagnitude > 1e-8f) { colorWrong++; Ex("color", r, " have=" + have.ToString("F2") + " want=" + want.ToString("F2")); }
+                    }
+                    break;
+                }
+                if (src.Sprite && src.Passes.Length != 0 && src.Sprite.sprite == null) { spriteWrong++; Ex("nullsprite", r, ""); }
+                if (src.PoseIndex >= 0 && poses.IsCreated)
+                {
+                    var have = poses[src.PoseIndex].World; var want = r.transform.localToWorldMatrix; float err = 0;
+                    for (int k = 0; k < 16; k++) err = Math.Max(err, Math.Abs(have[k] - want[k]));
+                    if (err > 1e-3f) { poseWrong++; Ex("pose", r, " err=" + err.ToString("F3")); }
+                }
+                else if (src.PoseIndex < 0) { poseMissing++; Ex("nopose", r, ""); }
+                if (src.Sprite && src.Sprite.sprite)
+                    foreach (var b in src.Passes)
+                    {
+                        if (b.NativeId == 0) continue;
+                        bool found = false; foreach (var kv in geometryCache) if (kv.Value == b.Geometry && kv.Key.Item1 == src.Sprite.sprite.GetInstanceID()) { found = true; break; }
+                        if (!found) { spriteWrong++; Ex("sprite", r, " now=" + src.Sprite.sprite.name); }
+                        break;
+                    }
+            }
+            foreach (var r in dormant)
+                if (r && r.enabled && r.gameObject.activeInHierarchy && !r.forceRenderingOff && (removedMask & 1 << r.gameObject.layer) != 0) { dormantVisible++; Ex("dormant-visible", r, ""); }
+            int unknown = 0, unknownVisible = 0;
+            foreach (var r in Resources.FindObjectsOfTypeAll<Renderer>())
+            {
+                if (!r || !r.gameObject.scene.IsValid() || (removedMask & 1 << r.gameObject.layer) == 0) continue;
+                if (rendererSources.ContainsKey(r) || dormant.Contains(r) || CanvasOwns(r.transform)) continue;
+                unknown++;
+                if (r.enabled && r.gameObject.activeInHierarchy && !r.forceRenderingOff) { unknownVisible++; Ex("unknown", r, " type=" + r.GetType().Name + " layer=" + r.gameObject.layer); }
+            }
+            int canvasUnknown = 0; var unitSet = new HashSet<Canvas>(); foreach (var u in canvasUnits) if (u.Canvas) unitSet.Add(u.Canvas);
+            foreach (var c in Resources.FindObjectsOfTypeAll<Canvas>())
+            {
+                if (!c || !c.gameObject.scene.IsValid() || !c.isActiveAndEnabled || !Relevant(c, camera)) continue;
+                if (unitSet.Contains(c) || dormantCanvases.Contains(c) || canvasOwned.Contains(c.transform)) continue;
+                canvasUnknown++; if (examples.Length < 1500) examples.Append("canvas-unknown:").Append(Clean(c.name)).Append(" | ");
+            }
+            string result = $"stale checked={checkedN} live_wrong={liveWrong} missing={liveMissing} extra={liveExtra} dormant_visible={dormantVisible} color_wrong={colorWrong} material_wrong={materialWrong} sprite_wrong={spriteWrong} pose_wrong={poseWrong} pose_missing={poseMissing} unknown={unknown} unknown_visible={unknownVisible} canvas_unknown={canvasUnknown} canvas_child_promotions={canvasChildPromotions} examples={examples}";
+            Log(result); return result;
+        }
+        static readonly List<Material> staleMaterials = new List<Material>();
+        // 진단: 재생 뒤 낡은 곳 찾기. constants=모든 상수 다시 보냄, order=순서 전체 다시, refresh=모든 source 다시 읽기, poses=모든 포즈 다시 보냄.
+        static readonly System.Text.StringBuilder examplesPoke = new System.Text.StringBuilder();
+        static string Poke(string what)
+        {
+            if (!Rendering) return "poke requires on";
+            int n = 0;
+            if (what == "constants") foreach (var src in sources) { if (src.Passes == null) continue; foreach (var b in src.Passes) { if (b.NativeId == 0) continue; Array.Clear(b.Previous, 0, b.Previous.Length); if (b.Previous.Length > 0) b.Previous[0] = (byte)~b.Bytes[0]; if (!b.ConstantsQueued) { b.ConstantsQueued = true; changedConstants.Add(b); } n++; } }
+            else if (what == "order") { DirtyAllOrder("poke"); orderCommandsReady = false; n = sources.Count; }
+            else if (what == "refresh") { foreach (var src in sources) { if (!src.R) continue; Queue(src); n++; } }
+            else if (what == "textures") { texturePointers.Clear(); foreach (var src in sources) { if (!src.R) continue; Queue(src); n++; } }
+            else if (what == "geometry") { geometryCache.Clear(); foreach (var src in sources) { if (!src.R || src.Passes == null) continue; foreach (var b in src.Passes) b.ConfigHash = 0; Queue(src); n++; } }
+            else if (what == "rebind") { foreach (var src in sources) { if (!src.R || src.Passes == null) continue; foreach (var b in src.Passes) b.ConfigHash = 0; Queue(src); n++; } }
+            else if (what == "canvases") { foreach (var c in dormantCanvases) if (c && c.isActiveAndEnabled && CanvasInMask(c, removedMask)) { pendingCanvasPromotions.Add(c); n++; if (examplesPoke.Length < 600) examplesPoke.Append(Clean(c.name)).Append(';'); } }
+            else if (what == "canvasunits") { canvasViewValid = false; canvasGraphicBounds.Clear(); foreach (var u in canvasUnits) { QueueCanvasWhy(u, "poke"); u.FullDirty = true; n++; } canvasDirty = true; }
+            else if (what == "poses") { if (poses.IsCreated) for (int i = 0; i < poseSources.Count; i++) { poses[i] = default; n++; } }
+            else return "poke constants|order|refresh|poses|canvases";
+            string ex = examplesPoke.ToString(); examplesPoke.Clear();
+            return "poke " + what + " n=" + n + " " + ex;
+        }
+        // 유니티 카메라가 맵 레이어를 안 그리면 파티클(자동 컬링)·애니메이터(컬링 모드)가 "안 보임"으로 멈춘다.
+        // 켜져 있는 동안 항상 시뮬레이션/애니메이트로 두고, 끌 때 원래대로 되돌린다.
+        static readonly List<(ParticleSystem, ParticleSystemCullingMode)> particleCulling = new List<(ParticleSystem, ParticleSystemCullingMode)>();
+        static readonly List<(Animator, AnimatorCullingMode)> animatorCulling = new List<(Animator, AnimatorCullingMode)>();
+        static int particleCullingSeen, animatorCullingSeen; static bool cullingOverride;
+        static void OverrideVisibilityCulling()
+        {
+            particleCulling.Clear(); animatorCulling.Clear(); particleCullingSeen = animatorCullingSeen = 0;
+            cullingOverride = System.IO.File.Exists(System.IO.Path.Combine(Main.Entry.Path, "drfull-alwayssim.txt"));
+            foreach (var ps in Resources.FindObjectsOfTypeAll<ParticleSystem>())
+            {
+                if (!ps || !ps.gameObject.scene.IsValid() || (removedMask & 1 << ps.gameObject.layer) == 0) continue;
+                var main = ps.main; if (main.cullingMode == ParticleSystemCullingMode.AlwaysSimulate) continue;
+                particleCullingSeen++;
+                if (cullingOverride) { particleCulling.Add((ps, main.cullingMode)); main.cullingMode = ParticleSystemCullingMode.AlwaysSimulate; }
+            }
+            foreach (var an in Resources.FindObjectsOfTypeAll<Animator>())
+            {
+                if (!an || !an.gameObject.scene.IsValid() || an.cullingMode == AnimatorCullingMode.AlwaysAnimate) continue;
+                bool mapRenderer = false; foreach (var r in an.GetComponentsInChildren<Renderer>(true)) if ((removedMask & 1 << r.gameObject.layer) != 0) { mapRenderer = true; break; }
+                if (!mapRenderer) continue;
+                animatorCullingSeen++;
+                if (cullingOverride) { animatorCulling.Add((an, an.cullingMode)); an.cullingMode = AnimatorCullingMode.AlwaysAnimate; }
+            }
+            Log("visibility culling particles=" + particleCullingSeen + " animators=" + animatorCullingSeen + " override=" + cullingOverride);
+        }
+        internal static void RestoreVisibilityCulling()
+        {
+            foreach (var (ps, mode) in particleCulling) if (ps) { var main = ps.main; main.cullingMode = mode; }
+            foreach (var (an, mode) in animatorCulling) if (an) an.cullingMode = mode;
+            particleCulling.Clear(); animatorCulling.Clear();
+        }
         static string LayoutReasonsTop()
         {
             var list = new List<KeyValuePair<string, long>>(layoutReasons); list.Sort((a, b) => b.Value.CompareTo(a.Value));
@@ -180,6 +296,7 @@ namespace StutterFix
         {
             if (AffectsNamedGrab(s)) namedGrabOwnershipDirty = true;
             if (!s.LiveQueued) { s.LiveQueued = true; liveChanges.Add(s); }
+            VisLiveChanged(s.R);
             liveToggles++; transformsDirty = true;
             // Native entries retain their order and use a packet-owned live bit.
             if (s.Passes != null) foreach (var b in s.Passes) if (b.NativeId == 0) { orderDirty = true; break; }
@@ -259,6 +376,8 @@ namespace StutterFix
             prebuildDormant = System.IO.File.Exists(System.IO.Path.Combine(Main.Entry.Path, "drfull-prebuild.txt"));
             earlyPrepare = System.IO.File.Exists(System.IO.Path.Combine(Main.Entry.Path, "drfull-early.txt"));
             prebuildMeshes = System.IO.File.Exists(System.IO.Path.Combine(Main.Entry.Path, "drfull-prebuild-mesh.txt"));
+            noInsert = System.IO.File.Exists(System.IO.Path.Combine(Main.Entry.Path, "drfull-noinsert.txt"));
+            materialFast = !System.IO.File.Exists(System.IO.Path.Combine(Main.Entry.Path, "drfull-nomatfast.txt")); materialFastHits = materialFastMisses = 0;
             countSignalWriters = !System.IO.File.Exists(System.IO.Path.Combine(Main.Entry.Path, "drfull-lean.txt"));
             notifyTiming = System.IO.File.Exists(System.IO.Path.Combine(Main.Entry.Path, "drfull-notifytime.txt")); notifyTicks = notifyCalls = 0; notifyCost.Clear(); prebuiltSources = 0;
             if (warmHooks == null) foreach (var step in DirectSequenceChanges.InstallSteps(hooks)) yield return null;
@@ -327,6 +446,7 @@ namespace StutterFix
                 PromoteSources();
                 if (fullRescan) throw new InvalidOperationException("hierarchy changed during preparation; retry on stable map; why=" + rescanWhy + " count=" + rescanCount);
                 SetPreparationStage("publish");
+                StartVisibility(main);
                 BeginLease(main, removedMask, "StutterFix.DirectFull.Render");
                 ParkLiveCanvases();
                 rendering = true;
@@ -339,6 +459,7 @@ namespace StutterFix
                 // Every pose is initialized in the first immutable frame packet.
                 poseCount = 0; // active dense poses are packed on the first PreCull
                 RebuildFullOrder();
+                OverrideVisibilityCulling();
                 preparationFinishedTicks = Stopwatch.GetTimestamp(); preparing = false;
                 LogCanvasSummary("on");
                 Log("FULL ON native=" + nativeCount + " unityExplicit=" + fallbackCount + " sources=" + sources.Count + " removedMask=" + removedMask + " retainedMask=" + retainedMask +
@@ -360,11 +481,17 @@ namespace StutterFix
         }
         static Source AddSource(Renderer r, bool prebuild = false)
         {
+            long t0 = Stopwatch.GetTimestamp();
             var s = new Source { R = r, Sprite = r as SpriteRenderer, Mask = r as SpriteMask, Filter = r.GetComponent<MeshFilter>(), Index = sources.Count, Prebuild = prebuild };
             sources.Add(s); rendererSources.Add(r, s); Index(r, s);
             for (Transform t = r.transform; t; t = t.parent) { Index(t, s); Index(t.gameObject, s); var g = t.GetComponent<SortingGroup>(); if (g) Index(g, s); }
+            long t1 = Stopwatch.GetTimestamp();
             var l = r.gameObject.AddComponent<DirectFullSourceLifetime>(); l.Changed = () => { s.GroupsDirty = true; Queue(s); }; s.Lifetime = l; sourceLifetimes.Add(l);
-            Refresh(s, true); s.Prebuild = false; transformsDirty = true; return s;
+            long t2 = Stopwatch.GetTimestamp();
+            Refresh(s, true); s.Prebuild = false; transformsDirty = true;
+            long t3 = Stopwatch.GetTimestamp();
+            if (rendering) { addIndexTicks += t1 - t0; addComponentTicks += t2 - t1; addRefreshTicks += t3 - t2; addCount++; }
+            return s;
         }
         static void PromoteSources()
         {
@@ -433,7 +560,7 @@ namespace StutterFix
             }
             fullRescan = true;
         }
-        static void Queue(Source s, bool tintOnly = false, bool keyOnly = false, bool stateOnly = false) { if (!s.Queued) { s.TintOnly = tintOnly; s.KeyOnly = keyOnly; s.StateOnly = stateOnly; s.Queued = true; changed.Add(s); } else { if (!tintOnly) s.TintOnly = false; if (!keyOnly) s.KeyOnly = false; if (!stateOnly) s.StateOnly = false; } }
+        static void Queue(Source s, bool tintOnly = false, bool keyOnly = false, bool stateOnly = false, bool materialOnly = false) { if (!s.Queued) { s.TintOnly = tintOnly; s.KeyOnly = keyOnly; s.StateOnly = stateOnly; s.MaterialOnly = materialOnly; s.Queued = true; changed.Add(s); } else { if (!tintOnly) s.TintOnly = false; if (!keyOnly) s.KeyOnly = false; if (!stateOnly) s.StateOnly = false; if (!materialOnly) s.MaterialOnly = false; } }
         static bool notifyTiming; static long notifyTicks, notifyCalls;
         static readonly Dictionary<(Type,string),long> notifyCost = new Dictionary<(Type,string),long>();
         internal static void NotifyFull(UnityEngine.Object obj, int kind, string writer)
@@ -473,6 +600,7 @@ namespace StutterFix
                 activeGo.GetComponentsInChildren(true, canvasScratch);
                 foreach (var c in canvasScratch)
                     if (dormantCanvases.Contains(c) && c.isActiveAndEnabled) pendingCanvasPromotions.Add(c);
+                { var pc = activeGo.GetComponentInParent<Canvas>(true); var root = pc ? pc.rootCanvas : null; if (root && dormantCanvases.Contains(root) && root.isActiveAndEnabled) { pendingCanvasPromotions.Add(root); canvasChildPromotions++; } }
             }
             if (!obj) { if (sourceIndex.ContainsKey(obj) || canvasIndex.Contains(obj)) MarkRescan("Render:290"); return; }
             if (kind == DirectSequenceChanges.Hierarchy)
@@ -487,6 +615,16 @@ namespace StutterFix
                 if (go) foreach (var c in go.GetComponentsInChildren<Canvas>(true))
                     if (Relevant(c, camera) && !dormantCanvases.Contains(c) && !canvasOwned.Contains(c.transform))
                     { dormantCanvases.Add(c); if (c.isActiveAndEnabled) pendingCanvasPromotions.Add(c); hierarchyIncremental++; }
+                // 새 자식이 이미 있는 캔버스 아래로 들어오면: 대기 캔버스는 올리고, 추적 중인 캔버스는 다시 본다.
+                if (go)
+                {
+                    var parentCanvas = go.GetComponentInParent<Canvas>(true); var root = parentCanvas ? parentCanvas.rootCanvas : null;
+                    if (root)
+                    {
+                        if (dormantCanvases.Contains(root)) { if (root.isActiveAndEnabled) pendingCanvasPromotions.Add(root); canvasChildPromotions++; }
+                        else foreach (var cu in canvasUnits) if (ReferenceEquals(cu.Canvas, root)) { QueueCanvasWhy(cu, "hierarchy-child"); canvasChildPromotions++; break; }
+                    }
+                }
                 return;
             }
             if (obj is SortingGroup && sourceIndex.TryGetValue(obj, out var grouped)) { foreach (var s in grouped) { s.GroupsDirty = true; Queue(s); DirtyOrder(s, "group-signal"); } return; }
@@ -495,9 +633,10 @@ namespace StutterFix
             if (obj is Shader) { globalsDirty = true; return; }
             if (obj is MeshFilter filter) { var renderer = filter.GetComponent<Renderer>(); if (renderer && rendererSources.TryGetValue(renderer, out var owner)) Queue(owner); }
             if (obj is UnityEngine.Texture texture && texturePointers.ContainsKey(texture)) { globalsDirty = true; texturePointers.Remove(texture); }
+            bool materialValue = obj is Material && materialFast && (writer == "SetColor" || writer == "SetFloat" || writer == "SetVector" || writer == "SetInt" || writer == "SetInteger" || writer == "set_color");
             if (sourceIndex.TryGetValue(obj, out var list)) foreach (var s in list) Queue(s, obj is SpriteRenderer && writer == "set_color",
                 obj is Renderer && (writer == "set_sortingOrder" || writer == "set_sortingLayerID" || writer == "set_sortingLayerName"),
-                obj is Renderer && writer == "set_enabled" || obj is GameObject && writer == "SetActive");
+                obj is Renderer && writer == "set_enabled" || obj is GameObject && writer == "SetActive", materialValue);
         }
         internal static void NotifyFullGlobal() { if (rendering || preparing) globalsDirty = true; }
         internal static void BeforeFullWrite(UnityEngine.Object obj, int kind)
@@ -551,6 +690,14 @@ namespace StutterFix
                 }
                 return;
             }
+            if (!initial && s.MaterialOnly && s.Live && s.Passes != null && !s.HierarchyDirty && !s.GroupsDirty)
+            {
+                s.MaterialOnly = false; bool ok = true;
+                foreach (var b in s.Passes) if (b.NativeId == 0 || !FillConstants(b)) { ok = false; break; }
+                if (ok) { materialFastHits++; UpdateKey(s); return; }
+                materialFastMisses++;
+            }
+            s.MaterialOnly = false;
             s.TintOnly = false;
             if (s.HierarchyDirty)
             {
@@ -722,6 +869,34 @@ namespace StutterFix
             s.SlotBlock.Clear(); if (slot < s.Materials.Count) s.R.GetPropertyBlock(s.SlotBlock, slot);
         }
         static MaterialPropertyBlock Block(Source s) => !s.SlotBlock.isEmpty ? s.SlotBlock : s.RendererBlock;
+        // 재질 값 쓰기 전용: 속성 기반 상태가 그대로면 재질 상수만 다시 채운다. 상태가 바뀌면 false(일반 경로).
+        static bool FillConstants(Bound b)
+        {
+            var s = b.Source; ReadBlock(s, b.Slot); var mpb = Block(s);
+            for (int i = 0; i < 29; i++)
+            {
+                var state = b.Pass.States[i]; if (state.Name.Length == 0) continue;
+                float value = Float(b, state.Id, state.Name, state.Value);
+                int v = i == 11 ? checked((int)(value * 1000000f)) : checked((int)value);
+                if (v != b.States[i]) return false;
+            }
+            foreach (var stage in b.Stages) foreach (var cb in stage.Buffers) if (mpb.HasConstantBuffer(cb.Id)) return false;
+            fixed (byte* data = b.Bytes)
+            {
+                Color c = s.Sprite && !b.HasRendererColor ? s.Sprite.color : Color.white;
+                ((Vector4*)data)[0] = c;
+                foreach (var write in b.MaterialWrites)
+                {
+                    var x = write.Variable; void* dst = data + write.Offset;
+                    if (x.Matrix != 0) { if (x.Rows != 4 || x.Cols != 4) return false; *(Matrix4x4*)dst = mpb.HasProperty(x.Id) ? mpb.GetMatrix(x.Id) : b.Material && b.Material.HasProperty(x.Id) ? b.Material.GetMatrix(x.Id) : Shader.GetGlobalMatrix(x.Id); continue; }
+                    if (x.Type == 1) { if (x.Cols != 1) return false; *(int*)dst = Integer(b, x); continue; }
+                    Vector4 value = Value(b, x);
+                    for (int k = 0; k < x.Cols; k++) ((float*)dst)[k] = value[k];
+                }
+            }
+            if (!b.ConstantsQueued) { b.ConstantsQueued = true; changedConstants.Add(b); }
+            return true;
+        }
         static void Fill(Bound b)
         {
             long fillStart = sampleCollect ? Stopwatch.GetTimestamp() : 0; fillCalls++;
@@ -905,7 +1080,14 @@ namespace StutterFix
             return p;
         }
         static bool Has(S.Variant v, string name) { foreach (var cb in v.Vs.Buffers) foreach (var x in cb.Variables) if (x.Name == name) return true; return false; }
+        static long geomMeshTicks, geomMeshCount, geomMeshPtrTicks, geomSpriteTicks, geomSpriteCount;
         static int GeometryFor(Source s, S.Variant variant, int slot)
+        {
+            long g0 = Stopwatch.GetTimestamp(); bool sprite = s.Sprite || s.Mask; int before = geometryCache.Count;
+            try { return GeometryForCore(s, variant, slot); }
+            finally { if (rendering && geometryCache.Count != before) { long dt = Stopwatch.GetTimestamp() - g0; if (sprite) { geomSpriteTicks += dt; geomSpriteCount++; } else { geomMeshTicks += dt; geomMeshCount++; } } }
+        }
+        static int GeometryForCore(Source s, S.Variant variant, int slot)
         {
             if (s.Sprite || s.Mask)
             {
@@ -939,7 +1121,9 @@ namespace StutterFix
             var array = list.ToArray(); fixed (N.Attribute* at = array)
             {
                 var g = new N.Geometry { Attributes = at, AttributeCount = (uint)array.Length, Indices = mesh.GetNativeIndexBufferPtr(), IndexFormat = mesh.indexFormat == IndexFormat.UInt16 ? 57u : 42u, IndexStart = (uint)desc.indexStart, IndexCount = (uint)desc.indexCount, BaseVertex = desc.baseVertex };
+                long p0 = Stopwatch.GetTimestamp();
                 for (int i = 0; i < mesh.vertexBufferCount; i++) { g.Buffers[i] = mesh.GetNativeVertexBufferPtr(i).ToInt64(); g.Strides[i] = (uint)mesh.GetVertexBufferStride(i); }
+                if (rendering) geomMeshPtrTicks += Stopwatch.GetTimestamp() - p0;
                 existing = N.Require(N.Op.Geometry, fullToken, &g);
             }
             // Supplement the external Unity buffer with a CPU batch stream; the
@@ -1039,10 +1223,11 @@ namespace StutterFix
         // 처음 켜진 장식/타일(새 source, 단순 native 패스만)은 전체 순서를 다시 만들지 않고
         // 그 자리에 끼워 넣는다: 트리 삽입 → 순위 → ordered/drawList 한 칸 밀기, 그 구간 길이 +1.
         // 이웃이 같은 구간의 native draw 가 아니면(구간 경계·명시 draw·캔버스) 전체 재구성으로 넘긴다.
-        static long nativeInserts, nativeInsertFallbacks;
+        static long canvasChildPromotions; static long nativeInserts, nativeInsertFallbacks, addIndexTicks, addComponentTicks, addRefreshTicks, addCount;
         static bool TryNativeInsert()
         {
             if (!orderCommandsReady || namedGrabOwnershipDirty || explicitVisibilityChanges != distanceOrderVisibility || orderChanges.Count == 0 || ordered.Count == 0) return false;
+            if (noInsert) return false;
             foreach (var u in canvasUnits) if (u.OrderDirty || u.Entry != null && u.Entry.RecordedIsolated != u.Isolated) return false;
             foreach (var source in orderChanges)
             {
@@ -1301,6 +1486,7 @@ namespace StutterFix
             try
             {
                 if (fullRescan) { RecreateFull(); return; }
+                VisFlush();
                 long phase = Stopwatch.GetTimestamp(); sampleCollect = fullFrames % 64 == 0;
                 long promoteStart = sampleCollect ? phase : 0; PromoteSources();
                 if (sampleCollect) collectPromoteTicks += Stopwatch.GetTimestamp() - promoteStart;
@@ -1354,6 +1540,7 @@ namespace StutterFix
                     if (moved[index] == 0 && reordered[index] == 0) continue;
                     poseChangedSlots++; var source = poseSources[index];
                     if (moved[index] == 2 || !source.R) { if (source.Live) { source.Live = false; LiveChanged(source); DirtyOrder(source, "invalid-pose"); } continue; }
+                    if (moved[index] == 1) VisMoved(source.R, poses[index].World);
                     if (!first && moved[index] != 0) { poseIds[poseCount] = (uint)source.Index; if (frameWorldOnly) worlds[poseCount] = poses[index].World; else upload[poseCount] = poses[index]; poseCount++; }
                     if (reordered[index] != 0)
                     {
@@ -1425,7 +1612,7 @@ namespace StutterFix
             N.UploadPerformance up = default; N.Require(N.Op.UploadPerf, fullToken, &up);
             N.GpuPerformance gpu = default; N.Require(N.Op.GpuPerf, fullToken, &gpu);
             double phaseScale = 1e6 / Stopwatch.Frequency / Math.Max(1, fullFrames);
-            return FormattableString.Invariant($"mode=M4h-original active=True native={nativeCount} unityExplicit={fallbackCount} sources={sources.Count} dormant={dormant.Count} poseActive={poseSources.Count} pose_capacity={poseCapacity} pose_world_only={frameWorldOnly} inverse_poses={inversePoseCount} pose_adds={poseAdds} pose_removes={poseRemoves} incremental_keys={incrementalKeys} live_toggles={liveToggles} removedMask={removedMask} retainedMask={retainedMask} frames={s.Frames} draws={s.Draws} errors={s.Errors} dropped={s.Dropped} main_us={(fullFrames != 0 ? fullTicks * 1e6 / Stopwatch.Frequency / fullFrames : 0):F3} main_max_us={fullMaxTicks * 1e6 / Stopwatch.Frequency:F3} render_us={s.RenderUs:F3} commit_us={s.CommitUs:F3} replans={orderBuilds} commit_max_us={commitMaxTicks * 1e6 / Stopwatch.Frequency:F3} replan_max_us={replanMaxTicks * 1e6 / Stopwatch.Frequency:F3} {CanvasState()} collect_visited={collectVisited} collect_state_only={collectStateSignals} collect_canvas_us={collectCanvasTicks*phaseScale:F3} collect_stats_us={collectStatsTicks*phaseScale:F3} collect_tracking_us={collectTrackingTicks*phaseScale:F3} pose_schedule_us={poseScheduleTicks*phaseScale:F3} pose_wait_us={poseWaitTicks*phaseScale:F3} pose_wait_max_us={poseWaitMaxTicks*1e6/Stopwatch.Frequency:F3} pose_results_us={poseResultsTicks*phaseScale:F3} pose_changed_slots={poseChangedSlots} local_order_patches={localOrderPatches} local_order_entries={localOrderEntries} collect_signals={collectSignals} collect_tint_signals={collectTintSignals} collect_full_signals={collectFullSignals} fill_calls={fillCalls} collect_refresh_sample_us_total={collectRefreshTicks*1e6/Stopwatch.Frequency:F3} collect_promote_sample_us_total={collectPromoteTicks*1e6/Stopwatch.Frequency:F3} fill_sample_us_total={fillTicks*1e6/Stopwatch.Frequency:F3} collect_us={collectTicks * phaseScale:F3} pose_us={poseTicks * phaseScale:F3} sort_us={sortTicks * phaseScale:F3} packet_us={packetTicks * phaseScale:F3} pose_uploads={poseCount} dirty_draws={dirtyCount} packet_bytes={constantCount} rt_apply_us={perf.ApplyUs:F3} rt_cull_us={perf.CullUs:F3} rt_constants_us={perf.ConstantsUs:F3} rt_draw_us={perf.DrawUs:F3} rt_execute_us={perf.ExecuteUs:F3} rt_uploads={perf.Uploads} rt_upload_bytes={perf.UploadBytes} upload_work_bytes={up.WorkBytes} baked_vertices={up.BakedVertices} upload_geometry_bytes={up.GeometryBytes} upload_pose_bytes={up.PoseBytes} upload_draw_bytes={up.DrawBytes} upload_index_bytes={up.IndexBytes} upload_constant_bytes={up.ConstantBytes} upload_color_bytes={up.ColorBytes} upload_cpu_batch_bytes={up.CpuBatchBytes} upload_pose_ranges={up.PoseRanges} upload_draw_ranges={up.DrawRanges} upload_index_calls={up.IndexUploads} upload_constant_calls={up.ConstantUploads} single_unverified={up.SingleUnverified} single_geometry={up.SingleGeometry} single_program={up.SingleProgram} single_constants={up.SingleConstants} single_textures={up.SingleTextures} single_segment={up.SingleSegment} single_limit={up.SingleLimit} layouts={perf.LayoutCreates} layout_hits={perf.LayoutHits} rt_sample_frames={perf.SampledFrames} gpu_batch={batch.GpuAvailable != 0} gpu_dispatches={batch.GpuDispatches} gpu_pose_uploads={batch.GpuPoseUploads} gpu_geometry_uploads={batch.GpuGeometryUploads} batch_runs={batch.Batches} batch_sources={batch.Sources} batch_vertices={batch.Vertices} single_draws={batch.SingleDraws} cb_creates={batch.ConstantCreates} rt_batch_us={batch.BuildUs / Math.Max(1.0, perf.SampledFrames):F3} avoided_order_replans={avoidedOrderReplans} key_only_frames={keyOnlyFrames} max_frame={maxFrameNumber} max_collect_us={maxCollect*1e6/Stopwatch.Frequency:F3} max_pose_us={maxPose*1e6/Stopwatch.Frequency:F3} max_sort_us={maxSort*1e6/Stopwatch.Frequency:F3} max_canvas_us={maxCanvas*1e6/Stopwatch.Frequency:F3} max_packet_us={maxPacket*1e6/Stopwatch.Frequency:F3} max_gc_collections={maxGc} commit_peak_poses={peakPacketPoses} commit_peak_dirty={peakPacketDirty} commit_peak_bytes={peakPacketBytes} commit_peak_gc={commitPeakGc} commit_peak_growths={commitPeakGrowths} commit_growths={commitGrowths} commit_growth_bytes={commitGrowthBytes} avoided_mask_replans={avoidedMaskReplans} avoided_empty_replans={avoidedEmptyReplans} canvas_pose_signals={canvasPoseSignals} order_key_changes={orderKeyChanges} draw_rebinds={drawRebinds} prepare_slices={prepareSlices} prepare_max_ms={prepareMaxTicks * 1000.0 / Stopwatch.Frequency:F3} prepare_work_ms={prepareWorkTicks * 1000.0 / Stopwatch.Frequency:F3} ready_ms={(firstReadyTicks == 0 ? 0 : (firstReadyTicks-fullStartTicks)*1000.0/Stopwatch.Frequency):F3} warm_ms={warmMs:F3} warm_cached={warmHooks != null} setup_ms={(preparationFinishedTicks-fullStartTicks)*1000.0/Stopwatch.Frequency:F3} setup_hooks_ms={StageMs("hooks"):F3} setup_discover_ms={StageMs("discover"):F3} setup_canvas_ms={StageMs("canvas"):F3} setup_native_ms={StageMs("native"):F3} setup_packets_ms={StageMs("packets"):F3} setup_shader_ms={StageMs("shader-resource"):F3} setup_bind_ms={StageMs("bind"):F3} setup_publish_ms={StageMs("publish"):F3} dead_sources={deadSources} canvas_promotions={canvasPromotions} hierarchy_incremental={hierarchyIncremental} rescans_marked={rescanCount} safe={(Resilience.SafeMode ? 1 : 0)} grab_copies={gpu.GrabCopies} grab_bytes={gpu.GrabBytes} named_grab_hits={gpu.NamedGrabHits} culled_draws={gpu.CulledDraws} culled_sources={gpu.CulledSources} gpu_event_us={gpu.EventUs:F3} gpu_event_max_us={gpu.MaxEventUs:F3} gpu_samples={gpu.Samples} gpu_pending={gpu.Pending} gpu_disjoint={gpu.Disjoint} {TimelineState()} {MemoryState()} refresh_per_frame={(fullFrames != 0 ? refreshCount / (double)fullFrames : 0):F1} refresh_tint={refreshTint} refresh_us={(fullFrames != 0 ? refreshTicks * 1e6 / Stopwatch.Frequency / fullFrames : 0):F3} canvas_graphic_signals={canvasGraphicSignals} canvas_incremental_replans={canvasIncrementalReplans} canvas_full_replans={canvasFullReplans} canvas_visibility_replans={canvasVisibilityReplans} canvas_material_skipped={canvasMaterialSignalsSkipped} canvas_full_why={CanvasFullReasonsTop()} rebind_states={rebindStates} rebind_textures={rebindTextures} rebind_bounds={rebindBounds} rebind_geometry={rebindGeometry} prebuilt_sources={prebuiltSources} early_prepare={earlyPrepare} notify_us={(fullFrames != 0 ? notifyTicks * 1e6 / Stopwatch.Frequency / fullFrames : 0):F3} notify_calls={notifyCalls} notify_top={NotifyCostTop()} prebuild_meshes={prebuildMeshes} layout_why={LayoutReasonsTop()} layout_size={layoutSize} layout_segcount={layoutSegCount} layout_segbounds={layoutSegBounds} layout_same={layoutSame} native_inserts={nativeInserts} native_insert_fallbacks={nativeInsertFallbacks} pose_direct={DirectSequenceChanges.PoseDirect} parity=UNMEASURED");
+            return FormattableString.Invariant($"mode=M4h-original active=True native={nativeCount} unityExplicit={fallbackCount} sources={sources.Count} dormant={dormant.Count} poseActive={poseSources.Count} pose_capacity={poseCapacity} pose_world_only={frameWorldOnly} inverse_poses={inversePoseCount} pose_adds={poseAdds} pose_removes={poseRemoves} incremental_keys={incrementalKeys} live_toggles={liveToggles} removedMask={removedMask} retainedMask={retainedMask} frames={s.Frames} draws={s.Draws} errors={s.Errors} dropped={s.Dropped} main_us={(fullFrames != 0 ? fullTicks * 1e6 / Stopwatch.Frequency / fullFrames : 0):F3} main_max_us={fullMaxTicks * 1e6 / Stopwatch.Frequency:F3} render_us={s.RenderUs:F3} commit_us={s.CommitUs:F3} replans={orderBuilds} commit_max_us={commitMaxTicks * 1e6 / Stopwatch.Frequency:F3} replan_max_us={replanMaxTicks * 1e6 / Stopwatch.Frequency:F3} {CanvasState()} collect_visited={collectVisited} collect_state_only={collectStateSignals} collect_canvas_us={collectCanvasTicks*phaseScale:F3} collect_stats_us={collectStatsTicks*phaseScale:F3} collect_tracking_us={collectTrackingTicks*phaseScale:F3} pose_schedule_us={poseScheduleTicks*phaseScale:F3} pose_wait_us={poseWaitTicks*phaseScale:F3} pose_wait_max_us={poseWaitMaxTicks*1e6/Stopwatch.Frequency:F3} pose_results_us={poseResultsTicks*phaseScale:F3} pose_changed_slots={poseChangedSlots} local_order_patches={localOrderPatches} local_order_entries={localOrderEntries} collect_signals={collectSignals} collect_tint_signals={collectTintSignals} collect_full_signals={collectFullSignals} fill_calls={fillCalls} collect_refresh_sample_us_total={collectRefreshTicks*1e6/Stopwatch.Frequency:F3} collect_promote_sample_us_total={collectPromoteTicks*1e6/Stopwatch.Frequency:F3} fill_sample_us_total={fillTicks*1e6/Stopwatch.Frequency:F3} collect_us={collectTicks * phaseScale:F3} pose_us={poseTicks * phaseScale:F3} sort_us={sortTicks * phaseScale:F3} packet_us={packetTicks * phaseScale:F3} pose_uploads={poseCount} dirty_draws={dirtyCount} packet_bytes={constantCount} rt_apply_us={perf.ApplyUs:F3} rt_cull_us={perf.CullUs:F3} rt_constants_us={perf.ConstantsUs:F3} rt_draw_us={perf.DrawUs:F3} rt_execute_us={perf.ExecuteUs:F3} rt_uploads={perf.Uploads} rt_upload_bytes={perf.UploadBytes} upload_work_bytes={up.WorkBytes} baked_vertices={up.BakedVertices} upload_geometry_bytes={up.GeometryBytes} upload_pose_bytes={up.PoseBytes} upload_draw_bytes={up.DrawBytes} upload_index_bytes={up.IndexBytes} upload_constant_bytes={up.ConstantBytes} upload_color_bytes={up.ColorBytes} upload_cpu_batch_bytes={up.CpuBatchBytes} upload_pose_ranges={up.PoseRanges} upload_draw_ranges={up.DrawRanges} upload_index_calls={up.IndexUploads} upload_constant_calls={up.ConstantUploads} single_unverified={up.SingleUnverified} single_geometry={up.SingleGeometry} single_program={up.SingleProgram} single_constants={up.SingleConstants} single_textures={up.SingleTextures} single_segment={up.SingleSegment} single_limit={up.SingleLimit} layouts={perf.LayoutCreates} layout_hits={perf.LayoutHits} rt_sample_frames={perf.SampledFrames} gpu_batch={batch.GpuAvailable != 0} gpu_dispatches={batch.GpuDispatches} gpu_pose_uploads={batch.GpuPoseUploads} gpu_geometry_uploads={batch.GpuGeometryUploads} batch_runs={batch.Batches} batch_sources={batch.Sources} batch_vertices={batch.Vertices} single_draws={batch.SingleDraws} cb_creates={batch.ConstantCreates} rt_batch_us={batch.BuildUs / Math.Max(1.0, perf.SampledFrames):F3} avoided_order_replans={avoidedOrderReplans} key_only_frames={keyOnlyFrames} max_frame={maxFrameNumber} max_collect_us={maxCollect*1e6/Stopwatch.Frequency:F3} max_pose_us={maxPose*1e6/Stopwatch.Frequency:F3} max_sort_us={maxSort*1e6/Stopwatch.Frequency:F3} max_canvas_us={maxCanvas*1e6/Stopwatch.Frequency:F3} max_packet_us={maxPacket*1e6/Stopwatch.Frequency:F3} max_gc_collections={maxGc} commit_peak_poses={peakPacketPoses} commit_peak_dirty={peakPacketDirty} commit_peak_bytes={peakPacketBytes} commit_peak_gc={commitPeakGc} commit_peak_growths={commitPeakGrowths} commit_growths={commitGrowths} commit_growth_bytes={commitGrowthBytes} avoided_mask_replans={avoidedMaskReplans} avoided_empty_replans={avoidedEmptyReplans} canvas_pose_signals={canvasPoseSignals} order_key_changes={orderKeyChanges} draw_rebinds={drawRebinds} prepare_slices={prepareSlices} prepare_max_ms={prepareMaxTicks * 1000.0 / Stopwatch.Frequency:F3} prepare_work_ms={prepareWorkTicks * 1000.0 / Stopwatch.Frequency:F3} ready_ms={(firstReadyTicks == 0 ? 0 : (firstReadyTicks-fullStartTicks)*1000.0/Stopwatch.Frequency):F3} warm_ms={warmMs:F3} warm_cached={warmHooks != null} setup_ms={(preparationFinishedTicks-fullStartTicks)*1000.0/Stopwatch.Frequency:F3} setup_hooks_ms={StageMs("hooks"):F3} setup_discover_ms={StageMs("discover"):F3} setup_canvas_ms={StageMs("canvas"):F3} setup_native_ms={StageMs("native"):F3} setup_packets_ms={StageMs("packets"):F3} setup_shader_ms={StageMs("shader-resource"):F3} setup_bind_ms={StageMs("bind"):F3} setup_publish_ms={StageMs("publish"):F3} dead_sources={deadSources} canvas_promotions={canvasPromotions} hierarchy_incremental={hierarchyIncremental} rescans_marked={rescanCount} safe={(Resilience.SafeMode ? 1 : 0)} grab_copies={gpu.GrabCopies} grab_bytes={gpu.GrabBytes} named_grab_hits={gpu.NamedGrabHits} culled_draws={gpu.CulledDraws} culled_sources={gpu.CulledSources} gpu_event_us={gpu.EventUs:F3} gpu_event_max_us={gpu.MaxEventUs:F3} gpu_samples={gpu.Samples} gpu_pending={gpu.Pending} gpu_disjoint={gpu.Disjoint} {TimelineState()} {MemoryState()} refresh_per_frame={(fullFrames != 0 ? refreshCount / (double)fullFrames : 0):F1} refresh_tint={refreshTint} refresh_us={(fullFrames != 0 ? refreshTicks * 1e6 / Stopwatch.Frequency / fullFrames : 0):F3} canvas_graphic_signals={canvasGraphicSignals} canvas_incremental_replans={canvasIncrementalReplans} canvas_full_replans={canvasFullReplans} canvas_visibility_replans={canvasVisibilityReplans} canvas_material_skipped={canvasMaterialSignalsSkipped} canvas_full_why={CanvasFullReasonsTop()} rebind_states={rebindStates} rebind_textures={rebindTextures} rebind_bounds={rebindBounds} rebind_geometry={rebindGeometry} prebuilt_sources={prebuiltSources} material_fast_hits={materialFastHits} material_fast_misses={materialFastMisses} {VisibilityState()} early_prepare={earlyPrepare} notify_us={(fullFrames != 0 ? notifyTicks * 1e6 / Stopwatch.Frequency / fullFrames : 0):F3} notify_calls={notifyCalls} notify_top={NotifyCostTop()} prebuild_meshes={prebuildMeshes} layout_why={LayoutReasonsTop()} layout_size={layoutSize} layout_segcount={layoutSegCount} layout_segbounds={layoutSegBounds} layout_same={layoutSame} native_inserts={nativeInserts} native_insert_fallbacks={nativeInsertFallbacks} add_count={addCount} add_index_us={(addCount != 0 ? addIndexTicks * 1e6 / Stopwatch.Frequency / addCount : 0):F1} add_component_us={(addCount != 0 ? addComponentTicks * 1e6 / Stopwatch.Frequency / addCount : 0):F1} geom_mesh_n={geomMeshCount} geom_mesh_us={(geomMeshCount != 0 ? geomMeshTicks * 1e6 / Stopwatch.Frequency / geomMeshCount : 0):F1} geom_mesh_ptr_us={(geomMeshCount != 0 ? geomMeshPtrTicks * 1e6 / Stopwatch.Frequency / geomMeshCount : 0):F1} geom_sprite_n={geomSpriteCount} geom_sprite_us={(geomSpriteCount != 0 ? geomSpriteTicks * 1e6 / Stopwatch.Frequency / geomSpriteCount : 0):F1} add_refresh_us={(addCount != 0 ? addRefreshTicks * 1e6 / Stopwatch.Frequency / addCount : 0):F1} pose_direct={DirectSequenceChanges.PoseDirect} parity=UNMEASURED");
         }
         static string WhyReplan()
         {

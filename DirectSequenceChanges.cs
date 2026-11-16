@@ -77,6 +77,8 @@ namespace StutterFix
             }
             if (t == typeof(GameObject) && n == "AddComponent" && !m.IsStatic
                 && typeof(UnityEngine.Object).IsAssignableFrom(m.ReturnType)) return Hierarchy;
+            // renderer.material(s) 읽기는 처음 불릴 때 공유 재질을 복제해 렌더러의 재질을 바꾼다(감시 필요, 바뀐 경우만 알림).
+            if (!m.IsStatic && typeof(Renderer).IsAssignableFrom(t) && (n == "get_material" || n == "get_materials") && m.GetParameters().Length == 0) return Shape;
             if (m.IsStatic || m.ReturnType != typeof(void)) return -1;
             if (t == typeof(Behaviour) && n == "set_enabled") return Script;
             if (t == typeof(Camera) && (n == "set_layerCullDistances" || n == "set_layerCullSpherical")) return Script;
@@ -216,7 +218,8 @@ namespace StutterFix
                     var binding = new Binding { Call = target.CreateDelegate(delegateType), Read = EqualityReader(target), Kind = kind, Writer = target.Name };
                     id = bindings.Count; bindings.Add(binding); bound.Add(target, id);
                 }
-                string name = target.IsStatic ? (target.DeclaringType == typeof(Shader) ? "Global" : returns ? "Spawn" : "Destroy") : returns ? "Add" : "Call";
+                bool materialRead = !target.IsStatic && returns && (target.Name == "get_material" || target.Name == "get_materials");
+                string name = target.IsStatic ? (target.DeclaringType == typeof(Shader) ? "Global" : returns ? "Spawn" : "Destroy") : materialRead ? "Mat" : returns ? "Add" : "Call";
                 int arity = signature.Length - (target.IsStatic && !returns ? 0 : !target.IsStatic && returns ? 2 : 1);
                 var wrapper = typeof(DirectSequenceChanges).GetMethod(name + arity, AccessTools.all)
                     .MakeGenericMethod(signature);
@@ -312,6 +315,14 @@ namespace StutterFix
         {
             var b = bindings[id]; DirectDeco.BeforeSequenceWrite(obj, b.Kind);
             ((Action<A, B>)b.Call)(obj, a); DirectDeco.AfterSequenceWrite(obj, b.Kind, b.Writer);
+        }
+        static R Mat0<T, R>(T obj, int id) where T : UnityEngine.Object
+        {
+            var b = bindings[id]; var r = obj as Renderer;
+            Material before = r ? r.sharedMaterial : null;
+            R result = ((Func<T, R>)b.Call)(obj);
+            if (r && !ReferenceEquals(before, r.sharedMaterial)) DirectDeco.AfterSequenceWrite(obj, b.Kind, "set_sharedMaterial");
+            return result;
         }
         static R Add0<T, R>(T obj, int id) where T : UnityEngine.Object where R : UnityEngine.Object
         {
