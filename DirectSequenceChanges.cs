@@ -166,7 +166,8 @@ namespace StutterFix
             Methods = Sites = 0;
             // These two assemblies contain the game and our competing optimizations.
             // Own writes/restoration and diagnostics are intentionally not instrumented.
-            foreach (var assembly in new[] { typeof(scrDecoration).Assembly, typeof(DirectSequenceChanges).Assembly })
+            // DOTween.dll 의 재질 트윈 람다(Material.DOColor/DOFade 등)도 쓰기 지점이다.
+            foreach (var assembly in new[] { typeof(scrDecoration).Assembly, typeof(DirectSequenceChanges).Assembly, typeof(DG.Tweening.DOTween).Assembly })
             foreach (var type in assembly.GetTypes())
             {
                 if (type.ContainsGenericParameters || Excluded(type)) continue;
@@ -264,7 +265,11 @@ namespace StutterFix
             var b = bindings[id];
             if (b.Kind == Pose && !PoseNotify) { PoseDirect++; ((Action<T, A, B>)b.Call)(obj, a, c); return; }
             DirectDeco.BeforeSequenceWrite(obj, b.Kind);
-            ((Action<T, A, B>)b.Call)(obj, a, c); DirectDeco.AfterSequenceWrite(obj, b.Kind, b.Writer);
+            ((Action<T, A, B>)b.Call)(obj, a, c);
+#if DEV || AUTOTEST
+            if (obj is Material) DirectFull.PendingMaterialProperty = a is int pid ? pid : a is string pname ? Shader.PropertyToID(pname) : -1;
+#endif
+            DirectDeco.AfterSequenceWrite(obj, b.Kind, b.Writer);
         }
         static void Call3<T, A, B, C>(T obj, A a, B c, C d, int id) where T : UnityEngine.Object
         {
