@@ -111,7 +111,7 @@ namespace StutterFix
                     prefix: new HarmonyMethod(typeof(HitSoundBatch), nameof(BeforeUpdate)) { priority = Priority.First });
                 PatchStop(typeof(AudioManager), "StopAllSounds", nameof(StopPrefix));
                 PatchStop(typeof(scrConductor), "Rewind", nameof(StopPrefix));
-                foreach (var name in new[] { "Restart", "FailAction", "QuitToMainMenu" })
+                foreach (var name in new[] { "Restart", "OnPlayerDied", "FailAction", "Fail2Action", "QuitToMainMenu" })
                     PatchStop(typeof(scrController), name, nameof(StopPrefix));
                 // 끝까지 깬 곡은 마지막 소리가 이어서 나야 하므로 남은 예약을 게임에 돌려준다.
                 PatchStop(typeof(scrController), "OnLandOnPortal", nameof(PortalPrefix));
@@ -267,8 +267,9 @@ namespace StutterFix
                 s.Origin = Math.Min(s.Origin, time);
                 end = Math.Max(end, time + (double)clip.samples / clip.frequency);
             }
-            if (end - s.Origin > 7200) throw new NotSupportedException("duration limit (2 hours)");
             s.Frames = s.Rate / 2;
+            s.Origin -= (double)HitSoundMix.LeadFrames / s.Rate;
+            if (end - s.Origin > 7200) throw new NotSupportedException("duration limit (2 hours)");
             long total = 0;
             foreach (var g in s.Formats)
             {
@@ -284,9 +285,10 @@ namespace StutterFix
             }
             s.Segments = checked((int)((total + s.Frames - 1) / s.Frames));
             s.OutputRate = AudioSettings.outputSampleRate;
+            int clipFrames = s.Frames + HitSoundMix.PadFrames;
             // Count managed reusable buffers AND native AudioClip PCM conservatively.
             long poolBytes = 0;
-            foreach (var g in s.Formats) poolBytes += (long)PoolSize * s.Frames * g.Channels * 4 * 2;
+            foreach (var g in s.Formats) poolBytes += (long)PoolSize * clipFrames * g.Channels * 4 * 2;
             if (s.PcmBytes + poolBytes > PcmLimit) throw new NotSupportedException("PCM plus pool limit");
             s.PcmBytes += poolBytes;
             s.Root = new GameObject("StutterFix hit sound batch");
@@ -303,9 +305,9 @@ namespace StutterFix
                     g.Sources[i].Stop(); g.Sources[i].playOnAwake = false;
                     g.Sources[i].pitch = 1; g.Sources[i].volume = 1; g.Sources[i].priority = 128;
                     g.Sources[i].outputAudioMixerGroup = s.Group;
-                    g.Clips[i] = AudioClip.Create("StutterFix PCM " + g.Channels + "ch " + i, s.Frames, g.Channels, s.Rate, false);
+                    g.Clips[i] = AudioClip.Create("StutterFix PCM " + g.Channels + "ch " + i, clipFrames, g.Channels, s.Rate, false);
                     g.Sources[i].clip = g.Clips[i];
-                    g.Free.Enqueue(new float[s.Frames * g.Channels]);
+                    g.Free.Enqueue(new float[clipFrames * g.Channels]);
                 }
             }
             return s;
@@ -332,7 +334,7 @@ namespace StutterFix
                     foreach (var g in s.Formats)
                     {
                         if (!g.Free.TryDequeue(out var buffer)) throw new InvalidOperationException("group buffer unavailable");
-                        HitSoundMix.Render(g.Voices, g.Channels, (long)index * s.Frames, buffer, cancelled);
+                        HitSoundMix.RenderSegment(g.Voices, g.Channels, index, s.Segments, s.Frames, buffer, cancelled);
                         if (s.Cancel) return;
                         foreach (float value in buffer) if (!Finite(value)) throw new InvalidOperationException("nonfinite mix");
 #if DEV || AUTOTEST
@@ -353,6 +355,10 @@ namespace StutterFix
             if (s == null || s.Conductor != __instance || !s.Taken) return;
             try
             {
+                // 죽음·실패·완주 상태이거나 게임 월드가 아니면 남은 예약을 놓고 게임에 돌려주지 않는다(FailAction 이 Update 안 UpdateInput 에서 불리는 틈 보호).
+                var runCtrl = ADOBase.controller;
+                if (!__instance.isGameWorld || (runCtrl != null && (runCtrl.state == States.Fail || runCtrl.state == States.Fail2)))
+                { Release("run ended", true, false, false); return; }
                 if (!enabled || Data(__instance) != s.Original || s.Original.Count != s.Times.Length || __instance.song == null || __instance.song.pitch != s.Pitch ||
                     __instance.dspTimeSong != s.SongClock || __instance.hitSoundVolume != s.HitVolume || !GCS.d_hitsounds ||
                     (__instance.hitSoundGroup != null ? __instance.hitSoundGroup : ADOBase.audioManager.fallbackMixerGroup) != s.Group ||
@@ -383,15 +389,16 @@ namespace StutterFix
                 if (start > now + 6) break;
                 // Fail before the deadline instead of silently omitting a late segment.
                 if (start < now + 0.02) throw new InvalidOperationException("segment deadline missed");
-                long bytes = (long)s.Frames * g.Channels * 4;
+                long bytes = (long)(s.Frames + HitSoundMix.PadFrames) * g.Channels * 4;
                 if (uploadBytesThisFrame + bytes > MaxUploadBytes) break;
                 int slot = g.Next % PoolSize;
                 if (g.Until[slot] > now - 0.05) break;
                 if (!g.Ready.TryDequeue(out var result)) break;
                 if (result.Index != g.Next) throw new InvalidOperationException("segment order");
+                g.Sources[slot].Stop();
                 if (!g.Clips[slot].SetData(result.Pcm, 0)) throw new InvalidOperationException("SetData failed");
                 g.Sources[slot].PlayScheduled(start);
-                g.Until[slot] = start + (double)s.Frames / s.Rate;
+                g.Until[slot] = start + (double)(s.Frames + HitSoundMix.PadFrames) / s.Rate;
                 g.Free.Enqueue(result.Pcm); s.Wake.Set();
                 g.Next++; s.Scheduled++; uploadsThisFrame++; lastUploads = uploadsThisFrame;
                 uploadBytesThisFrame += bytes; lastUploadBytes = uploadBytesThisFrame;
@@ -412,7 +419,8 @@ namespace StutterFix
             try
             {
                 foreach (var g in s.Formats)
-                    if (g.Sources != null) foreach (var source in g.Sources) if (source != null) source.Stop();
+                    if (g.Sources != null) foreach (var source in g.Sources) if (source != null) { source.Stop(); source.clip = null; source.enabled = false; } // Destroy 는 프레임 끝이라 예약 채널을 바로 끊는다
+                if (s.Root != null) s.Root.SetActive(false);
                 if (restore && s.Taken && s.Conductor != null && Data(s.Conductor) == s.Original)
                 {
                 double now = AudioSettings.dspTime;
@@ -533,6 +541,7 @@ namespace StutterFix
                 {
                 var actual = new float[s.Frames * g.Channels];
                 var expected = new float[actual.Length];
+                var segmented = new float[(s.Frames + HitSoundMix.PadFrames) * g.Channels];
                 // Reconstruct starts independently from captured original absolute times.
                 var voices = new HitSoundMix.Voice[g.Voices.Length];
                 for (int i = 0; i < voices.Length; i++)
@@ -549,7 +558,8 @@ namespace StutterFix
                 {
                     HitSoundMix.Render(g.Voices, g.Channels, (long)i * s.Frames, actual, cancelled);
                     double error = HitSoundMix.Verify(voices, g.Channels, (long)i * s.Frames, actual, expected, cancelled, out var diff);
-                    Volatile.Write(ref g.ExpectedHashes[i], Fingerprint(expected));
+                    HitSoundMix.RenderSegment(voices, g.Channels, i, s.Segments, s.Frames, segmented, cancelled);
+                    Volatile.Write(ref g.ExpectedHashes[i], Fingerprint(segmented));
                     s.MaxError = Math.Max(s.MaxError, error); s.Differences += diff;
                     Interlocked.Increment(ref s.Verified);
                 }

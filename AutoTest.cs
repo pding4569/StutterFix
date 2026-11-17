@@ -1090,6 +1090,7 @@ namespace StutterFix
                 case "profsamp": Log("[profsamp] " + (arg.StartsWith("begin") ? ProfSamp.Begin(arg.Substring(5)) : ProfSamp.End(arg.Contains("frames") ? modDir : null))); return true;
                 case "floatsem": Log("[floatsem] " + FloatSem.Run()); return true;
                 case "hitsound": Log("[히트음 예약 묶기] " + HitSoundBatch.Command(arg)); return true;
+                case "audiotap": Log("[audiotap] " + AudioTap.Command(arg)); return true;
                 case "audioplaying":
                     {
                         // 재생 중인 AudioSource 목록(곡 제외) - 죽은 뒤에도 히트음이 남는지 보는 진단 (AUTOTEST 전용)
