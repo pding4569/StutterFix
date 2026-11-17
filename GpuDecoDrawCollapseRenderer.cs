@@ -1,4 +1,4 @@
-#if DEV || AUTOTEST || GPUDECO
+﻿#if DEV || AUTOTEST || GPUDECO
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -219,6 +219,17 @@ namespace StutterFix
             RequireLive(bw>0 && bh>0 && bytes>0 && slices>0,"drawcollapse unknown array payload");
             return checked(DrawCollapsePolicy.TextureBytes(width,height,1,bw,bh,bytes)*slices);
         }
+        static string gpuCollapseBudgetLog="";
+        // 남은 VRAM(바이트). 꺼져 있으면 long.MaxValue. 모니터 값(PDH, 어댑터 전용 사용량)을 못 읽으면 보수적인 고정값.
+        static long CollapseVramBudget(out string why)
+        {
+            if(!DrawCollapsePolicy.VramBudget){why="disabled";return long.MaxValue;}
+            float total=SystemInfo.graphicsMemorySize, used=SystemMonitor.VramUsedMB;
+            if(total<=0 || used<=0){why="monitor_unknown";return (long)DrawCollapsePolicy.VramUnknownMB*1048576L;}
+            float free=total-used-DrawCollapsePolicy.VramReserveMB;
+            why="total="+total.ToString("F0",Inv)+" used="+used.ToString("F0",Inv)+" reserve="+DrawCollapsePolicy.VramReserveMB;
+            return Math.Max(0L,(long)(free*1048576.0));
+        }
         static void ValidateDrawCollapseItem(int item)
         {
             if(gpuCollapseIncluded!=null && !gpuCollapseIncluded[item] && !DrawCollapseTextureFallback(item))
@@ -320,6 +331,20 @@ namespace StutterFix
                     .OrderByDescending(g=>g.Count()).ThenBy(g=>g.Key,StringComparer.Ordinal).Take(maxExact);
                 foreach(var bg in bigCandidates)exactGroups.Add(bg.Take(SystemInfo.maxTextureArraySlices).ToArray());
             }
+            // VRAM 예산: 배열은 원본 텍스처의 사본이라 VRAM 을 그만큼 더 쓴다. 남은 VRAM 을 넘기면 판마다 밀어내기·다시 올리기가
+            // 일어나 GPU 가 크게 흔들린다(Windflower 3440: 배열 2.8GB, VRAM 7.7/7.9GB -> 212/158/119 FPS, 끔 217/223).
+            // 예산 밖 텍스처의 장식은 기존 대체 경로(유니티 렌더러가 원래대로 그림)로 간다.
+            long vramBudget=CollapseVramBudget(out string budgetWhy);long budgetUsed=0;int budgetDropped=0;
+            if(vramBudget!=long.MaxValue)
+            {
+                var keptExact=new List<Texture2D[]>();
+                foreach(var g in exactGroups)
+                {
+                    long cost=CollapseArrayBytes(g[0].width,g[0].height,g.Length,g[0].graphicsFormat);
+                    if(budgetUsed+cost<=vramBudget){keptExact.Add(g);budgetUsed+=cost;}else budgetDropped+=g.Length;
+                }
+                exactGroups=keptExact;
+            }
             var exactIds=new HashSet<int>(exactGroups.SelectMany(g=>g.Select(t=>t.GetInstanceID())));
             var admittedSmall=new List<Texture2D>();
             int availArraySlots=Math.Max(0,DrawCollapsePolicy.ArrayBindings-exactGroups.Count);
@@ -328,9 +353,21 @@ namespace StutterFix
             {
                 var ordered=smallGroups[group].OrderByDescending(t=>texUsage.TryGetValue(t.GetInstanceID(),out int u)?u:0).ToArray();
                 int take=(int)Math.Min(ordered.Length,(long)remSlots*SystemInfo.maxTextureArraySlices);
+                if(vramBudget!=long.MaxValue && take>0)
+                {
+                    // 같은 묶음의 조각은 묶음 안 가장 큰 크기로 잡힌다. 묶음 크기 상한(512/1024)으로 보수적으로 센다.
+                    int tier=CollapseSize(ordered[0]);
+                    long slice=CollapseArrayBytes(tier,tier,1,ordered[0].graphicsFormat);
+                    int fit=(int)Math.Min(take,Math.Max(0,(vramBudget-budgetUsed)/Math.Max(1,slice)));
+                    budgetDropped+=take-fit;take=fit;budgetUsed+=slice*take;
+                }
+                if(take<=0)continue;
                 admittedSmall.AddRange(ordered.Take(take));
                 remSlots-=(take+SystemInfo.maxTextureArraySlices-1)/SystemInfo.maxTextureArraySlices;
             }
+            gpuCollapseBudgetLog="vram_budget_mb="+(vramBudget==long.MaxValue?"off":(vramBudget/1048576).ToString(Inv))+" planned_mb="+(budgetUsed/1048576).ToString(Inv)
+                +" dropped_textures="+budgetDropped+" basis="+budgetWhy;
+            if(GpuDecoPlayer.Product)Main.Entry.Logger.Log("[GPU 장식] 배열 VRAM 예산: "+gpuCollapseBudgetLog);
             var small=admittedSmall.ToArray();
             var smallIds=new HashSet<int>(small.Select(t=>t.GetInstanceID()));
             var direct=textures.Values.Where(t=>!smallIds.Contains(t.GetInstanceID()) && !exactIds.Contains(t.GetInstanceID()))
@@ -363,7 +400,7 @@ namespace StutterFix
             }
             GpuLog("DRAWCOLLAPSE_ARRAY_TOTAL layout=small_dxt5_tiers_plus_borrowed_2d bytes_known="+total+" total_mb="+(total/1048576.0).ToString("F6",Inv)
                 +" planned_arrays_known="+arrays+" direct_textures="+direct.Length+" active_texture_slots="+(arrays+direct.Length)
-                +" shader_declared_slots="+DrawCollapsePolicy.TextureBindings+" samplers=2 arrays_allocated=0 copy_calls=0 free_vram=UNVERIFIED budget_scope=format_block_payload_not_residency");
+                +" shader_declared_slots="+DrawCollapsePolicy.TextureBindings+" samplers=2 arrays_allocated=0 copy_calls=0 "+gpuCollapseBudgetLog+" free_vram=UNVERIFIED budget_scope=format_block_payload_not_residency");
             RequireLive(SystemInfo.graphicsMemorySize>0 && total<(long)SystemInfo.graphicsMemorySize*1048576,
                 "drawcollapse array budget exceeds total VRAM"); // Free VRAM still needs external measurement.
             RequireLive(arrays<=DrawCollapsePolicy.ArrayBindings && direct.Length<=DrawCollapsePolicy.DirectBindings,

@@ -1,4 +1,4 @@
-#if DEV || AUTOTEST || GPUDECO
+﻿#if DEV || AUTOTEST || GPUDECO
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -2733,6 +2733,14 @@ namespace StutterFix
             {
                 DrawCollapsePolicy.PreStartActivate=command.EndsWith(" on",StringComparison.Ordinal);
                 GpuLog("light prestart="+DrawCollapsePolicy.PreStartActivate);return true;
+            }
+            if(command.StartsWith("vrambudget ",StringComparison.Ordinal))
+            {
+                RequireLive(!gpuLiveActive,"vrambudget must be set before live prepare/on");
+                string v=command.Substring(11).Trim();
+                if(v=="on")DrawCollapsePolicy.VramBudget=true;else if(v=="off")DrawCollapsePolicy.VramBudget=false;
+                else {DrawCollapsePolicy.VramBudget=true;DrawCollapsePolicy.VramReserveMB=int.Parse(v,Inv);}
+                GpuLog("vrambudget="+DrawCollapsePolicy.VramBudget+" reserve_mb="+DrawCollapsePolicy.VramReserveMB+" monitor_used_mb="+SystemMonitor.VramUsedMB.ToString("F0",Inv));return true;
             }
             if(command=="zeroalpha on" || command=="zeroalpha off")
             {
