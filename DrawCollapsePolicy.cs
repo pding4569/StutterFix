@@ -1,4 +1,4 @@
-#if DEV || AUTOTEST || GPUDECO || DRAWCOLLAPSE_CHECK
+﻿#if DEV || AUTOTEST || GPUDECO || DRAWCOLLAPSE_CHECK
 using System;
 using System.Collections.Generic;
 
@@ -36,6 +36,10 @@ namespace StutterFix
 #else
         internal static bool ScreenFixed { get => DecoBakeCore.ScreenFixedSupported; set => DecoBakeCore.ScreenFixedSupported = value; }
 #endif
+        // 배열 사본을 남은 VRAM 안에서만 만든다(측정: gpudeco vrambudget on|off|<여유MB>)
+        internal static bool VramBudget=true;
+        internal static int VramReserveMB=400;
+        internal static int VramUnknownMB=512;
         internal const int TextureBindings=ArrayBindings+DirectBindings;
         internal const int OwnedChecksPerFrame=4;
         // Orthographic camera translation changes every distance by this same
