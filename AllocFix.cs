@@ -82,6 +82,9 @@ namespace StutterFix
         internal static bool VerifyInput;
         internal static long InputFast, VerifyCalls, VerifyDiffs, VerifyWithKeys;
 
+        private static AccessTools.FieldRef<RDInputType_AsyncKeyboard, SkyHook.KeyLabel[]> MainKeysRefFor(string name)
+            => AccessTools.FieldRefAccess<RDInputType_AsyncKeyboard, SkyHook.KeyLabel[]>(name);
+
         private static void InstallInput(Harmony h)
         {
             var main = AccessTools.Method(typeof(RDInputType_AsyncKeyboard), "Main", new[] { typeof(ButtonState) });
@@ -91,7 +94,10 @@ namespace StutterFix
             // (게임이 직접 임시 객체를 줄임). 옛 모양이 아니면 입력 쪽은 건드리지 않는다.
             if (gsi != null && gsi.ReturnType != typeof(List<AsyncKeyCode>)) { Main.Entry.Logger.Log("[쓰레기 줄이기] 비동기 키 입력: 게임 코드가 바뀌어(GetSpecialInput " + gsi.ReturnType.Name + ") 끔"); return; }
             if (main == null || gsc == null || gsi == null) { Main.Entry.Logger.Log("[쓰레기 줄이기] 비동기 키 입력: 게임 코드 모양이 달라 끔"); return; }
-            mainKeysRef = AccessTools.FieldRefAccess<RDInputType_AsyncKeyboard, SkyHook.KeyLabel[]>("mainKeys");
+            // 2026-11-04 게임 업데이트 뒤에는 이 필드가 없다(위 GetSpecialInput 검사에서 먼저 끈다). 필드가 없으면 설치하지 않는다.
+            // (LoadCheck 는 이름이 인자로 들어오는 호출을 실행 중 확인으로 넘긴다.)
+            if (AccessTools.Field(typeof(RDInputType_AsyncKeyboard), "mainKeys") == null) { Main.Entry.Logger.Log("[쓰레기 줄이기] 비동기 키 입력: 게임에 mainKeys 필드가 없어 끔"); return; }
+            mainKeysRef = MainKeysRefFor("mainKeys");
             getStateCount = AccessTools.MethodDelegate<Func<RDInputType, ButtonState, RDInputType.MainStateCount>>(gsc);
             getSpecial = AccessTools.MethodDelegate<Func<RDInputType_AsyncKeyboard, List<AsyncKeyCode>>>(gsi);
             if (Edition.Dev) VerifyInput = System.IO.File.Exists(System.IO.Path.Combine(Main.Entry.Path, "input-verify"));
