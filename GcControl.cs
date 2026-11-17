@@ -561,10 +561,17 @@ namespace StutterFix
             // 전부 얼어붙어서, 플레이 중에 나가면 GC가 멈춘 채로 영영 남는다.
             dt = Time.unscaledDeltaTime;
 
+            // 재생 상태와 곡 시작/끝 처리는 GC 정책과 독립이다. "곡 중 GC 멈춤"을 꺼도 셰이더 예열·효과 나눠 처리·저사양·물리 멈춤 등의
+            // 곡 수명 처리(Hitch.Tick)가 돌아야 한다(2.8.1 까지는 GC 멈춤을 끄면 이 처리가 통째로 빠졌다).
+            bool playing = IsPlaying();
+            long hq = System.Diagnostics.Stopwatch.GetTimestamp();
+            Hitch.Tick(dt, playing);
+            Main.TickCost[16] += System.Diagnostics.Stopwatch.GetTimestamp() - hq;
+
             if (!Enabled)
             {
                 // 곡 중에 꺼지면(설정 창, 자동 보호) 한꺼번에 치우지 않고 GC 만 원래대로 켠다. 치우기는 게임의 GC 에 맡긴다(원래 게임과 같음).
-                if (Paused && IsPlaying())
+                if (Paused && playing)
                 {
                     try { GarbageCollector.GCMode = GarbageCollector.Mode.Enabled; } catch { }
                     Paused = false; resumeCountdown = -1f; holdAfterFail = false; holdAfterWin = false;
@@ -575,11 +582,7 @@ namespace StutterFix
                 return;
             }
 
-            bool playing = IsPlaying();
             if (Edition.Dev && GarbageMBps > 0 && playing) MakeGarbage(dt);
-            long hq = System.Diagnostics.Stopwatch.GetTimestamp();
-            Hitch.Tick(dt, playing);
-            Main.TickCost[16] += System.Diagnostics.Stopwatch.GetTimestamp() - hq;
 
             if (bgActive) BgStep(playing);   // 편집으로 나간 뒤 조금씩 치우기 (재생이 시작되면 거기서 멈춘다)
             if (wantGap && playing && Paused && !limitPhase) GapCheck();   // 한계 가까이: 입력이 없는 틈을 매 프레임 본다
