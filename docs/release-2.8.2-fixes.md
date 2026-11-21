@@ -1,7 +1,7 @@
 # 2.8.2 버그 수정 정리 (2026-11-18, 릴리스 전 — main·태그·GitHub 릴리스 없음)
 
 브랜치 `release/2.8.2` (= v2.8.1 `d6fb971` 위에 올린 수정만). 3.0.0 계열(`claude/adofai-renderer` 등)에서 2.8.1 코드에 실제로 있는 버그만 골라 옮겼고, 옮길 때마다 2.8.1 에서 재현되는지 먼저 확인했다.
-최종 확인은 정식 ZIP(`dist/StutterFix-2.8.2-player.zip`) 으로 HELLO 2026 전곡: 평균 165 FPS(모니터 꺼진 2560×1600 144Hz 조건), 끊김 0번, sf_errors 0, 정상 종료(`tools/ReleaseCheck/out/full-game-2.8.2.json`, 시험 동안만 Quartz 꺼 둠).
+최종 확인은 정식 ZIP(`dist/StutterFix-2.8.2-player.zip`) 으로 HELLO 2026 전곡: 평균 168 FPS(모니터 꺼진 2560×1600 144Hz 조건, 타이머 0.5ms 기본 켬 포함 최종 ZIP, 2026-11-22), 끊김 0번, sf_errors 0, 정상 종료(`tools/ReleaseCheck/out/full-game-2.8.2.json`, 시험 동안만 Quartz 꺼 둠).
 
 ## 들어간 것
 
@@ -29,4 +29,4 @@
 
 ## 릴리스 순서 (사용자가 "올려"라고 한 뒤)
 
-`docs/release.md` 따라: (선택) 테스터 ZIP `./pack.sh test 1` → `release/2.8.2` 를 main 에 fast-forward(현재 main = v2.8.1 `d6fb971` 의 자손) → 태그 `v2.8.2` → GitHub 릴리스에 `dist/StutterFix-2.8.2-player.zip`·`developer.zip` → 디스코드 알림(`docs/announcement-2.8.2.md`). `dist/` 는 `pack.sh` 가 만든 현재 ZIP 이다(sha256 `d60a8efc…`).
+`docs/release.md` 따라: (선택) 테스터 ZIP `./pack.sh test 1` → `release/2.8.2` 를 main 에 fast-forward(현재 main = v2.8.1 `d6fb971` 의 자손) → 태그 `v2.8.2` → GitHub 릴리스에 `dist/StutterFix-2.8.2-player.zip`·`developer.zip` → 디스코드 알림(`docs/announcement-2.8.2.md`). `dist/` 는 `pack.sh` 가 만든 현재 ZIP 이다(sha256 `c3d98258…`).
