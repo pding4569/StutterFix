@@ -119,6 +119,8 @@ namespace StutterFix
             if (Config.DefaultsGen < 4) { Config.RunLod = false; Config.DefaultsGen = 4; try { Config.Save(modEntry); } catch { } }
             // 5세대(11-13 사용자 결정): GPU 장식 처리를 기본 켬으로. 장식이 아주 많은 맵(Arche +100% 이상, DD +29%)에서만 켜지고, 지원 안 되는 맵·환경은 스스로 꺼진다.
             if (Config.DefaultsGen < 5) { Config.GpuDeco = 1; Config.DefaultsGen = 5; try { Config.Save(modEntry); } catch { } }
+            // 6세대(2.8.2 에서 가져옴): 화면 밖 파티클 멈추기 기본 꺼짐(eLadia 에서 화면 안 파티클을 멈춰 검은 효과가 사라짐) + 타이머 정밀도 0.5ms 요청 기본 켬.
+            if (Config.DefaultsGen < 6) { Config.LowPauseParticles = false; Config.TimerHalfMs = true; Config.DefaultsGen = 6; try { Config.Save(modEntry); } catch { } }
 
             Resilience.Init();   // 비정상 종료 감지 (안전 모드면 이번 실행 동안 일부 기능을 끔)
 
@@ -2541,7 +2543,7 @@ BlendProbe.Tick();
 
         public bool HitSoundBatch = true;   // 2026-10-20: 기본 켬 (Arche 전곡 +6.6%, 막히면 자동으로 원래 방식). 저사양 페이지에 있다
 
-        public int DefaultsGen = 0;         // 기본값을 바꿔 한 번 덮어쓴 세대 (1 = 히트음 묶기·화면 밖 파티클 멈추기 켬, 2 = 앞서 준비 프레임 4·화면 대기 건너뛰기 켬, 3 = 확대 장식 묶어 그리기 켬, 4 = 그것을 저사양 기능으로 되돌려 끔, 5 = GPU 장식 처리 켬)
+        public int DefaultsGen = 0;         // 기본값을 바꿔 한 번 덮어쓴 세대 (1 = 히트음 묶기·화면 밖 파티클 멈추기 켬, 2 = 앞서 준비 프레임 4·화면 대기 건너뛰기 켬, 3 = 확대 장식 묶어 그리기 켬, 4 = 그것을 저사양 기능으로 되돌려 끔, 5 = GPU 장식 처리 켬, 6 = 화면 밖 파티클 멈추기 끔·타이머 0.5ms 켬)
 
         public bool JitWarm = true;         // 모드·게임 효과 함수를 켤 때 미리 컴파일 (곡 초반 첫 효과의 JIT)       // 곡 중에 처음 쓰는 효과음(박자 소리 등)을 재생 준비 때 미리 불러오기
 
@@ -2551,7 +2553,7 @@ BlendProbe.Tick();
 
         public bool PhysicsPause = false;   // 곡 중 물리 시뮬레이션 중지(Script 모드), 기본 끔
 
-        public bool TimerHalfMs = false;    // 타이머 0.5ms 요청(NtSetTimerResolution), 기본 끔
+        public bool TimerHalfMs = true;     // 타이머 0.5ms 요청(NtSetTimerResolution), 2.8.2/DefaultsGen 6 부터 기본 켬
 
         public bool LowNoThrottle = false;  // 윈도우 절전 제한 끄기 + 타이머 1ms
 
@@ -2563,7 +2565,7 @@ BlendProbe.Tick();
 
         public bool LowFloorSplit = false;    // (저사양) 타일이 많은 타일 이동 효과를 여러 프레임에 나눠 처리
 
-        public bool LowPauseParticles = true; // 화면 밖 파티클 장식 시뮬레이션 멈추기 (2026-10-20 기본 켬)
+        public bool LowPauseParticles = false; // 화면 밖 파티클 장식 시뮬레이션 멈추기 (2026-10-20 기본 켬 → 2.8.2/DefaultsGen 6 에서 꺼짐: 화면 안 파티클을 멈추는 맵이 있음)
 
         public bool LowCompressImages = false; // (저사양) 장식 이미지를 DXT 로 압축해서 올리기 (그래픽 메모리 1/4, 여러 코어로 미리 압축)
 

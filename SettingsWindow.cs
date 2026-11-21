@@ -1180,6 +1180,10 @@ namespace StutterFix
                 ch |= Option("hitmeterfade", ref c.HitMeterFade, T("판정 오차 막대 가볍게", "Lighter hit error meter"),
                     T("판정 오차 막대의 눈금이 사라질 때 눈금 그림을 매 프레임 다시 만들지 않고 투명도만 바꿉니다. 박자가 빠른 구간에서 프레임이 가벼워집니다. 보이는 모습은 같습니다.",
                       "When hit error meter ticks fade out, only their opacity is updated instead of rebuilding each tick every frame. Lighter frames in fast sections. Looks the same."), null);
+                ch |= Option("timerhalf", ref c.TimerHalfMs, T("타이머 정밀도 0.5ms 요청", "0.5 ms timer resolution"),
+                    T("윈도우 타이머 정밀도를 0.5ms 까지 요청해 프레임 대기와 입력 처리가 덜 튀게 합니다. 기본 켬입니다. ISLC 같은 프로그램이 이미 0.5ms 로 고정해 둔 컴퓨터에서는 차이가 없습니다. 끄거나 게임을 끝내면 우리가 올린 요청만 내립니다.",
+                      "Requests 0.5 ms Windows timer resolution for steadier frame waits and input handling. On by default. No difference on PCs where a tool such as ISLC already pins it. Turning it off releases only our own request."),
+                    null);
                 ch |= Option("flooranim", ref c.FloorAnim, T("타일 애니메이션 직접 처리", "Tile move animations"),
                     T("길이가 있는 타일 이동(위치·회전·크기·불투명도)의 애니메이션을 DOTween 대신 모드가 돌립니다. 타일 수천 개를 한 번에 옮기는 효과가 시작될 때의 끊김을 줄입니다. 시간 누적, 이징, 끊기는 DOTween 과 똑같이 합니다.",
                       "Runs tile move animations (position, rotation, scale, opacity) in the mod instead of DOTween, reducing the hitch when an effect moves thousands of tiles at once. Timing, easing and kill behavior match DOTween."), null);
@@ -1363,10 +1367,6 @@ namespace StutterFix
                 SubHeading(T("그리기·타이머 실험", "Rendering and timer experiments"), "");
                 BeginGroup();
                 ch |= Option("filteridentity", ref c.FilterIdentity, T("중립 필터 건너뛰기", "Skip identity filters"), T("픽셀 대조를 통과한 필터만 중립 값일 때 건너뜁니다.", "Bypass only pixel-verified filters at neutral values."), null);
-                ch |= Option("timerhalf", ref c.TimerHalfMs, T("타이머 0.5ms 요청 (실험)", "0.5 ms timer request (experimental)"),
-                    T("윈도우 타이머 정밀도를 0.5ms 까지 요청해 프레임 대기가 덜 튀게 합니다. 이미 다른 프로그램이 올려 둔 컴퓨터에서는 차이가 없습니다. 끄거나 게임을 끝내면 우리가 올린 요청만 내립니다.",
-                      "Requests 0.5 ms Windows timer resolution for steadier frame waits. No difference if another program already raised it. Turning it off releases only our own request."),
-                    null);
                 ch |= Option("framegenconstantring",ref c.FrameGenConstantRing,T("보간 업로드 버퍼 재사용 (실험)","Reuse interpolation upload buffers (experimental)"),
                     T("우리 보간 상수 버퍼 3개만 GPU 완료 확인 뒤 번갈아 씁니다. 미지원·혼잡 시 기존 방식으로 돌아가며 GPU를 기다리지 않습니다. 성능 개선은 확인 중이고 기본 꺼짐입니다.","Rotates three owned interpolation constant buffers only after GPU completion. Falls back without a GPU wait if unsupported or busy. Performance is under validation; off by default."),null);
                 ch |= Option("fastcompact", ref c.DecoFastCompact, T("장식 목록 정리 생략 (실험)", "Skip decoration list compaction (experimental)"),
@@ -2066,8 +2066,8 @@ namespace StutterFix
                   "Effects that move more than 1000 tiles are processed over a few frames, nearest tiles first. Far tiles start moving a frame or a few later but finish at the same moment. The effect split strength sets the per-frame budget. Needs tile move animations on."),
                 null);
             ch |= Option("lowparticle", ref c.LowPauseParticles, T("화면 밖 파티클 멈추기", "Pause off-screen particles"),
-                T("파티클 장식이 화면 밖에 있는 동안 시뮬레이션을 멈춰 CPU 를 아낍니다. 파티클이 많은 맵에서 효과가 있습니다. 다시 화면에 들어오면 멈춘 곳부터 이어가서 원래와 모양·시점이 조금 달라질 수 있습니다." + (Compat.QPauseOffscreenParticles ? " (지금은 Quartz 가 같은 일을 하고 있어 쉬는 중)" : ""),
-                  "Stops simulating particle decorations while they are off-screen to save CPU on particle-heavy levels. When they come back on screen they resume where they stopped, so they may look slightly different from the original." + (Compat.QPauseOffscreenParticles ? " (Idle now: Quartz is doing the same)" : "")),
+                T("파티클 장식이 화면 밖에 있는 동안 시뮬레이션을 멈춰 CPU 를 아낍니다. 파티클이 많은 맵에서 효과가 있습니다. 다시 화면에 들어오면 멈춘 곳부터 이어가서 원래와 모양·시점이 달라질 수 있고, 맵에 따라 화면 안 파티클이 사라지기도 해서(eLadia) 기본은 꺼져 있습니다." + (Compat.QPauseOffscreenParticles ? " (지금은 Quartz 가 같은 일을 하고 있어 쉬는 중)" : ""),
+                  "Stops simulating particle decorations while they are off-screen to save CPU on particle-heavy levels. When they come back on screen they resume where they stopped, so they may look different from the original, and on some levels particles that should be visible disappear (eLadia), so this is off by default." + (Compat.QPauseOffscreenParticles ? " (Idle now: Quartz is doing the same)" : "")),
                 null);
             ch |= Option("runlod", ref c.RunLod, T("확대 장식 묶어 그리기", "Batch magnified decorations"),
                 T("크게 확대된 그림 장식이 연달아 그려지면 1/4 해상도로 모아 그린 뒤 한 번에 합칩니다. GPU가 모자랄 때만 켜지고, 그림이 아주 조금 흐려질 수 있습니다(원본 대비 PSNR 약 50dB). 흔들리는 장식에서는 가장자리가 미세하게 달라질 수 있습니다.",
