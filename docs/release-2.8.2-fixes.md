@@ -15,6 +15,7 @@
 | 6 | 로그 `This game is modded (StutterFix 버전)` 한 줄 | 7th Beat Games 모딩 가이드라인 | 정식 ZIP 전곡 로그에서 확인 | `cce00de` |
 | 7 | LoadCheck 거짓 경보 제거 | 2026-11-04 게임 업데이트로 `RDInputType_AsyncKeyboard.mainKeys` 가 없어져 `pack.sh` 의 LoadCheck 가 "틀림 1" 로 멈춤(실제로는 앞선 `GetSpecialInput` 검사에서 이미 꺼져 동작 변화 없음) | `pack.sh` 통과(Debug 266·Player 229곳 틀림 0), CompatCheck 설치된 게임 302개 중 못 찾은 것 0 | `c2ed40d` |
 | 8 | 화면 밖 파티클 멈추기(LowPauseParticles) 기본 꺼짐 | 2.8.0 부터 기본 켬. 일부 맵에서 화면 안 파티클을 통째로 멈춰 없앰(eLadia 곡 27초 타일 주변 검은 효과). 곡 중 처리(Hitch.Playing)가 있을 때만 일해서 GC 멈춤 켬/끔에 따라 달라 보임(제보 "메모리 정리 미루기 켜면 이펙트 달라짐") | eLadia 에디터 재생, 곡 27초 화면의 검은 영역 비율: 최적화 전부 끔 13.3%/13.9%(GC 켬/끔)=원래 모습, 2.8.1 기본 켬 4.9%(사라짐)/끔 13.2~13.4%. 31개 기능 이분 탐색으로 이 기능 하나로 좁힘: 이 기능만 끄면 13.66% 복구, 파티클 따라잡기 옵션은 4.98% 로 해결 못 함. 2.8.2 기본값+2.8.1 식 설정(세대 1)에서 GC 켬/끔 13.91%/13.78% | `d099b46` |
+| 9 | 자세한 로그 토글(VerboseLog)과 로그 폭주 막기(Lg) | 로그가 너무 많이 쌓여 다른 모드 로그를 읽기 힘들고, 로그가 폭주하면 크래시가 난다는 제보 | 정식 빌드 기본(보통): 필수 줄만. HELLO 전곡 모드 로그 108줄 → 예상 14줄(오프라인 계산). 같은 줄 10초 3번·전체 초당 100줄 제한. LogCheck 27개 x 3 에디션, 빌드 3종·LoadCheck 통과 | `097e597` |
 
 시험 전용(Player ZIP 에는 안 들어감): `AudioTap.cs`(`audiotap begin/end`, 새 AudioListener 로 게임 소리 출력을 녹음), `tools/analysis/tap_analyze.py`, 결과 `tools/ReleaseCheck/out/hitsound-tick-2.8.2.json`. 한계: 모드 안 녹음 분석이라 귀로 비교한 것은 아니며, 이음매에 우연히 히트음 시작이 겹치면 값이 커질 수 있다.
 
