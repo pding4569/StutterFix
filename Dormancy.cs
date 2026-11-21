@@ -63,7 +63,7 @@ namespace StutterFix
                 foreach (var name in new[] { "ApplyColor", "SetVisible", "SetMaskingType", "EnableMeshRenderer" })
                 {
                     var m = AccessTools.Method(typeof(scrVisualDecoration), name);
-                    if (m == null) { broken = true; Main.Entry.Logger.Log("[잠든 장식] " + name + " 없음 - 끔"); return; }
+                    if (m == null) { broken = true; Lg.I("[잠든 장식] " + name + " 없음 - 끔"); return; }
                     h.Patch(m, postfix: post);
                 }
                 foreach (var name in new[] { "Setup", "Awake" })
@@ -71,9 +71,9 @@ namespace StutterFix
                     var m = AccessTools.Method(typeof(scrDecoration), name);
                     if (m != null) h.Patch(m, postfix: new HarmonyMethod(typeof(Dormancy), nameof(WakeBase)));
                 }
-                Main.Entry.Logger.Log("[잠든 장식] 설치" + (versionRef == null ? " (목록 버전 못 읽음 - 개수로만 확인)" : ""));
+                Lg.I("[잠든 장식] 설치" + (versionRef == null ? " (목록 버전 못 읽음 - 개수로만 확인)" : ""));
             }
-            catch (Exception ex) { broken = true; Main.Entry.Logger.Log("[잠든 장식] 설치 실패: " + ex.Message); }
+            catch (Exception ex) { broken = true; Lg.I("[잠든 장식] 설치 실패: " + ex.Message); }
         }
 
         #if DEV || AUTOTEST
@@ -101,7 +101,7 @@ namespace StutterFix
             if (prepared) return awake;
             prepared = true;
             try { Prepare(all); }
-            catch (Exception ex) { broken = true; Main.Entry.Logger.Log("[잠든 장식] 오류로 끔: " + ex.Message); ResetState(); return all; }
+            catch (Exception ex) { broken = true; Lg.I("[잠든 장식] 오류로 끔: " + ex.Message); ResetState(); return all; }
             AwakeFrames++; AwakeTotal += awake.Count; AllCount = all.Count; LastAwake = awake.Count;
             if (Edition.Dev || Main.MeasureBuild) CountOffscreen();
             return awake;

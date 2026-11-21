@@ -30,6 +30,7 @@
 
   <ItemGroup>
     <Compile Include="StutterFix.cs" />
+    <Compile Include="Lg.cs" />
     <Compile Include="HitchHistogram.cs" />
     <Compile Include="HitchHeatmap.cs" />
     <Compile Include="CpuSetPolicy.cs" />

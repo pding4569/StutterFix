@@ -32,12 +32,12 @@ namespace StutterFix
                 phaseFrames = 0;
                 paused = false;
                 SafePlay();
-                Main.Entry.Logger.Log("[ab] started");
+                Lg.I("[ab] started");
             }
             else
             {
                 SafePlay();
-                Main.Entry.Logger.Log("[ab] stopped - " + Summary);
+                Lg.I("[ab] stopped - " + Summary);
             }
         }
 
@@ -56,7 +56,7 @@ namespace StutterFix
             if (phaseElapsed < PhaseSeconds) return;
 
             float fps = phaseFrames / phaseElapsed;
-            Main.Entry.Logger.Log($"[ab] {(paused ? "기능ON" : "기능OFF")} 구간: {fps:F0} fps, 최악 {phaseWorst:F1}ms ({phaseFrames}프레임 / {phaseElapsed:F1}초)");
+            Lg.I($"[ab] {(paused ? "기능ON" : "기능OFF")} 구간: {fps:F0} fps, 최악 {phaseWorst:F1}ms ({phaseFrames}프레임 / {phaseElapsed:F1}초)");
 
             phaseElapsed = 0f;
             phaseFrames = 0;

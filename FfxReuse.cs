@@ -83,7 +83,7 @@ namespace StutterFix
             try { Build(t, inf); }
             catch (Exception ex) { inf.ok = false; inf.why = ex.Message; }
             infos[t] = inf;
-            if (!inf.ok && Edition.Dev) Main.Entry.Logger.Log("[효과 재사용] " + t.Name + " 는 원래대로 지움: " + inf.why);
+            if (!inf.ok && Edition.Dev) Lg.I("[효과 재사용] " + t.Name + " 는 원래대로 지움: " + inf.why);
             return inf;
         }
 
@@ -164,7 +164,7 @@ namespace StutterFix
         internal static void Install(Harmony h)
         {
             string why;
-            if (!BaseCtorsTrivial(out why)) { Main.Entry.Logger.Log("[효과 재사용] 끔: " + why); return; }
+            if (!BaseCtorsTrivial(out why)) { Lg.I("[효과 재사용] 끔: " + why); return; }
             var tr = new HarmonyMethod(typeof(FfxReuse), nameof(Transpiler));
             int n = 0;
             var aetf = AccessTools.Method(typeof(scnGame), "ApplyEventsToFloors", new[] { typeof(List<scrFloor>), typeof(LevelData), typeof(scrLevelMaker), typeof(List<LevelEvent>) });
@@ -192,12 +192,12 @@ namespace StutterFix
             foreach (var ht in holders)
                 foreach (var m in ht.GetMethods(All))
                     if ((m.Name.Contains("<ApplyEventsToFloors>") || m.Name.Contains("<ApplyEvent>")) && !m.IsAbstract && !m.ContainsGenericParameters) { targets.Add(m); local++; }
-            if (local == 0) { Main.Entry.Logger.Log("[효과 재사용] ApplyEventsToFloors 안의 로컬 함수를 못 찾음 - 끔"); h.Unpatch(aetf, HarmonyPatchType.All, h.Id); return; }
+            if (local == 0) { Lg.I("[효과 재사용] ApplyEventsToFloors 안의 로컬 함수를 못 찾음 - 끔"); h.Unpatch(aetf, HarmonyPatchType.All, h.Id); return; }
             for (int i = 0; i < targets.Count; i++)
-                if (targets[i] == null) { Main.Entry.Logger.Log("[효과 재사용] 대상 함수 " + i + "번 없음 - 끔"); h.Unpatch(aetf, HarmonyPatchType.All, h.Id); return; }
+                if (targets[i] == null) { Lg.I("[효과 재사용] 대상 함수 " + i + "번 없음 - 끔"); h.Unpatch(aetf, HarmonyPatchType.All, h.Id); return; }
             foreach (var m in targets) { h.Patch(m, transpiler: tr); n++; }
             installed = true;
-            if (Edition.Dev) Main.Entry.Logger.Log("[효과 재사용] 함수 " + n + "개, 바꾼 호출 " + replaced + "개");
+            if (Edition.Dev) Lg.I("[효과 재사용] 함수 " + n + "개, 바꾼 호출 " + replaced + "개");
         }
 
         private static int replaced;
@@ -347,7 +347,7 @@ namespace StutterFix
             QuickN++;
             var a = GoGets<T>(go);
             var old = a.Length > 0 ? a[0] : null;
-            if (!ReferenceEquals(old, q)) { QuickDiff++; if (QuickDiff <= 5) Main.Entry.Logger.Log("[효과 재사용] (개발자용) 빠른 길이 다름: " + go.name + " " + typeof(T).Name + " " + (q == null ? "null" : q.GetType().Name) + " / " + (old == null ? "null" : old.GetType().Name)); }
+            if (!ReferenceEquals(old, q)) { QuickDiff++; if (QuickDiff <= 5) Lg.I("[효과 재사용] (개발자용) 빠른 길이 다름: " + go.name + " " + typeof(T).Name + " " + (q == null ? "null" : q.GetType().Name) + " / " + (old == null ? "null" : old.GetType().Name)); }
         }
         public static T[] GoGets<T>(GameObject go) where T : Component { return Arrange(go.GetComponents<T>()); }
         public static T[] CGets<T>(Component x) where T : Component { return Arrange(x.GetComponents<T>()); }
@@ -473,7 +473,7 @@ namespace StutterFix
             slots.Clear();
             passSw.Stop();
             if (was && (Reused + Fresh > 1000 || Edition.Dev))
-                Main.Entry.Logger.Log("[효과 재사용] 다시 씀 " + Reused + "개, 새로 붙임 " + Fresh + "개, 지움 " + Dropped + "개, 남겨 둔 것 " + pending.Count + "개, 순서가 다를 수 있는 오브젝트 " + touched.Count + "개 | " + passSw.ElapsedMilliseconds + "ms" + (Edition.Dev ? " | (개발자용) 빠른 찾기 " + QuickN + "번 중 다름 " + QuickDiff : ""));
+                Lg.I("[효과 재사용] 다시 씀 " + Reused + "개, 새로 붙임 " + Fresh + "개, 지움 " + Dropped + "개, 남겨 둔 것 " + pending.Count + "개, 순서가 다를 수 있는 오브젝트 " + touched.Count + "개 | " + passSw.ElapsedMilliseconds + "ms" + (Edition.Dev ? " | (개발자용) 빠른 찾기 " + QuickN + "번 중 다름 " + QuickDiff : ""));
             if (was && Edition.Dev && pending.Count > 0)
             {
                 // (개발자용) 남겨 둔 것이 무엇인지: 종류별 수, 꺼진 게임오브젝트에 붙은 수
@@ -482,7 +482,7 @@ namespace StutterFix
                 var l = new List<KeyValuePair<string, int>>(byT); l.Sort((a, b) => b.Value.CompareTo(a.Value));
                 var sb = new System.Text.StringBuilder("[효과 재사용] 남겨 둔 것: 꺼진 물체에 " + inactive + "개 |");
                 for (int i = 0; i < l.Count && i < 8; i++) sb.Append(' ').Append(l[i].Key).Append('=').Append(l[i].Value);
-                Main.Entry.Logger.Log(sb.ToString());
+                Lg.I(sb.ToString());
             }
             if (was && Verify && __exception == null) VerifyPass(__args);
             return __exception;
@@ -529,7 +529,7 @@ namespace StutterFix
                     if (d != null) { diff++; if (diff <= 8) sb.Append(" | 타일 " + i + " #" + k + " " + d); }
                 }
             }
-            Main.Entry.Logger.Log("[효과 재사용 검증] 효과 " + comps + "개 중 원래 방식과 다른 것 " + diff + "개" + sb + " | 검증 " + sw.ElapsedMilliseconds + "ms");
+            Lg.I("[효과 재사용 검증] 효과 " + comps + "개 중 원래 방식과 다른 것 " + diff + "개" + sb + " | 검증 " + sw.ElapsedMilliseconds + "ms");
         }
 
         // 본문이 ret 하나뿐인 함수 (빈 OnDestroy 등): 불려도 아무 일도 없다

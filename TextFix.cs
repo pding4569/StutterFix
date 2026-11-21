@@ -84,14 +84,14 @@ namespace StutterFix
             try
             {
                 var owner = AccessTools.TypeByName("scrTextDecoration");
-                if (owner == null) { Main.Entry.Logger.Error("scrTextDecoration 없음"); return; }
+                if (owner == null) { Lg.E("scrTextDecoration 없음"); return; }
 
                 textField = AccessTools.Field(owner, "text");
                 var setText = AccessTools.Method(owner, "SetText", new[] { typeof(string) });
                 if (textField != null && setText != null)
                 {
                     harmony.Patch(setText, prefix: new HarmonyMethod(typeof(TextFix), nameof(SetTextPrefix)));
-                    Main.Entry.Logger.Log("patched scrTextDecoration.SetText (같은 글자 건너뛰기)");
+                    Lg.I("patched scrTextDecoration.SetText (같은 글자 건너뛰기)");
                 }
 
                 // 글자 그림자 색: 게임 HUD 글자(scrHUDText.Update)가 커스텀 맵에서 매 프레임 그림자 색을 다시 넣는데,
@@ -101,7 +101,7 @@ namespace StutterFix
                 if (shadowSetter != null)
                 {
                     harmony.Patch(shadowSetter, prefix: new HarmonyMethod(typeof(TextFix), nameof(ShadowColorPrefix)));
-                    Main.Entry.Logger.Log("patched Shadow.effectColor (같은 그림자 색 건너뛰기)");
+                    Lg.I("patched Shadow.effectColor (같은 그림자 색 건너뛰기)");
                 }
 
                 // 코루틴 본체는 컴파일러가 만든 <SetCollider>d__NN 클래스의 MoveNext 안에 있다.
@@ -112,12 +112,12 @@ namespace StutterFix
                     if (move == null) continue;
 
                     harmony.Patch(move, transpiler: new HarmonyMethod(typeof(TextFix), nameof(Transpiler)));
-                    Main.Entry.Logger.Log("patched " + nested.Name + ".MoveNext");
+                    Lg.I("patched " + nested.Name + ".MoveNext");
                 }
             }
             catch (Exception ex)
             {
-                Main.Entry.Logger.Error("text fix 실패: " + ex.Message);
+                Lg.E("text fix 실패: " + ex.Message);
             }
         }
 

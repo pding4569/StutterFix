@@ -82,7 +82,7 @@ namespace StutterFix
                     if (!Select(group, r, d ? ids[d.GetInstanceID()] : 0)) continue;
                     saved.Add(new Saved { Renderer = r, Off = r.forceRenderingOff });
                 }
-                Main.Entry.Logger.Log("[gpuhide] group=" + group + " selected=" + saved.Count + " duration_per_phase=" + seconds + "; scan/warmup excluded; fixed cohort; realtime windows drift in song time");
+                Lg.I("[gpuhide] group=" + group + " selected=" + saved.Count + " duration_per_phase=" + seconds + "; scan/warmup excluded; fixed cohort; realtime windows drift in song time");
                 yield return new WaitForSecondsRealtime(0.5f);
                 GpuProbe.Window before = null, hidden = null, after = null;
                 yield return Measure("before", w => before = w);
@@ -102,7 +102,7 @@ namespace StutterFix
                     }
                     r.forceRenderingOff = true;
                 }
-                Main.Entry.Logger.Log("[gpuhide] hidden originally_renderable=" + initiallyOn + " main_camera_frustum_candidates_at_hide=" + candidates + "; candidates are not actual draws");
+                Lg.I("[gpuhide] hidden originally_renderable=" + initiallyOn + " main_camera_frustum_candidates_at_hide=" + candidates + "; candidates are not actual draws");
                 yield return new WaitForSecondsRealtime(0.5f);
                 yield return Measure("hidden", w => hidden = w);
                 if (!GpuProbe.Active) yield break;
@@ -112,28 +112,28 @@ namespace StutterFix
                 if (before != null && hidden != null && after != null && before.Completed > 0 && hidden.Completed > 0 && after.Completed > 0)
                 {
                     double baseline = (before.Frame + after.Frame) / 2;
-                    Main.Entry.Logger.Log(FormattableString.Invariant($"[gpuhide] group={group} selected={saved.Count} changed_renderable={initiallyOn} main_candidates={candidates} completed={before.Completed}/{hidden.Completed}/{after.Completed} frame_delta_ms_est={baseline-hidden.Frame:F4} control_drift_ms={after.Frame-before.Frame:F4} ms_per_candidate_est={(candidates == 0 ? double.NaN : (baseline-hidden.Frame)/candidates):F6}; time-varying content, not causal proof"));
+                    Lg.I(FormattableString.Invariant($"[gpuhide] group={group} selected={saved.Count} changed_renderable={initiallyOn} main_candidates={candidates} completed={before.Completed}/{hidden.Completed}/{after.Completed} frame_delta_ms_est={baseline-hidden.Frame:F4} control_drift_ms={after.Frame-before.Frame:F4} ms_per_candidate_est={(candidates == 0 ? double.NaN : (baseline-hidden.Frame)/candidates):F6}; time-varying content, not causal proof"));
                     foreach (var key in before.Means.Keys.Where(k => k.StartsWith("camera:", StringComparison.Ordinal)))
                     {
                         double b = before.Means[key], h = hidden.Means.TryGetValue(key, out double hv) ? hv : 0, a = after.Means.TryGetValue(key, out double av) ? av : 0;
-                        Main.Entry.Logger.Log(FormattableString.Invariant($"[gpuhide] {key} before_ms={b:F4} hidden_ms={h:F4} after_ms={a:F4} delta_ms_est={(b+a)/2-h:F4} control_drift_ms={a-b:F4} ms_per_main_candidate_est={(candidates == 0 ? double.NaN : ((b+a)/2-h)/candidates):F6}"));
+                        Lg.I(FormattableString.Invariant($"[gpuhide] {key} before_ms={b:F4} hidden_ms={h:F4} after_ms={a:F4} delta_ms_est={(b+a)/2-h:F4} control_drift_ms={a-b:F4} ms_per_main_candidate_est={(candidates == 0 ? double.NaN : ((b+a)/2-h)/candidates):F6}"));
                     }
                 }
-                else Main.Entry.Logger.Log("[gpuhide] insufficient completed snapshots; no delta");
+                else Lg.I("[gpuhide] insufficient completed snapshots; no delta");
             }
             finally { Restore(); if (instance == this) instance = null; Destroy(gameObject); }
         }
         IEnumerator Measure(string phase, Action<GpuProbe.Window> receive)
         {
-            if (!GpuProbe.Active) { Main.Entry.Logger.Log("[gpuhide] probe stopped; abort phase"); yield break; }
+            if (!GpuProbe.Active) { Lg.I("[gpuhide] probe stopped; abort phase"); yield break; }
             GpuProbe.Command("reset");
             float start = Time.realtimeSinceStartup;
-            Main.Entry.Logger.Log("[gpuhide] phase=" + phase + " start_realtime=" + start + " frame=" + Time.frameCount);
+            Lg.I("[gpuhide] phase=" + phase + " start_realtime=" + start + " frame=" + Time.frameCount);
             yield return new WaitForSecondsRealtime(seconds);
             GpuProbe.Window w = null;
             for (int retry = 0; retry < 8; retry++) { w = GpuProbe.Snapshot(); if (w != null) break; yield return null; }
             receive(w);
-            Main.Entry.Logger.Log("[gpuhide] phase=" + phase + " end_realtime=" + Time.realtimeSinceStartup + " frame=" + Time.frameCount);
+            Lg.I("[gpuhide] phase=" + phase + " end_realtime=" + Time.realtimeSinceStartup + " frame=" + Time.frameCount);
             GpuProbe.Report();
         }
         // Enforce only the selected cohort while the hidden phase is active. Other diagnostics/game
@@ -155,7 +155,7 @@ namespace StutterFix
             if (restored) return;
             restored = true;
             foreach (var item in saved) if (item.Renderer) item.Renderer.forceRenderingOff = item.Off;
-            Main.Entry.Logger.Log(FormattableString.Invariant($"[gpuhide] enforcement_frames={enforceCalls} external_unhide_writes={overwrites} mean_cpu_ms={(enforceCalls == 0 ? 0 : enforceTicks * 1000.0 / System.Diagnostics.Stopwatch.Frequency / enforceCalls):F4}; hidden-only CPU work may bias elapsed timestamps; if external_unhide_writes>0 after-control flags may be stale, reject causal estimate"));
+            Lg.I(FormattableString.Invariant($"[gpuhide] enforcement_frames={enforceCalls} external_unhide_writes={overwrites} mean_cpu_ms={(enforceCalls == 0 ? 0 : enforceTicks * 1000.0 / System.Diagnostics.Stopwatch.Frequency / enforceCalls):F4}; hidden-only CPU work may bias elapsed timestamps; if external_unhide_writes>0 after-control flags may be stale, reject causal estimate"));
         }
         void OnDisable() { if (instance == this) Stop(); else Restore(); }
         void OnDestroy() { Restore(); if (instance == this) instance = null; }
@@ -163,7 +163,7 @@ namespace StutterFix
         {
             var p = instance; if (!p) return;
             instance = null; p.Restore(); p.StopAllCoroutines(); Destroy(p.gameObject);
-            Main.Entry.Logger.Log("[gpuhide] cancelled; renderer flags restored");
+            Lg.I("[gpuhide] cancelled; renderer flags restored");
         }
     }
 }

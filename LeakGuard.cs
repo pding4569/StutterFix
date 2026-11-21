@@ -37,13 +37,13 @@ namespace StutterFix
             {
                 var m = AccessTools.Method(typeof(scrCamera), "SetCustomFrameRate");
                 frameRateField = AccessTools.Field(typeof(scrCamera), "frameRate");
-                if (m == null || frameRateField == null || m.GetParameters().Length != 2) { Main.Entry.Logger.Log("[누수] SetCustomFrameRate 모양이 달라 끔"); return; }
+                if (m == null || frameRateField == null || m.GetParameters().Length != 2) { Lg.I("[누수] SetCustomFrameRate 모양이 달라 끔"); return; }
                 h.Patch(m, prefix: new HarmonyMethod(typeof(LeakGuard), nameof(CfrPrefix)) { priority = Priority.First });
                 var st = AccessTools.Method(typeof(scnEditor), "Start");
                 if (st != null) h.Patch(st, prefix: new HarmonyMethod(typeof(LeakGuard), nameof(EditorStartPrefix)), postfix: new HarmonyMethod(typeof(LeakGuard), nameof(EditorStartPostfix)));
-                Main.Entry.Logger.Log("[누수] 설치 (사용자 지정 FPS 화면 버퍼, 옛 편집기 종료 콜백)");
+                Lg.I("[누수] 설치 (사용자 지정 FPS 화면 버퍼, 옛 편집기 종료 콜백)");
             }
-            catch (Exception ex) { Main.Entry.Logger.Log("[누수] 설치 실패: " + ex.Message); }
+            catch (Exception ex) { Lg.I("[누수] 설치 실패: " + ex.Message); }
         }
 
         internal static int StaleQuitRemoved;
@@ -80,9 +80,9 @@ namespace StutterFix
                         catch { }
                     }
                 prevMgr = null;
-                if (n > 0) { StaleQuitRemoved += n; Main.Entry.Logger.Log("[누수] 지워진 편집기의 종료 확인 콜백 " + n + "개 뺌 (지난 맵 데이터를 놓아 줌)"); }
+                if (n > 0) { StaleQuitRemoved += n; Lg.I("[누수] 지워진 편집기의 종료 확인 콜백 " + n + "개 뺌 (지난 맵 데이터를 놓아 줌)"); }
             }
-            catch (Exception ex) { Main.Entry.Logger.Log("[누수] 종료 콜백 정리 실패: " + ex.Message); }
+            catch (Exception ex) { Lg.I("[누수] 종료 콜백 정리 실패: " + ex.Message); }
         }
 
         public static bool CfrPrefix(scrCamera __instance, object[] __args)
@@ -111,7 +111,7 @@ namespace StutterFix
                 mat.mainTexture = camRT;
                 return false;
             }
-            catch (Exception ex) { Main.Entry.Logger.Log("[누수] 화면 버퍼 처리 실패, 원래대로: " + ex.Message); return true; }
+            catch (Exception ex) { Lg.I("[누수] 화면 버퍼 처리 실패, 원래대로: " + ex.Message); return true; }
         }
 
         // ── (개발자용) 누수 확인 ──
@@ -165,10 +165,10 @@ namespace StutterFix
                 long mono = GC.GetTotalMemory(false) / 1048576, native = UnityEngine.Profiling.Profiler.GetTotalAllocatedMemoryLong() / 1048576;
                 sb.AppendFormat(" 관리 힙 {0}MB, 엔진 메모리 {1}MB ({2}ms)", mono, native, sw.ElapsedMilliseconds);
                 string ap = LoadFix.ApplySummary(); if (ap.Length > 0) sb.Append(" | " + ap);
-                Main.Entry.Logger.Log(sb.ToString());
+                Lg.I(sb.ToString());
                 lastCount = count; lastBytes = bytes; lastNames = names;
             }
-            catch (Exception ex) { Main.Entry.Logger.Log("[누수 확인] 실패: " + ex.Message); }
+            catch (Exception ex) { Lg.I("[누수 확인] 실패: " + ex.Message); }
         }
 
         private static void Add<T>(string label, Dictionary<string, long> count, Dictionary<string, long> bytes, Dictionary<string, int> names, bool byName) where T : UnityEngine.Object

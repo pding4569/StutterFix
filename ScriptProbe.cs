@@ -66,8 +66,8 @@ namespace StutterFix
                     if (m.Name == parts[1] && !m.IsAbstract && !m.ContainsGenericParameters)
                     { try { h.Patch(m, prefix: new HarmonyMethod(typeof(ScriptProbe), nameof(NPre)), postfix: new HarmonyMethod(typeof(ScriptProbe), nameof(NPost))); cp++; } catch { } }
             }
-            Main.Entry.Logger.Log("[스크립트 측정] 지휘자 안쪽 " + cp + "개 감쌈");
-            Main.Entry.Logger.Log(string.Format("[스크립트 측정] Update/LateUpdate {0}개 감쌈 {1}ms, 기준 {2}ms", names.Count, sw.ElapsedMilliseconds, threshold));
+            Lg.I("[스크립트 측정] 지휘자 안쪽 " + cp + "개 감쌈");
+            Lg.I(string.Format("[스크립트 측정] Update/LateUpdate {0}개 감쌈 {1}ms, 기준 {2}ms", names.Count, sw.ElapsedMilliseconds, threshold));
         }
 
         private static double playMs, beatMs; private static int playN, beatN, cdepth;
@@ -109,7 +109,7 @@ namespace StutterFix
             var sb = new System.Text.StringBuilder();
             for (int k = 0; k < order.Count && k < 20; k++)
                 sb.AppendFormat(" [{0} {1:F3}ms {2:F0}번]", names[order[k]], tot[order[k]] / totFrames, (double)totN[order[k]] / totFrames);
-            Main.Entry.Logger.Log(string.Format("[스크립트 측정] 곡 전체 프레임 {0}개, 감싼 스크립트 합계 프레임당 {1:F2}ms (계측 비용 포함):{2}", totFrames, all / totFrames, sb));
+            Lg.I(string.Format("[스크립트 측정] 곡 전체 프레임 {0}개, 감싼 스크립트 합계 프레임당 {1:F2}ms (계측 비용 포함):{2}", totFrames, all / totFrames, sb));
             Array.Clear(tot, 0, tot.Length); Array.Clear(totN, 0, totN.Length); totFrames = 0;
         }
 
@@ -131,7 +131,7 @@ namespace StutterFix
                 for (int k = 0; k < order.Count && k < 6; k++) sb.Append(" [").Append(names[order[k]]).Append(' ').Append(acc[order[k]].ToString("F1")).Append("ms x").Append(cnt[order[k]]).Append(']');
                 foreach (var kv in named) if (kv.Value > 0.5) sb.AppendFormat(" | {0} {1}번 {2:F1}ms", kv.Key, namedN[kv.Key], kv.Value);
                 if (playN > 0 || beatN > 0) sb.AppendFormat(" | 소리 예약 {0}번 {1:F1}ms, 박자 알림 {2}번 {3:F1}ms", playN, playMs, beatN, beatMs);
-                Main.Entry.Logger.Log(string.Format("[스크립트 측정] 프레임 {0} 합계 {1:F1}ms 실시간 {2:F1}초:{3}", frame, total, Time.realtimeSinceStartup, sb));
+                Lg.I(string.Format("[스크립트 측정] 프레임 {0} 합계 {1:F1}ms 실시간 {2:F1}초:{3}", frame, total, Time.realtimeSinceStartup, sb));
             }
             playMs = beatMs = 0; playN = beatN = 0; named.Clear(); namedN.Clear();
             Array.Clear(acc, 0, acc.Length);

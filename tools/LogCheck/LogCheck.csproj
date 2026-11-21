@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>disable</Nullable>
+    <DefineConstants>$(DefineConstants);LOG_CHECK</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(LogEdition)' == 'Dev'">
+    <DefineConstants>$(DefineConstants);DEV</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(LogEdition)' == 'AutoTest'">
+    <DefineConstants>$(DefineConstants);AUTOTEST</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../../Lg.cs" Link="Lg.cs" />
+  </ItemGroup>
+</Project>

@@ -15,10 +15,10 @@ namespace StutterFix
             var m = AccessTools.Method(typeof(scnGame), "UpdateDecorationObjects", new[] { typeof(bool) });
             if (m == null) return;
             h.Patch(m, prefix: new HarmonyMethod(typeof(DecoDiag), nameof(Prefix)) { priority = Priority.Last });
-            Main.Entry.Logger.Log("[장식 불러오기 진단] 설치");
+            Lg.I("[장식 불러오기 진단] 설치");
         }
 
-        private static void Log(string s) { Main.Entry.Logger.Log("[장식 불러오기 진단] " + s); }
+        private static void Log(string s) { Lg.I("[장식 불러오기 진단] " + s); }
 
         public static bool Prefix(scnGame __instance, bool reloadDecorations)
         {

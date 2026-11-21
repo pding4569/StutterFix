@@ -63,7 +63,7 @@ namespace StutterFix
                 failed=true; Status=ex.Message;
                 try { FrameGenRuntime.Uninstall(); } catch { }
                 active=false;
-                Main.Entry.Logger.Log("[프레임 늘리기] "+Status);
+                Lg.I("[프레임 늘리기] "+Status);
             }
         }
         internal static void Shutdown()
@@ -675,7 +675,7 @@ namespace StutterFix
             if(runner!=null) { UnityEngine.Object.Destroy(runner.gameObject); runner=null; }
             return true;
         }
-        private static void Log(string message) { Main.Entry.Logger.Log("[프레임생성 바깥] "+message); }
+        private static void Log(string message) { Lg.I("[프레임생성 바깥] "+message); }
         [DefaultExecutionOrder(32000)] private sealed class Runner:MonoBehaviour { private void LateUpdate(){try { Late(); } catch(Exception ex) { failed=true; Log("중단: "+ex.Message); }} private void OnApplicationQuit(){FrameGen.Quit();} }
     }
 }

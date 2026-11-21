@@ -96,13 +96,13 @@ namespace StutterFix
                 bool set = false;
                 try { var e = Editor(); if (e != null && forceQuitField != null) { forceQuitField.SetValue(e, true); set = true; } } catch { }
                 LastBlockAt = -100f;
-                Main.Entry.Logger.Log("[" + kind + "] 한 번 더 눌러 저장 안 된 편집을 버리고 진행" + (set ? "" : " (forceQuit 를 못 켜서 게임이 끄기를 막을 수 있음)"));
+                Lg.I("[" + kind + "] 한 번 더 눌러 저장 안 된 편집을 버리고 진행" + (set ? "" : " (forceQuit 를 못 켜서 게임이 끄기를 막을 수 있음)"));
                 return true;
             }
             LastBlock = quit ? SettingsWindow.T("저장 안 된 편집이 있습니다. 한 번 더 누르면 저장하지 않고 종료합니다", "Unsaved changes. Click again to quit without saving")
                              : SettingsWindow.T("저장 안 된 편집이 있습니다. 한 번 더 누르면 저장하지 않고 재시작합니다", "Unsaved changes. Click again to restart without saving");
             LastBlockAt = Time.realtimeSinceStartup; lastBlockKind = kind;
-            Main.Entry.Logger.Log("[" + kind + "] 저장 안 된 편집이 있어 한 번 막음 (한 번 더 누르면 진행)");
+            Lg.I("[" + kind + "] 저장 안 된 편집이 있어 한 번 막음 (한 번 더 누르면 진행)");
             return false;
         }
 
@@ -145,16 +145,16 @@ namespace StutterFix
             if (string.IsNullOrEmpty(p)) return;
             Main.Config.ReopenLevel = "";                 // 한 번만 (실패해도 다음 실행에서 되풀이하지 않게)
             try { Main.Config.Save(Main.Entry); } catch { }
-            if (!File.Exists(p)) { Main.Entry.Logger.Log("[재시작] 다시 열 맵이 없음: " + p); return; }
+            if (!File.Exists(p)) { Lg.I("[재시작] 다시 열 맵이 없음: " + p); return; }
             reopenPath = p; lastEditorLevel = p; reopenStep = 1; reopenStart = Time.realtimeSinceStartup; reopenWait = 0f;
-            Main.Entry.Logger.Log("[재시작] 하던 맵을 다시 엽니다: " + p);
+            Lg.I("[재시작] 하던 맵을 다시 엽니다: " + p);
         }
 
         internal static void Tick()
         {
             TrackEditorLevel();
             if (reopenStep == 0) return;
-            if (Time.realtimeSinceStartup - reopenStart > 90f) { reopenStep = 0; Main.Entry.Logger.Log("[재시작] 맵 다시 열기 시간 초과"); return; }
+            if (Time.realtimeSinceStartup - reopenStart > 90f) { reopenStep = 0; Lg.I("[재시작] 맵 다시 열기 시간 초과"); return; }
             try
             {
                 string scene = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
@@ -177,19 +177,19 @@ namespace StutterFix
                     if (reopenWait < 1f) return;
                     reopenStep = 0;
                     var open = AccessTools.Method(typeof(scnEditor), "OpenLevel", new[] { typeof(string) });
-                    if (open == null) { Main.Entry.Logger.Log("[재시작] scnEditor.OpenLevel(string) 없음"); return; }
+                    if (open == null) { Lg.I("[재시작] scnEditor.OpenLevel(string) 없음"); return; }
                     open.Invoke(e, new object[] { reopenPath });
-                    Main.Entry.Logger.Log("[재시작] 에디터에서 맵 열기: " + reopenPath);
+                    Lg.I("[재시작] 에디터에서 맵 열기: " + reopenPath);
                 }
             }
-            catch (Exception ex) { reopenStep = 0; Main.Entry.Logger.Log("[재시작] 맵 다시 열기 실패: " + (ex.InnerException ?? ex).Message); }
+            catch (Exception ex) { reopenStep = 0; Lg.I("[재시작] 맵 다시 열기 실패: " + (ex.InnerException ?? ex).Message); }
         }
 
         // 게임 종료 (저장 안 된 편집이 있으면 한 번 막고, 한 번 더 누르면 저장하지 않고 끈다)
         internal static void Quit()
         {
             if (!Proceed(true)) return;
-            Main.Entry.Logger.Log("[종료] 게임을 끕니다");
+            Lg.I("[종료] 게임을 끕니다");
             try { Main.Config.ReopenLevel = ""; Main.Config.Save(Main.Entry); } catch { }
             Application.Quit();
         }
@@ -217,13 +217,13 @@ namespace StutterFix
                 var keys = new List<string>();
                 foreach (System.Collections.DictionaryEntry kv in Environment.GetEnvironmentVariables()) { var k = kv.Key as string; if (k != null && k.StartsWith("DOORSTOP", StringComparison.OrdinalIgnoreCase)) keys.Add(k); }
                 foreach (var k in keys) psi.EnvironmentVariables.Remove(k);
-                Main.Entry.Logger.Log("[재시작] 지운 모드 로더 표시: " + (keys.Count > 0 ? string.Join(", ", keys.ToArray()) : "없음"));
+                Lg.I("[재시작] 지운 모드 로더 표시: " + (keys.Count > 0 ? string.Join(", ", keys.ToArray()) : "없음"));
                 Process.Start(psi);
-                Main.Entry.Logger.Log("[재시작] 게임을 다시 켭니다");
+                Lg.I("[재시작] 게임을 다시 켭니다");
                 try { Main.Config.Save(Main.Entry); } catch { }
                 Application.Quit();
             }
-            catch (Exception ex) { Main.Entry.Logger.Log("[재시작] 실패: " + ex.Message); }
+            catch (Exception ex) { Lg.I("[재시작] 실패: " + ex.Message); }
         }
     }
 }

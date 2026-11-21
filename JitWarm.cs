@@ -58,8 +58,8 @@ namespace StutterFix
                     }
                 }
             }
-            catch (Exception ex) { Main.Entry.Logger.Log("[미리 컴파일] 게임 함수 실패: " + ex.Message); }
-            Main.Entry.Logger.Log("[미리 컴파일] 모드 함수 " + ok + "개 " + modMs + "ms, 게임 함수(효과·장식·타일·행성·지휘자) " + gok + "개 " + (sw.ElapsedMilliseconds - modMs) + "ms" + (fail > 0 ? ", 실패 " + fail : ""));
+            catch (Exception ex) { Lg.I("[미리 컴파일] 게임 함수 실패: " + ex.Message); }
+            Lg.I("[미리 컴파일] 모드 함수 " + ok + "개 " + modMs + "ms, 게임 함수(효과·장식·타일·행성·지휘자) " + gok + "개 " + (sw.ElapsedMilliseconds - modMs) + "ms" + (fail > 0 ? ", 실패 " + fail : ""));
         }
     }
 }

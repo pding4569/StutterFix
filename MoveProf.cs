@@ -71,9 +71,9 @@ namespace StutterFix
                         try { h.Patch(m, prefix: new HarmonyMethod(typeof(MoveProf), nameof(SubPre)), postfix: new HarmonyMethod(typeof(MoveProf), nameof(SubPost))); subs++; }
                         catch { }
                     }
-                Main.Entry.Logger.Log("[장식 이동 쪼개기] 설치 (다른 호출 " + subs + "개, 태그 목록 " + (getTagged != null ? getTagged.ToString() : "못 찾음") + ")");
+                Lg.I("[장식 이동 쪼개기] 설치 (다른 호출 " + subs + "개, 태그 목록 " + (getTagged != null ? getTagged.ToString() : "못 찾음") + ")");
             }
-            catch (Exception ex) { Main.Entry.Logger.Log("[장식 이동 쪼개기] 설치 실패: " + ex.Message); Enabled = false; }
+            catch (Exception ex) { Lg.I("[장식 이동 쪼개기] 설치 실패: " + ex.Message); Enabled = false; }
         }
 
         private static bool inMove;
@@ -172,7 +172,7 @@ namespace StutterFix
             {
                 string s = Describe(total);
                 if (total > worstMs) { worstMs = total; worst = s; }
-                if (logged < 40) { logged++; Main.Entry.Logger.Log("[장식 이동 쪼개기] " + Time.frameCount + "프레임: " + s); }
+                if (logged < 40) { logged++; Lg.I("[장식 이동 쪼개기] " + Time.frameCount + "프레임: " + s); }
             }
             cur.Clear(); ClearSub();
         }
@@ -222,7 +222,7 @@ namespace StutterFix
             benchWait += Time.unscaledDeltaTime;
             if (benchWait < 3f) return;
             benchDone = true;
-            try { Bench(); } catch (Exception ex) { Main.Entry.Logger.Log("[기본 동작 비용] 실패: " + ex.Message); }
+            try { Bench(); } catch (Exception ex) { Lg.I("[기본 동작 비용] 실패: " + ex.Message); }
         }
 
         private static void Bench()
@@ -292,12 +292,12 @@ namespace StutterFix
                     sb2.AppendFormat(", wrapMode 읽기 {0:F0}", (TS() - t) * TickMs * 1e6 / m2 - l2);
                     t = TS(); for (int r = 0; r < R; r++) for (int i = 0; i < tex.Count; i++) { var w = tex[i].wrapMode; tex[i].wrapMode = w; }
                     sb2.AppendFormat(", wrapMode 같은 값 넣기 {0:F0}", (TS() - t) * TickMs * 1e6 / m2 - l2);
-                    Main.Entry.Logger.Log("[기본 동작 비용] SetSprite 뒷부분, 장식 " + srs.Count + "개 x " + R + "번, 한 번당 ns: " + sb2 + " (sink " + sink + ")");
+                    Lg.I("[기본 동작 비용] SetSprite 뒷부분, 장식 " + srs.Count + "개 x " + R + "번, 한 번당 ns: " + sb2 + " (sink " + sink + ")");
                 }
             }
-            catch (Exception ex) { Main.Entry.Logger.Log("[기본 동작 비용] SetSprite 측정 실패: " + ex.Message); }
+            catch (Exception ex) { Lg.I("[기본 동작 비용] SetSprite 측정 실패: " + ex.Message); }
             Array.Clear(InvisibleSkip.LazyNo, 0, InvisibleSkip.LazyNo.Length);
-            Main.Entry.Logger.Log("[기본 동작 비용] 투명 장식 " + decs.Count + "개 x " + R + "번, 한 번당 ns: " + sb + " (sink " + sink + ")");
+            Lg.I("[기본 동작 비용] 투명 장식 " + decs.Count + "개 x " + R + "번, 한 번당 ns: " + sb + " (sink " + sink + ")");
         }
     }
 }

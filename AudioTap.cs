@@ -49,7 +49,7 @@ namespace StutterFix
                     if (listener == null && l.isActiveAndEnabled) listener = l;
                 }
                 if (listener == null) throw new InvalidOperationException("켜진 AudioListener 없음: " + sbl);
-                Main.Entry.Logger.Log("[audiotap] 리스너 목록 " + sbl);
+                Lg.I("[audiotap] 리스너 목록 " + sbl);
                 double sec = a.Length >= 2 ? double.Parse(a[1], System.Globalization.CultureInfo.InvariantCulture) : 20;
                 int rate = AudioSettings.outputSampleRate;
                 // 게임 리스너 오브젝트에는 AudioSource 가 이미 있어 OnAudioFilterRead 를 둘 다에 걸 수 없다 → 새 오브젝트에 리스너를 만들고 옛 리스너는 잠시 끈다.

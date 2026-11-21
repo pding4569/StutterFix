@@ -16,13 +16,13 @@ namespace StutterFix
         {
             if(!Enabled)return;
             bool ok=scope.Begin();
-            try{Main.Entry.Logger.Log("[업로드 예산] 로딩 시작 적용="+ok+" time="+QualitySettings.asyncUploadTimeSlice+" buffer="+QualitySettings.asyncUploadBufferSize);}catch{}
+            try{Lg.I("[업로드 예산] 로딩 시작 적용="+ok+" time="+QualitySettings.asyncUploadTimeSlice+" buffer="+QualitySettings.asyncUploadBufferSize);}catch{}
         }
         internal static void Restore()
         {
             if(!scope.Active)return;
             bool ok=scope.Restore();
-            try{Main.Entry.Logger.Log("[업로드 예산] 원래 설정 복원="+ok+" time="+QualitySettings.asyncUploadTimeSlice+" buffer="+QualitySettings.asyncUploadBufferSize);}catch{}
+            try{Lg.I("[업로드 예산] 원래 설정 복원="+ok+" time="+QualitySettings.asyncUploadTimeSlice+" buffer="+QualitySettings.asyncUploadBufferSize);}catch{}
         }
     }
 }

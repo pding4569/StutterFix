@@ -65,11 +65,11 @@ namespace StutterFix
                     }
                 }
 
-                Main.Entry.Logger.Log("[그리기콜백] " + count + "개 감쌈");
+                Lg.I("[그리기콜백] " + count + "개 감쌈");
             }
             catch (Exception ex)
             {
-                Main.Entry.Logger.Error("[그리기콜백] 설치 실패: " + ex.Message);
+                Lg.E("[그리기콜백] 설치 실패: " + ex.Message);
             }
         }
 

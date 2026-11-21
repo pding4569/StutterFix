@@ -46,7 +46,7 @@ namespace StutterFix
             next = Time.realtimeSinceStartup + 10f; turn++;
             HalfRender.Suppress = true;
             try { if (half) { Fsr.Suppress = true; CheckHalf(__instance); } else CheckScale(__instance); }   // 반만 그리기 검증은 진짜 화면과 같은 보통 늘리기로
-            catch (Exception ex) { Main.Entry.Logger.Log("[저사양 검증] 실패: " + ex.Message); }
+            catch (Exception ex) { Lg.I("[저사양 검증] 실패: " + ex.Message); }
             finally { HalfRender.Suppress = false; Fsr.Suppress = false; }
         }
 
@@ -114,7 +114,7 @@ namespace StutterFix
             double best = double.MaxValue; int bx = 0, by = 0;
             for (int dy = -1; dy <= 1; dy++) for (int dx = -1; dx <= 1; dx++) { double d = Diff(a, b, dx, dy); if (d < best) { best = d; bx = dx; by = dy; } }
             ScaleN++; ScaleDiffSum += best; if (bx != 0 || by != 0) ScaleMisaligned++;
-            Main.Entry.Logger.Log(string.Format("[저사양 검증] 해상도 {0}% ({1}x{2}): 원래 해상도와 평균 차이 {3:F2}/255, 가장 잘 맞는 어긋남 ({4},{5}){6}",
+            Lg.I(string.Format("[저사양 검증] 해상도 {0}% ({1}x{2}): 원래 해상도와 평균 차이 {3:F2}/255, 가장 잘 맞는 어긋남 ({4},{5}){6}",
                 LowEnd.EffectivePct, camRT.width, camRT.height, best, bx, by,
                 fsrText));
         }
@@ -209,7 +209,7 @@ namespace StutterFix
             RenderTexture.ReleaseTemporary(truthShot); RenderTexture.ReleaseTemporary(fixedShot); RenderTexture.ReleaseTemporary(rawShot);
             double df = Diff(F, T, 0, 0), dr = Diff(R, T, 0, 0);
             HalfN++; HalfFixSum += df; HalfRawSum += dr; if (df <= dr) HalfBetter++;
-            Main.Entry.Logger.Log(string.Format("[저사양 검증] 반만 그리기: 진짜 화면과 평균 차이 - 옮긴 것 {0:F2}/255, 안 옮긴 것 {1:F2}/255 | 카메라 이동 ({2:F0},{3:F0})px 회전 {4:F1}도 확대 {5:F3}",
+            Lg.I(string.Format("[저사양 검증] 반만 그리기: 진짜 화면과 평균 차이 - 옮긴 것 {0:F2}/255, 안 옮긴 것 {1:F2}/255 | 카메라 이동 ({2:F0},{3:F0})px 회전 {4:F1}도 확대 {5:F3}",
                 df, dr, movePx.x, movePx.y, dRot, zoom));
         }
 

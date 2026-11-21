@@ -80,10 +80,10 @@ namespace StutterFix
                 if (sp != null) foreach (var m in sp.GetMethods(AccessTools.all))
                     if (m.Name == "StartEffect" && m.DeclaringType == sp && !m.IsAbstract)
                         h.Patch(m, prefix: new HarmonyMethod(typeof(Precheck), nameof(ParticlePre)));
-                Main.Entry.Logger.Log("[미리 확인] 설치" + (sp == null ? " (파티클 설정 효과 못 찾음 - 끔)" : ""));
+                Lg.I("[미리 확인] 설치" + (sp == null ? " (파티클 설정 효과 못 찾음 - 끔)" : ""));
                 if (sp == null) Enabled = false;   // 애니메이션 사전을 바꾸는 길 하나를 못 막으면 쓰지 않는다
             }
-            catch (Exception ex) { Enabled = false; Main.Entry.Logger.Log("[미리 확인] 설치 실패, 끔: " + ex.Message); }
+            catch (Exception ex) { Enabled = false; Lg.I("[미리 확인] 설치 실패, 끔: " + ex.Message); }
         }
 
         public static void DecoTouchPre(scrDecoration __instance, System.Reflection.MethodBase __originalMethod) { if (Active != 0) InvisibleSkip.TouchDeco(__instance, __originalMethod.Name); }
@@ -103,7 +103,7 @@ namespace StutterFix
                 if (p.Dirty == null) { p.Dirty = new HashSet<scrDecoration>(FastMove.DecoEq); p.DirtyList = new List<scrDecoration>(); }
                 if (!p.Dirty.Add(d)) continue;
                 p.DirtyList.Add(d); InvTouch++;
-                if (Edition.Dev && p.DirtyList.Count == 1 && ++logged <= 30) Main.Entry.Logger.Log(string.Format("[미리 확인] 장식 {0}개 효과 ({1:F2}초): 확인한 장식이 건드려짐 - {2} ({3})", p.Targets.Count, startRef(p.Fx), why, d.name));
+                if (Edition.Dev && p.DirtyList.Count == 1 && ++logged <= 30) Lg.I(string.Format("[미리 확인] 장식 {0}개 효과 ({1:F2}초): 확인한 장식이 건드려짐 - {2} ({3})", p.Targets.Count, startRef(p.Fx), why, d.name));
                 if (p.DirtyList.Count > p.Targets.Count / 4) { p.Valid = false; TooDirty++; }
             }
         }
@@ -134,7 +134,7 @@ namespace StutterFix
         // ── 매 프레임 (게임이 이번 프레임의 효과를 꺼낸 직후) ──
         public static void VfxPost(scrVfxPlus __instance)
         {
-            try { Tick(__instance); } catch (Exception ex) { ResetAll(); Enabled = false; Main.Entry.Logger.Log("[미리 확인] 오류로 끔: " + ex.Message); }
+            try { Tick(__instance); } catch (Exception ex) { ResetAll(); Enabled = false; Lg.I("[미리 확인] 오류로 끔: " + ex.Message); }
         }
 
         private static long t0; private static long budgetTicks;
@@ -269,7 +269,7 @@ namespace StutterFix
         private static void NotNoopWhy(Plan p, string why)
         {
             p.Valid = false; NotNoop++;
-            if (Edition.Dev && ++logged <= 20) Main.Entry.Logger.Log(string.Format("[미리 확인] 장식 {0}개 효과 ({1:F2}초) 포기: {2} ({3}번째 장식)", p.Targets.Count, startRef(p.Fx), why, p.Checked + 1));
+            if (Edition.Dev && ++logged <= 20) Lg.I(string.Format("[미리 확인] 장식 {0}개 효과 ({1:F2}초) 포기: {2} ({3}번째 장식)", p.Targets.Count, startRef(p.Fx), why, p.Checked + 1));
             if (FirstNotNoop.Length < 200 && FirstNotNoop.IndexOf(why, StringComparison.Ordinal) < 0) FirstNotNoop += (FirstNotNoop.Length > 0 ? ", " : "") + why;
         }
 

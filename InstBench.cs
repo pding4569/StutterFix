@@ -22,7 +22,7 @@ namespace StutterFix
             internal string Key;
             internal double Frame, Tail, Main;
         }
-        static void Log(string s) { Main.Entry.Logger.Log("[마이크로벤치] instbench " + s); }
+        static void Log(string s) { Lg.I("[마이크로벤치] instbench " + s); }
         static double Ms(long ticks) { return ticks * 1000.0 / Stopwatch.Frequency; }
         static string F(double value) { return value.ToString("F6", CultureInfo.InvariantCulture); }
 

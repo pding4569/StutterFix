@@ -78,11 +78,11 @@ namespace StutterFix
                     if (fixedUp != null)
                         entry.OnFixedUpdate = (e, dt) => Measure(id, () => fixedUp(e, dt));
                 }
-                Main.Entry.Logger.Log("mod watch installed");
+                Lg.I("mod watch installed");
             }
             catch (Exception ex)
             {
-                Main.Entry.Logger.Error("mod watch install failed: " + ex.Message);
+                Lg.E("mod watch install failed: " + ex.Message);
             }
         }
 
@@ -135,7 +135,7 @@ namespace StutterFix
                 if (mb >= 10) parts.Add(string.Format("{0} {1:F0}MB", kv.Key, mb));
                 kv.Value.TotalBytes = 0;
             }
-            Main.Entry.Logger.Log("[모드별 할당] " + (parts.Count > 0 ? string.Join(", ", parts.ToArray()) : "모드들은 거의 안 씀 (게임 본체가 잡는 중)"));
+            Lg.I("[모드별 할당] " + (parts.Count > 0 ? string.Join(", ", parts.ToArray()) : "모드들은 거의 안 씀 (게임 본체가 잡는 중)"));
         }
     }
 }

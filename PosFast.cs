@@ -169,7 +169,7 @@ namespace StutterFix
             if (field == null) return;
             mismatch++; e.Rejected = true; e.Has = false;
             if (first == "none") first = d.name + " field=" + field;
-            if (mismatch == 1) Main.Entry.Logger.Log("[posfast] mismatch=" + mismatch + " first=" + first
+            if (mismatch == 1) Lg.I("[posfast] mismatch=" + mismatch + " first=" + first
                 + "; decoration rejected; further counts in posfast state");
         }
         internal static string Command(string arg)

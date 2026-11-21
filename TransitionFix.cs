@@ -50,7 +50,7 @@ namespace StutterFix
                     h.Patch(mark, prefix: new HarmonyMethod(typeof(TransitionFix), nameof(SkipWhileKeeping)));
                     h.Patch(unload, prefix: new HarmonyMethod(typeof(TransitionFix), nameof(SkipWhileKeeping)));
                 }
-                else Main.Entry.Logger.Log("[전환] 이미지 유지: 게임 코드 모양이 달라 끔");
+                else Lg.I("[전환] 이미지 유지: 게임 코드 모양이 달라 끔");
 
                 var co = AccessTools.Method(typeof(scrController), "ResetCustomLevel");
                 var moveNext = co == null ? null : AccessTools.EnumeratorMoveNext(co);
@@ -60,16 +60,16 @@ namespace StutterFix
                     h.Patch(moveNext, prefix: new HarmonyMethod(typeof(TransitionFix), nameof(RestartPrefix)), finalizer: new HarmonyMethod(typeof(TransitionFix), nameof(RestartFinalizer)));
                     h.Patch(reset, prefix: new HarmonyMethod(typeof(TransitionFix), nameof(ResetPrefix)));
                 }
-                else Main.Entry.Logger.Log("[전환] 다시 하기 장식 설정 줄이기: 게임 코드 모양이 달라 끔");
+                else Lg.I("[전환] 다시 하기 장식 설정 줄이기: 게임 코드 모양이 달라 끔");
 
                 foreach (var name in new[] { "SwitchToEditMode", "Play" })
                 {
                     var m = AccessTools.Method(typeof(scnEditor), name);
                     if (m != null) h.Patch(m, prefix: new HarmonyMethod(typeof(TransitionFix), nameof(TimePrefix)), finalizer: new HarmonyMethod(typeof(TransitionFix), nameof(TimeFinalizer)));
                 }
-                Main.Entry.Logger.Log("[전환] 설치");
+                Lg.I("[전환] 설치");
             }
-            catch (Exception ex) { Main.Entry.Logger.Log("[전환] 설치 실패: " + ex.Message); }
+            catch (Exception ex) { Lg.I("[전환] 설치 실패: " + ex.Message); }
         }
 
         // ── 1) 이미지 유지 ──
@@ -107,7 +107,7 @@ namespace StutterFix
             {
                 pending = false; Fallbacks++;
                 try { var mgr = scrDecorationManager.instance; if (mgr != null) mgr.ResetDecorations(); LoadFix.AfterRetryReset(); }
-                catch (Exception ex) { Main.Entry.Logger.Log("[전환] 장식 다시 설정(대신 부름) 실패: " + ex.Message); }
+                catch (Exception ex) { Lg.I("[전환] 장식 다시 설정(대신 부름) 실패: " + ex.Message); }
             }
             if (SceneReset.Count != resetsAtStart)   // 이번 MoveNext 에서 실제로 되돌렸다 (게임 화면은 닦기 전환 뒤)
             {
@@ -129,7 +129,7 @@ namespace StutterFix
         {
             double ms = (Stopwatch.GetTimestamp() - t0) * 1000.0 / Stopwatch.Frequency;
             if (ImagesKept != lastKept) { extra += " (이미지 " + (ImagesKept - lastKept) + "장 그대로 둠)"; lastKept = ImagesKept; }
-            Main.Entry.Logger.Log(string.Format("[전환] {0} {1:F0}ms{2}", what, ms, extra));
+            Lg.I(string.Format("[전환] {0} {1:F0}ms{2}", what, ms, extra));
         }
 
         // (개발자용) 건너뜀/안 건너뜀 재생 준비 끝 상태 비교
@@ -147,11 +147,11 @@ namespace StutterFix
                     string detail;
                     int diff = LoadFix.Compare(all, lastSnap, snap, out detail);
                     string kind = lastSkipped == skipped ? (skipped ? "건너뜀끼리(기준선)" : "안 건너뜀끼리(기준선)") : "건너뜀 대 안 건너뜀";
-                    Main.Entry.Logger.Log(string.Format("[전환 검증] {0}: 장식 {1}개 중 다시 하기 뒤 상태가 다른 것 {2}개{3}", kind, all.Count, diff, detail));
+                    Lg.I(string.Format("[전환 검증] {0}: 장식 {1}개 중 다시 하기 뒤 상태가 다른 것 {2}개{3}", kind, all.Count, diff, detail));
                 }
                 lastSnap = snap; lastSkipped = skipped; lastKey = key;
             }
-            catch (Exception ex) { Main.Entry.Logger.Log("[전환 검증] 실패: " + ex.Message); }
+            catch (Exception ex) { Lg.I("[전환 검증] 실패: " + ex.Message); }
         }
     }
 }

@@ -26,7 +26,7 @@ namespace StutterFix
         static string baselineKey;
         static double baselineMain, baselineMainTail, baselineFrame, baselineTail;
         static readonly string[] Modes = { "renderers", "a-buffer", "b-lists", "c-job" };
-        static void Log(string s) { Main.Entry.Logger.Log("[마이크로벤치] meshbench " + s); }
+        static void Log(string s) { Lg.I("[마이크로벤치] meshbench " + s); }
         static string F(double v) { return v.ToString("F6", CultureInfo.InvariantCulture); }
         static double Ms(long ticks) { return ticks * 1000.0 / Stopwatch.Frequency; }
 

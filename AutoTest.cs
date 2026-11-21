@@ -59,7 +59,7 @@ namespace StutterFix
                     try
                     {
                         PMC c; GetProcessMemoryInfo(GetCurrentProcess(), out c, (uint)System.Runtime.InteropServices.Marshal.SizeOf(typeof(PMC)));
-                        Main.Entry.Logger.Log(string.Format("[자동 시험] 메모리 {0:F0}초: 힙 {1}MB, 프로세스 {2}MB(실제 램 {3}MB), 프레임 {4} {5}",
+                        Lg.I(string.Format("[자동 시험] 메모리 {0:F0}초: 힙 {1}MB, 프로세스 {2}MB(실제 램 {3}MB), 프레임 {4} {5}",
                             sw.Elapsed.TotalSeconds, GC.GetTotalMemory(false) >> 20, (long)c.PrivateUsage.ToUInt64() >> 20, (long)c.WorkingSetSize.ToUInt64() >> 20, MainFrame, Phase));
                     }
                     catch { }
@@ -117,12 +117,12 @@ namespace StutterFix
                 string done = Path.Combine(modDir, "autotest.done");
                 if (File.Exists(done)) File.Delete(done);
                 File.Move(f, done);
-                Main.Entry.Logger.Log("[자동 시험] 시작: " + steps.Count + "단계 - " + string.Join(" / ", steps.ToArray()));
+                Lg.I("[자동 시험] 시작: " + steps.Count + "단계 - " + string.Join(" / ", steps.ToArray()));
             }
-            catch (Exception ex) { steps = null; Main.Entry.Logger.Log("[자동 시험] 읽기 실패: " + ex.Message); }
+            catch (Exception ex) { steps = null; Lg.I("[자동 시험] 읽기 실패: " + ex.Message); }
         }
 
-        private static void Log(string s) { Main.Entry.Logger.Log("[자동 시험] " + s); }
+        private static void Log(string s) { Lg.I("[자동 시험] " + s); }
 
         private static float watchStart = -1, watchNext; private static int watchBad, watchChecks; private static readonly HashSet<int> watchSeen = new HashSet<int>();
         private static object spamMgr; private static scrPlanet spamPlanet; private static System.Reflection.MethodInfo spamShow;
@@ -681,9 +681,9 @@ namespace StutterFix
                         new System.Threading.Thread(() =>
                         {
                             System.Threading.Thread.Sleep((int)(delay * 1000));
-                            AltTab(); Main.Entry.Logger.Log("[자동 시험] Alt+Tab 나감 (옆 스레드)");
+                            AltTab(); Lg.I("[자동 시험] Alt+Tab 나감 (옆 스레드)");
                             System.Threading.Thread.Sleep((int)(hold * 1000));
-                            AltTab(); Main.Entry.Logger.Log("[자동 시험] Alt+Tab 돌아옴 (옆 스레드)");
+                            AltTab(); Lg.I("[자동 시험] Alt+Tab 돌아옴 (옆 스레드)");
                         }) { IsBackground = true, Name = "StutterFix.AutoTestAltTab" }.Start();
                         Log(string.Format("Alt+Tab 예약: {0}초 뒤 나갔다가 {1}초 뒤 돌아옴", delay, hold));
                         return true;

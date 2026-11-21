@@ -122,7 +122,7 @@ namespace StutterFix
             return result.ToString().TrimEnd();
         }
 
-        static void Log(string s) => Main.Entry.Logger.Log("[decorender] " + s);
+        static void Log(string s) => Lg.I("[decorender] " + s);
         static string F(double x) => x.ToString("F6", CultureInfo.InvariantCulture);
         internal static bool Step(string arg, string modDir)
         {

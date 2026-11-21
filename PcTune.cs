@@ -114,11 +114,11 @@ namespace StutterFix
                 VramLow = !Integrated && SystemInfo.graphicsMemorySize > 0 && SystemInfo.graphicsMemorySize < 3000;
                 RamLow = RamMB > 0 && RamMB < 12000;
                 HasResult = true;
-                Main.Entry.Logger.Log(string.Format("[PC 맞춤] 측정 {0}ms: CPU {1} ({2:F0}, 1ms 에 {3:F0}) | GPU {4}{5} ({6:F0}, {7}x{8} 복사 100만 픽셀당 {9:F4}ms) | RAM {10}MB, 코어 {11}, 주사율 {12}Hz -> {13}",
+                Lg.I(string.Format("[PC 맞춤] 측정 {0}ms: CPU {1} ({2:F0}, 1ms 에 {3:F0}) | GPU {4}{5} ({6:F0}, {7}x{8} 복사 100만 픽셀당 {9:F4}ms) | RAM {10}MB, 코어 {11}, 주사율 {12}Hz -> {13}",
                     sw.ElapsedMilliseconds, CpuName, CpuScore, cpu, GpuName, Integrated ? " (내장 그래픽)" : "", GpuScore, w, h, gpu, RamMB, Cores, Refresh,
                     (CpuWeak || GpuWeak || RamLow) ? ("약한 쪽: " + (CpuWeak ? "CPU " : "") + (GpuWeak ? "GPU " : "") + (RamLow ? "RAM" : "")) : "충분함"));
             }
-            catch (Exception ex) { HasResult = false; Main.Entry.Logger.Log("[PC 맞춤] 측정 실패: " + ex.Message); }
+            catch (Exception ex) { HasResult = false; Lg.I("[PC 맞춤] 측정 실패: " + ex.Message); }
         }
 
         // ── 추천 ──
@@ -169,7 +169,7 @@ namespace StutterFix
             Main.Config.TuneBackup = string.Join(";", backup.ToArray());
             Main.ApplyConfig();
             try { Main.Config.Save(Main.Entry); } catch { }
-            Main.Entry.Logger.Log("[PC 맞춤] 적용: " + string.Join(", ", labels.ToArray()) + " (되돌리기용 저장: " + Main.Config.TuneBackup + ")");
+            Lg.I("[PC 맞춤] 적용: " + string.Join(", ", labels.ToArray()) + " (되돌리기용 저장: " + Main.Config.TuneBackup + ")");
             return labels;
         }
 
@@ -193,7 +193,7 @@ namespace StutterFix
             c.TuneBackup = ""; c.TuneNotice = "";
             Main.ApplyConfig();
             try { c.Save(Main.Entry); } catch { }
-            Main.Entry.Logger.Log("[PC 맞춤] 되돌림");
+            Lg.I("[PC 맞춤] 되돌림");
         }
 
         // ── 처음 한 번 자동 ──

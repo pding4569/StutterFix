@@ -44,7 +44,7 @@ namespace StutterFix
         {
             var gp = AccessTools.Method(typeof(FloorMesh), "GetPositions", new[] { typeof(float), typeof(float), typeof(float), typeof(float), typeof(int) });
             var aetf = AccessTools.Method(typeof(scnGame), "ApplyEventsToFloors", new[] { typeof(List<scrFloor>), typeof(LevelData), typeof(scrLevelMaker), typeof(List<LevelEvent>) });
-            if (gp == null || aetf == null) { Main.Entry.Logger.Log("[타일 메시] 게임 코드 모양이 달라 미리 만들기 안 함"); return; }
+            if (gp == null || aetf == null) { Lg.I("[타일 메시] 게임 코드 모양이 달라 미리 만들기 안 함"); return; }
             getPositions = AccessTools.MethodDelegate<GetPos>(gp);
             h.Patch(aetf, postfix: new HarmonyMethod(typeof(MeshWarm), nameof(Postfix)) { priority = Priority.Last });
         }
@@ -52,14 +52,14 @@ namespace StutterFix
         public static void Postfix()
         {
             if (!Enabled) return;
-            try { Run(); } catch (Exception ex) { Main.Entry.Logger.Log("[타일 메시] 미리 만들기 실패: " + ex.Message); }
+            try { Run(); } catch (Exception ex) { Lg.I("[타일 메시] 미리 만들기 실패: " + ex.Message); }
         }
 
         private static void Run()
         {
             var lm = ADOBase.lm;
             var ctrl = ADOBase.controller;
-            if (lm == null || ctrl == null || lm.listFloors == null) { if (Edition.Dev) Main.Entry.Logger.Log("[타일 메시] 레벨 없음"); return; }
+            if (lm == null || ctrl == null || lm.listFloors == null) { if (Edition.Dev) Lg.I("[타일 메시] 레벨 없음"); return; }
             var floors = lm.listFloors;
             // 키에 없는 값(육각형, 인셋)이 타일마다 다르면 같은 키를 어느 타일이 먼저 만드느냐에 따라 내용이 달라진다.
             // 육각형 타일이 있으면 하지 않고, 인셋은 모든 타일이 같은 값일 때 그 값으로 만든다.
@@ -68,10 +68,10 @@ namespace StutterFix
             {
                 var fmr = floors[i] == null ? null : floors[i].floorRenderer as FloorMeshRenderer;
                 if (fmr == null || fmr.floorMesh == null) continue;
-                if (hexRef(fmr.floorMesh)) { if (Edition.Dev) Main.Entry.Logger.Log("[타일 메시] 육각형 타일이 있어 미리 만들기 안 함 (타일 " + i + ")"); return; }
+                if (hexRef(fmr.floorMesh)) { if (Edition.Dev) Lg.I("[타일 메시] 육각형 타일이 있어 미리 만들기 안 함 (타일 " + i + ")"); return; }
                 if (finRef(fmr.floorMesh)) finT++; else finF++;
             }
-            if (finT > 0 && finF > 0) { if (Edition.Dev) Main.Entry.Logger.Log("[타일 메시] 인셋 값이 타일마다 달라 미리 만들기 안 함 (켬 " + finT + ", 끔 " + finF + ")"); return; }
+            if (finT > 0 && finF > 0) { if (Edition.Dev) Lg.I("[타일 메시] 인셋 값이 타일마다 달라 미리 만들기 안 함 (켬 " + finT + ", 끔 " + finF + ")"); return; }
             fin = finT > 0;
             // 같은 타일 목록에 같은 효과 구성이면(에디터 재생·나가기를 되풀이) 키는 이미 다 캐시에 있다. 키 문자열을 다시 만들지 않는다.
             long fp = floors.Count;
@@ -116,7 +116,7 @@ namespace StutterFix
             Made += made;
             lastFloors = floors; lastFp = fp; lastCache = FloorMesh.cache.Count;
             if (made > 0 || Edition.Dev)
-                Main.Entry.Logger.Log(string.Format("[타일 메시] 색 바꾸기 효과 {0}개, 타일·스타일 {1}가지 -> 새로 미리 만든 메시 {2}개 {3:F0}ms (캐시 {4}개)",
+                Lg.I(string.Format("[타일 메시] 색 바꾸기 효과 {0}개, 타일·스타일 {1}가지 -> 새로 미리 만든 메시 {2}개 {3:F0}ms (캐시 {4}개)",
                     effects, tiles, made, (Stopwatch.GetTimestamp() - t0) * 1000.0 / Stopwatch.Frequency, FloorMesh.cache.Count));
         }
 

@@ -27,7 +27,7 @@ namespace StutterFix
             try
             {
                 var ev = AccessTools.TypeByName("ADOFAI.LevelEvent") ?? AccessTools.TypeByName("LevelEvent");
-                if (ev == null) { Main.Entry.Logger.Log("[맵 파일 읽기] 이벤트 바꾸기: 게임 코드 모양이 달라 끔"); return; }
+                if (ev == null) { Lg.I("[맵 파일 읽기] 이벤트 바꾸기: 게임 코드 모양이 달라 끔"); return; }
                 replaced = 0;
                 foreach (var m in ev.GetMethods(AccessTools.all))
                     if (m.Name == "Decode" && m.DeclaringType == ev && !m.IsAbstract)
@@ -38,10 +38,10 @@ namespace StutterFix
                     foreach (var m in ld.GetMethods(AccessTools.all))
                         if (m.Name == "Decode" && m.GetParameters().Length == 2 && m.GetParameters()[0].ParameterType == typeof(Dictionary<string, object>))
                             h.Patch(m, prefix: new HarmonyMethod(typeof(DecodeFix), nameof(TimePrefix)), finalizer: new HarmonyMethod(typeof(DecodeFix), nameof(TimeFinalizer)));
-                if (replaced == 0) { Main.Entry.Logger.Log("[맵 파일 읽기] 이벤트 바꾸기: 바꿀 호출이 없어 효과 없음"); return; }
-                Main.Entry.Logger.Log("[맵 파일 읽기] 이벤트로 바꾸기의 열거형 변환 캐시 설치 (바꾼 곳 " + replaced + ")");
+                if (replaced == 0) { Lg.I("[맵 파일 읽기] 이벤트 바꾸기: 바꿀 호출이 없어 효과 없음"); return; }
+                Lg.I("[맵 파일 읽기] 이벤트로 바꾸기의 열거형 변환 캐시 설치 (바꾼 곳 " + replaced + ")");
             }
-            catch (Exception ex) { Main.Entry.Logger.Log("[맵 파일 읽기] 이벤트 바꾸기 설치 실패: " + ex.Message); }
+            catch (Exception ex) { Lg.I("[맵 파일 읽기] 이벤트 바꾸기 설치 실패: " + ex.Message); }
         }
 
         internal static double LastDecodeMs;

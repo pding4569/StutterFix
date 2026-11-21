@@ -44,9 +44,9 @@ namespace StutterFix
                         h.Patch(m, prefix: new HarmonyMethod(typeof(TexCompress), nameof(CompressPrefix)) { priority = Priority.First });
                 var apply = AccessTools.Method(typeof(Texture2D), "Apply", new[] { typeof(bool), typeof(bool) });
                 if (apply != null) h.Patch(apply, prefix: new HarmonyMethod(typeof(TexCompress), nameof(ApplyPrefix)) { priority = Priority.First });
-                Main.Entry.Logger.Log("[이미지 압축] 설치");
+                Lg.I("[이미지 압축] 설치");
             }
-            catch (Exception ex) { Main.Entry.Logger.Log("[이미지 압축] 설치 실패: " + ex.Message); }
+            catch (Exception ex) { Lg.I("[이미지 압축] 설치 실패: " + ex.Message); }
         }
 
         // 메인 스레드: 미리 푼 이미지를 텍스처에 넣은 직후 (압축 결과의 주인이 여기로 넘어온다)
@@ -89,7 +89,7 @@ namespace StutterFix
                 Substituted++;
                 return true;
             }
-            catch (Exception ex) { Main.Entry.Logger.Log("[이미지 압축] 넣기 실패, 원래대로: " + ex.Message); return false; }
+            catch (Exception ex) { Lg.I("[이미지 압축] 넣기 실패, 원래대로: " + ex.Message); return false; }
             finally { Marshal.FreeHGlobal(p.Blocks); }
         }
 
@@ -113,10 +113,10 @@ namespace StutterFix
                 bool sameFmt = copy.format == (p.Dxt5 ? TextureFormat.DXT5 : TextureFormat.DXT1);
                 double eo = DxtEncoder.MeanError(op, p.W, p.H, layout, (byte*)p.Blocks, p.Dxt5);
                 double eu = sameFmt ? DxtEncoder.MeanError(op, p.W, p.H, layout, up, p.Dxt5) : -1;
-                Main.Entry.Logger.Log(string.Format("[이미지 압축 검증] {0}x{1} {2}: 원본과의 평균 오차 - 이 모드 {3:F2}, 유니티 {4:F2} (/255), 유니티 형식 {5}{6}, 유니티 압축 {7:F0}ms",
+                Lg.I(string.Format("[이미지 압축 검증] {0}x{1} {2}: 원본과의 평균 오차 - 이 모드 {3:F2}, 유니티 {4:F2} (/255), 유니티 형식 {5}{6}, 유니티 압축 {7:F0}ms",
                     p.W, p.H, p.Src, eo, eu, copy.format, sameFmt ? " (같음)" : " (다름)", unityMs));
             }
-            catch (Exception ex) { Main.Entry.Logger.Log("[이미지 압축 검증] 실패: " + ex.Message); }
+            catch (Exception ex) { Lg.I("[이미지 압축 검증] 실패: " + ex.Message); }
             finally { verifying = false; if (copy != null) UnityEngine.Object.Destroy(copy); }
         }
 

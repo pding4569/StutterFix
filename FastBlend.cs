@@ -84,7 +84,7 @@ namespace StutterFix
             add = Make("Legacy Shaders/Particles/Additive");
             screen = Make("Legacy Shaders/Particles/Additive (Soft)");
             multiply = Make("Legacy Shaders/Particles/Multiply");
-            if (Edition.Dev) Main.Entry.Logger.Log(string.Format("[블렌드] 대신 쓸 셰이더: 더하기 {0}, 스크린 {1}, 곱하기 {2}", add != null, screen != null, multiply != null));
+            if (Edition.Dev) Lg.I(string.Format("[블렌드] 대신 쓸 셰이더: 더하기 {0}, 스크린 {1}, 곱하기 {2}", add != null, screen != null, multiply != null));
         }
 
         private static Material For(BlendMode mode)
@@ -148,7 +148,7 @@ namespace StutterFix
             }
             catch { }
             Status = n + "";
-            if (Edition.Dev) Main.Entry.Logger.Log("[블렌드] 복사 없이 그리기 켬: " + n + "개 바꿈");
+            if (Edition.Dev) Lg.I("[블렌드] 복사 없이 그리기 켬: " + n + "개 바꿈");
         }
 
         private static void RestoreAll()
@@ -170,7 +170,7 @@ namespace StutterFix
             }
             swapped.Clear();
             queue.Clear();
-            if (Edition.Dev) Main.Entry.Logger.Log("[블렌드] 복사 없이 그리기 끔: " + n + "개 원래대로");
+            if (Edition.Dev) Lg.I("[블렌드] 복사 없이 그리기 끔: " + n + "개 원래대로");
         }
 
         // ── (개발자용) 비교 촬영 ──────────────────────────────────────
@@ -207,7 +207,7 @@ namespace StutterFix
             yield return new WaitForEndOfFrame();
             Texture2D a = null, b = null;
             try { a = RenderCams(); SwapAll(); b = RenderCams(); }
-            catch (System.Exception ex) { Main.Entry.Logger.Log("[블렌드 비교] 그리기 실패: " + ex.Message); }
+            catch (System.Exception ex) { Lg.I("[블렌드 비교] 그리기 실패: " + ex.Message); }
             if (!active) RestoreAll();
             suspended = false;
             if (a == null || b == null) yield break;
@@ -235,11 +235,11 @@ namespace StutterFix
                 System.IO.File.WriteAllBytes(System.IO.Path.Combine(dir, "새방식-" + stamp + ".png"), b.EncodeToPNG());
                 System.IO.File.WriteAllBytes(System.IO.Path.Combine(dir, "차이-" + stamp + ".png"), dt.EncodeToPNG());
                 Object.Destroy(dt);
-                Main.Entry.Logger.Log(string.Format("[블렌드 비교] {0}x{1} | 평균 차이 {2:F3}/255, 최대 {3}/255 | 2 넘게 다른 픽셀 {4:F2}%, 8 넘게 {5:F2}% | 전체 밝기 원래 {6:F2} 새 {7:F2} | {8} ({9})",
+                Lg.I(string.Format("[블렌드 비교] {0}x{1} | 평균 차이 {2:F3}/255, 최대 {3}/255 | 2 넘게 다른 픽셀 {4:F2}%, 8 넘게 {5:F2}% | 전체 밝기 원래 {6:F2} 새 {7:F2} | {8} ({9})",
                     a.width, a.height, (double)sum / n, max, 100.0 * over2 / n, 100.0 * over8 / n,
                     (double)brightO / n / 3, (double)brightF / n / 3, dir, stamp));
             }
-            catch (System.Exception ex) { Main.Entry.Logger.Log("[블렌드 비교] 실패: " + ex.Message); }
+            catch (System.Exception ex) { Lg.I("[블렌드 비교] 실패: " + ex.Message); }
             Object.Destroy(a); Object.Destroy(b);
         }
     }

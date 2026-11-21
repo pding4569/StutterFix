@@ -45,7 +45,7 @@ namespace StutterFix
                 if (!hooked) { Camera.onPreCull += PreCull; hooked = true; }
                 if (runner == null) { var go = new GameObject("StutterFix.HalfRender"); UnityEngine.Object.DontDestroyOnLoad(go); go.hideFlags = HideFlags.HideAndDontSave; runner = go.AddComponent<HalfRenderRunner>(); }
             }
-            catch (Exception ex) { Main.Entry.Logger.Log("[저사양] 반만 그리기 설치 실패: " + ex.Message); }
+            catch (Exception ex) { Lg.I("[저사양] 반만 그리기 설치 실패: " + ex.Message); }
         }
 
         internal static void Shutdown()
@@ -77,7 +77,7 @@ namespace StutterFix
                 else if (!skip && skipping) EnableBack(__instance);
                 if (skip) Skipped++; else Rendered++;
             }
-            catch (Exception ex) { Enabled = false; Restore(); Main.Entry.Logger.Log("[저사양] 반만 그리기 오류로 끔: " + ex.Message); }
+            catch (Exception ex) { Enabled = false; Restore(); Lg.I("[저사양] 반만 그리기 오류로 끔: " + ex.Message); }
         }
 
         private static void EnableBack(scrCamera sc)

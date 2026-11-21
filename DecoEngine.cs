@@ -342,7 +342,7 @@ namespace StutterFix
                         if ((s.Advanced & (1 << j)) != 0 && s.Slots[j] != null) s.Slots[j].EngineSkipFrame = Time.frameCount;
                     Publish(s);
                     Exclude(s); fallbacks++;
-                    Main.Entry.Logger.Log("[decoengine] fallback " + ex.GetType().Name); continue;
+                    Lg.I("[decoengine] fallback " + ex.GetType().Name); continue;
                 }
                 decorations++;
                 if (s.LateEntry.EngineRejected)

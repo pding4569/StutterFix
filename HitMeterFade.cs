@@ -28,7 +28,7 @@ namespace StutterFix
             try
             {
                 var t = AccessTools.TypeByName("scrHitErrorMeter");
-                if (t == null) { Main.Entry.Logger.Log("[오차 막대] 형식 없음"); return; }
+                if (t == null) { Lg.I("[오차 막대] 형식 없음"); return; }
                 swapped = 0;
                 // 옛 게임: 눈금 그리기 함수가 DOColor 를 직접 부른다. 알파 3.4(2026-10-06)부터는 눈금 풀(ADOFAI.ErrorMeterTick)의 Show 가 부른다.
                 foreach (var name in new[] { "DrawStraightTick", "DrawCurvedTick" })
@@ -42,9 +42,9 @@ namespace StutterFix
                     var show = AccessTools.Method(tick, "Show");
                     if (show != null) h.Patch(show, transpiler: new HarmonyMethod(typeof(HitMeterFade), nameof(Transpiler)));
                 }
-                Main.Entry.Logger.Log("[오차 막대] 눈금 가볍게 사라지기 설치 (바꾼 곳 " + swapped + "개)");
+                Lg.I("[오차 막대] 눈금 가볍게 사라지기 설치 (바꾼 곳 " + swapped + "개)");
             }
-            catch (Exception ex) { Main.Entry.Logger.Log("[오차 막대] 설치 실패: " + ex.Message); }
+            catch (Exception ex) { Lg.I("[오차 막대] 설치 실패: " + ex.Message); }
         }
 
         public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> ins)

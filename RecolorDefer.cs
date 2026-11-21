@@ -60,11 +60,11 @@ namespace StutterFix
                 System.Reflection.MethodInfo se = null;
                 foreach (var m in typeof(ffxRecolorFloorPlus).GetMethods(AccessTools.all))
                     if (m.Name == "StartEffect" && m.DeclaringType == typeof(ffxRecolorFloorPlus) && !m.IsAbstract) se = m;
-                if (se == null) { Main.Entry.Logger.Log("[색 바꾸기 미루기] StartEffect 없음"); return; }
+                if (se == null) { Lg.I("[색 바꾸기 미루기] StartEffect 없음"); return; }
                 var ua = AccessTools.Method(typeof(scrFloor), "UpdateAngle", new[] { typeof(bool) });
                 var st = AccessTools.Method(typeof(scrFloor), "SetTrackStyle", new[] { typeof(TrackStyle), typeof(bool), typeof(Color?) });
                 var cf = AccessTools.Method(typeof(scrFloor), "ColorFloor", new[] { typeof(TrackColorType), typeof(Color), typeof(Color), typeof(float), typeof(TrackColorPulse), typeof(float), typeof(int), typeof(float), typeof(Ease) });
-                if (ua == null || st == null || cf == null) { Main.Entry.Logger.Log("[색 바꾸기 미루기] 대상 함수 없음 (UpdateAngle " + (ua != null) + ", SetTrackStyle " + (st != null) + ", ColorFloor " + (cf != null) + ")"); return; }
+                if (ua == null || st == null || cf == null) { Lg.I("[색 바꾸기 미루기] 대상 함수 없음 (UpdateAngle " + (ua != null) + ", SetTrackStyle " + (st != null) + ", ColorFloor " + (cf != null) + ")"); return; }
                 h.Patch(se, prefix: new HarmonyMethod(typeof(RecolorDefer), nameof(EnterPrefix)), finalizer: new HarmonyMethod(typeof(RecolorDefer), nameof(ExitFinalizer)));
                 h.Patch(ua, prefix: new HarmonyMethod(typeof(RecolorDefer), nameof(UpdateAnglePrefix)));
                 h.Patch(st, prefix: new HarmonyMethod(typeof(RecolorDefer), nameof(SetTrackStylePrefix)));
@@ -85,7 +85,7 @@ namespace StutterFix
                     if ((m.Name == "SetToRandomColor" || m.Name == "TweenColor") && m.DeclaringType == typeof(scrFloor) && !m.IsAbstract) h.Patch(m, prefix: consumer);
                 Installed = true;
             }
-            catch (Exception ex) { Main.Entry.Logger.Log("[색 바꾸기 미루기] 설치 실패: " + ex.Message); }
+            catch (Exception ex) { Lg.I("[색 바꾸기 미루기] 설치 실패: " + ex.Message); }
         }
 
         private static readonly AccessTools.FieldRef<ffxRecolorFloorPlus, bool> usedTypeRef = AccessTools.FieldRefAccess<ffxRecolorFloorPlus, bool>("usedColorType");
@@ -218,7 +218,7 @@ namespace StutterFix
             if (!flushedThisStep) return;
             flushedThisStep = false;
             InMeshUpdate = true;
-            try { FloorMesh.UpdateAllRequired(); } catch (Exception ex) { Main.Entry.Logger.Log("[색 바꾸기 미루기] 메시 갱신 실패: " + ex.Message); }
+            try { FloorMesh.UpdateAllRequired(); } catch (Exception ex) { Lg.I("[색 바꾸기 미루기] 메시 갱신 실패: " + ex.Message); }
             finally { InMeshUpdate = false; }
         }
 
@@ -253,7 +253,7 @@ namespace StutterFix
                     flushedThisStep = true;
                 }
             }
-            catch (Exception ex) { Main.Entry.Logger.Log("[색 바꾸기 미루기] 적용 오류: " + ex.Message); }
+            catch (Exception ex) { Lg.I("[색 바꾸기 미루기] 적용 오류: " + ex.Message); }
             finally
             {
                 bypass = prev;

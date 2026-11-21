@@ -65,7 +65,7 @@ namespace StutterFix
             for(int i=1;i<=4;i++){total+=ms[i];count+=frames[i];}
             Log("[원본 프레임 창] monitor_elapsed=10..50 seconds accumulated_ms="+total.ToString("R",System.Globalization.CultureInfo.InvariantCulture)+" frames="+count+" fps="+(count*1000.0/total).ToString("R",System.Globalization.CultureInfo.InvariantCulture)+" pixels_capture=0 excludes_frames_ge_1500ms=1");
         }
-        private static void Log(string value){Main.Entry.Logger.Log(value);}
+        private static void Log(string value){Lg.I(value);}
     }
 }
 #endif

@@ -80,11 +80,11 @@ namespace StutterFix
                 lastStamp = Stopwatch.GetTimestamp();
                 lastIndex = -1;
                 installed = true;
-                Main.Entry.Logger.Log("phase watch installed (" + names.Length + " markers)");
+                Lg.I("phase watch installed (" + names.Length + " markers)");
             }
             catch (Exception ex)
             {
-                Main.Entry.Logger.Error("phase watch 설치 실패: " + ex.Message);
+                Lg.E("phase watch 설치 실패: " + ex.Message);
             }
         }
 
@@ -153,7 +153,7 @@ namespace StutterFix
             if (!installed || names.Length == 0) return;
             int frames = PerfOverlay.SongFrameCount;
             if (frames < 30) return;
-            Main.Entry.Logger.Log("[엔진 단계] 곡 평균, 프레임당: " + Rank(i => songTicks[i], frames));
+            Lg.I("[엔진 단계] 곡 평균, 프레임당: " + Rank(i => songTicks[i], frames));
             if (AllocPhases && songAlloc != null)
             {
                 float secs = Math.Max(1f, Time.realtimeSinceStartup - allocSince);
@@ -168,14 +168,14 @@ namespace StutterFix
                     if (n > 0) sb.Append(", ");
                     sb.Append(names[ix[n]]).Append(' ').Append((songAlloc[ix[n]] / 1048576.0 / secs).ToString("F3")).Append("MB/s");
                 }
-                Main.Entry.Logger.Log("[할당 단계] 곡 중 단계별 힙 증가: " + sb);
+                Lg.I("[할당 단계] 곡 중 단계별 힙 증가: " + sb);
             }
             int best, bestFrames;
             if (PerfOverlay.BestBucket(out best, out bestFrames))
-                Main.Entry.Logger.Log("[엔진 단계] 가장 가벼운 구간 " + best * 10 + "초, 프레임당: " + Rank(i => bucketTicks[best, i], bestFrames));
+                Lg.I("[엔진 단계] 가장 가벼운 구간 " + best * 10 + "초, 프레임당: " + Rank(i => bucketTicks[best, i], bestFrames));
             int worst, worstFrames;
             if (PerfOverlay.WorstBucket(out worst, out worstFrames))
-                Main.Entry.Logger.Log("[엔진 단계] 가장 무거운 구간 " + worst * 10 + "초, 프레임당: " + Rank(i => bucketTicks[worst, i], worstFrames));
+                Lg.I("[엔진 단계] 가장 무거운 구간 " + worst * 10 + "초, 프레임당: " + Rank(i => bucketTicks[worst, i], worstFrames));
         }
 
         private static string Rank(Func<int, long> t, int frames)

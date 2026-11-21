@@ -61,14 +61,14 @@ namespace StutterFix
                     $"스프라이트 {active}개 (화면 안 {visible}개) | 고유 텍스처 {uniqueTex}개 | " +
                     $"평균 공유 {sharing:F1}개/텍스처 | 텍스처 총량 약 {mbEstimate:F0}MB | 머티리얼 {materials.Count}개";
 
-                Main.Entry.Logger.Log("[scan] " + LastResult);
-                Main.Entry.Logger.Log("[scan] 많이 쓰인 텍스처: " + string.Join(", ", top));
+                Lg.I("[scan] " + LastResult);
+                Lg.I("[scan] 많이 쓰인 텍스처: " + string.Join(", ", top));
                 ScanOthers();
                 ScanComponents();
             }
             catch (Exception ex)
             {
-                Main.Entry.Logger.Error("scan failed: " + ex.Message);
+                Lg.E("scan failed: " + ex.Message);
             }
         }
 
@@ -112,12 +112,12 @@ namespace StutterFix
                     $"애니메이터 {animActive}개 | " +
                     $"메시렌더러 {meshActive}개(화면 안 {meshVisible}) | 활성 오브젝트 {goActive}개";
 
-                Main.Entry.Logger.Log("[scan2] " + line);
+                Lg.I("[scan2] " + line);
                 LastResult += "\n    " + line;
             }
             catch (Exception ex)
             {
-                Main.Entry.Logger.Error("scan2 failed: " + ex.Message);
+                Lg.E("scan2 failed: " + ex.Message);
             }
         }
 
@@ -155,13 +155,13 @@ namespace StutterFix
                 var topU = withUpdate.OrderByDescending(kv => kv.Value).Take(12)
                     .Select(kv => $"{kv.Key} x{kv.Value}");
 
-                Main.Entry.Logger.Log($"[comp] 활성 컴포넌트 {all.Length}개 / 종류 {counts.Count}가지");
-                Main.Entry.Logger.Log("[comp] 많은 것: " + string.Join(", ", top));
-                Main.Entry.Logger.Log("[comp] Update 가진 것: " + string.Join(", ", topU));
+                Lg.I($"[comp] 활성 컴포넌트 {all.Length}개 / 종류 {counts.Count}가지");
+                Lg.I("[comp] 많은 것: " + string.Join(", ", top));
+                Lg.I("[comp] Update 가진 것: " + string.Join(", ", topU));
             }
             catch (Exception ex)
             {
-                Main.Entry.Logger.Error("comp scan failed: " + ex.Message);
+                Lg.E("comp scan failed: " + ex.Message);
             }
         }
     }

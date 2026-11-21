@@ -116,14 +116,14 @@ namespace StutterFix
                     if(same)
                     {
                         Compatible=true;Rounding=mode;
-                        Main.Entry.Logger.Log("[네이티브 장식 계산] 반올림 모드 "+mode+", 엔진 대조 "+n+"개 다름 0");
+                        Lg.I("[네이티브 장식 계산] 반올림 모드 "+mode+", 엔진 대조 "+n+"개 다름 0");
                         return true;
                     }
                 }
             }
             catch{}
             Failed=true;
-            Main.Entry.Logger.Log("[네이티브 장식 계산] 엔진 대조 실패: 기존 계산 사용");
+            Lg.I("[네이티브 장식 계산] 엔진 대조 실패: 기존 계산 사용");
             return false;
         }
         internal static void Reset()

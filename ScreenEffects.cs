@@ -37,7 +37,7 @@ namespace StutterFix {
         }
         internal static bool IsOwn(Texture t)=>result!=null && t==result;
         internal static void Apply() {
-            if(!injectionChecked){injectionChecked=true;string root=Path.GetFullPath(Path.Combine(Main.Entry.Path,"..",".."));ReShadeFiles=File.Exists(Path.Combine(root,"ReShade.ini"))&&(File.Exists(Path.Combine(root,"dxgi.dll"))||File.Exists(Path.Combine(root,"d3d11.dll")));if(ReShadeFiles)Main.Entry.Logger.Log("[화면 효과] ReShade 설정·DLL 파일 있음 (실제 연결 확인 안 됨)");}
+            if(!injectionChecked){injectionChecked=true;string root=Path.GetFullPath(Path.Combine(Main.Entry.Path,"..",".."));ReShadeFiles=File.Exists(Path.Combine(root,"ReShade.ini"))&&(File.Exists(Path.Combine(root,"dxgi.dll"))||File.Exists(Path.Combine(root,"d3d11.dll")));if(ReShadeFiles)Lg.I("[화면 효과] ReShade 설정·DLL 파일 있음 (실제 연결 확인 안 됨)");}
             ++revision;RestoreQuad();
             if(!Enabled) {Release();Status="";Failed=false;return;}
             if(material==null && !Failed) try {
@@ -51,8 +51,8 @@ namespace StutterFix {
                 cachedShader=shader;
                 }
                 material=new Material(cachedShader){hideFlags=HideFlags.HideAndDontSave};
-                Main.Entry.Logger.Log("[화면 효과] 번들 준비 "+SystemInfo.graphicsDeviceType);
-            }catch(Exception e){Failed=true;Status=e.Message;Main.Entry.Logger.Log("[화면 효과] 실패: "+e.Message);}
+                Lg.I("[화면 효과] 번들 준비 "+SystemInfo.graphicsDeviceType);
+            }catch(Exception e){Failed=true;Status=e.Message;Lg.I("[화면 효과] 실패: "+e.Message);}
             LoadLut();
         }
         private static void LoadLut() {
@@ -66,7 +66,7 @@ namespace StutterFix {
                 tex=new Texture2D(2,2,TextureFormat.RGBA32,false,true){hideFlags=HideFlags.HideAndDontSave,wrapMode=TextureWrapMode.Clamp,filterMode=FilterMode.Bilinear};
                 if(!tex.LoadImage(File.ReadAllBytes(full)) || tex.width!=tex.height*tex.height || tex.height<2 || tex.height>64)throw new Exception("LUT는 N²×N PNG(N=2~64)입니다.");
                 lut=tex;tex=null;
-            }catch(Exception e){Status="LUT: "+e.Message;Main.Entry.Logger.Log("[화면 효과] "+Status);}
+            }catch(Exception e){Status="LUT: "+e.Message;Lg.I("[화면 효과] "+Status);}
             finally{if(tex!=null)UnityEngine.Object.Destroy(tex);}
         }
         internal static void RestoreQuad() {
@@ -84,7 +84,7 @@ namespace StutterFix {
                 input=src;
                 if(content!=done || revision!=doneRevision){Process(src,result);done=content;doneRevision=revision;++Frames;}else ++Reused;
                 quadMat.mainTexture=result;
-            }catch(Exception e){Failed=true;Status=e.Message;RestoreQuad();Main.Entry.Logger.Log("[화면 효과] 실패: "+e.Message);}
+            }catch(Exception e){Failed=true;Status=e.Message;RestoreQuad();Lg.I("[화면 효과] 실패: "+e.Message);}
         }
         private static void Process(RenderTexture src,RenderTexture dst,Settings fixture=null) {
             var c=fixture??Main.Config;
@@ -247,7 +247,7 @@ namespace StutterFix {
             foreach(var name in candidates)names.Add(name);
             var shaders=names.OrderBy(n=>n,StringComparer.Ordinal).Select(n=>{var s=Shader.Find(n);return n+"\tfound="+(s!=null)+"\tsupported="+(s!=null&&s.isSupported);}).ToArray();
             File.WriteAllLines(Path.Combine(dir,"shader-inventory.txt"),shaders);
-            Main.Entry.Logger.Log("[화면 효과] shader 목록 "+shaders.Length+"개 (로드된 Shader+게임 필터의 Find 이름, 효과 전체 지원 증명 아님)");
+            Lg.I("[화면 효과] shader 목록 "+shaders.Length+"개 (로드된 Shader+게임 필터의 Find 이름, 효과 전체 지원 증명 아님)");
         }
 #if DEV || AUTOTEST
         private static ShotRunner shotRunner;
@@ -269,7 +269,7 @@ namespace StutterFix {
                     File.WriteAllBytes(Path.Combine(dir,name+".png"),image.EncodeToPNG());
                     bool paired=Enabled && LastFrame==frame && input is RenderTexture && result!=null;
                     if(paired){Save((RenderTexture)input,Path.Combine(dir,name+".scene-input.png"));Save(result,Path.Combine(dir,name+".scene-output.png"));}
-                    Main.Entry.Logger.Log(FormattableString.Invariant($"[FX원본캡처] target={target:R} song={song:R} frame={frame} effect_frame={LastFrame} enabled={Enabled} glow={LastGlow} size={image.width}x{image.height} scene_pair={paired} color_space={QualitySettings.activeColorSpace}"));
+                    Lg.I(FormattableString.Invariant($"[FX원본캡처] target={target:R} song={song:R} frame={frame} effect_frame={LastFrame} enabled={Enabled} glow={LastGlow} size={image.width}x{image.height} scene_pair={paired} color_space={QualitySettings.activeColorSpace}"));
                 }finally{if(image!=null)UnityEngine.Object.Destroy(image);shotRunner=null;UnityEngine.Object.Destroy(gameObject);}
             }
         }
@@ -288,7 +288,7 @@ namespace StutterFix {
                     var cfg=EffectsGpuProbe.Configuration(name);PrepareBenchmark(cfg);
                     Process(src,dst,cfg);Save(dst,Path.Combine(dir,"gal-"+name+".png"));
                 }
-                Main.Entry.Logger.Log("[화면 효과] 갤러리 "+names.Length+"장 저장 "+src.width+"x"+src.height);
+                Lg.I("[화면 효과] 갤러리 "+names.Length+"장 저장 "+src.width+"x"+src.height);
             }finally{dst.Release();UnityEngine.Object.Destroy(dst);Apply();}
         }
         internal static RenderTexture SceneTexture(){var sc=scrCamera.instance;return sc==null?null:AccessTools.FieldRefAccess<scrCamera,RenderTexture>("camRT")(sc);}
@@ -298,7 +298,7 @@ namespace StutterFix {
             if(result==null || !(input is RenderTexture))throw new Exception("효과를 켜고 진짜 프레임을 그린 뒤 캡처하세요.");
             string dir=Path.Combine(Main.Entry.Path,"shots");Directory.CreateDirectory(dir);
             Save((RenderTexture)input,Path.Combine(dir,"fx-input.png"));Save(result,Path.Combine(dir,"fx-output.png"));
-            Main.Entry.Logger.Log("[화면 효과] 같은 프레임 입력/출력 캡처 song="+scrConductor.instance.songposition_minusi+" "+Describe());
+            Lg.I("[화면 효과] 같은 프레임 입력/출력 캡처 song="+scrConductor.instance.songposition_minusi+" "+Describe());
         }
         internal static void Fixture() {
             var old=Main.Config;var config=new Settings();var saved=RenderTexture.active;
@@ -311,18 +311,18 @@ namespace StutterFix {
                 Main.Config=config;config.FxColor=true;Apply();if(material==null)throw new Exception("효과 셰이더 준비 실패");
                 config.FxColor=false;Process(src,dst);var off=Read(dst);var baseline=Read(src);
                 int mismatch=0;for(int i=0;i<off.Length;i++)if(!off[i].Equals(baseline[i]))++mismatch;
-                Main.Entry.Logger.Log("[화면 효과 fixture] off_pixels="+off.Length+" mismatch="+mismatch);
+                Lg.I("[화면 효과 fixture] off_pixels="+off.Length+" mismatch="+mismatch);
                 if(mismatch!=0)throw new Exception("OFF 픽셀 다름");
                 for(int p=1;p<=3;p++){Preset(p);Process(src,dst);var output=Read(dst);int changed=0;for(int i=0;i<output.Length;i++)if(!output[i].Equals(baseline[i]))++changed;
                     var retained=Read(src);int altered=0;for(int i=0;i<retained.Length;i++)if(!retained[i].Equals(baseline[i]))++altered;
-                    Main.Entry.Logger.Log("[화면 효과 fixture] preset="+p+" changed="+changed+" total="+output.Length+" source_altered="+altered);if(changed==0||altered!=0)throw new Exception("출력 또는 원본 보존 검사 실패");}
-                config.FxLight=true;Process(src,dst);Main.Entry.Logger.Log("[화면 효과 fixture] light_pass=1");
+                    Lg.I("[화면 효과 fixture] preset="+p+" changed="+changed+" total="+output.Length+" source_altered="+altered);if(changed==0||altered!=0)throw new Exception("출력 또는 원본 보존 검사 실패");}
+                config.FxLight=true;Process(src,dst);Lg.I("[화면 효과 fixture] light_pass=1");
                 foreach(string name in new[]{"clear-strong","neon-strong","rays","streak","flare","tone","chromatic","grain","crt","pixel","posterize","blur","hdr","filmic","hdr-filmic","sepia","duotone","tealorange","invert","mono","night","thermal","hue","outline","emboss","halftone","tilt","soft","barrel","ripple","glitch","zoom","mirror","kaleido","letterbox","extras-all"}) {
                     var candidate=EffectsGpuProbe.Configuration(name);Process(src,dst,candidate);
                     var output=Read(dst);int changed=0,altered=0,bright=0;
                     for(int i=0;i<output.Length;i++){if(!output[i].Equals(baseline[i]))++changed;bright=Math.Max(bright,Math.Max(output[i].r,Math.Max(output[i].g,output[i].b)));}
                     var retained=Read(src);for(int i=0;i<retained.Length;i++)if(!retained[i].Equals(baseline[i]))++altered;
-                    Main.Entry.Logger.Log("[화면 효과 fixture] profile="+name+" changed="+changed+" total="+output.Length+" source_altered="+altered+" max_channel="+bright);
+                    Lg.I("[화면 효과 fixture] profile="+name+" changed="+changed+" total="+output.Length+" source_altered="+altered+" max_channel="+bright);
                     if(changed==0 || altered!=0 || candidate.FxToneMap && bright>Math.Ceiling(candidate.FxCeiling*255)+1)throw new Exception("추가 효과 픽셀 검사 실패: "+name);
                 }
                 {
@@ -334,7 +334,7 @@ namespace StutterFix {
                         Process(src,dst,EffectsGpuProbe.Configuration(name));var o=Read(dst);int row=90*320;
                         int blackMax=Math.Max(o[row].r,Math.Max(o[row].g,o[row].b)),whiteMin=Math.Min(o[row+319].r,Math.Min(o[row+319].g,o[row+319].b)),drops=0;
                         for(int x=8;x<312;x++){int a=o[row+x].r,b=o[row+x+1].r;if(b<a-2)++drops;}
-                        Main.Entry.Logger.Log("[화면 효과 fixture] ramp="+name+" black="+blackMax+" white_min="+whiteMin+" brightness_drops="+drops);
+                        Lg.I("[화면 효과 fixture] ramp="+name+" black="+blackMax+" white_min="+whiteMin+" brightness_drops="+drops);
                         if(blackMax>1 || whiteMin<253 || drops>0)throw new Exception("HDR 회색 띠 검사 실패: "+name);
                     }
                     for(int y=0;y<180;y++)for(int x=0;x<320;x++)pixels[y*320+x]=new Color32((byte)(x*7),(byte)(y*11),(byte)((x/8+y/8)%2*255),255);
@@ -346,7 +346,7 @@ namespace StutterFix {
                     config.FxLut=true;config.FxLutPath=identity;LoadLut();if(lut==null)throw new Exception("identity LUT load failed");
                     Process(src,dst);var identityPixels=Read(dst);int maximum=0;
                     for(int i=0;i<identityPixels.Length;i++){var a=identityPixels[i];var b=baseline[i];maximum=Math.Max(maximum,Math.Max(Math.Abs(a.r-b.r),Math.Max(Math.Abs(a.g-b.g),Math.Abs(a.b-b.b))));}
-                    Main.Entry.Logger.Log("[화면 효과 fixture] identity_lut_max_byte_error="+maximum);
+                    Lg.I("[화면 효과 fixture] identity_lut_max_byte_error="+maximum);
                     if(maximum>2)throw new Exception("identity LUT pixel mismatch");
                 }
             }finally{Main.Config=old;Apply();Fsr.Apply();RenderTexture.active=saved;src.Release();dst.Release();UnityEngine.Object.Destroy(src);UnityEngine.Object.Destroy(dst);UnityEngine.Object.Destroy(pattern);}

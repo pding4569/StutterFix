@@ -136,11 +136,11 @@ namespace StutterFix
                         || (Find(lines, BitbltKey) >= 0) != runningBitblt
                         || Value(lines, ModeKey) != runningMode);
                     if (pending && (!NeedsRestart || ResetByOutside != outside))
-                        Main.Entry.Logger.Log("[그래픽 설정] 이번 실행은 boot.config 가 적용되지 않았습니다 (" + (outside ? "외부 초기화" : "사용자 변경") + ")");
+                        Lg.I("[그래픽 설정] 이번 실행은 boot.config 가 적용되지 않았습니다 (" + (outside ? "외부 초기화" : "사용자 변경") + ")");
                     NeedsRestart = pending;
                     ResetByOutside = pending && outside;
-                    if (repair && !changed) Main.Entry.Logger.Log("boot.config 줄 끝을 원래대로(LF) 고침 (다음 실행부터 적용)");
-                    Main.Entry.Logger.Log("boot.config 수정: " + (enable ? JobsKey + "=" + JobsValue + " 추가" : JobsKey + " 제거") + ", 화면 출력 " + (flip ? "최신(Flip)" : "원래대로") + " (다음 실행부터 적용)");
+                    if (repair && !changed) Lg.I("boot.config 줄 끝을 원래대로(LF) 고침 (다음 실행부터 적용)");
+                    Lg.I("boot.config 수정: " + (enable ? JobsKey + "=" + JobsValue + " 추가" : JobsKey + " 제거") + ", 화면 출력 " + (flip ? "최신(Flip)" : "원래대로") + " (다음 실행부터 적용)");
                     Status = Describe() + " | 다음 실행부터 적용됩니다";
                 }
                 else Status = Describe();
@@ -148,7 +148,7 @@ namespace StutterFix
             catch (Exception ex)
             {
                 Status = "boot.config 수정 실패: " + ex.Message;
-                Main.Entry.Logger.Error(Status);
+                Lg.E(Status);
             }
         }
 

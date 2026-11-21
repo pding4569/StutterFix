@@ -25,7 +25,7 @@ namespace StutterFix
         private static bool inFrame;
         private static long deadline;
         private static long initialErrors;
-        private static void Log(string s) { Main.Entry.Logger.Log("[장식시뮬] " + s); }
+        private static void Log(string s) { Lg.I("[장식시뮬] " + s); }
 
         internal struct State
         {

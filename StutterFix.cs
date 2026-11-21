@@ -41,13 +41,15 @@ namespace StutterFix
             // 아무것도 설치하지 않고 이유만 알려 준다. (Wine/Proton 에서는 Application.platform 이 WindowsPlayer 라 그대로 동작)
             if (Application.platform != RuntimePlatform.WindowsPlayer && Application.platform != RuntimePlatform.WindowsEditor)
             {
-                modEntry.Logger.Warning("StutterFix 는 Windows 전용입니다. 이 운영체제(" + Application.platform + ")에서는 아무것도 설치하지 않고 꺼 둡니다. / StutterFix is Windows-only; disabled on this OS (" + Application.platform + ").");
+                Lg.W("StutterFix 는 Windows 전용입니다. 이 운영체제(" + Application.platform + ")에서는 아무것도 설치하지 않고 꺼 둡니다. / StutterFix is Windows-only; disabled on this OS (" + Application.platform + ").");
                 modEntry.OnGUI = e => GUILayout.Label("StutterFix 는 Windows 전용이라 이 운영체제(" + Application.platform + ")에서는 꺼져 있습니다. / StutterFix is Windows-only and is disabled on this OS.");
                 return true;
             }
+            Lg.Start();
             // 7th Beat Games 모딩 가이드라인: 로그에 개조된 게임임을 남긴다.
-            modEntry.Logger.Log("This game is modded (StutterFix " + modEntry.Info.Version + ")");
+            Lg.I("This game is modded (StutterFix " + modEntry.Info.Version + ")");
             Config = UnityModManager.ModSettings.Load<Settings>(modEntry);
+            Lg.Verbose = Edition.Dev || Edition.AutoTest || Config.VerboseLog;
             if (Config.DefaultsGen < 1)
             {
                 // 2026-10-20: 히트음 예약 묶기를 기본 켬으로 (예전 설정 파일에는 false 가 적혀 있어 한 번만 덮어쓴다. 설정창에서 끄면 그대로 유지)
@@ -75,7 +77,7 @@ namespace StutterFix
             InstallAll();
             if (Config.FlipModel < 0) { Config.FlipModel = BootConfig.FlipNow() ? 1 : 0; try { Config.Save(modEntry); } catch { } }   // 처음: 지금 boot.config 상태를 따른다
             BootConfig.Apply(Config.LegacyGfxJobs, Config.FlipModel == 1, false);
-            modEntry.Logger.Log(BootConfig.Describe());
+            Lg.I(BootConfig.Describe());
             WindowGhost.MainThread = Environment.CurrentManagedThreadId;
             WindowGhost.MainNativeThread = WindowGhost.GetCurrentThreadId();
             WindowGhost.KeepResponsive = Config.NoGhosting;
@@ -99,19 +101,19 @@ AutoTest.Init(modEntry.Path);
 }   // 모드 폴더에 autotest.txt 가 있으면 자동 시험 (AutoTest.cs)
             PerfOverlay.FrameStatsOff = !Config.FrameStats;
             // (개발자용 시험) 모드 폴더에 frame-stats-off 파일이 있으면 설정과 상관없이 끈다 - 설정을 건드리지 않고 켜고 끄며 비교하려고
-            if (Edition.Dev && System.IO.File.Exists(System.IO.Path.Combine(modEntry.Path, "frame-stats-off"))) { PerfOverlay.FrameStatsOff = true; modEntry.Logger.Log("[프레임 통계] frame-stats-off 파일이 있어 이번 실행은 끔"); }
-            try { modEntry.Logger.Log("[프레임 통계] 게임 기본: " + (FrameTimingManager.IsFeatureEnabled() ? "켜짐" : "꺼짐") + ", 이 모드: " + (Config.FrameStats ? "켬(GPU 시간 측정)" : "안 켬") + (PerfOverlay.FrameStatsOff ? " -> 이번 실행 꺼짐" : "")); } catch { }
-            if (LaunchWarning.Length > 0) modEntry.Logger.Log(LaunchWarning.Trim());
+            if (Edition.Dev && System.IO.File.Exists(System.IO.Path.Combine(modEntry.Path, "frame-stats-off"))) { PerfOverlay.FrameStatsOff = true; Lg.I("[프레임 통계] frame-stats-off 파일이 있어 이번 실행은 끔"); }
+            try { Lg.I("[프레임 통계] 게임 기본: " + (FrameTimingManager.IsFeatureEnabled() ? "켜짐" : "꺼짐") + ", 이 모드: " + (Config.FrameStats ? "켬(GPU 시간 측정)" : "안 켬") + (PerfOverlay.FrameStatsOff ? " -> 이번 실행 꺼짐" : "")); } catch { }
+            if (LaunchWarning.Length > 0) Lg.I(LaunchWarning.Trim());
             return true;
         }
 
         private static void DevPresentFlags(string dir)
         {
             Func<string, bool> has = n => System.IO.File.Exists(System.IO.Path.Combine(dir, n));
-            if (has("present-keepalive")) { WindowGhost.KeepPresent = true; Entry.Logger.Log("[첫 판 FPS] present-keepalive 파일이 있어 멈춘 동안 화면 다시 내보내기 켬"); }
-            if (has("present-flip")) { WindowGhost.PresentMode = 0; Entry.Logger.Log("[첫 판 FPS] present-flip 파일이 있어 보통 Present(0,0) 로 내보냄"); }
-            if (has("present-screen-check")) { WindowGhost.ScreenCheck = true; Entry.Logger.Log("[첫 판 FPS] present-screen-check 파일이 있어 멈춘 동안 화면을 비교함"); }
-            if (has("beat-verify")) { BeatFix.Verify = true; Entry.Logger.Log("[박자 알림 검증] beat-verify 파일이 있어 건너뛴 타일을 가끔 원래대로 불러 봄"); }
+            if (has("present-keepalive")) { WindowGhost.KeepPresent = true; Lg.I("[첫 판 FPS] present-keepalive 파일이 있어 멈춘 동안 화면 다시 내보내기 켬"); }
+            if (has("present-flip")) { WindowGhost.PresentMode = 0; Lg.I("[첫 판 FPS] present-flip 파일이 있어 보통 Present(0,0) 로 내보냄"); }
+            if (has("present-screen-check")) { WindowGhost.ScreenCheck = true; Lg.I("[첫 판 FPS] present-screen-check 파일이 있어 멈춘 동안 화면을 비교함"); }
+            if (has("beat-verify")) { BeatFix.Verify = true; Lg.I("[박자 알림 검증] beat-verify 파일이 있어 건너뛴 타일을 가끔 원래대로 불러 봄"); }
             if (has("time-probe")) { Hitch.TimeProbeOn = true;
 #if DEV || AUTOTEST
 TimeProbe.Install(new HarmonyLib.Harmony("StutterFix.timeprobe"));
@@ -123,29 +125,29 @@ AllocProbe.Install(new HarmonyLib.Harmony("StutterFix.allocprobe"));
 #endif
  }
 #if DEV || AUTOTEST
-            if (has("matprobe")) { MatProbe.Install(new HarmonyLib.Harmony("StutterFix.matprobe")); Entry.Logger.Log("[재질 만들기] matprobe 파일이 있어 곡 중 재질 만들기를 잼"); }
+            if (has("matprobe")) { MatProbe.Install(new HarmonyLib.Harmony("StutterFix.matprobe")); Lg.I("[재질 만들기] matprobe 파일이 있어 곡 중 재질 만들기를 잼"); }
 #endif
-            if (has("late-verify")) { MoveApply.VerifyLate = true; Entry.Logger.Log("[장식 이동] late-verify 파일이 있어 LateUpdate 에 맡긴 장식을 32개 중 1개 대조"); }
-            if (has("pairxy-off")) { DecoAnim.PairXY = false; Entry.Logger.Log("[장식 애니메이션] pairxy-off 파일이 있어 위치 X·Y 합치기 끔"); }
-            if (has("rotscale-off")) { MoveApply.DeferRotScale = false; Entry.Logger.Log("[장식 이동] rotscale-off 파일이 있어 회전·크기 맡기기 끔"); }
-            if (has("lazysprite-off")) { LazySprite.Enabled = false; Entry.Logger.Log("[투명 장식] lazysprite-off 파일이 있어 이미지 미루기 끔"); }
-            if (has("floorlate-off")) { FloorLateFix.Enabled = false; Entry.Logger.Log("[타일 LateUpdate] floorlate-off 파일이 있어 위치·크기 읽기를 원래대로 함"); }
-            if (has("tc-no-glow")) { TileCull.CullGlow = false; Entry.Logger.Log("[화면 밖 타일] tc-no-glow 파일이 있어 타일 발광은 끄지 않음"); }
-            if (has("tc-old-pin")) { TileCull.PinOnScript = true; Entry.Logger.Log("[화면 밖 타일] tc-old-pin 파일이 있어 타일 스크립트가 돌면 예전처럼 관리에서 뺌"); }
-            if (has("fastopa-off")) { global::StutterFix.FloorAnim.FastOpa = false; Entry.Logger.Log("[타일 이동] fastopa-off 파일이 있어 불투명도 전용 빠른 경로를 끔"); }
-            if (has("deco-split-probe")) { FastMove.Probe = true; Entry.Logger.Log("[장식 이동 쪼개 보기] deco-split-probe 파일이 있어 큰 효과를 단계별로 잼"); }
-            if (has("tilecull-verify.txt")) { TileCull.Verify = true; TileCull.VerifyInstall(); Entry.Logger.Log("[화면 밖 타일 검증] tilecull-verify.txt 파일이 있어 그리기마다 검사함"); }
-            if (has("tilecull-min.txt")) { try { TileCull.MinFloors = int.Parse(System.IO.File.ReadAllText(System.IO.Path.Combine(dir, "tilecull-min.txt")).Trim()); Entry.Logger.Log("[화면 밖 타일] 최소 타일 수 " + TileCull.MinFloors); } catch { } }
-            if (has("ffx-verify.txt")) { FfxReuse.Verify = true; Entry.Logger.Log("[효과 재사용 검증] ffx-verify.txt 파일이 있어 효과 붙이기마다 원래 방식과 비교함"); }
+            if (has("late-verify")) { MoveApply.VerifyLate = true; Lg.I("[장식 이동] late-verify 파일이 있어 LateUpdate 에 맡긴 장식을 32개 중 1개 대조"); }
+            if (has("pairxy-off")) { DecoAnim.PairXY = false; Lg.I("[장식 애니메이션] pairxy-off 파일이 있어 위치 X·Y 합치기 끔"); }
+            if (has("rotscale-off")) { MoveApply.DeferRotScale = false; Lg.I("[장식 이동] rotscale-off 파일이 있어 회전·크기 맡기기 끔"); }
+            if (has("lazysprite-off")) { LazySprite.Enabled = false; Lg.I("[투명 장식] lazysprite-off 파일이 있어 이미지 미루기 끔"); }
+            if (has("floorlate-off")) { FloorLateFix.Enabled = false; Lg.I("[타일 LateUpdate] floorlate-off 파일이 있어 위치·크기 읽기를 원래대로 함"); }
+            if (has("tc-no-glow")) { TileCull.CullGlow = false; Lg.I("[화면 밖 타일] tc-no-glow 파일이 있어 타일 발광은 끄지 않음"); }
+            if (has("tc-old-pin")) { TileCull.PinOnScript = true; Lg.I("[화면 밖 타일] tc-old-pin 파일이 있어 타일 스크립트가 돌면 예전처럼 관리에서 뺌"); }
+            if (has("fastopa-off")) { global::StutterFix.FloorAnim.FastOpa = false; Lg.I("[타일 이동] fastopa-off 파일이 있어 불투명도 전용 빠른 경로를 끔"); }
+            if (has("deco-split-probe")) { FastMove.Probe = true; Lg.I("[장식 이동 쪼개 보기] deco-split-probe 파일이 있어 큰 효과를 단계별로 잼"); }
+            if (has("tilecull-verify.txt")) { TileCull.Verify = true; TileCull.VerifyInstall(); Lg.I("[화면 밖 타일 검증] tilecull-verify.txt 파일이 있어 그리기마다 검사함"); }
+            if (has("tilecull-min.txt")) { try { TileCull.MinFloors = int.Parse(System.IO.File.ReadAllText(System.IO.Path.Combine(dir, "tilecull-min.txt")).Trim()); Lg.I("[화면 밖 타일] 최소 타일 수 " + TileCull.MinFloors); } catch { } }
+            if (has("ffx-verify.txt")) { FfxReuse.Verify = true; Lg.I("[효과 재사용 검증] ffx-verify.txt 파일이 있어 효과 붙이기마다 원래 방식과 비교함"); }
 #if DEV || AUTOTEST
-            if (has("alloc-phase")) { PhaseWatch.AllocPhases = true; Entry.Logger.Log("[할당 단계] alloc-phase 파일이 있어 곡 중 단계별 힙 증가를 잼"); }
+            if (has("alloc-phase")) { PhaseWatch.AllocPhases = true; Lg.I("[할당 단계] alloc-phase 파일이 있어 곡 중 단계별 힙 증가를 잼"); }
 #endif
-            if (has("freeze-test")) { PresentWatch.FreezeTest = true; Entry.Logger.Log("[첫 판 FPS 시험] freeze-test 파일이 있어 곡 중 6초 멈춤 시험을 함"); }
-            try { var gm = System.IO.Path.Combine(dir, "gc-mode.txt"); if (System.IO.File.Exists(gm)) { GcControl.PauseMode = System.IO.File.ReadAllText(gm).Trim().ToLowerInvariant(); Entry.Logger.Log("[GC] (시험) 곡 중 멈추는 방식: " + GcControl.PauseMode); } } catch { }
+            if (has("freeze-test")) { PresentWatch.FreezeTest = true; Lg.I("[첫 판 FPS 시험] freeze-test 파일이 있어 곡 중 6초 멈춤 시험을 함"); }
+            try { var gm = System.IO.Path.Combine(dir, "gc-mode.txt"); if (System.IO.File.Exists(gm)) { GcControl.PauseMode = System.IO.File.ReadAllText(gm).Trim().ToLowerInvariant(); Lg.I("[GC] (시험) 곡 중 멈추는 방식: " + GcControl.PauseMode); } } catch { }
             // (시험) 곡 중 힙 한계를 낮춰 긴 곡의 "한계 뒤 조금씩 치우기" 를 빨리 재현 / 조각 치우기 방식
-            try { var gl = System.IO.Path.Combine(dir, "gc-limit.txt"); if (System.IO.File.Exists(gl)) { GcControl.HardLimitMB = int.Parse(System.IO.File.ReadAllText(gl).Trim()); Entry.Logger.Log("[GC] (시험) 곡 중 힙 한계 " + GcControl.HardLimitMB + "MB"); } } catch { }
-            try { var gg = System.IO.Path.Combine(dir, "gc-garbage.txt"); if (System.IO.File.Exists(gg)) { GcControl.GarbageMBps = float.Parse(System.IO.File.ReadAllText(gg).Trim(), System.Globalization.CultureInfo.InvariantCulture); Entry.Logger.Log("[GC] (시험) 곡 중 쓰레기 초당 " + GcControl.GarbageMBps + "MB 만듦"); } } catch { }
-            try { var gs = System.IO.Path.Combine(dir, "gc-slice.txt"); if (System.IO.File.Exists(gs)) { GcControl.SliceStyle = System.IO.File.ReadAllText(gs).Trim().ToLowerInvariant(); Entry.Logger.Log("[GC] (시험) 조각 치우기 방식: " + GcControl.SliceStyle); } } catch { }
+            try { var gl = System.IO.Path.Combine(dir, "gc-limit.txt"); if (System.IO.File.Exists(gl)) { GcControl.HardLimitMB = int.Parse(System.IO.File.ReadAllText(gl).Trim()); Lg.I("[GC] (시험) 곡 중 힙 한계 " + GcControl.HardLimitMB + "MB"); } } catch { }
+            try { var gg = System.IO.Path.Combine(dir, "gc-garbage.txt"); if (System.IO.File.Exists(gg)) { GcControl.GarbageMBps = float.Parse(System.IO.File.ReadAllText(gg).Trim(), System.Globalization.CultureInfo.InvariantCulture); Lg.I("[GC] (시험) 곡 중 쓰레기 초당 " + GcControl.GarbageMBps + "MB 만듦"); } } catch { }
+            try { var gs = System.IO.Path.Combine(dir, "gc-slice.txt"); if (System.IO.File.Exists(gs)) { GcControl.SliceStyle = System.IO.File.ReadAllText(gs).Trim().ToLowerInvariant(); Lg.I("[GC] (시험) 조각 치우기 방식: " + GcControl.SliceStyle); } } catch { }
         }
 
         // UMM에서 모드를 끄고 켤 때 불린다.
@@ -334,11 +336,11 @@ ParticleTextWatch.Install(harmony);
 
                 }
                 if (Config.JitWarm && !Resilience.Off("JitWarm")) Try(JitWarm.Run);   // 모드 함수 미리 컴파일 (곡 초반 처음 쓰는 효과의 JIT, JitWarm.cs)
-                Entry.Logger.Log("켜짐: 패치 설치 완료 (" + Edition.Name + ")");
+                Lg.I("켜짐: 패치 설치 완료 (" + Edition.Name + ")");
             }
             catch (Exception ex)
             {
-                Entry.Logger.Error("harmony patch failed: " + ex);
+                Lg.E("harmony patch failed: " + ex);
             }
             if (Edition.Dev) VerifyPatches();
         }
@@ -360,11 +362,11 @@ ParticleTextWatch.Install(harmony);
                 {
                     string n = a.GetName().Name;
                     if (!n.StartsWith("StutterFix", StringComparison.Ordinal)) continue;
-                    Entry.Logger.Log("[사본] " + n + " 모듈 " + a.ManifestModule.Name + " ID " + a.ManifestModule.ModuleVersionId +
+                    Lg.I("[사본] " + n + " 모듈 " + a.ManifestModule.Name + " ID " + a.ManifestModule.ModuleVersionId +
                         (a == typeof(Main).Assembly ? " (지금 것)" : ""));
                 }
             }
-            catch (Exception ex) { Entry.Logger.Error("[사본] " + ex.Message); }
+            catch (Exception ex) { Lg.E("[사본] " + ex.Message); }
         }
 
         private static void VerifyPatches()
@@ -397,11 +399,11 @@ ParticleTextWatch.Install(harmony);
                 if (bad.Count == 0) { ReloadProblem = ""; return; }
 
                 ReloadProblem = "다시 불러오기가 깨졌습니다 (패치 " + bad.Count + "개가 이전 DLL을 가리킴). 모드를 전부 껐습니다. 게임을 껐다 켜 주세요.";
-                Entry.Logger.Error(ReloadProblem + " 정상 " + ok + "개");
-                foreach (var b in bad) if (b.Length > 0) Entry.Logger.Error("  " + b);
+                Lg.E(ReloadProblem + " 정상 " + ok + "개");
+                foreach (var b in bad) if (b.Length > 0) Lg.E("  " + b);
                 UninstallAll();
             }
-            catch (Exception ex) { Entry.Logger.Error("패치 확인 실패: " + ex.Message); }
+            catch (Exception ex) { Lg.E("패치 확인 실패: " + ex.Message); }
         }
 
         // Resources.UnloadUnusedAssets 를 부르는 곳은 게임 전체에서 딱 세 군데다.
@@ -431,11 +433,11 @@ ParticleTextWatch.Install(harmony);
                 try
                 {
                     harmony.Patch(m, transpiler: transpiler);
-                    Entry.Logger.Log("patched " + t[0] + "." + t[1]);
+                    Lg.I("patched " + t[0] + "." + t[1]);
                 }
                 catch (Exception ex)
                 {
-                    Entry.Logger.Error("patch failed " + t[0] + "." + t[1] + ": " + ex.Message);
+                    Lg.E("patch failed " + t[0] + "." + t[1] + ": " + ex.Message);
                 }
             }
         }
@@ -478,8 +480,9 @@ ParticleTextWatch.Install(harmony);
 
         private static bool Unload(UnityModManager.ModEntry modEntry)
         {
-            modEntry.Logger.Log("내리는 중 (다시 불러오기)");
+            Lg.I("내리는 중 (다시 불러오기)");
             UninstallAll();
+            Lg.Stop();
             return true;
         }
 
@@ -581,13 +584,13 @@ Try(RenderCallbackScan.Shutdown);
             Try(PosFast.Uninstall);
             Try(ColorFast.Uninstall);
 
-            Entry.Logger.Log("꺼짐: 패치와 감시를 모두 풀었음");
+            Lg.I("꺼짐: 패치와 감시를 모두 풀었음");
         }
 
         private static void Try(Action a)
         {
             try { a(); }
-            catch (Exception ex) { Entry.Logger.Error("내리는 중 오류: " + ex.Message); }
+            catch (Exception ex) { Lg.E("내리는 중 오류: " + ex.Message); }
         }
 
         internal static void RequestReload()
@@ -600,13 +603,13 @@ Try(RenderCallbackScan.Shutdown);
                     canReload.SetValue(Entry, true, null);
 
                 var reload = AccessTools.Method(type, "Reload");
-                if (reload == null) { Entry.Logger.Error("UMM에 Reload가 없음"); return; }
+                if (reload == null) { Lg.E("UMM에 Reload가 없음"); return; }
                 reloading = true;
                 reload.Invoke(Entry, null);
             }
             catch (Exception ex)
             {
-                Entry.Logger.Error("다시 불러오기 실패: " + ex);
+                Lg.E("다시 불러오기 실패: " + ex);
             }
             finally { reloading = false; }
         }
@@ -704,17 +707,18 @@ BlendProbe.Tick();
             {
                 DOTween.Init();
                 DOTween.SetTweensCapacity(Config.TweenerCapacity, Config.SequenceCapacity);
-                Entry.Logger.Log($"tween capacity set to {Config.TweenerCapacity}/{Config.SequenceCapacity}");
+                Lg.I($"tween capacity set to {Config.TweenerCapacity}/{Config.SequenceCapacity}");
             }
             catch (Exception ex)
             {
-                Entry.Logger.Error("failed to set tween capacity: " + ex.Message);
+                Lg.E("failed to set tween capacity: " + ex.Message);
             }
         }
 
         // 설정 파일에 저장된 켜기/끄기를 각 기능에 반영한다.
         internal static void ApplyConfig()
         {
+            Lg.Verbose = Edition.Dev || Edition.AutoTest || Config.VerboseLog;
             if (Config.ShowOverlay) { Config.ShowOverlay = false; Config.OverlayMode = 1; }   // 예전 "모니터 켜짐" 은 아이콘으로
             if (Config.ImageAutoVer < 1) { if (Config.ImageMaxSide == 0) Config.ImageMaxSide = ImagePrefetch.Auto; Config.ImageAutoVer = 1; }   // 1.2.2: 기본을 자동으로
             ApplyToggles();
@@ -730,11 +734,11 @@ BlendProbe.Tick();
                 if (want > 0)
                 {
                     if (origQueued < 0) origQueued = QualitySettings.maxQueuedFrames;
-                    if (QualitySettings.maxQueuedFrames != want) { QualitySettings.maxQueuedFrames = want; Entry.Logger.Log("[화면 출력 실험] 앞서 준비하는 프레임 " + origQueued + " -> " + want); }
+                    if (QualitySettings.maxQueuedFrames != want) { QualitySettings.maxQueuedFrames = want; Lg.I("[화면 출력 실험] 앞서 준비하는 프레임 " + origQueued + " -> " + want); }
                 }
                 else if (origQueued >= 0) { QualitySettings.maxQueuedFrames = origQueued; origQueued = -1; }
             }
-            catch (Exception ex) { Entry.Logger.Log("[화면 출력 실험] 실패: " + ex.Message); }
+            catch (Exception ex) { Lg.I("[화면 출력 실험] 실패: " + ex.Message); }
         }
         private static void RestoreQueued() { if (origQueued >= 0) { QualitySettings.maxQueuedFrames = origQueued; origQueued = -1; } }
         // (실험 옵션, 설정 창 그래픽) 전체 화면일 때 독점 전체 화면(ExclusiveFullScreen). 창 모드면 건드리지 않는다.
@@ -785,13 +789,13 @@ BlendProbe.Tick();
                 if(!displayApplied) {
                     if(!FrameGen.DisplayChangeReady) {
                         if(now-displaySince>5) {
-                            Entry.Logger.Log("[화면 출력] 생성 출력 해제 확인 시간 초과; 화면 전환 취소");
+                            Lg.I("[화면 출력] 생성 출력 해제 확인 시간 초과; 화면 전환 취소");
                             EndDisplayTransition();
                         }
                         return;
                     }
                     var r=Screen.currentResolution;
-                    Entry.Logger.Log("[화면 출력] 생성 출력 해제 확인; "+Screen.fullScreenMode+" -> "+displayTarget+" "+r.width+"x"+r.height);
+                    Lg.I("[화면 출력] 생성 출력 해제 확인; "+Screen.fullScreenMode+" -> "+displayTarget+" "+r.width+"x"+r.height);
                     displayIssuedTarget=displayTarget;
                     Screen.SetResolution(r.width,r.height,displayIssuedTarget,r.refreshRateRatio);
                     Config.ExpFsChanged=displayTarget==FullScreenMode.ExclusiveFullScreen;
@@ -805,12 +809,12 @@ BlendProbe.Tick();
                 // do not install a new Present connection in that same frame.
                 if(Time.frameCount-displayFrame<8 || now-displayStableSince<.25f) return;
                 if(displayObserved!=displayIssuedTarget && now-displaySince<1f) return;
-                Entry.Logger.Log("[화면 출력] 전환 완료: 요청="+displayIssuedTarget+" 실제="+displayObserved);
+                Lg.I("[화면 출력] 전환 완료: 요청="+displayIssuedTarget+" 실제="+displayObserved);
                 if(displayTarget!=displayIssuedTarget) {displayApplied=false;displaySince=now;return;}
                 EndDisplayTransition();
             } catch(Exception ex) {
                 EndDisplayTransition();
-                Entry.Logger.Log("[화면 출력] 전환 실패: "+ex.Message);
+                Lg.I("[화면 출력] 전환 실패: "+ex.Message);
             }
         }
         private static void RestoreFullscreen()
@@ -1116,6 +1120,7 @@ BlendProbe.Tick();
 
     public class Settings : UnityModManager.ModSettings
     {
+        public bool VerboseLog = false;    // 자세한 진단 로그. 끄면 필수 줄만 남긴다
         // 로그에서 확인된 최대치(19530 tweener / 12187 sequence)보다 넉넉하게 잡는다.
         public int TweenerCapacity = 40000;
         public int SequenceCapacity = 25000;
