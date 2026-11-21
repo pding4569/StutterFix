@@ -26,7 +26,7 @@ Begin MonoManager ReloadAssembly
 [Manager] IsSupportOnSessionStop: False.
 [Manager] Mods path: D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods.
 [Manager] Injection successful.
-- Loaded All Assemblies, in  0.859 seconds
+- Loaded All Assemblies, in  0.845 seconds
 - Finished resetting the current domain, in  0.003 seconds
 [Physics::Module] Selected backend.
 [Physics::Module] Name: PhysX
@@ -36,7 +36,7 @@ Begin MonoManager ReloadAssembly
 [Physics::Module] Threading Mode: Multi-Threaded
 <RI> Initializing input.
 <RI> Input initialized.
-UnloadTime: 0.957600 ms
+UnloadTime: 0.607400 ms
 [Manager] Starting.
 [Manager] Parsing mods.
 [Manager] Reading file 'D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\AdofaiGenBridge\Info.json'.
@@ -52,77 +52,13 @@ UnloadTime: 0.957600 ms
 [Quartz] To skip (disabled).
 [StutterFix] Version '2.8.2'. Loading.
 [StutterFix] This game is modded (StutterFix 2.8.2)
-[StutterFix] [화면 출력 실험] 앞서 준비하는 프레임 2 -> 4
-[StutterFix] [캐시] 남은 공간 부족(6359MB): 디스크 캐시 쓰지 않음
-[StutterFix] [저사양] 선명도 보정 셰이더 찾음
-[StutterFix] patched scnGame.Awake
-[StutterFix] patched scnEditor.SwitchToEditMode
-[StutterFix] patched scrTextDecoration.SetText (같은 글자 건너뛰기)
-[StutterFix] patched Shadow.effectColor (같은 그림자 색 건너뛰기)
-[StutterFix] patched <SetCollider>d__23.MoveNext
-[StutterFix] [효과] StartEffect 87개, 걸러내기 0개 감쌈
-[StutterFix] RecolorSplit: StartEffect 인자 1개
-[StutterFix] patched ffxRecolorFloorPlus.StartEffect (구간 나누기)
-[StutterFix] [즉시 이동] OnUpdate 건너뛸 짝 9개, 타입으로 판별 가능 9개 (예상 9개)
-[StutterFix] [즉시 이동] 설치
-[StutterFix] [즉시 이동 직접] 설치: 속성 블록 9개 (예상 9개)
-[StutterFix] [장식 이동 루프] 설치
-[StutterFix] [미리 확인] 설치
-[StutterFix] [장식 애니메이션] 설치
-[StutterFix] [타일 애니메이션] 설치
-[StutterFix] [저사양] 설치 (게임 화면 해상도 사용 가능)
-[StutterFix] [파티클] 설치 (바꾼 호출 2곳)
-[StutterFix] [누수] 설치 (사용자 지정 FPS 화면 버퍼, 옛 편집기 종료 콜백)
-[StutterFix] [로딩] 이미지 파일 시각 캐시 설치 (바꾼 곳 2)
-[StutterFix] [로딩] 에디터 재생 시작 때 장식 다시 설정 줄이기 설치 (맵 연 뒤 첫 재생 포함)
-[StutterFix] [로딩] 에디터에서 다시 할 때 클릭용 충돌 상자 켜지 않기 설치
-[StutterFix] [로딩] 같은 이미지 장식 목록 넣기 빠르게 설치
-[StutterFix] [맵 파일 읽기] 빠른 JSON 해석기 설치 (GDMiniJSON.Json)
-[StutterFix] [맵 파일 읽기] 이벤트로 바꾸기의 열거형 변환 캐시 설치 (바꾼 곳 3)
-[StutterFix] [맵 파일 읽기] 여러 코어로 이벤트 만들기 설치
-[StutterFix] [장식 한 번에 복제] 설치
-[StutterFix] [판정 글자] 사라질 때 색만 바꾸기 설치
-[StutterFix] [오차 막대] 눈금 가볍게 사라지기 설치 (바꾼 곳 2개)
-[StutterFix] [연출 끄기] 설치 (효과 19종)
-[StutterFix] [이미지 압축] 설치
-[StutterFix] [장식 마무리] 설치
-[StutterFix] [잠든 장식] 설치
-[StutterFix] [이미지] 빠른 압축 풀기(libdeflate): 사용 중
-[StutterFix] [이미지] 네이티브 필터 되돌리기·DXT 압축(sfnative): 사용 중
-[StutterFix] [이미지] JPG 풀기(libjpeg-turbo): 사용 중
-[StutterFix] [이미지] 스프라이트 크기 보정 설치 (큰 이미지 줄이기용)
-[StutterFix] [이미지] 미리 풀기 설치
-[StutterFix] [투명 장식] 위치 늦게 반영 설치
-[StutterFix] [투명 장식] 이미지 바꾸기 미루기 설치 (먼저 적용하는 곳 17개)
-[StutterFix] [투명 장식] 설치
-[StutterFix] tween fix installed
-[StutterFix] [장면 정리] 설치
-[StutterFix] [전환] 설치
-[StutterFix] [나가기] 설치
-[StutterFix] end hook: scnEditor.SwitchToEditMode
-[StutterFix] end hook: scrController.FailAction
-[StutterFix] end hook: scrController.Fail2Action
-[StutterFix] end hook: scrController.OnLandOnPortal
-[StutterFix] end hook: scrController.QuitToMainMenu
-[StutterFix] end hook: scnEditor.QuitToMenu
-[StutterFix] end hook: scnEditor.TryQuitToMenu
-[StutterFix] end hook: scnEditor.SaveAndQuit
-[StutterFix] restart hook: scrController.Restart
-[StutterFix] restart hook: scnEditor.Play
-[StutterFix] restart hook: scrController.ResetCustomLevel
-[StutterFix] gc control installed
-[StutterFix] [쓰레기 줄이기] scrFloor.Update: 볼륨 색 모드용 객체를 필요한 타일만 새로 만듦
-[StutterFix] [쓰레기 줄이기] 비동기 키 입력: 게임 코드가 바뀌어(GetSpecialInput Void) 끔
-[StutterFix] [쓰레기 줄이기] scrFloor.Update: 볼륨 색 모드용 객체를 필요한 타일만 새로 만듦
-[StutterFix] [타일 LateUpdate] 다중 행성 아닌 타일의 위치·크기 읽기 생략 (바꾼 곳 4/4)
-[StutterFix] [미리 컴파일] 모드 함수 2400개 441ms, 게임 함수(효과·장식·타일·행성·지휘자) 1111개 108ms
+[StutterFix] [캐시] 남은 공간 부족(3755MB): 디스크 캐시 쓰지 않음
 [StutterFix] 켜짐: 패치 설치 완료 (플레이어용)
 [StutterFix] 지금 Direct3D11 / LegacyJobified
-[StutterFix] [첫 판 FPS] 응답 없음 창 끔
 [StutterFix] [프레임 통계] 게임 기본: 꺼짐, 이 모드: 켬(GPU 시간 측정)
-[StutterFix] [캐시] 남은 공간 부족(6359MB): 디스크 캐시 쓰지 않음
+[StutterFix] [캐시] 남은 공간 부족(3755MB): 디스크 캐시 쓰지 않음
 [StutterFix] Active.
-[StutterFix] Loading time 7.62 s.
+[StutterFix] Loading time 7.95 s.
 [StutterFixReleaseCheck] Version '1.0.0'. Loading.
 [StutterFixReleaseCheck] Release ZIP unchanged; separate playback helper enabled
 [StutterFixReleaseCheck] Active.
@@ -130,7 +66,7 @@ UnloadTime: 0.957600 ms
 [YouTubeStream] Version '1.0.5'. Loading.
 Mod was added: YouTubeStream
 [YouTubeStream] Active.
-[YouTubeStream] Loading time 0.08 s.
+[YouTubeStream] Loading time 0.09 s.
 [Manager] FINISH. SUCCESSFUL LOADED 6/6 MODS.
 
 
@@ -179,29 +115,26 @@ Startup: Setup Loading Screen
 Startup: ADOStartup done!
 [Manager] Spawning.
 [Manager] Checking updates.
-[StutterFix] [상태] ? 종료됨 world:X  -> 정지
 Go to Menu
 Startup: Setup Audio Settings
 Startup: Setup Audio Settings End 
 Unloading 7 Unused Serialized files (Serialized files now loaded: 0)
-UnloadTime: 2.092700 ms
+UnloadTime: 2.453200 ms
 Unloading 36 unused Assets to reduce memory usage. Loaded Objects now: 67990.
-Total: 39.736600 ms (FindLiveObjects: 4.321300 ms CreateObjectMapping: 1.373300 ms MarkObjects: 33.903900 ms  DeleteObjects: 0.137900 ms)
+Total: 41.328200 ms (FindLiveObjects: 4.905700 ms CreateObjectMapping: 1.403400 ms MarkObjects: 34.862500 ms  DeleteObjects: 0.156100 ms)
 
 Shader.WarmupAllShaders ();
-Shader warmup: 131 shaders 1383 combinations 0.092s
-[StutterFix] [상태] None 종료됨 world:X  -> 정지
+Shader warmup: 131 shaders 1383 combinations 0.089s
 [StutterFixReleaseCheck] OPEN requested
 <color=#0099bc><b>DOTWEEN ► </b></color>Max Tweens reached: capacity has automatically been increased from 500/50 to 1250/50. Use DOTween.SetTweensCapacity to set it manually at startup
 Unloading 6 Unused Serialized files (Serialized files now loaded: 0)
-UnloadTime: 42.899800 ms
-[StutterFix] [첫 판 FPS] 8.6초 멈춘 프레임 동안 윈도우 메시지 확인 1번 (멈춘 창 판정 막기), 가장 긴 빈틈 8.6초
+UnloadTime: 43.164600 ms
+[StutterFix] [첫 판 FPS] 8.9초 멈춘 프레임 동안 윈도우 메시지 확인 1번 (멈춘 창 판정 막기), 가장 긴 빈틈 8.9초
 Unloading 240 unused Assets to reduce memory usage. Loaded Objects now: 42505.
-Total: 72.803700 ms (FindLiveObjects: 2.788600 ms CreateObjectMapping: 1.201700 ms MarkObjects: 67.659500 ms  DeleteObjects: 1.153700 ms)
+Total: 73.665800 ms (FindLiveObjects: 2.473300 ms CreateObjectMapping: 1.099700 ms MarkObjects: 68.890200 ms  DeleteObjects: 1.202300 ms)
 
 Shader.WarmupAllShaders ();
-Shader warmup: 131 shaders 1390 combinations 0.004s
-[StutterFix] [상태] None 종료됨  -> 정지
+Shader warmup: 131 shaders 1390 combinations 0.003s
 <color=#0099bc><b>DOTWEEN ► </b></color>Tween startup failed (NULL target/property - Void ThrowNullReferenceException(System.Object)): the tween will now be killed ► Object reference not set to an instance of an object.
 <color=#0099bc><b>DOTWEEN ► </b></color>Tween startup failed (NULL target/property - Void ThrowNullReferenceException(System.Object)): the tween will now be killed ► Object reference not set to an instance of an object.
 <color=#0099bc><b>DOTWEEN ► </b></color>Tween startup failed (NULL target/property - Void ThrowNullReferenceException(System.Object)): the tween will now be killed ► Object reference not set to an instance of an object.
@@ -1168,61 +1101,33 @@ Shader warmup: 131 shaders 1390 combinations 0.004s
 <color=#0099bc><b>DOTWEEN ► </b></color>Tween startup failed (NULL target/property - Void ThrowNullReferenceException(System.Object)): the tween will now be killed ► Object reference not set to an instance of an object.
 <color=#0099bc><b>DOTWEEN ► </b></color>Tween startup failed (NULL target/property - Void ThrowNullReferenceException(System.Object)): the tween will now be killed ► Object reference not set to an instance of an object.
 <color=#0099bc><b>DOTWEEN ► </b></color>Tween startup failed (NULL target/property - Void ThrowNullReferenceException(System.Object)): the tween will now be killed ► Object reference not set to an instance of an object.
-[StutterFix] [상태] Start 종료됨  -> 정지
 Unloading 1 Unused Serialized files (Serialized files now loaded: 0)
 [StutterFix] [첫 판 FPS] 1.6초 멈춘 프레임 동안 윈도우 메시지 확인 1번 (멈춘 창 판정 막기), 가장 긴 빈틈 1.6초
-[StutterFix] [맵 파일 읽기] GC 멈춤 418ms(그중 이벤트로 바꾸기 265ms: 이벤트 21349개 여러 코어(5개)로 256ms), 힙 111MB -> 246MB (그 사이 GC 0번)
 Hash needs data to generate hash
 Hash needs data to generate hash
 Hash needs data to generate hash
 Hash needs data to generate hash
-[StutterFix] [이미지] 맵 열기 전: 이미 올라와 있는 이미지 1장, VRAM 전체 1235MB / 게임 341MB
-[StutterFix] [이미지] 713장 미리 풀기 시작 (작업 스레드 5개)
-[StutterFix] [장식 한 번에 복제] 36번에 2425개 (안 쓰고 지움 0개)
-[StutterFix] [이미지] 미리 푼 것 712장(넣기 1370ms), 원래 방식 5장(65ms, 순서 어긋남 0), 기다림 2468ms, GC 0번, 전체 5.1초, 줄인 이미지 456장 (긴 변 1536, VRAM 약 7828MB 아낌) | 장식 만들기 2531개 3787ms, 그중 텍스처 불러오기 4288ms
-[StutterFix] [이미지] 해독 시간(작업 스레드 5개 합계): 압축 풀기 490ms, 필터 되돌리기 1517ms, 줄이기 1480ms(339M 픽셀), 필터·줄이기 한 번에 0장 0ms(0M 픽셀), 흘려 풀기·줄이기 424장 18991ms(2438M 픽셀, 못 한 것 0) | 새로 맡은 형식(흑백·인터레이스) 14장 | libdeflate 260장, 원래 zlib 로 다시 푼 것 0장 (사용 중) | 네이티브(sfnative): 필터 되돌린 줄 215866, DXT 압축 줄 묶음 0 | JPG(libjpeg-turbo): 28장 1878ms, 못 푼 것 0장
-[StutterFix] [이미지] 로딩 뒤 GC 한 번 139ms
+[StutterFix] [이미지] 해독 시간(작업 스레드 5개 합계): 압축 풀기 568ms, 필터 되돌리기 1545ms, 줄이기 1443ms(339M 픽셀), 필터·줄이기 한 번에 0장 0ms(0M 픽셀), 흘려 풀기·줄이기 424장 19973ms(2438M 픽셀, 못 한 것 0) | 새로 맡은 형식(흑백·인터레이스) 14장 | libdeflate 260장, 원래 zlib 로 다시 푼 것 0장 (사용 중) | 네이티브(sfnative): 필터 되돌린 줄 215866, DXT 압축 줄 묶음 0 | JPG(libjpeg-turbo): 28장 2040ms, 못 푼 것 0장
 Shader warmup: 202 shaders 1473 combinations 0.003s
-[StutterFix] [셰이더] 맵 불러온 뒤: 셰이더 202개, 새 필터 109개(필터 텍스처 10개) 미리 준비 32ms
-[StutterFix] [타일 메시] 색 바꾸기 효과 3324개, 타일·스타일 38024가지 -> 새로 미리 만든 메시 1684개 286ms (캐시 1684개)
-[StutterFix] [소리 미리 불러오기] 쓸 수 있는 소리 4가지 중 새로 불러온 것 4개 17ms
-[StutterFix] [효과 재사용] 다시 씀 0개, 새로 붙임 30746개, 지움 0개, 남겨 둔 것 0개, 순서가 다를 수 있는 오브젝트 0개 | 1032ms
-[StutterFix] [상태] Start  -> 플레이
-[StutterFix] [물리] 곡 중 시뮬레이션 중지: 2D=True 3D=False
-[StutterFix] [저사양] 그래픽 설정: 품질 단계 Default, 안티에일리어싱 0x, 수직동기 0, 그림자 Disable, 텍스처 0, 이방성 Disable, 파티클 레이캐스트 256, 소프트 파티클 False | 카메라 BGStaticCam: MSAA False, HDR False, 경로 Forward, 대상 화면, 깊이 -1.63, 컬링 800 | 카메라 OverlayCam: MSAA False, HDR False, 경로 Forward, 대상 화면, 깊이 -1.63, 컬링 100000 | 카메라 BGMovingCam: MSAA False, HDR False, 경로 Forward, 대상 화면, 깊이 -1.11, 컬링 400 | 카메라 Camera: MSAA False, HDR False, 경로 Forward, 대상 화면, 깊이 -1, 컬링 9F397 | 화면 2560x1600 FullScreenWindow, 그래픽카드 NVIDIA GeForce RTX 4060 Ti
 Unloading 140 unused Assets to reduce memory usage. Loaded Objects now: 572685.
-Total: 233.897500 ms (FindLiveObjects: 53.005500 ms CreateObjectMapping: 13.884100 ms MarkObjects: 128.789300 ms  DeleteObjects: 38.218200 ms)
+Total: 254.264700 ms (FindLiveObjects: 57.532300 ms CreateObjectMapping: 14.635300 ms MarkObjects: 138.004500 ms  DeleteObjects: 44.092300 ms)
 
-[StutterFix] [곡 시작] 화면: 수직동기 0, 목표 FPS 10000, FullScreenWindow, 2560x1600 144Hz, 창 2560x1600, 앞서 준비하는 프레임 4
+[StutterFix] [곡 시작] 화면: 수직동기 0, 목표 FPS 10000, ExclusiveFullScreen, 2560x1600 144Hz, 창 2560x1600, 앞서 준비하는 프레임 4
 <color=#0099bc><b>DOTWEEN ► </b></color>Max Tweens reached: capacity has automatically been increased from 1250/50 to 3125/50. Use DOTween.SetTweensCapacity to set it manually at startup
 <color=#0099bc><b>DOTWEEN ► </b></color>Max Tweens reached: capacity has automatically been increased from 3125/50 to 7812/50. Use DOTween.SetTweensCapacity to set it manually at startup
 <color=#0099bc><b>DOTWEEN ► </b></color>Max Tweens reached: capacity has automatically been increased from 7812/50 to 19530/50. Use DOTween.SetTweensCapacity to set it manually at startup
-[StutterFix] [이미지] 맵 연 뒤: 올라와 있는 이미지 718장, VRAM 전체 4910MB / 게임 4014MB
-[StutterFix] tween capacity set to 40000/25000
 [StutterFixReleaseCheck] PLAY requested
 Hash needs data to generate hash
-[StutterFix] [태그 색인] 준비 1173개, 효과 5869개
-[StutterFix] [상태] Countdown  -> 플레이
-[StutterFix] [모니터] 곡 시작 연출 구간 끝: 5초 지남 | 시작 뒤 5.0초, 유니티 프레임 1223개, 곡 위치 0.61초, 현재 타일 0, 상태 Countdown, 일시정지 False | 프레임 늘리기: active=False native_installed=0 sources=0 generated=0 runtime_initialized=False status= missed_lock=0 missed_timer=0 outputs=0 frame_begins=0 worker_wait_ms=0 stalled=0 early_sources=0 sources_n=0 interval_us_sum=0 shown=0 real_gpu_us=0/0 held=0/0/0
-[StutterFix] [상태] PlayerControl  -> 플레이
-Curl error 28: Failed to connect to cdp.cloud.unity3d.com port 443 after 21068 ms: Could not connect to server
-[StutterFix] [곡] 평균 165 FPS (6.1ms), 가장 긴 프레임 495ms, 곡 시작 연출 뒤 가장 긴 프레임 22ms, 끊김 0번, 프레임 31295개 | GPU 평균 2.8ms, CPU 평균 6.1ms (31294개 잼) | 그 프레임: 게임 효과 61개 9.9ms (그중 장식 이동 1.4ms), 나머지 12.0ms | 효과가 가장 무거운 프레임 19ms: 게임 효과 10.2ms (그중 장식 이동 4.6ms) | 모드가 쓴 시간 평균 0.07ms/프레임 | 가장 무거운 프레임 8개: [22ms @165.3초: 효과 61개 9.9(장식 이동 1.4, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.3, 장식 갱신 0.0+0.5, 나머지 11.2] [22ms @143.5초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.7, 장식 갱신 0.0+0.6, 나머지 20.7] [21ms @136.8초: 효과 55개 7.3(장식 이동 0.3, 그중 길이 있는 것 0.1), 애니메이션 갱신 0.3, 장식 갱신 0.0+0.4, 나머지 13.4] [21ms @88.7초: 효과 5개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.2, 장식 갱신 0.0+0.3, 나머지 20.0] [20ms @34.6초: 효과 2개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.3, 장식 갱신 0.0+0.4, 나머지 19.7] [20ms @36.6초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.3, 장식 갱신 0.0+0.3, 나머지 19.1] [19ms @139.7초: 효과 3개 0.1(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.5, 장식 갱신 0.0+0.4, 나머지 18.5] [19ms @5.1초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.2, 나머지 18.4] | 화면: 수직동기 0, 목표 FPS 10000, FullScreenWindow, 2560x1600 144Hz, 창 2560x1600, 앞서 준비하는 프레임 4
-[곡] 10초 구간별 FPS (메인/렌더 스레드/화면 대기 ms): 0s 231(8.7/1.1/0.0/1.6/0.0, 139/0개) 10s 189(5.3/1.5/0.0/2.6/0.1, 189/0개) 20s 174(5.7/1.5/0.0/2.8/0.1, 181/0개) 30s 170(5.9/1.5/0.0/2.7/0.1, 168/0개) 40s 146(6.8/1.4/0.0/2.7/0.1, 153/0개) 50s 163(6.1/1.7/0.0/3.5/0.1, 230/0개) 60s 158(6.3/1.7/0.0/4.5/0.2, 259/0개) 70s 160(6.2/1.8/0.0/1.9/0.1, 150/0개) 80s 164(6.1/1.7/0.0/2.2/0.1, 159/0개) 90s 170(5.9/1.5/0.0/2.0/0.1, 147/0개) 100s 204(4.9/1.4/0.0/2.1/0.1, 145/0개) 110s 182(5.5/1.5/0.0/2.9/0.1, 165/0개) 120s 155(6.5/1.7/0.0/3.5/0.1, 218/0개) 130s 152(6.6/1.7/0.0/2.5/0.1, 178/0개) 140s 138(7.2/2.0/0.0/3.8/0.1, 200/0개) 150s 144(6.9/2.2/0.0/3.3/0.1, 197/0개) 160s 143(7.0/2.0/0.0/3.3/0.2, 185/0개) 170s 157(6.4/1.5/0.0/2.9/0.2, 167/0개) 180s 137(7.3/2.2/0.0/3.1/0.2, 166/0개) | 가장 높은 구간 0s 231 FPS | 같은 그림자 색 건너뛰기 190750회 | 파티클 장식: 같은 값 넣기 3442450번 중 0번 건너뜀, 화면 밖 멈춤 55개 | 누수 막기: 사용자 지정 FPS 버퍼 5개 없앰, 게임 화면 버퍼 불필요한 해제 0번 막음 | 필터 형식 찾기 기억 2113번 (새로 찾음 70번) | 저사양: 우선순위 보통, 절전 제한 끔 False, 음악 반응 계산 건너뜀 31296번 (돈 것 4번), 해상도 배율 100%, 게임 화면 2560x1600, 선명도 보정 0프레임 | 판정 글자 사라질 때 색만 바꿈 1246772번 (원래대로 22762번) | 오차 막대 눈금 가볍게 27930개 (원래대로 0개)
-[StutterFix] [장식 이동] 애니메이션 없이 처리 0개 | 표본 비교 0개 중 다름 0 | 콜백 없는 것 0 | 위치 마무리 3917번을 1672번으로 줄임 (57% 절약, 마무리에 쓴 시간 0ms) | 편집기 피벗 갱신 0번을 0번으로 | 위치 쓰기 4999561번 중 같은 값이라 건너뜀 783160번 | 재생 중 편집기 검사 건너뜀 1113745번 | 매 프레임 장식 순회 4560982번 중 바뀌는 게 없어 뺀 것 21902번 | 히트박스 순회: 전체 2531개 중 히트박스 있는 0개만 (목록 새로 만듦 1번) | 매 프레임 순회: 전체 2531개 중 평균 177개만 훑음 (잠재움 21902번, 깨움 19539번, 목록 새로 만듦 1번, 안전망 검사 189번에 놓친 깨움 0개) | 즉시 이동 직접 처리 6538번 | 투명 장식 빠른 처리(위치 바로 미루기, 같은 색 건너뛰기) 579번, 투명한 채 색만 저장 28번 | 장식 이동 루프: 효과 5840개(장식 46544개), 원래 코드로 넘긴 효과 0개 [길이 있음 0, 공식 맵 0, 그래픽 설정 0, 이미지 준비 안 됨·없는 이미지 0, 대상 없음 0, null 0], 이미지·마스크 바꾸는 효과 맡음 208개 | 장식 애니메이션 직접 처리: 만든 것 41086개(동시 최대 679개), 끝까지 감 22999, 끊겨서 완료 37320, 버림 0, 기록 다시 씀 18291, 새 표 객체 6989, 갱신에 쓴 시간 3054ms (29970프레임), 게임이 멈출 때 넘겨준 것 0 | GroupStep enabled=False suppressed(Prof/Dev)=False compatibility=pending probe=False verify=False | 타일 이동 애니메이션 직접 처리: 효과 13957개(타일 557334개, 시작에 쓴 시간 307ms), 원래 코드로 0개 [곡 시작 직후 0, 길이 음수 0, 기타 0], 만든 것 33784개(동시 최대 812, 다시 씀 762, 겹쳐서 진짜 DOTween 111), 끝까지 감 32601, 끊겨서 완료 1183, 버림 0, 갱신 591ms (19304프레임), 게임이 멈출 때 넘겨준 것 0, 길이 0 효과 1862개(바로 쓴 값 1434개) | 보이는 장식 위치 재계산을 LateUpdate 에 맡김 1340343번 (안 보이게 돼서 대신 갱신 2100번) | 효과 나누기: 뒤로 미룬 효과 28개, 늦게 시작한 정도 평균 10.4ms 최대 11.7ms (1프레임)
-[StutterFix] [투명 장식] 지금 안 그리는 투명 장식 789개, 곡 중 최대 847개 | 투명한 장식 위치 반영 미룸 1035016번, 보일 때 반영 679번 | 색 바뀜 18667번 확인, 그리기 켜고 끈 것 2084번, 쓴 시간 약 5.7ms, 가장 많이 쓴 프레임 약 0.36ms (64번에 한 번 재서 추정)
+[StutterFix] [곡] 평균 158 FPS (6.3ms), 가장 긴 프레임 526ms, 곡 시작 연출 뒤 가장 긴 프레임 24ms, 끊김 0번, 프레임 29935개 | GPU 평균 3.2ms, CPU 평균 6.1ms (29933개 잼) | 그 프레임: 게임 효과 60개 9.5ms (그중 장식 이동 1.3ms), 나머지 14.7ms | 효과가 가장 무거운 프레임 20ms: 게임 효과 13.9ms (그중 장식 이동 13.9ms) | 모드가 쓴 시간 평균 0.07ms/프레임 | 가장 무거운 프레임 8개: [24ms @165.3초: 효과 60개 9.5(장식 이동 1.3, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.3, 장식 갱신 0.0+0.4, 나머지 13.9] [23ms @131.9초: 효과 1개 0.2(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 2.5, 장식 갱신 0.0+0.3, 나머지 20.4] [23ms @158.9초: 효과 1개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.3, 장식 갱신 0.0+0.4, 나머지 22.3] [23ms @159.9초: 효과 7개 0.1(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.3, 장식 갱신 0.0+0.4, 나머지 22.0] [23ms @69.2초: 효과 1개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.7, 장식 갱신 0.0+0.2, 나머지 21.6] [22ms @137.7초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.5, 장식 갱신 0.0+0.4, 나머지 21.3] [22ms @121.2초: 효과 2개 0.1(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.4, 장식 갱신 0.0+0.4, 나머지 21.0] [22ms @185.6초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.4, 장식 갱신 0.0+0.3, 나머지 21.1] | 화면: 수직동기 0, 목표 FPS 10000, ExclusiveFullScreen, 2560x1600 144Hz, 창 2560x1600, 앞서 준비하는 프레임 4
+[곡] 10초 구간별 FPS (메인/렌더 스레드/화면 대기 ms): 0s 227(8.8/1.1/0.2/1.9/0.0, 139/0개) 10s 186(5.2/1.5/0.2/2.9/0.1, 189/0개) 20s 168(5.8/1.5/0.2/3.3/0.1, 181/0개) 30s 164(5.9/1.5/0.2/3.2/0.1, 167/0개) 40s 139(7.0/1.4/0.2/3.4/0.1, 153/0개) 50s 153(6.1/1.7/0.4/4.1/0.1, 231/0개) 60s 148(6.4/1.7/0.3/5.3/0.2, 259/0개) 70s 153(6.2/1.8/0.3/2.4/0.1, 150/0개) 80s 157(6.1/1.7/0.3/2.4/0.1, 159/0개) 90s 164(5.9/1.6/0.2/2.5/0.1, 147/0개) 100s 193(5.0/1.4/0.2/2.5/0.1, 145/0개) 110s 176(5.5/1.5/0.2/3.3/0.1, 165/0개) 120s 149(6.5/1.7/0.2/4.0/0.1, 218/0개) 130s 145(6.6/1.7/0.3/2.9/0.1, 178/0개) 140s 132(7.2/2.0/0.4/4.4/0.1, 200/0개) 150s 135(6.9/2.1/0.6/3.6/0.1, 196/0개) 160s 135(7.0/2.0/0.4/3.7/0.2, 185/0개) 170s 151(6.4/1.6/0.2/3.3/0.2, 167/0개) 180s 128(7.1/2.1/0.7/3.3/0.1, 166/0개) | 가장 높은 구간 0s 227 FPS | 같은 그림자 색 건너뛰기 182618회 | 파티클 장식: 같은 값 넣기 3292850번 중 0번 건너뜀, 화면 밖 멈춤 55개 | 누수 막기: 사용자 지정 FPS 버퍼 5개 없앰, 게임 화면 버퍼 불필요한 해제 0번 막음 | 필터 형식 찾기 기억 2113번 (새로 찾음 70번) | 저사양: 우선순위 보통, 절전 제한 끔 False, 음악 반응 계산 건너뜀 29936번 (돈 것 4번), 해상도 배율 100%, 게임 화면 2560x1600, 선명도 보정 0프레임 | 판정 글자 사라질 때 색만 바꿈 1189544번 (원래대로 22750번) | 오차 막대 눈금 가볍게 27930개 (원래대로 0개)
 Hash needs data to generate hash
 [StutterFixReleaseCheck] COMPLETE OnLandOnPortal
-[StutterFix] [상태] PlayerControl 종료됨  -> 정지
-[StutterFix] [화면 밖 타일] 렌더러 켜기/끄기 부르는 함수 188개 바꿔 끼움, 세대 1 (훑기 1116ms), 1프레임에 나눠 770ms, 한 프레임 최대 770ms
-[StutterFix] [다른 모드] 같은 게임 함수를 고치는 곳 3개: scnEditor.Play (YouTubeStream) | RDString.Get (YouTubeStream) | scnGame.LoadLevel (YouTubeStream)
-[StutterFix] [업데이트] 최신 v2.8.1, 지금 v2.8.2
-[StutterFix] [상태] Won 종료됨  -> 정지
 [StutterFixReleaseCheck] QUIT complete=True
+Thread ended
+[Manager] Destroying when exit.
 <color=#ff7337><color=#0099bc><b>DOTWEEN ► </b></color> SAFE MODE ►</color> DOTween's safe mode captured 776 errors. This is usually ok (it's what safe mode is there for) but if your game is encountering issues you should set Log Behaviour to Default in DOTween Utility Panel in order to get detailed warnings when an error is captured (consider that these errors are always on the user side).
 - 19 missing target or field errors
 - 757 startup errors
-Thread ended
-[Manager] Destroying when exit.
 [Physics::Module] Cleanup current backend.
 [Physics::Module] Id: 0xf2b8ea05
 Input System module state changed to: ShutdownInProgress.
