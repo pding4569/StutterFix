@@ -1177,6 +1177,10 @@ namespace StutterFix
                 ch |= Option("flooranim", ref c.FloorAnim, T("타일 애니메이션 직접 처리", "Tile move animations"),
                     T("길이가 있는 타일 이동(위치·회전·크기·불투명도)의 애니메이션을 DOTween 대신 모드가 돌립니다. 타일 수천 개를 한 번에 옮기는 효과가 시작될 때의 끊김을 줄입니다. 시간 누적, 이징, 끊기는 DOTween 과 똑같이 합니다.",
                       "Runs tile move animations (position, rotation, scale, opacity) in the mod instead of DOTween, reducing the hitch when an effect moves thousands of tiles at once. Timing, easing and kill behavior match DOTween."), null);
+                ch |= Option("timerhalf", ref c.TimerHalfMs, T("타이머 정밀도 0.5ms 요청", "0.5 ms timer resolution"),
+                    T("윈도우 타이머 정밀도를 0.5ms 까지 요청해 프레임 대기와 입력 처리가 덜 튀게 합니다. 기본 켬입니다. ISLC 같은 프로그램이 이미 0.5ms 로 고정해 둔 컴퓨터에서는 차이가 없습니다. 끄거나 게임을 끝내면 우리가 올린 요청만 내립니다.",
+                      "Requests 0.5 ms Windows timer resolution for steadier frame waits and input handling. On by default. No difference on PCs where a tool such as ISLC already pins it. Turning it off releases only our own request."),
+                    null);
                 EndGroup();
                 SubHeading(T("맵 파일 캐시", "Level disk cache"), "");
                 BeginGroup();
@@ -1342,10 +1346,6 @@ namespace StutterFix
                 SubHeading(T("그리기·타이머 실험", "Rendering and timer experiments"), "");
                 BeginGroup();
                 ch |= Option("filteridentity", ref c.FilterIdentity, T("중립 필터 건너뛰기", "Skip identity filters"), T("픽셀 대조를 통과한 필터만 중립 값일 때 건너뜁니다.", "Bypass only pixel-verified filters at neutral values."), null);
-                ch |= Option("timerhalf", ref c.TimerHalfMs, T("타이머 0.5ms 요청 (실험)", "0.5 ms timer request (experimental)"),
-                    T("윈도우 타이머 정밀도를 0.5ms 까지 요청해 프레임 대기가 덜 튀게 합니다. 이미 다른 프로그램이 올려 둔 컴퓨터에서는 차이가 없습니다. 끄거나 게임을 끝내면 우리가 올린 요청만 내립니다.",
-                      "Requests 0.5 ms Windows timer resolution for steadier frame waits. No difference if another program already raised it. Turning it off releases only our own request."),
-                    null);
                 ch |= Option("framegenconstantring",ref c.FrameGenConstantRing,T("보간 업로드 버퍼 재사용 (실험)","Reuse interpolation upload buffers (experimental)"),
                     T("우리 보간 상수 버퍼 3개만 GPU 완료 확인 뒤 번갈아 씁니다. 미지원·혼잡 시 기존 방식으로 돌아가며 GPU를 기다리지 않습니다. 성능 개선은 확인 중이고 기본 꺼짐입니다.","Rotates three owned interpolation constant buffers only after GPU completion. Falls back without a GPU wait if unsupported or busy. Performance is under validation; off by default."),null);
                 ch |= Option("fastcompact", ref c.DecoFastCompact, T("장식 목록 정리 생략 (실험)", "Skip decoration list compaction (experimental)"),
