@@ -72,12 +72,12 @@ namespace StutterFix
         {
             try
             {
-                if (!ZeroTween.CanEase) { Main.Entry.Logger.Log("[타일 애니메이션] 이징 함수가 없어 끔"); return; }
+                if (!ZeroTween.CanEase) { Lg.I("[타일 애니메이션] 이징 함수가 없어 끔"); return; }
                 foreach (var m in typeof(ffxMoveFloorPlus).GetMethods(AccessTools.all))
                     if (m.Name == "StartEffect" && m.DeclaringType == typeof(ffxMoveFloorPlus) && !m.IsAbstract && m.GetParameters().Length == 1) startEffect = m;
                 var comp = AccessTools.TypeByName("DG.Tweening.Core.DOTweenComponent");
                 var upd = comp == null ? null : AccessTools.Method(comp, "Update");
-                if (startEffect == null || upd == null) { Main.Entry.Logger.Log("[타일 애니메이션] 게임 코드 모양이 달라 끔"); return; }
+                if (startEffect == null || upd == null) { Lg.I("[타일 애니메이션] 게임 코드 모양이 달라 끔"); return; }
                 // 원래 코드의 필드 이름을 먼저 확인 (없으면 위 FieldRef 가 예외)
                 if (startRef == null || tScaleRef == null || opaUsedRef == null) return;
 
@@ -115,9 +115,9 @@ namespace StutterFix
                             if (m.Name == n && !m.IsGenericMethodDefinition) System.Runtime.CompilerServices.RuntimeHelpers.PrepareMethod(m.MethodHandle);
                 }
                 catch { }
-                Main.Entry.Logger.Log("[타일 애니메이션] 설치");
+                Lg.I("[타일 애니메이션] 설치");
             }
-            catch (Exception ex) { Installed = false; Main.Entry.Logger.Log("[타일 애니메이션] 설치 실패: " + ex.Message); }
+            catch (Exception ex) { Installed = false; Lg.I("[타일 애니메이션] 설치 실패: " + ex.Message); }
         }
 
         internal static bool Active { get { return Enabled && Installed; } }
@@ -139,13 +139,13 @@ namespace StutterFix
             double ms = (System.Diagnostics.Stopwatch.GetTimestamp() - t0) * 1000.0 / System.Diagnostics.Stopwatch.Frequency;
             StartMs += ms;
 #if DEV || AUTOTEST
-            if (ms > 3 && heavyLogged < 40) { heavyLogged++; Main.Entry.Logger.Log(string.Format("[타일 이동 효과] {0:F2}ms 타일 {1}개 길이 {2:F2} 불투명도만 {3} | 위치 {4} 회전 {5} 크기 {6} 불투명도 {7} | 값 위치 {8} 회전 {9} 크기 {10}", ms, Tiles - tiles0, durRef(__instance), opaOnlyLast, posUsedRef(__instance), rotUsedRef(__instance), scaleUsedRef(__instance), opaUsedRef(__instance), tPosRef(__instance), tRotRef(__instance), tScaleRef(__instance))); }
+            if (ms > 3 && heavyLogged < 40) { heavyLogged++; Lg.I(string.Format("[타일 이동 효과] {0:F2}ms 타일 {1}개 길이 {2:F2} 불투명도만 {3} | 위치 {4} 회전 {5} 크기 {6} 불투명도 {7} | 값 위치 {8} 회전 {9} 크기 {10}", ms, Tiles - tiles0, durRef(__instance), opaOnlyLast, posUsedRef(__instance), rotUsedRef(__instance), scaleUsedRef(__instance), opaUsedRef(__instance), tPosRef(__instance), tRotRef(__instance), tScaleRef(__instance))); }
 #endif
             if (Prof && ms > 5 && profLogged < 40)
             {
                 profLogged++;
                 double f = System.Diagnostics.Stopwatch.Frequency / 1000.0;
-                Main.Entry.Logger.Log(string.Format("[타일 애니메이션] (개발자용) 효과 {0:F1}ms 타일 {1}개: 앞부분 {2:F1}, 위치 {3:F1}, 회전 {4:F1}, 크기 {5:F1}, 불투명도 {6:F1}ms, 나머지 {7:F1}ms | 이전 모드 표 {8}개(진행 중 {9}), 새로 만든 애니메이션 {10}개(새 표 객체 {11})",
+                Lg.I(string.Format("[타일 애니메이션] (개발자용) 효과 {0:F1}ms 타일 {1}개: 앞부분 {2:F1}, 위치 {3:F1}, 회전 {4:F1}, 크기 {5:F1}, 불투명도 {6:F1}ms, 나머지 {7:F1}ms | 이전 모드 표 {8}개(진행 중 {9}), 새로 만든 애니메이션 {10}개(새 표 객체 {11})",
                     ms, Tiles - tiles0, pHead / f, pPos / f, pRot / f, pScale / f, pOpa / f, ms - (pHead + pPos + pRot + pScale + pOpa) / f, pKillN, pRunning, Created - made0, pNewObj));
             }
             return false;

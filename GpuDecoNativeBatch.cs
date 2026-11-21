@@ -109,7 +109,7 @@ namespace StutterFix
                     Require(GpuDecoScene.SortKey(state,state.sharedMaterial,camera).SameBucket(GpuDecoScene.SortKey(renderer,renderer.sharedMaterial,camera)),"restored static sort bucket changed");
                 }
             }
-            Main.Entry.Logger.Log("[gpudeco] static_sort_audit owned="+renderers.Count+" bucket_mismatch_before="+mismatches+" restored_world_bounds="+RestoreSortBounds+" split_sort_buckets="+splitSortBuckets+" combine_groups="+bucketCount);
+            Lg.I("[gpudeco] static_sort_audit owned="+renderers.Count+" bucket_mismatch_before="+mismatches+" restored_world_bounds="+RestoreSortBounds+" split_sort_buckets="+splitSortBuckets+" combine_groups="+bucketCount);
             var indicesByMesh=new Dictionary<Mesh,List<int>>();
             for(int i=0;i<renderers.Count;i++)
             {
@@ -192,7 +192,7 @@ namespace StutterFix
             foreach(var go in objects)try {if(go)UnityEngine.Object.Destroy(go);}catch {errors++;} objects.Clear();renderers.Clear();
             foreach(var mesh in meshes)try {if(mesh)UnityEngine.Object.Destroy(mesh);}catch {errors++;} meshes.Clear();
             BufferCount=0;
-            if(errors!=0)Main.Entry.Logger.Log("[gpudeco] shared_static_dispose_errors="+errors);
+            if(errors!=0)Lg.I("[gpudeco] shared_static_dispose_errors="+errors);
         }
     }
 }

@@ -75,9 +75,9 @@ namespace StutterFix
                 easu = new Material(e) { hideFlags = HideFlags.HideAndDontSave };
                 rcas = new Material(r2) { hideFlags = HideFlags.HideAndDontSave };
                 Ready = true;
-                Main.Entry.Logger.Log("[저사양] FSR 1 셰이더 불러옴 (" + SystemInfo.graphicsDeviceType + ")");
+                Lg.I("[저사양] FSR 1 셰이더 불러옴 (" + SystemInfo.graphicsDeviceType + ")");
             }
-            catch (Exception ex) { Failed = true; Main.Entry.Logger.Log("[저사양] FSR 1 사용 불가: " + ex.Message); }
+            catch (Exception ex) { Failed = true; Lg.I("[저사양] FSR 1 사용 불가: " + ex.Message); }
         }
 
         private static void PreCull(Camera c)
@@ -123,7 +123,7 @@ namespace StutterFix
                 quadMat.mainTexture = outRT;
                 if (TestSharp < -1.5f) { done = content; Frames++; } else done = -1;   // 검증용으로 그린 것은 다음 프레임에 다시 그린다
             }
-            catch (Exception ex) { Failed = true; Ready = false; Main.Entry.Logger.Log("[저사양] FSR 1 실패, 끔: " + ex.Message); RestoreQuad(); }
+            catch (Exception ex) { Failed = true; Ready = false; Lg.I("[저사양] FSR 1 실패, 끔: " + ex.Message); RestoreQuad(); }
             finally { if(effectsCamera!=null) ScreenEffects.Render(effectsCamera,content); }
         }
 

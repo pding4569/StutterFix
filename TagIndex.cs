@@ -71,7 +71,7 @@ namespace StutterFix
             Forget();if(!Enabled)return;
             try
             {
-                if(!InitVersions()){Main.Entry.Logger.Log("[태그 색인] 변경 감지 불가: 기존 조회 사용");return;}
+                if(!InitVersions()){Lg.I("[태그 색인] 변경 감지 불가: 기존 조회 사용");return;}
                 var mgr=scrDecorationManager.instance;if(mgr==null)return;
                 var src=mgr.taggedDecorations;if(src==null)return;
                 int v=dictVersion(src);var built=new CompiledTagTable<scrDecoration>(src);
@@ -102,7 +102,7 @@ namespace StutterFix
                     catch{ /* A malformed effect remains on the original path. */ }
                 }
                 if(v!=dictVersion(src)){Forget();return;}
-                Main.Entry.Logger.Log("[태그 색인] 준비 "+built.Rows.Length+"개, 효과 "+prepared+"개");
+                Lg.I("[태그 색인] 준비 "+built.Rows.Length+"개, 효과 "+prepared+"개");
             }
             catch{Forget();}
         }

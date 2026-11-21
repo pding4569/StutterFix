@@ -101,7 +101,7 @@ namespace StutterFix
 #if AUTOTEST
                 {
                     long heap1 = GC.GetTotalMemory(false) / 1048576;
-                    Main.Entry.Logger.Log("[GPU 장식] 준비로 늘어난 관리 힙: " + heap0 + "MB -> " + heap1 + "MB (+" + (heap1 - heap0) + "MB) | 단계별: " + DecoBake.hpSb);
+                    Lg.I("[GPU 장식] 준비로 늘어난 관리 힙: " + heap0 + "MB -> " + heap1 + "MB (+" + (heap1 - heap0) + "MB) | 단계별: " + DecoBake.hpSb);
                 }
 #endif
                 {
@@ -111,13 +111,13 @@ namespace StutterFix
                     DecoBake.EnsureNativeAdoptionHook();
                 }
 #if AUTOTEST
-                Main.Entry.Logger.Log("[GPU 장식] 준비 완료 (막힘 " + lifetime.Blocked + ", 준비됨 " + lifetime.Prepared + ")");
+                Lg.I("[GPU 장식] 준비 완료 (막힘 " + lifetime.Blocked + ", 준비됨 " + lifetime.Prepared + ")");
 #endif
             }
             catch (Exception e)
             {
 #if AUTOTEST
-                Main.Entry.Logger.Log("[GPU 장식] 준비 예외: " + e);
+                Lg.I("[GPU 장식] 준비 예외: " + e);
 #endif
                 Skip(e.Message); DecoBake.ReleasePlayerLevel(); cleanupPending=false;
             }
@@ -139,7 +139,7 @@ namespace StutterFix
             bool preStart = DrawCollapsePolicy.PreStartActivate && c && c.gameworld && !c.paused && !(scnEditor.instance) && CurrentState(c) == States.Start; // 시작 키 전에는 따라잡을 효과가 없다(InCatchUp 은 다시 하기 뒤 몇 초 켜져 있어 활성화가 키를 누른 뒤로 밀렸다)
 #if AUTOTEST
             if (c && song && !song.hasSongStarted && lifetime.Prepared && !lifetime.Attempted && (Time.frameCount % 240) == 0)
-                Main.Entry.Logger.Log("[GPU 장식] 시작 전 대기 점검: preStart " + preStart + " gameworld " + c.gameworld + " paused " + c.paused + " 상태 " + CurrentState(c) + " 따라잡기 " + EffectBudget.InCatchUp + " 에디터 " + (bool)scnEditor.instance + " 오디오정지 " + AudioListener.pause + " timeScale " + Time.timeScale);
+                Lg.I("[GPU 장식] 시작 전 대기 점검: preStart " + preStart + " gameworld " + c.gameworld + " paused " + c.paused + " 상태 " + CurrentState(c) + " 따라잡기 " + EffectBudget.InCatchUp + " 에디터 " + (bool)scnEditor.instance + " 오디오정지 " + AudioListener.pause + " timeScale " + Time.timeScale);
 #endif
             if (!c || !song || (!song.hasSongStarted && !preStart) || !c.gameworld || c.paused || AudioListener.pause || Time.timeScale <= 0) return;
             if (scnEditor.instance && !scnEditor.instance.playMode) return;
@@ -154,7 +154,7 @@ namespace StutterFix
             catch (Exception e)
             {
 #if AUTOTEST
-                Main.Entry.Logger.Log("[GPU 장식] 켜기 예외: " + e);
+                Lg.I("[GPU 장식] 켜기 예외: " + e);
 #endif
                 Skip(e.Message); DecoBake.ReleasePlayerLevel(); cleanupPending=false;
             }
@@ -176,19 +176,19 @@ namespace StutterFix
             cleanupPending = RuntimeInitialized;
             if (reported) return;
             reported = true;
-            Main.Entry.Logger.Log("[GPU 장식] 건너뜀: " + reason.Replace('\r', ' ').Replace('\n', ' '));
+            Lg.I("[GPU 장식] 건너뜀: " + reason.Replace('\r', ' ').Replace('\n', ' '));
         }
         internal static void OrderViolation(string reason)
         {
             if (orderReported) return;
             orderReported = true;
-            Main.Entry.Logger.Log("[GPU 장식] 순서 점검: " + reason);
+            Lg.I("[GPU 장식] 순서 점검: " + reason);
         }
         internal static void End(string reason)
         {
             if (!Product || !RuntimeInitialized) return;
 #if AUTOTEST
-            Main.Entry.Logger.Log("[GPU 장식] 종료 후크: " + reason + " | 준비됨 " + lifetime.Prepared + " 시도함 " + lifetime.Attempted + " 막힘 " + lifetime.Blocked + " 준비중 " + Preparing);
+            Lg.I("[GPU 장식] 종료 후크: " + reason + " | 준비됨 " + lifetime.Prepared + " 시도함 " + lifetime.Attempted + " 막힘 " + lifetime.Blocked + " 준비중 " + Preparing);
 #endif
             // 죽음·완주 순간에는 되돌리지 않는다: 켜 둔 채 결과 화면을 그리고, 다시 하기·나가기·편집기 복귀 같은 전환(어차피 멈추는 순간)에서 되돌린다.
             // 마지막 타일·죽는 프레임의 약 40~55ms 복원 멈춤이 없어진다.
@@ -196,7 +196,7 @@ namespace StutterFix
                 && (reason == "FailAction" || reason == "Fail2Action" || reason == "OnLandOnPortal"))
             {
 #if AUTOTEST
-                Main.Entry.Logger.Log("[GPU 장식] 종료를 전환 때로 미룸: " + reason);
+                Lg.I("[GPU 장식] 종료를 전환 때로 미룸: " + reason);
 #endif
                 return;
             }
@@ -482,7 +482,7 @@ namespace StutterFix
             if (!SameBaselineObjects(expectedObjects, baselineObjects)) differences++;
             if (table.Decorations.Length != expectedCount) differences++;
             if (PlayerPrepInitialHash() != expectedInitial) differences++;
-            Main.Entry.Logger.Log("[GPU 장식] 준비 재사용 검증: " + (differences == 0 ? "같음" : "다름") + " " + differences);
+            Lg.I("[GPU 장식] 준비 재사용 검증: " + (differences == 0 ? "같음" : "다름") + " " + differences);
             if (differences != 0)
             {
                 playerPrepReuseEnabled = playerPrepVerify = false;
@@ -519,9 +519,9 @@ namespace StutterFix
                 && gpuPreparedHash != 0 && gpuLiveManager == manager && manager == scrDecorationManager.instance;
             if (!cacheCandidate) { if (gpuLivePrepared || gpuLiveSlices.Count > 0) DisposeGpuLive(); gpuScope = GpuDecoScopePlan.Song(); gpuPreparedHash = 0; }
 #if AUTOTEST
-            Main.Entry.Logger.Log("[GPU 장식] 메모리: 관리 힙 " + (GC.GetTotalMemory(false) >> 20) + "MB, 프로세스 개인 " + (System.Diagnostics.Process.GetCurrentProcess().PrivateMemorySize64 >> 20)
+            Lg.I("[GPU 장식] 메모리: 관리 힙 " + (GC.GetTotalMemory(false) >> 20) + "MB, 프로세스 개인 " + (System.Diagnostics.Process.GetCurrentProcess().PrivateMemorySize64 >> 20)
                 + "MB, 유니티 할당 " + (UnityEngine.Profiling.Profiler.GetTotalAllocatedMemoryLong() >> 20) + "MB, 그래픽 드라이버 " + (UnityEngine.Profiling.Profiler.GetAllocatedMemoryForGraphicsDriver() >> 20) + "MB");
-            Main.Entry.Logger.Log("[GPU 장식] 준비 시작: 처음 Setup 기록 " + initial.Count + "개 (파괴된 것 " + deadCount + "개 정리), 장식 " + (scrDecorationManager.instance ? scrDecorationManager.instance.allDecorations.Count : -1) + "개, enabled " + enabled + ", 관리자 같음 " + (manager == scrDecorationManager.instance) + ", 준비 결과 재사용 후보 " + cacheCandidate);
+            Lg.I("[GPU 장식] 준비 시작: 처음 Setup 기록 " + initial.Count + "개 (파괴된 것 " + deadCount + "개 정리), 장식 " + (scrDecorationManager.instance ? scrDecorationManager.instance.allDecorations.Count : -1) + "개, enabled " + enabled + ", 관리자 같음 " + (manager == scrDecorationManager.instance) + ", 준비 결과 재사용 후보 " + cacheCandidate);
 #endif
             gpuImageCandidate = Main.Config.GpuDecoImages == 1;
             gpuImageOwn = true;
@@ -559,7 +559,7 @@ namespace StutterFix
                     foreach (var why in row.Reasons) { total.TryGetValue(why, out int n); total[why] = n + 1; }
                     if (row.Reasons.Count == 1) foreach (var why in row.Reasons) { only.TryGetValue(why, out int n); only[why] = n + 1; }
                 }
-                Main.Entry.Logger.Log("[GPU 장식] 표 거부 사유: 장식 " + table.Decorations.Length + "개, 지원 " + table.Supported + "개 | "
+                Lg.I("[GPU 장식] 표 거부 사유: 장식 " + table.Decorations.Length + "개, 지원 " + table.Supported + "개 | "
                     + string.Join(", ", total.OrderByDescending(kv => kv.Value).Select(kv => kv.Key + " " + kv.Value + "/단독 " + (only.TryGetValue(kv.Key, out int o) ? o : 0))));
             }
 #endif
@@ -609,7 +609,7 @@ namespace StutterFix
                     gpuPlanPreBuilt = false;
 #if AUTOTEST
                     string st = e.StackTrace ?? "";
-                    Main.Entry.Logger.Log("[GPU 장식] 계획 사전 구성 실패(시작 때 한다): " + e.GetType().Name + " " + e.Message + " @ " + st.Substring(0, Math.Min(200, st.Length)).Replace((char)10, ' ').Replace((char)13, ' '));
+                    Lg.I("[GPU 장식] 계획 사전 구성 실패(시작 때 한다): " + e.GetType().Name + " " + e.Message + " @ " + st.Substring(0, Math.Min(200, st.Length)).Replace((char)10, ' ').Replace((char)13, ' '));
 #endif
                 }
                 finally { gpuPrePlan = false; }
@@ -623,7 +623,7 @@ namespace StutterFix
             catch { ForgetPlayerPrepIdentity(); }
             long p4 = Stopwatch.GetTimestamp();
             double f = 1000.0 / Stopwatch.Frequency;
-            Main.Entry.Logger.Log("[GPU 장식] 준비 " + ((p4 - p0) * f).ToString("F0") + "ms" + (prepReuse ? " (수집·표 재사용)" : reuse ? " (이전 준비 결과 재사용)" : "") + ": 수집 " + ((p1 - p0) * f).ToString("F0") + ", 표 만들기 대기 " + ((p2 - p1) * f).ToString("F0")
+            Lg.I("[GPU 장식] 준비 " + ((p4 - p0) * f).ToString("F0") + "ms" + (prepReuse ? " (수집·표 재사용)" : reuse ? " (이전 준비 결과 재사용)" : "") + ": 수집 " + ((p1 - p0) * f).ToString("F0") + ", 표 만들기 대기 " + ((p2 - p1) * f).ToString("F0")
                 + ", 이미지 계획 " + ((p3 - p2) * f).ToString("F0") + ", GPU 준비 " + ((p4 - p3) * f).ToString("F0"));
         }
         // 정상 종료한 게임 화면만 CPU 준비 결과도 보존한다. 편집기는 매번 전체 수집한다.
@@ -708,7 +708,7 @@ namespace StutterFix
                     catch (Exception e)
                     {
                         // 중간 시작 상태가 준비 때 계획과 어긋남: 순수 기준 상태를 복원하고 다시 계획한다.
-                        Main.Entry.Logger.Log("[GPU 장식] 중간 시작: 준비 때 계획이 맞지 않아 다시 계획함 (" + e.GetType().Name + ")");
+                        Lg.I("[GPU 장식] 중간 시작: 준비 때 계획이 맞지 않아 다시 계획함 (" + e.GetType().Name + ")");
                         RestoreCollapseBaseState();
                         foreach (var sl in gpuLiveSlices) foreach (var rr in sl.Renderers) if (rr && rr.enabled) rr.enabled = false;
                         RebuildDrawCollapse();ActMark("계획(재구성)");
@@ -727,7 +727,7 @@ namespace StutterFix
             ActEnd();
             gpuActivationDeferred = 0;
             long t2 = Stopwatch.GetTimestamp();
-            Main.Entry.Logger.Log("[GPU 장식] 켜짐: 소유 " + GpuLiveOwned + "개, 그리기 통합 " + (gpuCollapseOn ? "켬" : "끔") + ", 이미지 " + (gpuImageCandidate ? "켬" : "끔") + ", CPU 처리 장식 " + gpuLiveCpuFallbackCount + "개"
+            Lg.I("[GPU 장식] 켜짐: 소유 " + GpuLiveOwned + "개, 그리기 통합 " + (gpuCollapseOn ? "켬" : "끔") + ", 이미지 " + (gpuImageCandidate ? "켬" : "끔") + ", CPU 처리 장식 " + gpuLiveCpuFallbackCount + "개"
                 + " | 시작 " + ((t1 - t0) * 1000.0 / Stopwatch.Frequency).ToString("F1") + "ms, 통합 켜기 " + ((t2 - t1) * 1000.0 / Stopwatch.Frequency).ToString("F1") + "ms");
         }
         internal static void ReleasePlayerLevel()

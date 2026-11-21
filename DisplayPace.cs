@@ -31,7 +31,7 @@ namespace StutterFix
         {
             if (start) { inputDt = appliedDt = maxError = elapsed = maxClockError = 0; checkFrames = checkUpdates = 0; }
             checking = false; armCheck = start;
-            Main.Entry.Logger.Log(string.Format("[pacecheck] {0} frames={1} updates={2} input={3:F9} applied={4:F9} pending={5:F9} maxError={6:E3}",
+            Lg.I(string.Format("[pacecheck] {0} frames={1} updates={2} input={3:F9} applied={4:F9} pending={5:F9} maxError={6:E3}",
                 start ? "begin" : "end", checkFrames, checkUpdates, inputDt, appliedDt, pendingDt, maxError)
                 + string.Format(" elapsed={0:F9} maxClockError={1:E3}", elapsed, maxClockError));
         }

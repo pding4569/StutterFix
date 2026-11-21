@@ -70,7 +70,7 @@ namespace StutterFix
             lodCb = new CommandBuffer { name = "StutterFix RenderLod" };
             lodCbCamera = gpuLiveCamera; lodCbCamera.AddCommandBuffer(CameraEvent.BeforeForwardAlpha, lodCb);
             GpuLog("RENDERLOD ready spans=" + spans);
-            if (GpuDecoPlayer.Product) Main.Entry.Logger.Log("[GPU 장식] 저해상도 그리기 준비: 구간 " + spans + "개");
+            if (GpuDecoPlayer.Product) Lg.I("[GPU 장식] 저해상도 그리기 준비: 구간 " + spans + "개");
         }
 
         internal static void LodRelease()

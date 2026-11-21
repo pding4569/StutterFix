@@ -17,13 +17,13 @@ namespace StutterFix
         static void Add(Type t, string method, string key)
         {
             var m = t == null ? null : (AccessTools.DeclaredMethod(t, method) ?? AccessTools.Method(t, method));
-            if (m == null || m.IsAbstract) { Main.Entry.Logger.Log("[LightProbe] 없음: " + key); return; }
+            if (m == null || m.IsAbstract) { Lg.I("[LightProbe] 없음: " + key); return; }
             try
             {
                 names[m] = key;
                 h.Patch(m, prefix: new HarmonyMethod(typeof(LightProbe), nameof(Prefix)) { priority = Priority.First });
             }
-            catch (Exception e) { names.Remove(m); Main.Entry.Logger.Log("[LightProbe] 패치 실패 " + key + ": " + e.Message.Substring(0, Math.Min(80, e.Message.Length))); }
+            catch (Exception e) { names.Remove(m); Lg.I("[LightProbe] 패치 실패 " + key + ": " + e.Message.Substring(0, Math.Min(80, e.Message.Length))); }
         }
 
         static void Install()
@@ -70,7 +70,7 @@ namespace StutterFix
         {
             Install();
             skip[key] = on;
-            Main.Entry.Logger.Log("[LightProbe] " + key + "=" + on);
+            Lg.I("[LightProbe] " + key + "=" + on);
         }
 
         internal static void Uninstall()

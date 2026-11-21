@@ -38,7 +38,7 @@ namespace StutterFix
                     json = types.FirstOrDefault(t => t.Name == "Json" && t.GetMethod("Deserialize", BindingFlags.Public | BindingFlags.Static, null, new[] { typeof(string) }, null) != null);
                 }
                 var m = json == null ? null : json.GetMethod("Deserialize", BindingFlags.Public | BindingFlags.Static, null, new[] { typeof(string) }, null);
-                if (m == null || m.ReturnType != typeof(object)) { Main.Entry.Logger.Log("[맵 파일 읽기] 빠른 해석기: 게임 코드 모양이 달라 끔"); return; }
+                if (m == null || m.ReturnType != typeof(object)) { Lg.I("[맵 파일 읽기] 빠른 해석기: 게임 코드 모양이 달라 끔"); return; }
                 // 개발자용 대조: 원래 해석기 본체(Json 안의 Parser.Parse, 패치하지 않은 것)
                 var parser = json.GetNestedTypes(BindingFlags.Public | BindingFlags.NonPublic).FirstOrDefault(t => t.Name == "Parser");
                 origParse = parser == null ? null : parser.GetMethod("Parse", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static, null, new[] { typeof(string) }, null);
@@ -47,9 +47,9 @@ namespace StutterFix
                 if(ld!=null)foreach(var load in ld.GetMethods(AccessTools.all))
                     if(load.DeclaringType==ld&&load.Name=="LoadLevel"&&!load.IsAbstract&&!load.ContainsGenericParameters)
                         h.Patch(load,prefix:new HarmonyMethod(typeof(FastJson),nameof(SourcePrefix)),finalizer:new HarmonyMethod(typeof(FastJson),nameof(SourceFinalizer)));
-                Main.Entry.Logger.Log("[맵 파일 읽기] 빠른 JSON 해석기 설치 (" + json.FullName + ")");
+                Lg.I("[맵 파일 읽기] 빠른 JSON 해석기 설치 (" + json.FullName + ")");
             }
-            catch (Exception ex) { Main.Entry.Logger.Log("[맵 파일 읽기] 빠른 해석기 설치 실패: " + ex.Message); }
+            catch (Exception ex) { Lg.I("[맵 파일 읽기] 빠른 해석기 설치 실패: " + ex.Message); }
         }
 
         private static MethodInfo origParse;
@@ -104,10 +104,10 @@ namespace StutterFix
                 object orig = origParse.Invoke(null, new object[] { text });
                 double origMs = (System.Diagnostics.Stopwatch.GetTimestamp() - t0) * 1000.0 / System.Diagnostics.Stopwatch.Frequency;
                 string diff = Diff(orig, fast, "$");
-                Main.Entry.Logger.Log(string.Format("[맵 파일 읽기] 원래 해석기와 대조({0}만 글자): {1} | 빠른 해석기 {2:F0}ms, 원래 {3:F0}ms",
+                Lg.I(string.Format("[맵 파일 읽기] 원래 해석기와 대조({0}만 글자): {1} | 빠른 해석기 {2:F0}ms, 원래 {3:F0}ms",
                     text.Length / 10000, diff == null ? "결과 전부 같음" : "다름 " + diff, LastMs, origMs));
             }
-            catch (Exception ex) { Main.Entry.Logger.Log("[맵 파일 읽기] 원래 해석기와 대조 실패: " + (ex.InnerException ?? ex).Message); }
+            catch (Exception ex) { Lg.I("[맵 파일 읽기] 원래 해석기와 대조 실패: " + (ex.InnerException ?? ex).Message); }
         }
 
         private static string Diff(object a, object b, string path)

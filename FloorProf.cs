@@ -27,12 +27,12 @@ namespace StutterFix
             foreach (var t in types)
                 foreach (var m in t.GetMethods(AccessTools.all))
                     if (m.DeclaringType == t && m.Name.Contains("g__TweenFloor")) target = m;
-            if (target == null) { Main.Entry.Logger.Log("[타일 이동 측정] 지역 함수 없음"); return; }
+            if (target == null) { Lg.I("[타일 이동 측정] 지역 함수 없음"); return; }
             h.Patch(target, transpiler: new HarmonyMethod(typeof(FloorProf), nameof(Transpiler)));
             MethodBase se = null;
             foreach (var m in typeof(ffxMoveFloorPlus).GetMethods(AccessTools.all)) if (m.Name == "StartEffect" && m.DeclaringType == typeof(ffxMoveFloorPlus)) se = m;
             if (se != null) h.Patch(se, prefix: new HarmonyMethod(typeof(FloorProf), nameof(SePre)), postfix: new HarmonyMethod(typeof(FloorProf), nameof(SePost)));
-            Main.Entry.Logger.Log("[타일 이동 측정] 설치 (바꾼 호출 " + replaced + "개)");
+            Lg.I("[타일 이동 측정] 설치 (바꾼 호출 " + replaced + "개)");
         }
         private static int replaced;
         public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> ins)
@@ -82,7 +82,7 @@ namespace StutterFix
             if (ms < 5 || logged >= 40) return;
             logged++;
             double dt = toMs + easeMs + updMs + doneMs + killMs + scaleMs;
-            Main.Entry.Logger.Log(string.Format("[타일 이동 측정] 효과 {0:F1}ms 중 DOTween {1:F1}ms (만들기 {2}번 {3:F1}, SetEase {4:F1}, OnUpdate {5:F1}, Done {6}번 {7:F1}, 끝내기 {8}번 {9:F1}, 크기 {10:F1}) | 불투명도 {12}번 {13:F1}ms | transform 읽기 {14}번 {15:F1}ms | 나머지 {11:F1}ms",
+            Lg.I(string.Format("[타일 이동 측정] 효과 {0:F1}ms 중 DOTween {1:F1}ms (만들기 {2}번 {3:F1}, SetEase {4:F1}, OnUpdate {5:F1}, Done {6}번 {7:F1}, 끝내기 {8}번 {9:F1}, 크기 {10:F1}) | 불투명도 {12}번 {13:F1}ms | transform 읽기 {14}번 {15:F1}ms | 나머지 {11:F1}ms",
                 ms, dt, toN, toMs, easeMs, updMs, doneN, doneMs, killN, killMs, scaleMs, ms - dt - opaMs - readMs, opaN, opaMs, readN, readMs));
         }
     }

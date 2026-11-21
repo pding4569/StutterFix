@@ -34,7 +34,7 @@ namespace StutterFix
         static string Bits(float x) => BitConverter.SingleToInt32Bits(x).ToString("X8", CultureInfo.InvariantCulture);
         static string Vec(Vector4 v) => Bits(v.x)+","+Bits(v.y)+","+Bits(v.z)+","+Bits(v.w);
         static string Matrix(Matrix4x4 m) { var b = new StringBuilder(); for (int i=0;i<16;i++) b.Append(Bits(m[i])).Append(','); return b.ToString(); }
-        static void Log(string s) => Main.Entry.Logger.Log("[gpuexact] " + s);
+        static void Log(string s) => Lg.I("[gpuexact] " + s);
         internal static bool Step(string arg)
         {
             if (arg == "stop") { Stop(); ready=false; failure=null; return true; }

@@ -103,7 +103,7 @@ namespace StutterFix
             string what = SettingsWindow.T("맵을 연 뒤 그래픽 메모리가 거의 찼습니다(", "VRAM is nearly full after loading (") + used.ToString("F0") + "/" + total + "MB"
                 + SettingsWindow.T("). 장식이 처음 보일 때 끊길 수 있어, 다음에 이 맵을 불러올 때 큰 이미지를 긴 변 ", "). Decorations may hitch when first shown, so next time this level loads, large images will be capped at ")
                 + next + SettingsWindow.T(" 으로 줄입니다", " px");
-            Main.Entry.Logger.Log(string.Format("[이미지] 자동: 맵 연 뒤 VRAM {0:F0}/{1}MB (게임 {2:F0}MB) -> 이 맵은 다음부터 긴 변 {3} ({4})", used, total, game, next, Level));
+            Lg.I(string.Format("[이미지] 자동: 맵 연 뒤 VRAM {0:F0}/{1}MB (게임 {2:F0}MB) -> 이 맵은 다음부터 긴 변 {3} ({4})", used, total, game, next, Level));
             PerfOverlay.Notice(SettingsWindow.T("VRAM 거의 참", "VRAM nearly full"), what);
         }
 
@@ -128,7 +128,7 @@ namespace StutterFix
             string what = SettingsWindow.T("그래픽 메모리가 가득 차서(", "VRAM was full (") + used.ToString("F0") + "/" + total + "MB"
                 + SettingsWindow.T(") 끊겼습니다. 다음에 이 맵을 불러올 때 큰 이미지를 긴 변 ", ") and caused stutter. Next time this level loads, large images will be capped at ")
                 + next + SettingsWindow.T(" 으로 줄입니다", " px");
-            Main.Entry.Logger.Log("[이미지] 자동: VRAM 부족으로 끊김 -> 이 맵은 다음부터 긴 변 " + next + " (" + Level + ")");
+            Lg.I("[이미지] 자동: VRAM 부족으로 끊김 -> 이 맵은 다음부터 긴 변 " + next + " (" + Level + ")");
             PerfOverlay.Notice(SettingsWindow.T("VRAM 부족", "VRAM full"), what);
         }
     }

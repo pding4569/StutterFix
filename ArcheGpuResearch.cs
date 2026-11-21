@@ -169,7 +169,7 @@ namespace StutterFix
             if (Main.Config != null) Main.Config.ArcheGpuResearch = false;
             new Harmony(Id).UnpatchAll(Id);
         }
-        static void Log(string value) { Main.Entry.Logger.Log("[archegpu] " + value); }
+        static void Log(string value) { Lg.I("[archegpu] " + value); }
     }
 }
 #endif

@@ -49,7 +49,7 @@ namespace StutterFix
                                 foreach (var c in FilterIdentity.Candidates.Values) if (c.Type.Name == parts[0]) c.Approved.Add(key);
                         }
                     File.WriteAllLines(FilterIdentity.CertificatePath, lines);
-                    State(); Main.Entry.Logger.Log("[필터 대조] 승인 기록 " + (lines.Count-1) + "개. 미관측/실패 필터는 원래대로"); break;
+                    State(); Lg.I("[필터 대조] 승인 기록 " + (lines.Count-1) + "개. 미관측/실패 필터는 원래대로"); break;
                 default: throw new Exception("filteridentity on|off|state|approve");
             }
         }
@@ -59,9 +59,9 @@ namespace StutterFix
             foreach (var c in FilterIdentity.Candidates.Values)
             {
                 sightings.TryGetValue(c.Type, out var n);
-                Main.Entry.Logger.Log("[필터 관측] " + c.Type.Name + " 호출 " + (n == null ? 0 : n[0]) + " 중 중립 값 " + (n == null ? 0 : n[1]));
+                Lg.I("[필터 관측] " + c.Type.Name + " 호출 " + (n == null ? 0 : n[0]) + " 중 중립 값 " + (n == null ? 0 : n[1]));
             }
-            foreach (var kv in results) Main.Entry.Logger.Log("[필터 대조] " + kv.Key + " 표본 " + kv.Value.Samples + " 실패 " + kv.Value.Bad + " 최대 차이 " + kv.Value.Max + "/255");
+            foreach (var kv in results) Lg.I("[필터 대조] " + kv.Key + " 표본 " + kv.Value.Samples + " 실패 " + kv.Value.Bad + " 최대 차이 " + kv.Value.Max + "/255");
         }
         public static void Before(object __instance, RenderTexture __0, ref RenderTexture __1, out Capture __state)
         {

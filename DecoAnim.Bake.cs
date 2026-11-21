@@ -16,7 +16,7 @@ namespace StutterFix
             string[] names = { "위치", "회전", "크기+시차배율", "색", "숨김" };
             var parts = new string[5];
             for (int i = 0; i < 5; i++) parts[i] = names[i]+"ms="+(bakeTicks[i]*1000.0/Stopwatch.Frequency/frames).ToString("F6",System.Globalization.CultureInfo.InvariantCulture);
-            Main.Entry.Logger.Log("[굽기채택 쓰기] "+string.Join(" ",parts)+" 호출="+bakeCalls+" 숨김="+bakeHidden+" Transform미룸="+bakeDeferred+"; 64호출당1 표본추정, 목록/평가 별도");
+            Lg.I("[굽기채택 쓰기] "+string.Join(" ",parts)+" 호출="+bakeCalls+" 숨김="+bakeHidden+" Transform미룸="+bakeDeferred+"; 64호출당1 표본추정, 목록/평가 별도");
         }
 #if AUTOTEST || GPUDECO
         internal static void CopyGpuImageFields(scrDecoration d,float[] v)

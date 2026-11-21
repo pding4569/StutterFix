@@ -57,7 +57,7 @@ namespace StutterFix
             try
             {
                 var t = AccessTools.TypeByName("scrHitErrorMeter");
-                if (t == null) { Main.Entry.Logger.Log("[오차 막대] 형식 없음"); return; }
+                if (t == null) { Lg.I("[오차 막대] 형식 없음"); return; }
                 swapped = 0;
                 tickSwapped = handSwapped = 0;
                 // 옛 게임: 눈금 그리기 함수가 DOColor 를 직접 부른다. 알파 3.4(2026-10-06)부터는 눈금 풀(ADOFAI.ErrorMeterTick)의 Show 가 부른다.
@@ -74,10 +74,10 @@ namespace StutterFix
                 }
                 var add = AccessTools.Method(t, "AddHit");
                 if (add != null) h.Patch(add, transpiler: new HarmonyMethod(typeof(HitMeterFade), nameof(HandTranspiler)));
-                Main.Entry.Logger.Log("[오차 막대] 눈금 가볍게 사라지기 설치 (바꾼 곳 " + swapped + "개)");
-                Main.Entry.Logger.Log("[오차 막대 직접 종료] 눈금 Kill " + tickSwapped + "/2곳, 손 " + handSwapped + "/2곳");
+                Lg.I("[오차 막대] 눈금 가볍게 사라지기 설치 (바꾼 곳 " + swapped + "개)");
+                Lg.I("[오차 막대 직접 종료] 눈금 Kill " + tickSwapped + "/2곳, 손 " + handSwapped + "/2곳");
             }
-            catch (Exception ex) { Main.Entry.Logger.Log("[오차 막대] 설치 실패: " + ex.Message); }
+            catch (Exception ex) { Lg.I("[오차 막대] 설치 실패: " + ex.Message); }
         }
 
         // Show 전체는 그대로 두고 Kill 과 OnKill 연결만 바꾼다. 모양이 달라진 게임/다른 모드면 원래 호출을 남긴다.

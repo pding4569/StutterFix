@@ -80,13 +80,13 @@ namespace StutterFix
                 startHeap = GC.GetTotalMemory(false);
                 elapsed = 0f;
                 Running = true;
-                Main.Entry.Logger.Log($"[할당추적] 시작: 컴포넌트 {types.Count}종, 함수 {patchedCount}개 (감싸는 데 {patchWatch.ElapsedMilliseconds}ms), {Seconds:F0}초");
+                Lg.I($"[할당추적] 시작: 컴포넌트 {types.Count}종, 함수 {patchedCount}개 (감싸는 데 {patchWatch.ElapsedMilliseconds}ms), {Seconds:F0}초");
                 if (!GcControl.Paused)
-                    Main.Entry.Logger.Log("[할당추적] 주의: GC가 도는 중이라 값이 부정확하다. 곡을 재생하면서 켜야 한다.");
+                    Lg.I("[할당추적] 주의: GC가 도는 중이라 값이 부정확하다. 곡을 재생하면서 켜야 한다.");
             }
             catch (Exception ex)
             {
-                Main.Entry.Logger.Error("[할당추적] 시작 실패: " + ex.Message);
+                Lg.E("[할당추적] 시작 실패: " + ex.Message);
                 Running = false;
             }
         }
@@ -127,7 +127,7 @@ namespace StutterFix
                 if (count >= 1500) break;
             }
             patchedCount += count;
-            Main.Entry.Logger.Log("[할당추적] 코루틴 " + count + "개 감쌈");
+            Lg.I("[할당추적] 코루틴 " + count + "개 감쌈");
         }
 
         internal static void Shutdown() { Stop(); }
@@ -197,10 +197,10 @@ namespace StutterFix
             LastReport = string.Format("{0:F0}초 동안 힙 +{1:F0}MB ({2:F0}MB/s) 중 {3:F0}MB 설명됨",
                 window, grown / 1048576.0, grown / 1048576.0 / window, explained);
 
-            Main.Entry.Logger.Log("[할당추적] " + LastReport);
-            foreach (var line in lines) Main.Entry.Logger.Log("[할당추적]   " + line);
+            Lg.I("[할당추적] " + LastReport);
+            foreach (var line in lines) Lg.I("[할당추적]   " + line);
             if (lines.Count == 0)
-                Main.Entry.Logger.Log("[할당추적]   Update 계열에서는 아무것도 안 잡힌다 -> 코루틴이나 엔진 콜백 쪽이다");
+                Lg.I("[할당추적]   Update 계열에서는 아무것도 안 잡힌다 -> 코루틴이나 엔진 콜백 쪽이다");
         }
     }
 }

@@ -35,20 +35,20 @@ namespace StutterFix
             var m = AccessTools.Method(typeof(scnEditor), "ObjectsAtMouse");
             var get = AccessTools.PropertyGetter(typeof(scnEditor), "floors");
             camRef = AccessTools.FieldRefAccess<scnEditor, Camera>("camera");
-            if (m == null || get == null) { Main.Entry.Logger.Log("[편집 화면 클릭] 게임 코드 모양이 달라 쓰지 않음"); return; }
+            if (m == null || get == null) { Lg.I("[편집 화면 클릭] 게임 코드 모양이 달라 쓰지 않음"); return; }
             int found = 0;
             var tr = new HarmonyMethod(AccessTools.Method(typeof(EditorPick), nameof(Transpiler)));
             getFloors = get;
             h.Patch(m, transpiler: tr);
             found = patched;
-            if (found != 1) { h.Unpatch(m, HarmonyPatchType.Transpiler, h.Id); Main.Entry.Logger.Log("[편집 화면 클릭] 타일 반복을 " + found + "곳 찾음 (1곳이어야 함) - 쓰지 않음"); return; }
+            if (found != 1) { h.Unpatch(m, HarmonyPatchType.Transpiler, h.Id); Lg.I("[편집 화면 클릭] 타일 반복을 " + found + "곳 찾음 (1곳이어야 함) - 쓰지 않음"); return; }
             // 준비(TransformAccessArray 만들기, 9만 타일 약 170ms)는 첫 클릭이 아니라 어차피 멈추는 순간에 미리 한다:
             // 편집 화면의 타일 다시 만들기(scnEditor.RemakePath, 맵 열기·편집) 끝과 편집으로 나가기 끝. 재생 시작 안의 것은 건너뛴다.
             var pre = new HarmonyMethod(AccessTools.Method(typeof(EditorPick), nameof(Prebuild)));
             foreach (var name in new[] { "RemakePath", "SwitchToEditMode" })
                 foreach (var mm in typeof(scnEditor).GetMethods(AccessTools.all))
                     if (mm.Name == name && mm.DeclaringType == typeof(scnEditor) && !mm.IsAbstract) h.Patch(mm, finalizer: pre);
-            if (Edition.Dev) Main.Entry.Logger.Log("[편집 화면 클릭] 설치: 마우스 근처 타일만 돌기");
+            if (Edition.Dev) Lg.I("[편집 화면 클릭] 설치: 마우스 근처 타일만 돌기");
         }
 
         public static Exception Prebuild(Exception __exception)
@@ -60,9 +60,9 @@ namespace StutterFix
                 var floors = ed != null && ADOBase.lm != null ? ADOBase.lm.listFloors : null;
                 if (floors == null || floors.Count < MinFloors) return __exception;
                 long t0 = System.Diagnostics.Stopwatch.GetTimestamp();
-                if (Ensure(floors) && Edition.Dev) Main.Entry.Logger.Log(string.Format("[편집 화면 클릭] 미리 준비 {0:F0}ms (타일 {1}개)", Ms(t0, System.Diagnostics.Stopwatch.GetTimestamp()), floors.Count));
+                if (Ensure(floors) && Edition.Dev) Lg.I(string.Format("[편집 화면 클릭] 미리 준비 {0:F0}ms (타일 {1}개)", Ms(t0, System.Diagnostics.Stopwatch.GetTimestamp()), floors.Count));
             }
-            catch (Exception ex) { broken = true; Drop(); Main.Entry.Logger.Log("[편집 화면 클릭] 준비 실패, 원래대로: " + ex.Message); }
+            catch (Exception ex) { broken = true; Drop(); Lg.I("[편집 화면 클릭] 준비 실패, 원래대로: " + ex.Message); }
             return __exception;
         }
 
@@ -173,13 +173,13 @@ namespace StutterFix
                 Fast++;
                 LastMs = (System.Diagnostics.Stopwatch.GetTimestamp() - t0) * 1000.0 / System.Diagnostics.Stopwatch.Frequency;
                 if (Edition.Dev) Check(floors, v);   // 시간 재기 뒤에 (원래 방식 전체 훑기라 느림)
-                if (Edition.Dev && (Fast <= 3 || LastMs > 25)) Main.Entry.Logger.Log(string.Format("[편집 화면 클릭] 타일 {0}개 중 후보 {1}개, {2:F2}ms (확인 {3:F2}, 잡 {4:F2}, 고르기 {5:F2}, 작업 스레드 {6})", n, result.Count, LastMs, Ms(t0, t1), Ms(t1, t2), Ms(t2, System.Diagnostics.Stopwatch.GetTimestamp()), Unity.Jobs.LowLevel.Unsafe.JobsUtility.JobWorkerCount));
+                if (Edition.Dev && (Fast <= 3 || LastMs > 25)) Lg.I(string.Format("[편집 화면 클릭] 타일 {0}개 중 후보 {1}개, {2:F2}ms (확인 {3:F2}, 잡 {4:F2}, 고르기 {5:F2}, 작업 스레드 {6})", n, result.Count, LastMs, Ms(t0, t1), Ms(t1, t2), Ms(t2, System.Diagnostics.Stopwatch.GetTimestamp()), Unity.Jobs.LowLevel.Unsafe.JobsUtility.JobWorkerCount));
                 return result;
             }
             catch (Exception ex)
             {
                 broken = true; Drop();
-                Main.Entry.Logger.Log("[편집 화면 클릭] 실패, 원래대로 (이번 실행 동안): " + ex.Message);
+                Lg.I("[편집 화면 클릭] 실패, 원래대로 (이번 실행 동안): " + ex.Message);
                 return floors;
             }
         }
@@ -195,7 +195,7 @@ namespace StutterFix
             foreach (var f in floors)
                 if (f != null && Vector2.Distance(f.transform.position.xy(), v) <= mag && !set.Contains(f)) miss++;
             Checks++; Missed += miss;
-            if (miss > 0) Main.Entry.Logger.Log("[편집 화면 클릭 검증] 후보가 빠뜨린 가까운 타일 " + miss + "개");
+            if (miss > 0) Lg.I("[편집 화면 클릭 검증] 후보가 빠뜨린 가까운 타일 " + miss + "개");
         }
     }
 }

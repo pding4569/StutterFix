@@ -137,7 +137,7 @@ namespace StutterFix
             // 감싸는 비용(호출마다 1~3us)이 굵직한 단계 시간을 부풀려서, 단계 나눔만 볼 때는 이쪽이 정확하다(2026-10-03).
             if (System.IO.File.Exists(System.IO.Path.Combine(Main.Entry.Path, "startprobe-cold.txt")))
             {
-                Main.Entry.Logger.Log("[시작시간] 함수 " + n + "개 감쌈 (자주 불리는 함수는 뺌: startprobe-cold.txt)");
+                Lg.I("[시작시간] 함수 " + n + "개 감쌈 (자주 불리는 함수는 뺌: startprobe-cold.txt)");
                 return;
             }
             var hpre = new HarmonyMethod(typeof(StartProbe), nameof(HotPre));
@@ -171,7 +171,7 @@ namespace StutterFix
                         catch { }
                     }
                 }
-            Main.Entry.Logger.Log("[시작시간] 함수 " + n + "개, 자주 불리는 함수 " + h + "개 감쌈");
+            Lg.I("[시작시간] 함수 " + n + "개, 자주 불리는 함수 " + h + "개 감쌈");
         }
 
         public static void Pre(MethodBase __originalMethod, out object __state)

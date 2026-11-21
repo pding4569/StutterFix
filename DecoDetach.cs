@@ -60,7 +60,7 @@ namespace StutterFix
             if (total < CpuMinDecos || !identity) { CpuLost(); return; }
             int before = mode;
             ActiveTick(p, total, total);
-            if (mode != 0) { if (!cpuDriven) { cpuDriven = true; CpuStarts++; Main.Entry.Logger.Log("[장식 떼기] CPU 경로 시작: 장식 " + total + "개"); } }
+            if (mode != 0) { if (!cpuDriven) { cpuDriven = true; CpuStarts++; Lg.I("[장식 떼기] CPU 경로 시작: 장식 " + total + "개"); } }
             if (before != 2 && mode == 2) TightLate.Invalidate();
         }
         // 준비 조건이 깨졌다(꺼짐·호환 안 됨 등): 되붙이기를 시작한다(재생 일시정지에서는 부르지 않는다)

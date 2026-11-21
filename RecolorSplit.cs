@@ -59,19 +59,19 @@ namespace StutterFix
                     if (m.Name == "AdjustDurationForHardbake") adjust = m;
                 if (startEffect == null || adjust == null)
                 {
-                    Main.Entry.Logger.Error("RecolorSplit: 대상 없음 (StartEffect " + (startEffect != null) + ", Adjust " + (adjust != null) + ")");
+                    Lg.E("RecolorSplit: 대상 없음 (StartEffect " + (startEffect != null) + ", Adjust " + (adjust != null) + ")");
                     return;
                 }
                 if (startEffect.GetParameters().Length > 0)
-                    Main.Entry.Logger.Log("RecolorSplit: StartEffect 인자 " + startEffect.GetParameters().Length + "개");
+                    Lg.I("RecolorSplit: StartEffect 인자 " + startEffect.GetParameters().Length + "개");
                 harmony.Patch(startEffect, transpiler: new HarmonyMethod(typeof(RecolorSplit), nameof(Transpiler)));
 #if DEV || AUTOTEST
                 if (System.IO.File.Exists(System.IO.Path.Combine(Main.Entry.Path, "recolor-probe")))
                     harmony.Patch(startEffect, prefix: new HarmonyMethod(typeof(RecolorSplit), nameof(ProbePre)), postfix: new HarmonyMethod(typeof(RecolorSplit), nameof(ProbePost)));
 #endif
-                Main.Entry.Logger.Log("patched ffxRecolorFloorPlus.StartEffect (구간 나누기" + (Patched ? ")" : " - 모양이 달라 적용 안 함)"));
+                Lg.I("patched ffxRecolorFloorPlus.StartEffect (구간 나누기" + (Patched ? ")" : " - 모양이 달라 적용 안 함)"));
             }
-            catch (Exception ex) { Main.Entry.Logger.Error("RecolorSplit 설치 실패: " + ex.Message); }
+            catch (Exception ex) { Lg.E("RecolorSplit 설치 실패: " + ex.Message); }
         }
 
         // 세 군데를 바꾼다. 하나라도 못 찾으면 원래 코드를 그대로 둔다.
@@ -152,7 +152,7 @@ namespace StutterFix
                 SplitEffects++;
                 DeferredTiles += tiles - ChunkTiles;
             }
-            catch (Exception ex) { Main.Entry.Logger.Error("RecolorSplit: " + ex.Message); loopOwner = null; }
+            catch (Exception ex) { Lg.E("RecolorSplit: " + ex.Message); loopOwner = null; }
             return start;
         }
 
@@ -166,7 +166,7 @@ namespace StutterFix
             double ms = (Stopwatch.GetTimestamp() - __state) * 1000.0 / Stopwatch.Frequency;
             if (ms < 2.5) return;
             string kind = replay != null ? "밀린 조각" : "첫 호출";
-            Main.Entry.Logger.Log(string.Format("[색칠 추적] 곡 {8:F2}초 프레임 {0} {1} {2:F1}ms 깊이 {3} 구간 {4}~{5} 밀린 조각 {6}개 지속 {7:F2}", UnityEngine.Time.frameCount, kind, ms, probeDepth, startRef(__instance), endRef(__instance), pending.Count, 0f, (scrConductor.instance != null ? scrConductor.instance.songposition_minusi : -1.0)));
+            Lg.I(string.Format("[색칠 추적] 곡 {8:F2}초 프레임 {0} {1} {2:F1}ms 깊이 {3} 구간 {4}~{5} 밀린 조각 {6}개 지속 {7:F2}", UnityEngine.Time.frameCount, kind, ms, probeDepth, startRef(__instance), endRef(__instance), pending.Count, 0f, (scrConductor.instance != null ? scrConductor.instance.songposition_minusi : -1.0)));
         }
 #endif
 
@@ -211,7 +211,7 @@ namespace StutterFix
             long runStart = Stopwatch.GetTimestamp();
             replay = p;
             try { startEffect.Invoke(p.Effect, DefaultArgs()); }
-            catch (Exception ex) { Main.Entry.Logger.Error("RecolorSplit 조각 실패: " + (ex.InnerException ?? ex).Message); }
+            catch (Exception ex) { Lg.E("RecolorSplit 조각 실패: " + (ex.InnerException ?? ex).Message); }
             finally
             {
                 replay = null;

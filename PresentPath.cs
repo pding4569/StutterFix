@@ -550,7 +550,7 @@ namespace StutterFix
                 finally {RegCloseKey(key);}
             }
         }
-        static void Log(string s) {Main.Entry.Logger.Log("[presentpath] "+s);}
+        static void Log(string s) {Lg.I("[presentpath] "+s);}
     }
 }
 #endif

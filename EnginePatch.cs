@@ -57,20 +57,20 @@ namespace StutterFix
             for (int i = 0; i < MaskGrowGuard.Length; i++)
                 if (Marshal.ReadByte(target, i - MaskGrowGuard.Length) != MaskGrowGuard[i])
                 {
-                    Main.Entry.Logger.Log("[엔진 패치] 건너뜀: MaskGrow guard mismatch");
+                    Lg.I("[엔진 패치] 건너뜀: MaskGrow guard mismatch");
                     return;
                 }
             byte[] want = on ? MaskGrowOriginal : MaskGrowPatched;
             byte[] put  = on ? MaskGrowPatched  : MaskGrowOriginal;
             if (!MatchBytes(target, want))
             {
-                Main.Entry.Logger.Log("[엔진 패치] 건너뜀: MaskGrow byte mismatch");
+                Lg.I("[엔진 패치] 건너뜀: MaskGrow byte mismatch");
                 return;
             }
             if (WriteBytes(target, put))
             {
                 maskApplied = on;
-                Main.Entry.Logger.Log("[엔진 패치] 마스크 노드 배열 늘리기(0x1148649) " + (on ? "켬" : "끔"));
+                Lg.I("[엔진 패치] 마스크 노드 배열 늘리기(0x1148649) " + (on ? "켬" : "끔"));
             }
         }
 
@@ -91,27 +91,27 @@ namespace StutterFix
                     using (var sha = System.Security.Cryptography.SHA256.Create())
                     using (var file = System.IO.File.OpenRead(path))
                         if (BitConverter.ToString(sha.ComputeHash(file)).Replace("-", "").ToLowerInvariant() != WaitUnitySha256)
-                        { Main.Entry.Logger.Log("[엔진 패치] 건너뜀: WaitSkip v6 UnityPlayer SHA256 불일치"); return; }
+                        { Lg.I("[엔진 패치] 건너뜀: WaitSkip v6 UnityPlayer SHA256 불일치"); return; }
                 }
                 catch (Exception e)
-                { Main.Entry.Logger.Log("[엔진 패치] 건너뜀: WaitSkip v6 identity " + e.Message); return; }
+                { Lg.I("[엔진 패치] 건너뜀: WaitSkip v6 identity " + e.Message); return; }
                 // JE must remain original (also rejects a still-loaded v5 patch).
                 // Verify the real device, original atomic increment, and resize guard.
                 if (!MatchBytes(IntPtr.Add(mod, 0x5D0A62), new byte[] {0x74,0x13}) ||
                     !MatchBytes(target, WaitInlineBefore) || !WaitCounterGuards(mod))
-                { Main.Entry.Logger.Log("[엔진 패치] 건너뜀: WaitSkip v6 바이트 불일치; v5 사용 중이면 게임 재시작 필요"); return; }
+                { Lg.I("[엔진 패치] 건너뜀: WaitSkip v6 바이트 불일치; v5 사용 중이면 게임 재시작 필요"); return; }
                 long device = ReadWaitInt64(IntPtr.Add(mod, 0x22736C0));
                 long table = device == 0 ? 0 : ReadWaitInt64((IntPtr)device);
                 if (table == 0 || ReadWaitInt64((IntPtr)(table + 0x698)) != mod.ToInt64() + 0x9306F0)
-                { Main.Entry.Logger.Log("[엔진 패치] 건너뜀: WaitSkip v6 D3D11 device 불일치"); return; }
+                { Lg.I("[엔진 패치] 건너뜀: WaitSkip v6 D3D11 device 불일치"); return; }
             }
             if (!MatchBytes(target, on ? WaitInlineBefore : WaitInlineAfter))
-            { Main.Entry.Logger.Log("[엔진 패치] WaitSkip v6 원복/적용 중단: 바이트 불일치"); return; }
+            { Lg.I("[엔진 패치] WaitSkip v6 원복/적용 중단: 바이트 불일치"); return; }
             // One contiguous write: no multi-site partially applied state.
             if (WriteBytes(target, on ? WaitInlineAfter : WaitInlineBefore))
             {
                 waitApplied = on;
-                Main.Entry.Logger.Log("[엔진 패치] 화면 대기 건너뛰기(WaitSkip v6 D3D11 paired counter) " + (on ? "켬" : "끔"));
+                Lg.I("[엔진 패치] 화면 대기 건너뛰기(WaitSkip v6 D3D11 paired counter) " + (on ? "켬" : "끔"));
             }
         }
 
@@ -140,13 +140,13 @@ namespace StutterFix
             IntPtr mod = GetModuleHandleW("UnityPlayer.dll");
             if (mod == IntPtr.Zero || Application.unityVersion != ExpectedUnityVersion ||
                 SystemInfo.graphicsDeviceType != GraphicsDeviceType.Direct3D11 || !WaitCounterGuards(mod))
-            { Main.Entry.Logger.Log("[waitskip] state unavailable: Unity/D3D11/byte guard mismatch"); return; }
+            { Lg.I("[waitskip] state unavailable: Unity/D3D11/byte guard mismatch"); return; }
             long device = ReadWaitInt64(IntPtr.Add(mod, 0x22736C0));
-            if (device == 0) { Main.Entry.Logger.Log("[waitskip] state unavailable: no device"); return; }
+            if (device == 0) { Lg.I("[waitskip] state unavailable: no device"); return; }
             // Read-only sample, not a render-thread barrier; Present may advance between reads.
             long a = ReadWaitInt64((IntPtr)(device + 0x5E68));
             long b = ReadWaitInt64((IntPtr)(device + 0x5E70));
-            Main.Entry.Logger.Log("[waitskip] applied=" + waitApplied + " inlineOriginal=" + MatchBytes(IntPtr.Add(mod, WaitInlineRva), WaitInlineBefore) +
+            Lg.I("[waitskip] applied=" + waitApplied + " inlineOriginal=" + MatchBytes(IntPtr.Add(mod, WaitInlineRva), WaitInlineBefore) +
                 " inlinePatched=" + MatchBytes(IntPtr.Add(mod, WaitInlineRva), WaitInlineAfter) +
                 " adjGuardA=" + a + " adjGuardB=" + b + " delta=" + (a-b) + " sampled=true");
         }
@@ -193,12 +193,12 @@ namespace StutterFix
             if (cmd == "off")
             {
                 DisableTurbo();
-                Main.Entry.Logger.Log("[turbo] 꺼짐");
+                Lg.I("[turbo] 꺼짐");
                 return;
             }
             if (cmd == "state")
             {
-                Main.Entry.Logger.Log($"[turbo] active={turboActive} gpuLateCache={TightLate.GpuListCaching} tightSkipSame={TightLate.SkipSame} evalMemo={UpdateEvalMemo.Enabled} mouseSkips={mouseSkippedFrames} eventSysSkips={eventSysSkippedFrames} flashCulled={flashCulledFrames} clipperSkips={clipperSkippedFrames}");
+                Lg.I($"[turbo] active={turboActive} gpuLateCache={TightLate.GpuListCaching} tightSkipSame={TightLate.SkipSame} evalMemo={UpdateEvalMemo.Enabled} mouseSkips={mouseSkippedFrames} eventSysSkips={eventSysSkippedFrames} flashCulled={flashCulledFrames} clipperSkips={clipperSkippedFrames}");
                 return;
             }
             DisableTurbo();
@@ -276,7 +276,7 @@ namespace StutterFix
             if (cullMethod != null && !exactOnly)
                 turboHarmony.Patch(cullMethod, prefix: new HarmonyMethod(typeof(EnginePatch), nameof(ClipperCullPrefix)));
 
-            Main.Entry.Logger.Log($"[turbo] 켜짐 mode=clean_lossless_v14 idleCamsDisabled={disabledIdleCams.Count} depthCleared={depthCleared} rflags={rflagsCount} flashQuads={flashRenderers.Count}");
+            Lg.I($"[turbo] 켜짐 mode=clean_lossless_v14 idleCamsDisabled={disabledIdleCams.Count} depthCleared={depthCleared} rflags={rflagsCount} flashQuads={flashRenderers.Count}");
         }
 
         private static void OnPreCullFlashSkip(Camera cam)
@@ -384,8 +384,8 @@ namespace StutterFix
             else if (cmd == "off") { latActive = false; }
             else if (cmd == "state")
             {
-                if (latSamples <= 0) { Main.Entry.Logger.Log("[latprobe] 표본 없음"); return; }
-                Main.Entry.Logger.Log(string.Format(System.Globalization.CultureInfo.InvariantCulture,
+                if (latSamples <= 0) { Lg.I("[latprobe] 표본 없음"); return; }
+                Lg.I(string.Format(System.Globalization.CultureInfo.InvariantCulture,
                     "[latprobe] samples={0} maxQueued={1} waitSkip={2} outstanding_avg={3:F2} outstanding_max={4} pending_avg={5:F2} pending_max={6} late_frames={7} queue_latency_avg_ms={8:F2} queue_latency_max_ms={9:F2}",
                     latSamples, QualitySettings.maxQueuedFrames, waitApplied,
                     (double)latSumOut / latSamples, latMaxOut,

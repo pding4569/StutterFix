@@ -41,12 +41,12 @@ namespace StutterFix
                         loop.subSystemList = top;
                         PlayerLoop.SetPlayerLoop(loop);
                         removed = true; Toggles++;
-                        Main.Entry.Logger.Log("[마우스단계] 곡 중 SendMouseEvents 뺌");
+                        Lg.I("[마우스단계] 곡 중 SendMouseEvents 뺌");
                         return;
                     }
                 }
             }
-            catch (Exception e) { Main.Entry.Logger.Log("[마우스단계] 빼기 실패: " + e.Message); Enabled = false; }
+            catch (Exception e) { Lg.I("[마우스단계] 빼기 실패: " + e.Message); Enabled = false; }
         }
 
         static void Restore()
@@ -74,9 +74,9 @@ namespace StutterFix
                     }
                 }
                 removed = false; Toggles++;
-                Main.Entry.Logger.Log("[마우스단계] SendMouseEvents 되돌림");
+                Lg.I("[마우스단계] SendMouseEvents 되돌림");
             }
-            catch (Exception e) { Main.Entry.Logger.Log("[마우스단계] 되돌리기 실패: " + e.Message); }
+            catch (Exception e) { Lg.I("[마우스단계] 되돌리기 실패: " + e.Message); }
         }
 
         internal static void Shutdown() { if (removed) Restore(); Enabled = false; }

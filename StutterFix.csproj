@@ -59,6 +59,7 @@
     <Compile Include="ScriptCensus.cs" />
     <Compile Include="GpuPriority.cs" />
     <Compile Include="TightSpriteProbe.cs" />
+    <Compile Include="Lg.cs" />
     <Compile Include="LightProbe.cs" />
     <Compile Include="BeatProbe.cs" />
     <Compile Include="GpuDecoPlayer.cs" />

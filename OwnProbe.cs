@@ -68,8 +68,8 @@ namespace StutterFix
                     if (!sr || !sr.sprite || !sr.sprite.texture.name.Contains(want)) continue;
                     int m = src.MasterItems[i]; var d = sr.GetComponentInParent<scrVisualDecoration>();
                     int slot = gpuCollapseSlotOfItem != null ? gpuCollapseSlotOfItem[i] : -1;
-                    if (vals != null) Main.Entry.Logger.Log("[ownprobe-item]   ch=" + string.Join(",", Enumerable.Range(0, 16).Select(c => vals[i * 16 + c].ToString("G6"))));
-                    Main.Entry.Logger.Log("[ownprobe-item] " + sr.sprite.texture.name + " item=" + i + " incl=" + (gpuCollapseIncluded != null && gpuCollapseIncluded[i]) + " fb=" + DrawCollapseTextureFallback(i)
+                    if (vals != null) Lg.I("[ownprobe-item]   ch=" + string.Join(",", Enumerable.Range(0, 16).Select(c => vals[i * 16 + c].ToString("G6"))));
+                    Lg.I("[ownprobe-item] " + sr.sprite.texture.name + " item=" + i + " incl=" + (gpuCollapseIncluded != null && gpuCollapseIncluded[i]) + " fb=" + DrawCollapseTextureFallback(i)
                         + " g1hidden=" + G1DrawHidden(m) + " map=" + (slot >= 0 ? gpuCollapseMapCpu[slot].ToString("X") : "-") + " hiddenState=" + (gpuItemHiddenState != null && gpuItemHiddenState[i])
                         + " gpuAlpha=" + (vals != null ? (vals[i * 16 + 10] * vals[i * 16 + 11]).ToString("F3") : "?") + " deco_visible=" + (d ? g1RendererEnabled(d).ToString() : "?") + " opacity=" + (d ? d.opacity.ToString("F2") : "?") + " color.a=" + (d ? d.color.a.ToString("F2") : "?") + " srEnabled=" + sr.enabled + " forceOff=" + sr.forceRenderingOff);
                     shown++;
@@ -108,10 +108,10 @@ namespace StutterFix
                 {
                     var sr = d.spriteRenderer; if (!sr || !sr.sprite || !sr.sprite.texture.name.Contains(want) || n0++ > 6) continue;
                     var fx = d.blendModeEffect; var m = sr.sharedMaterial;
-                    Main.Entry.Logger.Log("[ownprobe-deco] " + sr.sprite.texture.name + " active=" + sr.gameObject.activeInHierarchy + " en=" + sr.enabled + " forceOff=" + sr.forceRenderingOff + " vis=" + sr.isVisible
+                    Lg.I("[ownprobe-deco] " + sr.sprite.texture.name + " active=" + sr.gameObject.activeInHierarchy + " en=" + sr.enabled + " forceOff=" + sr.forceRenderingOff + " vis=" + sr.isVisible
                         + " color=" + sr.color + " mat=" + (m ? m.shader.name + "#" + m.GetInstanceID() + " kw=" + string.Join(",", m.shaderKeywords) : "null") + " maskInt=" + sr.maskInteraction
                         + " fx=" + (fx ? fx.enabled + "/" + fx.BlendMode + "/" + fx.MaskMode + "/" + fx.RenderMode : "none") + " layer=" + sr.gameObject.layer + " order=" + sr.sortingOrder + " pos=" + sr.transform.position + " bounds=" + sr.bounds.size);
-                    Main.Entry.Logger.Log("[ownprobe-deco]   placement=" + d.placementType + " parallax=" + (d.parallax != null ? d.parallax.multiplier + " clamp=" + d.parallax.clampToScreen + " dontX=" + d.parallax.dontAlterX + " dontY=" + d.parallax.dontAlterY : "null")
+                    Lg.I("[ownprobe-deco]   placement=" + d.placementType + " parallax=" + (d.parallax != null ? d.parallax.multiplier + " clamp=" + d.parallax.clampToScreen + " dontX=" + d.parallax.dontAlterX + " dontY=" + d.parallax.dontAlterY : "null")
                         + " pivotPos=" + d.pivotPosVec + " pivotOff=" + d.pivotOffsetVec + " parallaxOff=" + d.parallaxOffset + " rot=" + d.rotAngle + " scale=" + d.scaleVec + " lockScale=" + d.lockScale + " lockRot=" + d.lockRotation + " pivotTrans=" + (d.pivotTrans ? d.pivotTrans.position.ToString() : "-"));
                 }
                 return "deco " + want + " n=" + n0;
@@ -129,7 +129,7 @@ namespace StutterFix
                     rows.Add((k, (ownProbeList.Contains(r) ? "OWN " : "oth ") + r.GetType().Name + ":" + nm + " L" + k.Layer + " O" + k.Order + " d" + k.Distance.ToString("F3") + " mat" + k.Material + " sh=" + r.sharedMaterial.shader.name));
                 }
                 rows.Sort((x, y) => x.k.CompareTo(y.k));
-                foreach (var r in rows) Main.Entry.Logger.Log("[ownprobe-nat] " + r.s);
+                foreach (var r in rows) Lg.I("[ownprobe-nat] " + r.s);
                 return "native listed=" + rows.Count;
             }
             if (arg.Trim() == "spans")
@@ -147,7 +147,7 @@ namespace StutterFix
                 }
                 foreach (var b in gpuCollapseBarriers) if (b.R && DrawCollapseBarrierActive(b) && b.R.isVisible) { var k = GpuDecoScene.SortKey(b.R, b.M, cam); rows.Add((k, "BAR " + b.R.GetType().Name + ":" + b.R.name + " L" + k.Layer + " O" + k.Order + " d" + k.Distance.ToString("F3") + " mat" + k.Material + " sh=" + (b.M ? b.M.shader.name : "-"))); }
                 rows.Sort((x, y) => x.k.CompareTo(y.k));
-                foreach (var r in rows) Main.Entry.Logger.Log("[ownprobe-order] " + r.s);
+                foreach (var r in rows) Lg.I("[ownprobe-order] " + r.s);
                 return "spans listed=" + rows.Count;
             }
             if (arg.Trim() == "live")

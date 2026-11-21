@@ -59,7 +59,7 @@ namespace StutterFix
             var wl = new System.Collections.Generic.List<System.Collections.Generic.KeyValuePair<string, double>>(wasteTop); wl.Sort((x, y) => y.Value.CompareTo(x.Value));
             var wsb = new System.Text.StringBuilder();
             for (int wi = 0; wi < wl.Count && wi < 8; wi++) wsb.Append(wl[wi].Key).Append(" 빈칸 ").Append(wl[wi].Value.ToString("F2", System.Globalization.CultureInfo.InvariantCulture)).Append("장; ");
-            Main.Entry.Logger.Log(string.Format(System.Globalization.CultureInfo.InvariantCulture, "[coverage2] 원래 장식 {0}개 사각형 {1:F1}장, 채워진 칸 기준 {2:F1}장(빈 칸 {3:F1}장, 형태 정보 없는 넓이 {4:F1}장) | 빈 칸 상위: {5}", nativeN, native, nativeUsed, native - nativeUsed, unknownArea, wsb));
+            Lg.I(string.Format(System.Globalization.CultureInfo.InvariantCulture, "[coverage2] 원래 장식 {0}개 사각형 {1:F1}장, 채워진 칸 기준 {2:F1}장(빈 칸 {3:F1}장, 형태 정보 없는 넓이 {4:F1}장) | 빈 칸 상위: {5}", nativeN, native, nativeUsed, native - nativeUsed, unknownArea, wsb));
             return string.Format(System.Globalization.CultureInfo.InvariantCulture, "원래 장식 렌더러 {0}개 {1:F1}장 | GpuDeco 구간 항목 {2}개 {3:F1}장 | 알파0인데 정점 있는 항목 {4}개 {5:F1}장 | 면적 상위: {6}", nativeN, native, gpuN, gpu, zeroN, zeroA, string.Join(" ; ", top.OrderByDescending(x => x.Value).Take(8).Select(x => x.Key + "=" + x.Value.ToString("F1"))));
         }
 

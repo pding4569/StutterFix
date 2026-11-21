@@ -144,7 +144,7 @@ namespace StutterFix
         internal static int Owned => ownedCount;
         internal static double TransitionMs => transitionMs;
         internal static float EnabledSeconds => starting ? 0 : Time.realtimeSinceStartup - enabledAt;
-        static void Log(string s) => Main.Entry.Logger.Log("[livedeco] " + s);
+        static void Log(string s) => Lg.I("[livedeco] " + s);
         static string Ms(long ticks, int n = 1) => (ticks * 1000.0 / Stopwatch.Frequency / Math.Max(1, n)).ToString("F6", Inv);
         internal static string State() => "on=" + Active + " gate=2 variant=A owned=" + ownedCount
             + " runs=" + runs.Count + " registry=" + sources.Count + " transitions=" + transitionCount

@@ -62,7 +62,7 @@ namespace StutterFix
             int mode = Takeable(d, r) ? Id(d) : 0;
             var m = r ? r.sharedMaterial : null;
             if (mode == 0 && m && m.shader && (m.shader.name == GrabShader || m.shader.name == AddShader) && noted++ < 6)
-                Main.Entry.Logger.Log("[gpudeco blend] 혼합 재질인데 모드 0: " + (d ? d.name : "null") + " field=" + (d ? blendField(d).ToString() : "-")
+                Lg.I("[gpudeco blend] 혼합 재질인데 모드 0: " + (d ? d.name : "null") + " field=" + (d ? blendField(d).ToString() : "-")
                     + " id=" + Id(d) + " shader=" + m.shader.name + " effect=" + (d && d.blendModeEffect ? d.blendModeEffect.enabled.ToString() : "null")
                     + " policy=" + DrawCollapsePolicy.BlendModes);
             return mode;

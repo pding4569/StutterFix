@@ -314,7 +314,7 @@ namespace StutterFix
             if (selection != null && selection.Live) ledger.Restore();
             if (instance == this && !mainCamera) Stop();
         }
-        internal static void Log(string message) => Main.Entry.Logger.Log("[gpusplit] " + message);
+        internal static void Log(string message) => Lg.I("[gpusplit] " + message);
         internal static void Stop()
         {
             GpuSplitPixelDiff.Stop();

@@ -30,7 +30,7 @@ namespace StutterFix
             }
             foreach (var sprite in owned) UnityEngine.Object.Destroy(sprite);
             changes.Clear();
-            Main.Entry.Logger.Log("[tightsprite] restored=" + restored + " externally_replaced=" + replaced);
+            Lg.I("[tightsprite] restored=" + restored + " externally_replaced=" + replaced);
         }
         internal static void Step(string arg)
         {
@@ -138,9 +138,9 @@ namespace StutterFix
                     changes.Add(new Change { Renderer = r, Before = s, After = clone });
                     if (!r.bounds.Equals(before)) boundsChanged++;
                 }
-                Main.Entry.Logger.Log("[tightsprite] api=" + (cloneOnly ? "clone" : dataApi ? "data" : "override") + " cap=" + cap + " candidates=" + candidates + " changed=" + changes.Count + " shader_or_state_rejected=" + rejected + " bounds_changed=" + boundsChanged + " api_rejected=" + apiRejected + " cloned_sprites=" + clones.Count + " vertices_include_two_unused_extrema=" + (cloneOnly ? 0 : 1));
-                Main.Entry.Logger.Log("[tightsprite] rejected=" + string.Join(";", reasons.Select(p => p.Key+"="+p.Value)));
-                Main.Entry.Logger.Log("[tightsprite] additive_textures=" + string.Join(";", additiveTextures.OrderByDescending(p => p.Value).Take(24).Select(p => p.Key+"="+p.Value)));
+                Lg.I("[tightsprite] api=" + (cloneOnly ? "clone" : dataApi ? "data" : "override") + " cap=" + cap + " candidates=" + candidates + " changed=" + changes.Count + " shader_or_state_rejected=" + rejected + " bounds_changed=" + boundsChanged + " api_rejected=" + apiRejected + " cloned_sprites=" + clones.Count + " vertices_include_two_unused_extrema=" + (cloneOnly ? 0 : 1));
+                Lg.I("[tightsprite] rejected=" + string.Join(";", reasons.Select(p => p.Key+"="+p.Value)));
+                Lg.I("[tightsprite] additive_textures=" + string.Join(";", additiveTextures.OrderByDescending(p => p.Value).Take(24).Select(p => p.Key+"="+p.Value)));
                 if (boundsChanged != 0) { Stop(); throw new InvalidOperationException("bounds changed"); }
             }
             catch { Stop(); throw; }

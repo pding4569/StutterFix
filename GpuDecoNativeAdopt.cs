@@ -153,7 +153,7 @@ namespace StutterFix
         {
 #if AUTOTEST
             if(DrawCollapsePolicy.AdoptNativeTweens)
-                Main.Entry.Logger.Log("[GPU 장식] 이어받기 검사 "+(nativeCheckTicks*1000.0/Stopwatch.Frequency).ToString("F3",Inv)
+                Lg.I("[GPU 장식] 이어받기 검사 "+(nativeCheckTicks*1000.0/Stopwatch.Frequency).ToString("F3",Inv)
                     +"ms / 캡처 "+(nativeCaptureTicks*1000.0/Stopwatch.Frequency).ToString("F3",Inv)
                     +"ms / commit "+(nativeCommitTicks*1000.0/Stopwatch.Frequency).ToString("F3",Inv)+"ms");
 #endif
@@ -622,7 +622,7 @@ namespace StutterFix
                 }
             }
 #if AUTOTEST
-            if(DrawCollapsePolicy.AdoptNativeTweens)Main.Entry.Logger.Log("[GPU 장식] 이어받기: "+gpuNativeAdoptions.Count+"개(장식), 채널 "+NativeAdoptionChannelCount()+"개, 값 불일치 "+mismatch+"개, 거절 "+NativeRejectSummary());
+            if(DrawCollapsePolicy.AdoptNativeTweens)Lg.I("[GPU 장식] 이어받기: "+gpuNativeAdoptions.Count+"개(장식), 채널 "+NativeAdoptionChannelCount()+"개, 값 불일치 "+mismatch+"개, 거절 "+NativeRejectSummary());
             ResetNativeRejects();
 #endif
             RequireLive(mismatch==0,"native adoption current value mismatch");

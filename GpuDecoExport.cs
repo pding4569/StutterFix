@@ -411,7 +411,7 @@ namespace StutterFix
                         gpuRecoveryBlocked=true;return false;
                     }
 #if AUTOTEST
-                Main.Entry.Logger.Log("[gpudeco] effect_exception "+ex.Message);
+                Lg.I("[gpudeco] effect_exception "+ex.Message);
 #endif
                 RecoverGpuLive("effect:"+ex.GetType().Name,!(ex is NotSupportedException));
                 // The current/remaining targets go through normal FastMove once.
@@ -1069,7 +1069,7 @@ namespace StutterFix
                     long refs = 0; if (table.InputEvents != null) foreach (var e in table.InputEvents) if (e.Targets != null) refs += e.Targets.Length;
                     DrawCollapsePolicy.SplitNow = DrawCollapsePolicy.RunLodSplit && Main.Config.RunLod
                         && baselineObjects.Length < DrawCollapsePolicy.SplitAllDecos;   // 이벤트 대상 수는 DD(20.8만)·Exit(17.1만)도 커서 기준에서 뺐다
-                    if (DrawCollapsePolicy.RunLodSplit && Main.Config.RunLod) Main.Entry.Logger.Log("[GPU 장식] RunLod 와 나눠 맡기: " + (DrawCollapsePolicy.SplitNow ? "나눔" : "전부 맡음") + " (장식 " + baselineObjects.Length + "개, 이벤트 대상 " + refs + ")");
+                    if (DrawCollapsePolicy.RunLodSplit && Main.Config.RunLod) Lg.I("[GPU 장식] RunLod 와 나눠 맡기: " + (DrawCollapsePolicy.SplitNow ? "나눔" : "전부 맡음") + " (장식 " + baselineObjects.Length + "개, 이벤트 대상 " + refs + ")");
                 }
                 for (int index = 0; index < baselineObjects.Length; index++)
                 {
@@ -1350,7 +1350,7 @@ namespace StutterFix
                 PrepareGpuMerge(masterRows);
                 if(collapseRows!=null)PrepareDrawCollapse(collapseRows);
                 PrepMark("그리기 통합");
-                if(GpuDecoPlayer.Product)Main.Entry.Logger.Log("[GPU 장식] GPU 준비 세부(ms): "+gpuPrepMarks);
+                if(GpuDecoPlayer.Product)Lg.I("[GPU 장식] GPU 준비 세부(ms): "+gpuPrepMarks);
                 CompleteGpuLivePreparationBudget();
                 gpuLiveManager = manager;
                 gpuLiveBaseline = baselineObjects;
@@ -1618,7 +1618,7 @@ namespace StutterFix
             if (totalMs > 4.0 && GpuDecoPlayer.Product)
             {
                 double f = 1000.0 / Stopwatch.Frequency;
-                Main.Entry.Logger.Log("[GPU 장식] 느린 프레임 " + totalMs.ToString("F1") + "ms: 슬라이스 " + ((t1 - t0) * f).ToString("F1") + " 진행·이미지 " + ((t2 - t1) * f).ToString("F1")
+                Lg.I("[GPU 장식] 느린 프레임 " + totalMs.ToString("F1") + "ms: 슬라이스 " + ((t1 - t0) * f).ToString("F1") + " 진행·이미지 " + ((t2 - t1) * f).ToString("F1")
                     + " 유니폼·검증 " + ((t3 - t2) * f).ToString("F1") + " 디스패치 " + ((t4 - t3) * f).ToString("F1") + " | 곡 " + time.ToString("F2") + "초");
             }
 #endif
@@ -1655,7 +1655,7 @@ namespace StutterFix
             {
                 if(gpuCollapseOn){gpuCollapseFault=e.GetType().Name+":"+e.Message;GpuLog("DRAWCOLLAPSE_RUNTIME_ERROR "+gpuCollapseFault);}
 #if AUTOTEST
-                Main.Entry.Logger.Log("[GPU 장식] 프레임 예외: "+e);
+                Lg.I("[GPU 장식] 프레임 예외: "+e);
 #endif
                 RecoverGpuLive("LateUpdateException:"+e.GetType().Name);
             }
@@ -1785,7 +1785,7 @@ namespace StutterFix
         static long actT0;static System.Text.StringBuilder actSb;
         internal static void ActStart(){actSb=new System.Text.StringBuilder();actT0=Stopwatch.GetTimestamp();}
         internal static void ActMark(string n){if(actSb==null)return;long t=Stopwatch.GetTimestamp();actSb.Append(n).Append(' ').Append(((t-actT0)*1000.0/Stopwatch.Frequency).ToString("F1")).Append("ms | ");actT0=t;}
-        internal static void ActEnd(){if(actSb!=null){Main.Entry.Logger.Log("[GPU 장식] 켜기 단계: "+actSb);actSb=null;}}
+        internal static void ActEnd(){if(actSb!=null){Lg.I("[GPU 장식] 켜기 단계: "+actSb);actSb=null;}}
 #else
         internal static void ActStart(){}internal static void ActMark(string n){}internal static void ActEnd(){}
 #endif
@@ -1892,7 +1892,7 @@ namespace StutterFix
             double dMs = gpuCostDispatchTicks / tf / f;
             double mMs = gpuCostMiscTicks / tf / f;
             double totMs = pMs + uMs + dMs + mMs;
-            Main.Entry.Logger.Log("[gpudeco] cost scope=" + scope + " frames=" + gpuCostFrames
+            Lg.I("[gpudeco] cost scope=" + scope + " frames=" + gpuCostFrames
                 + " cpu_scope=managed_only native_copy_accounting=G2_window_stats"
                 + " total_ms=" + totMs.ToString("F6", Inv)
                 + " progress_ms=" + pMs.ToString("F6", Inv)
@@ -2912,9 +2912,9 @@ namespace StutterFix
         }
 #endif
 #if AUTOTEST
-        static void GpuLog(string s) { Main.Entry.Logger.Log("[gpudeco] " + s); }
+        static void GpuLog(string s) { Lg.I("[gpudeco] " + s); }
 #else
-        static void GpuLog(string s) { if (!GpuDecoPlayer.Product) Main.Entry.Logger.Log("[gpudeco] " + s); }
+        static void GpuLog(string s) { if (!GpuDecoPlayer.Product) Lg.I("[gpudeco] " + s); }
 #endif
         static AssetBundle LoadPlayerGpuBundle()
         {

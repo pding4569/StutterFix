@@ -53,7 +53,7 @@ namespace StutterFix
                 "diagnostic off|world|single|floatcolor|unorm8|localz|float_single_localz required");
             DiagnosticMode = mode;
         }
-        static void Log(string s) => Main.Entry.Logger.Log("[gpudeco] " + s);
+        static void Log(string s) => Lg.I("[gpudeco] " + s);
         static void Require(bool ok, string reason) { if (!ok) throw new InvalidOperationException("gpudeco G1: " + reason); }
 
         internal static string MaterialSignature(Material m)

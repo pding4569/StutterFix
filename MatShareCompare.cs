@@ -67,14 +67,14 @@ namespace StutterFix
                         Diff(candidate,frontA,out int candidateA,out _); Diff(candidate,frontB,out int candidateB,out _);
                         bool valid = control0 == 0 && control1 == 0 && overlap > 0 && sensitivity > 0 && (matchesA == 0 || matchesB == 0);
                         tested++; if (!valid) invalid++; else if (pixels != 0) changed++;
-                        Main.Entry.Logger.Log("[matshare] pair frame=" + Time.frameCount + " a=" + a.GetInstanceID() + " b=" + b.GetInstanceID()
+                        Lg.I("[matshare] pair frame=" + Time.frameCount + " a=" + a.GetInstanceID() + " b=" + b.GetInstanceID()
                             + " same_run=" + (shared(a) == shared(b)) + " valid=" + valid + " original_front=" + (matchesA == 0 ? "a" : matchesB == 0 ? "b" : "unknown")
                             + " candidate_front=" + (candidateA == 0 ? "a" : candidateB == 0 ? "b" : "unknown") + " sensitivity=" + sensitivity + " overlap_pixels=" + overlap + " rgba_max=" + max + " different_pixels=" + pixels
                             + " controls=" + control0 + "," + control1 + " scope=isolated-actual-renderer-pair-RGBA8 timing_contaminated=1");
                     }
                     finally { a.sharedMaterial = am; b.sharedMaterial = bm; a.sortingOrder = ao; b.sortingOrder = bo; a.gameObject.layer = al; b.gameObject.layer = bl; }
                 }
-                Main.Entry.Logger.Log("[matshare] compare tested=" + tested + " invalid=" + invalid + " changed=" + changed + " whole_screen_proven=0");
+                Lg.I("[matshare] compare tested=" + tested + " invalid=" + invalid + " changed=" + changed + " whole_screen_proven=0");
             }
             finally
             {

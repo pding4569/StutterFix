@@ -26,7 +26,7 @@ namespace StutterFix
         private static long initialErrors;
         private static long zero0, real0, fallback0, created0, completed0, killed0, dropped0;
         private static readonly Dictionary<string, long> reasons = new Dictionary<string, long>();
-        private static void Log(string s) { Main.Entry.Logger.Log("[타일시뮬] " + s); }
+        private static void Log(string s) { Lg.I("[타일시뮬] " + s); }
         private static void Reject(string reason)
         {
             long n; reasons.TryGetValue(reason, out n); reasons[reason] = n + 1;

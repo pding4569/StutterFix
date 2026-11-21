@@ -108,9 +108,9 @@ namespace StutterFix
                 dead = AccessTools.CreateInstance<TweenerCore<float, float, FloatOptions>>();   // 끝난 애니메이션 자리(active = false)
                 h.Patch(start, transpiler: new HarmonyMethod(typeof(InstantMove), nameof(Transpiler)) { priority = Priority.Last },
                     postfix: new HarmonyMethod(typeof(InstantMove), nameof(After)));
-                Main.Entry.Logger.Log("[즉시 이동 직접] 설치: 속성 블록 " + Blocks + "개 (예상 9개)");
+                Lg.I("[즉시 이동 직접] 설치: 속성 블록 " + Blocks + "개 (예상 9개)");
             }
-            catch (Exception ex) { Main.Entry.Logger.Log("[즉시 이동 직접] 설치 실패: " + ex.Message); }
+            catch (Exception ex) { Lg.I("[즉시 이동 직접] 설치 실패: " + ex.Message); }
         }
 
         public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
@@ -135,7 +135,7 @@ namespace StutterFix
                 }
                 if (methodNo < 0)
                 {
-                    Main.Entry.Logger.Log("[즉시 이동 직접] 장식 클로저 번호를 못 찾아 적용 안 함");
+                    Lg.I("[즉시 이동 직접] 장식 클로저 번호를 못 찾아 적용 안 함");
                     return code;
                 }
                 for (int i = 0; i < code.Count; i++)
@@ -156,7 +156,7 @@ namespace StutterFix
                 var ldLoc1 = loc1 == null ? null : Load((CodeInstruction)loc1);
                 if (decField == null || startPosField == null || ldDict == null || ldC1 == null || ldLoc1 == null)
                 {
-                    Main.Entry.Logger.Log("[즉시 이동 직접] 필요한 지역 변수를 못 찾아 적용 안 함");
+                    Lg.I("[즉시 이동 직접] 필요한 지역 변수를 못 찾아 적용 안 함");
                     return code;
                 }
 
@@ -177,7 +177,7 @@ namespace StutterFix
                         var mi = code[j].operand as MethodInfo;
                         if (mi != null && mi.Name == "TryGetValue") { key = KeyOf(code[j - 2]); break; }
                     }
-                    if (key != b.Key) { Main.Entry.Logger.Log("[즉시 이동 직접] " + ci.DeclaringType.Name + " 키가 " + key + " (예상 " + b.Key + ") - 건너뜀"); continue; }
+                    if (key != b.Key) { Lg.I("[즉시 이동 직접] " + ci.DeclaringType.Name + " 키가 " + key + " (예상 " + b.Key + ") - 건너뜀"); continue; }
 
                     var end = br.operand;   // 분기 대상. Label 타입 이름은 이 빌드 환경에서 참조할 수 없어 그대로 넘긴다
                     var ins = new List<CodeInstruction>();
@@ -200,7 +200,7 @@ namespace StutterFix
                 }
                 Patched = Blocks > 0;
             }
-            catch (Exception ex) { Main.Entry.Logger.Log("[즉시 이동 직접] 끼우기 실패, 원래대로 둠: " + ex.Message); return instructions; }
+            catch (Exception ex) { Lg.I("[즉시 이동 직접] 끼우기 실패, 원래대로 둠: " + ex.Message); return instructions; }
             return code;
         }
 

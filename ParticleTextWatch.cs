@@ -51,9 +51,9 @@ namespace StutterFix
                 }
 
                 Font.textureRebuilt += OnFontRebuilt;
-                Main.Entry.Logger.Log("particle/text watch installed");
+                Lg.I("particle/text watch installed");
             }
-            catch (Exception ex) { Main.Entry.Logger.Error("particle/text watch 실패: " + ex.Message); }
+            catch (Exception ex) { Lg.E("particle/text watch 실패: " + ex.Message); }
         }
 
         // 학교 PC에서는 TextGenerator 폭주가 없었다. 이 PC에만 있는 무언가가 글자를 매 프레임
@@ -81,7 +81,7 @@ namespace StutterFix
                 sb.Append("\n      ").Append(s);
                 if (++shown >= 12) break;
             }
-            Main.Entry.Logger.Log("[글자 호출경로 " + stackSamples + "/3]" + sb);
+            Lg.I("[글자 호출경로 " + stackSamples + "/3]" + sb);
         }
 
         // 같은 글자를 다시 넣는 것은 싸지만, 처음 보는 글자나 크기가 들어오면 유니티가
@@ -108,10 +108,10 @@ namespace StutterFix
                 renderers = new ParticleSystemRenderer[systems.Length];
                 for (int i = 0; i < systems.Length; i++)
                     renderers[i] = systems[i] != null ? systems[i].GetComponent<ParticleSystemRenderer>() : null;
-                Main.Entry.Logger.Log("[파티클] 이 맵의 파티클 시스템 " + systems.Length + "개");
+                Lg.I("[파티클] 이 맵의 파티클 시스템 " + systems.Length + "개");
                 stackSamples = 0;
             }
-            catch (Exception ex) { Main.Entry.Logger.Error("[파티클] 목록 실패: " + ex.Message); }
+            catch (Exception ex) { Lg.E("[파티클] 목록 실패: " + ex.Message); }
         }
 
         internal static void Shutdown()

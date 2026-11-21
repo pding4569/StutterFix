@@ -95,7 +95,7 @@ namespace StutterFix
             foreach(var row in rows)if(cpu.Contains(row.AuxiliaryOwner))row.AuxiliaryOwner=-1;
             var samples=ranked.Skip(DrawCollapsePolicy.DirectBindings).Take(3)
                 .Select(id=>textures[id].width+"x"+textures[id].height);
-            Main.Entry.Logger.Log("[GPU 장식] 직접 텍스처 한도 초과 정리: 필요 "+textures.Count
+            Lg.I("[GPU 장식] 직접 텍스처 한도 초과 정리: 필요 "+textures.Count
                 +" > 한도 "+DrawCollapsePolicy.DirectBindings+", 내린 텍스처 "+(textures.Count-retained.Count)
                 +"장, 내린 장식 "+cpu.Count+"개, 내린 텍스처 상위 3개 크기: "+string.Join(" | ",samples));
         }

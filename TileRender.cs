@@ -35,7 +35,7 @@ namespace StutterFix
             internal SceneRenderOrder.Key Key;
             internal bool Tile;
         }
-        static void Log(string s) => Main.Entry.Logger.Log("[tilerender] " + s);
+        static void Log(string s) => Lg.I("[tilerender] " + s);
         static TileRender Get()
         {
             if (!instance)

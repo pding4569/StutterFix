@@ -114,16 +114,16 @@ namespace StutterFix
             {
                 foreach (var m in typeof(ffxMoveDecorationsPlus).GetMethods(AccessTools.all))
                     if (m.Name == "StartEffect" && m.DeclaringType == typeof(ffxMoveDecorationsPlus) && !m.IsAbstract) start = m;
-                if (start == null) { Main.Entry.Logger.Log("[장식 이동 루프] StartEffect 없음 - 적용 안 함"); return; }
+                if (start == null) { Lg.I("[장식 이동 루프] StartEffect 없음 - 적용 안 함"); return; }
                 var d = typeof(scrDecoration);
                 setPlacement = AccessTools.MethodDelegate<Action<scrDecoration, DecPlacementType>>(AccessTools.Method(d, "SetPlacementType", new[] { typeof(DecPlacementType) }));
                 setVisible = AccessTools.MethodDelegate<Action<scrDecoration, bool>>(AccessTools.Method(d, "SetVisible", new[] { typeof(bool) }));
                 setDepth = AccessTools.MethodDelegate<Action<scrDecoration, int>>(AccessTools.Method(d, "SetDepth", new[] { typeof(int) }));
                 h.Patch(start, prefix: new HarmonyMethod(typeof(FastMove), nameof(Prefix)) { priority = Priority.Last });
                 Installed = true;
-                Main.Entry.Logger.Log("[장식 이동 루프] 설치");
+                Lg.I("[장식 이동 루프] 설치");
             }
-            catch (Exception ex) { Main.Entry.Logger.Log("[장식 이동 루프] 설치 실패: " + ex.Message); }
+            catch (Exception ex) { Lg.I("[장식 이동 루프] 설치 실패: " + ex.Message); }
         }
 
         // 다른 모드 코드(효과 나누기 등)가 원래 실행을 막았으면 아무것도 안 한다. 맡으면 false(원래 코드 건너뜀).
@@ -218,7 +218,7 @@ namespace StutterFix
             heavyLogged++;
             string props = "";
             try { props = (posUsed(fx) ? "위치 " : "") + (rotUsed(fx) ? "회전 " : "") + (scaleUsed(fx) ? "크기 " : "") + (colUsed(fx) ? "색 " : "") + (opaUsed(fx) ? "불투명도 " : "") + (visUsed(fx) ? "보임 " : "") + (depthUsed(fx) ? "깊이 " : "") + (AnyImg(fx) ? "이미지 " : "") + (parUsed(fx) ? "시차 " : ""); } catch { }
-            Main.Entry.Logger.Log(string.Format("[장식 이동 루프] (개발자용) 무거운 효과 {0:F1}ms: 장식 {1}개, 길이 {2}, 속성 {3}| {4}{5}", ms, src != null ? src.Count : -1, durRef(fx), props, how, sample ? ", 검증 표본(원래 코드로 한 번 더)" : ""));
+            Lg.I(string.Format("[장식 이동 루프] (개발자용) 무거운 효과 {0:F1}ms: 장식 {1}개, 길이 {2}, 속성 {3}| {4}{5}", ms, src != null ? src.Count : -1, durRef(fx), props, how, sample ? ", 검증 표본(원래 코드로 한 번 더)" : ""));
         }
 
         // 원래 코드로 돈다. 원래 코드는 대상 장식의 애니메이션 사전을 바꿀 수 있으므로, 미리 확인 중인 계획이 그 장식을 보고 있으면 취소한다.
@@ -230,7 +230,7 @@ namespace StutterFix
 #endif
             if (GpuDecoPlayer.Active && GpuOriginalTouchesOwned(fx))
             {
-                Main.Entry.Logger.Log("[gpudeco] original_guard bypass="+bypass+" running="+running+" enabled="+Enabled+" installed="+Installed
+                Lg.I("[gpudeco] original_guard bypass="+bypass+" running="+running+" enabled="+Enabled+" installed="+Installed
                     +" hitch_playing="+Hitch.Playing+" resume_continuity="+GpuPlaybackState.PlaybackContinuity
                     +" instant="+InstantMove.Enabled+" instant_patched="+InstantMove.Patched+" zero="+ZeroTween.Enabled
                     +" zero_patched="+ZeroTween.Patched+" ease="+ZeroTween.CanEase);
@@ -238,11 +238,11 @@ namespace StutterFix
                 if(GpuOriginalTrace && !gpuOriginalTraceLogged)
                 {
                     gpuOriginalTraceLogged=true;
-                    Main.Entry.Logger.Log("[gpudeco] original_guard_stack "+new System.Diagnostics.StackTrace(false).ToString().Replace("\r","").Replace("\n"," | "));
-                    Main.Entry.Logger.Log("[gpudeco] original_guard_owner entries="+gpuTraceEntries+" exits="+gpuTraceExits
+                    Lg.I("[gpudeco] original_guard_stack "+new System.Diagnostics.StackTrace(false).ToString().Replace("\r","").Replace("\n"," | "));
+                    Lg.I("[gpudeco] original_guard_owner entries="+gpuTraceEntries+" exits="+gpuTraceExits
                         +" current_thread="+System.Threading.Thread.CurrentThread.ManagedThreadId+" enter_thread="+gpuTraceEnterThread+" exit_thread="+gpuTraceExitThread
                         +" current_frame="+AutoTest.MainFrame+" enter_frame="+gpuTraceEnterFrame+" exit_frame="+gpuTraceExitFrame+" enter_fx="+gpuTraceEnterFx+" stack_entry="+gpuTraceStackEntry);
-                    if(gpuTraceEnterStack!=null)Main.Entry.Logger.Log("[gpudeco] original_guard_enter_stack "+gpuTraceEnterStack);
+                    if(gpuTraceEnterStack!=null)Lg.I("[gpudeco] original_guard_enter_stack "+gpuTraceEnterStack);
                 }
 #endif
                 DecoBake.RecoverGpuLive("FastMoveOriginal",false);
@@ -265,13 +265,13 @@ namespace StutterFix
                 if(!fx || !fx.decManager || fx.targetTags==null)throw new InvalidOperationException("missing target manager/tags");
                 foreach(var d in fx.decManager.GetTaggedDecorations((IEnumerable<string>)fx.targetTags))
                 {targets++;if(DecoBake.SkipGpuLate(d))owned++;}
-                Main.Entry.Logger.Log("[gpudeco] original_targets source="+fx.GetInstanceID()+" targets="+targets+" owned="+owned
+                Lg.I("[gpudeco] original_targets source="+fx.GetInstanceID()+" targets="+targets+" owned="+owned
                     +" image="+imgUsed(fx)+" selector="+tImg(fx)+" recovery="+(owned>0));
                 return owned>0;
             }
             catch(Exception ex)
             {
-                Main.Entry.Logger.Log("[gpudeco] original_targets_unknown source="+(fx?fx.GetInstanceID():0)+" reason="+ex.GetType().Name+" recovery=True");
+                Lg.I("[gpudeco] original_targets_unknown source="+(fx?fx.GetInstanceID():0)+" reason="+ex.GetType().Name+" recovery=True");
                 return true; // Unknown targets must never silently mutate owned state.
             }
         }
@@ -701,7 +701,7 @@ namespace StutterFix
         {
 #if AUTOTEST
             if(GpuOriginalTrace && GpuDecoPlayer.Active)
-                Main.Entry.Logger.Log("[gpudeco] take_refusal reason="+w+" catchup="+EffectBudget.InCatchUp+" deco_active="+DecoAnim.Active+" pivot_parallax="+DecoAnim.CanPivotParallax+" performance=False");
+                Lg.I("[gpudeco] take_refusal reason="+w+" catchup="+EffectBudget.InCatchUp+" deco_active="+DecoAnim.Active+" pivot_parallax="+DecoAnim.CanPivotParallax+" performance=False");
 #endif
             why[w]++;Fallbacks++;if(Edition.Dev)MoveProf.Fallback(w);return false;
         }
@@ -857,7 +857,7 @@ namespace StutterFix
                     if (total >= 1.0 && probeLogged < 60)
                     {
                         probeLogged++;
-                        Main.Entry.Logger.Log(string.Format("[장식 이동 쪼개 보기] 곡 {0:F1}초 장식 {1}개 합계 {2:F2}ms: 위치·회전 {13:F2}, 색·투명도 {14:F2}, 크기 {3:F2}, 보이기 {4:F2}, 깊이·이미지 {5:F2}, 나머지 {6:F2} | 크기={7}{8} 보이기={9}({10}) 이미지={11} 길이={12}",
+                        Lg.I(string.Format("[장식 이동 쪼개 보기] 곡 {0:F1}초 장식 {1}개 합계 {2:F2}ms: 위치·회전 {13:F2}, 색·투명도 {14:F2}, 크기 {3:F2}, 보이기 {4:F2}, 깊이·이미지 {5:F2}, 나머지 {6:F2} | 크기={7}{8} 보이기={9}({10}) 이미지={11} 길이={12}",
                             scrConductor.instance != null ? scrConductor.instance.songposition_minusi : -1.0, src.Count, total, pScaleT / f, pVisT / f, pImgT / f, total - (pScaleT + pVisT + pImgT + pHeadT + pColT) / f,
                             sx ? "X" : "", sy ? "Y" : "", vis, visV, img, durRef(fx), pHeadT / f, pColT / f) + " | 쓰는 것 위치" + pos + " 회전" + rot + " 색" + col + " 투명도" + opa + " 시차" + par + " 배치" + placement);
                     }

@@ -33,7 +33,7 @@ namespace StutterFix
                 if (c.Calls(Original)) { c.operand = replacement; n++; }
                 yield return c;
             }
-            Main.Entry.Logger.Log("[히트박스 질의] 공 Update 의 OverlapCircleAll 바꿔 끼움 " + n + "곳 (예상 1)");
+            Lg.I("[히트박스 질의] 공 Update 의 OverlapCircleAll 바꿔 끼움 " + n + "곳 (예상 1)");
         }
 
         public static Collider2D[] Overlap(Vector2 point, float radius, int layerMask)

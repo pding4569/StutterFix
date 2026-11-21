@@ -15,7 +15,7 @@ namespace StutterFix
     internal static class DrProbe
     {
         static Camera main, pre; static int savedMask; static CommandBuffer cb; static readonly List<Renderer> cbOff = new List<Renderer>();
-        static void Log(string s) => Main.Entry.Logger.Log("[drx] " + s);
+        static void Log(string s) => Lg.I("[drx] " + s);
         internal static bool Step(string arg)
         {
             var a = arg.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);

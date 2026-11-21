@@ -46,7 +46,7 @@ namespace StutterFix
         {
             if(!Enabled||completed)return;
             completed=true;
-            try{Main.Entry.Logger.Log("[끊김 상위 타일] "+Describe().Replace("\n"," | "));}catch{}
+            try{Lg.I("[끊김 상위 타일] "+Describe().Replace("\n"," | "));}catch{}
         }
         internal static void Shutdown(){Enabled=false;current.Clear();previous="";completed=false;}
     }

@@ -133,26 +133,26 @@ namespace StutterFix
                         Collects = collects - lastCollects,
                     };
                     recs.Add(r);
-                    Main.Entry.Logger.Log(string.Format(
+                    Lg.I(string.Format(
                         "[끊김] {9} 타일 #{0}, {1:F1}초 | 프레임 {2:F0}ms | 힙 {3:+#;-#;0}MB | 네이티브 {4:+#;-#;0}MB | 그래픽 {8:+#;-#;0}MB | 정리 {5}회 | 할당 {6:F0}MB/s | 모드 {7}",
                         r.Floor, songTime, r.Ms, r.HeapDelta, r.NativeDelta, r.Collects, AllocMBPerSec, ModWatch.Top, gfx - lastGfx,
                         DateTime.Now.ToString("HH:mm:ss.fff")));   // 바깥 측정(PerfView)과 맞춰 보려면 실제 시각이 필요하다
 #if DEV || AUTOTEST
-                    Main.Entry.Logger.Log("[끊김]    직전 프레임 단계: " + PhaseWatch.TopOfLastFrame(3));
-                    Main.Entry.Logger.Log("[끊김]    그리기: " + RenderWatch.Info());
+                    Lg.I("[끊김]    직전 프레임 단계: " + PhaseWatch.TopOfLastFrame(3));
+                    Lg.I("[끊김]    그리기: " + RenderWatch.Info());
 #endif
 
 #if DEV || AUTOTEST
-Main.Entry.Logger.Log("[끊김]    그리기 콜백: " + RenderCallbackScan.Top(5) + " | " + FrameRateScreenWatch.Info());
+Lg.I("[끊김]    그리기 콜백: " + RenderCallbackScan.Top(5) + " | " + FrameRateScreenWatch.Info());
 #endif
 
 
 #if DEV || AUTOTEST
-Main.Entry.Logger.Log("[끊김]    파티클/글자: " + ParticleTextWatch.Info());
+Lg.I("[끊김]    파티클/글자: " + ParticleTextWatch.Info());
 #endif
 
 #if DEV || AUTOTEST
-                    Main.Entry.Logger.Log("[끊김]    느린 함수: " + SlowScan.Top(5) + " | " + EffectScan.FrameSummary() + ZeroTween.FrameSummary() + InstantMove.FrameSummary() + " | 살아있는 애니메이션 " + ActiveTweens());
+                    Lg.I("[끊김]    느린 함수: " + SlowScan.Top(5) + " | " + EffectScan.FrameSummary() + ZeroTween.FrameSummary() + InstantMove.FrameSummary() + " | 살아있는 애니메이션 " + ActiveTweens());
 #endif
                 }
             }
@@ -226,7 +226,7 @@ UiProf.ResetSong();
 
             if (Main.Config != null && Main.Config.ExpFullscreen == 1) Main.ApplyFullscreen();   // 게임 설정에서 화면을 바꿨으면 다시 독점 전체 화면으로
             TileCull.SongBegin();
-            Main.Entry.Logger.Log("[끊김] 기록 시작");
+            Lg.I("[끊김] 기록 시작");
         }
 
         private static void SongStarted()
@@ -236,7 +236,7 @@ UiProf.ResetSong();
             {
                 double ms = (System.Diagnostics.Stopwatch.GetTimestamp() - GcControl.RestartAt) * 1000.0 / System.Diagnostics.Stopwatch.Frequency;
                 GcControl.RestartAt = 0;
-                if (ms < 30000) Main.Entry.Logger.Log(string.Format("[재시작 시간] {0} → 곡 시작까지 {1:F0}ms (프레임 {3}개, 가장 긴 프레임 {4:F0}ms){5}{2}",
+                if (ms < 30000) Lg.I(string.Format("[재시작 시간] {0} → 곡 시작까지 {1:F0}ms (프레임 {3}개, 가장 긴 프레임 {4:F0}ms){5}{2}",
                     GcControl.RestartWhy, ms, LoadFix.Summary(), UnityEngine.Time.frameCount - GcControl.RestartFrame, GcControl.RestartMaxMs, GcControl.RestartParts(ms)));
                 LoadFix.ResetStats();
             }
@@ -255,7 +255,7 @@ BlendProbe.Report();
 }
             LowEnd.SongStarted(); PhysicsPause.SongStarted(); LowEnd.LogRenderOnce(); Compat.Refresh(); Resilience.Phase("플레이 중");
             RunLod.SongStarted();
-            if (Main.Config != null && Main.Config.PlayTurbo) { try { EnginePatch.TurboCommand("lite"); } catch (System.Exception e) { Main.Entry.Logger.Log("[turbo] 실패: " + e.Message); } }
+            if (Main.Config != null && Main.Config.PlayTurbo) { try { EnginePatch.TurboCommand("lite"); } catch (System.Exception e) { Lg.I("[turbo] 실패: " + e.Message); } }
         }
 
         // 곡이 끝났다고 밀린 효과를 버리면 안 된다. 마지막 타일은 효과가 한꺼번에 몰려 나눠 두는 곳이라,
@@ -285,13 +285,13 @@ BlendProbe.Report();
                 {
                     endLogged = true;
                     string perf = PerfOverlay.SongSummary();
-                    if (perf != null) Main.Entry.Logger.Log("[곡] " + perf + " | 같은 그림자 색 건너뛰기 " + TextFix.SkippedSameShadow + "회" + ParticleFix.Summary() + LeakGuard.Summary() + TypeCache.Summary() + LowEnd.Summary() + (HitTextFade.Fast + HitTextFade.Slow > 0 ? " | " + HitTextFade.Summary() : "") + (HitMeterFade.Fast + HitMeterFade.Slow > 0 ? " | " + HitMeterFade.Summary() : "")
+                    if (perf != null) Lg.I("[곡] " + perf + " | 같은 그림자 색 건너뛰기 " + TextFix.SkippedSameShadow + "회" + ParticleFix.Summary() + LeakGuard.Summary() + TypeCache.Summary() + LowEnd.Summary() + (HitTextFade.Fast + HitTextFade.Slow > 0 ? " | " + HitTextFade.Summary() : "") + (HitMeterFade.Fast + HitMeterFade.Slow > 0 ? " | " + HitMeterFade.Summary() : "")
                         + (PlayTweaks.Skipped + PlayTweaks.HiddenJudge + PlayTweaks.BlockedZoom + PlayTweaks.FilterOffs + PlayTweaks.DecoNotMade + PlayTweaks.DecoHidden > 0 ? string.Format(" | 연출 끄기{6}: 효과 {0}개 건너뜀, 필터 {3}번 끔, 장식 안 만듦 {4}개·숨김 {5}개, 판정 글자 {1}개 숨김, 휠 확대 {2}번 막음", PlayTweaks.Skipped, PlayTweaks.HiddenJudge, PlayTweaks.BlockedZoom, PlayTweaks.FilterOffs, PlayTweaks.DecoNotMade, PlayTweaks.DecoHidden, PlayTweaks.NoFx ? "(노이펙)" : "") : ""));
                     PlayTweaks.Skipped = PlayTweaks.HiddenJudge = PlayTweaks.BlockedZoom = 0; PlayTweaks.FilterOffs = 0; PlayTweaks.DecoHidden = 0;
-                    Main.Entry.Logger.Log("[장식 이동] " + ZeroTween.Summary() + " | " + MoveApply.Summary() + EffectBudget.Summary());
-                    { var mp = MoveProf.SongSummary(); if (mp.Length > 0) Main.Entry.Logger.Log(mp); }
+                    Lg.I("[장식 이동] " + ZeroTween.Summary() + " | " + MoveApply.Summary() + EffectBudget.Summary());
+                    { var mp = MoveProf.SongSummary(); if (mp.Length > 0) Lg.I(mp); }
                     EffectBudget.ResetLate();
-                    if (InvisibleSkip.Enabled) Main.Entry.Logger.Log("[투명 장식] " + InvisibleSkip.Summary());
+                    if (InvisibleSkip.Enabled) Lg.I("[투명 장식] " + InvisibleSkip.Summary());
                 }
                 ZeroTween.Reset(); MoveApply.Reset();
             }
@@ -320,19 +320,19 @@ AllocProbe.Report();
 TimeProbe.Report();
 #endif
 }
-            if (BeatFix.Skipped + BeatFix.Called > 0) Main.Entry.Logger.Log("[박자 알림] 타일 OnBeat 건너뜀 " + BeatFix.Skipped + "번, 부름 " + BeatFix.Called + "번 (빠른 길 " + BeatFix.Fast + "번, 원래 반복 " + BeatFix.Slow + "번)" + (BeatFix.Verify ? " | 검증 " + BeatFix.Checks / 64 + "번, 목록 틀림 " + BeatFix.Mismatch : ""));
-            if (AllocFix.VerifyInput) Main.Entry.Logger.Log(AllocFix.VerifySummary());
+            if (BeatFix.Skipped + BeatFix.Called > 0) Lg.I("[박자 알림] 타일 OnBeat 건너뜀 " + BeatFix.Skipped + "번, 부름 " + BeatFix.Called + "번 (빠른 길 " + BeatFix.Fast + "번, 원래 반복 " + BeatFix.Slow + "번)" + (BeatFix.Verify ? " | 검증 " + BeatFix.Checks / 64 + "번, 목록 틀림 " + BeatFix.Mismatch : ""));
+            if (AllocFix.VerifyInput) Lg.I(AllocFix.VerifySummary());
 
 #if DEV || AUTOTEST
 UiProf.ReportSong();
 #endif
 
             ModWatch.Report();
-            Main.Entry.Logger.Log("[끊김] 같은 글자 건너뛰기 누적 " + TextFix.SkippedSameText + "회, 같은 그림자 색 건너뛰기 " + TextFix.SkippedSameShadow + "회");
-            Main.Entry.Logger.Log("[끊김] 색 바꾸기 나눔 " + RecolorSplit.SplitEffects + "번, 미룬 타일 " + RecolorSplit.DeferredTiles + "칸, 순서 맞추려 먼저 칠함 " + RecolorSplit.FlushedForOrder + "번" + (RecolorSplit.Patched ? "" : " (적용 안 됨)"));
+            Lg.I("[끊김] 같은 글자 건너뛰기 누적 " + TextFix.SkippedSameText + "회, 같은 그림자 색 건너뛰기 " + TextFix.SkippedSameShadow + "회");
+            Lg.I("[끊김] 색 바꾸기 나눔 " + RecolorSplit.SplitEffects + "번, 미룬 타일 " + RecolorSplit.DeferredTiles + "칸, 순서 맞추려 먼저 칠함 " + RecolorSplit.FlushedForOrder + "번" + (RecolorSplit.Patched ? "" : " (적용 안 됨)"));
             if (Edition.Dev) {
 #if DEV || AUTOTEST
-Main.Entry.Logger.Log("[끊김] 덮어쓰기 측정: " + MergeProbe.Summary());
+Lg.I("[끊김] 덮어쓰기 측정: " + MergeProbe.Summary());
 #endif
 
 #if DEV || AUTOTEST
@@ -344,7 +344,7 @@ MergeProbe.Reset();
             {
                 Summary = string.Format("{0:F0}초 동안 {1}ms 넘는 끊김 없음 (할당 최고 {2:F0}MB/s)",
                     songTime, ThresholdMs, PeakAllocMBPerSec);
-                Main.Entry.Logger.Log("[끊김] " + Summary);
+                Lg.I("[끊김] " + Summary);
                 return;
             }
 
@@ -372,8 +372,8 @@ MergeProbe.Reset();
                 "{0:F0}초 중 {1}회 끊김, 합계 {2:F0}ms, 최악 {3:F0}ms | 원인: GC {4}회, 리소스 {5}회, 불명 {6}회 | 할당 최고 {7:F0}MB/s",
                 songTime, recs.Count, total, worst, gcSide, nativeSide, unknown, PeakAllocMBPerSec);
 
-            Main.Entry.Logger.Log("[끊김] " + Summary);
-            Main.Entry.Logger.Log("[끊김] 심한 순서: " + worstList);
+            Lg.I("[끊김] " + Summary);
+            Lg.I("[끊김] 심한 순서: " + worstList);
         }
     }
 }

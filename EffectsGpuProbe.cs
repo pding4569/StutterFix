@@ -28,7 +28,7 @@ namespace StutterFix {
             if(frozen==null){frozen=new RenderTexture(scene.width,scene.height,0,scene.format);frozen.Create();Graphics.Blit(scene,frozen);}
             r.src=frozen;r.dst=new RenderTexture(scene.width,scene.height,0,scene.format);r.dst.Create();
             r.texture=r.src.GetNativeTexturePtr();r.callback=sf_effects_gpu_event();r.command=new CommandBuffer();r.Issue(4);r.warmup=30;
-            Main.Entry.Logger.Log("[화면효과GPU] start profile="+name+" size="+scene.width+"x"+scene.height+" static_scene=1 live_effects_unchanged=1");
+            Lg.I("[화면효과GPU] start profile="+name+" size="+scene.width+"x"+scene.height+" static_scene=1 live_effects_unchanged=1");
         }
         internal static Settings Configuration(string name) {
             var c=new Settings();switch(name){
@@ -49,8 +49,8 @@ namespace StutterFix {
             }return c;
         }
         private void Issue(int id){command.Clear();command.IssuePluginEventAndData(callback,id,texture);Graphics.ExecuteCommandBuffer(command);}
-        private void Update(){try{if(warmup>0){ScreenEffects.Benchmark(src,dst,config);if(--warmup==0)Issue(4);return;}Issue(1);ScreenEffects.Benchmark(src,dst,config);Issue(2);}catch(Exception e){Main.Entry.Logger.Log("[화면효과GPU] 실패: "+e.Message);Stop();}}
-        internal static void Report(){if(instance==null)return;ulong count=sf_effects_gpu_stat(0);Main.Entry.Logger.Log(FormattableString.Invariant($"[화면효과GPU] profile={instance.profile} samples={count} mean_ms={(count>0?(double)sf_effects_gpu_stat(1)/count/1e6:double.NaN):R} max_ms={(double)sf_effects_gpu_stat(2)/1e6:R} skipped={sf_effects_gpu_stat(3)} errors={sf_effects_gpu_stat(4)}"));}
+        private void Update(){try{if(warmup>0){ScreenEffects.Benchmark(src,dst,config);if(--warmup==0)Issue(4);return;}Issue(1);ScreenEffects.Benchmark(src,dst,config);Issue(2);}catch(Exception e){Lg.I("[화면효과GPU] 실패: "+e.Message);Stop();}}
+        internal static void Report(){if(instance==null)return;ulong count=sf_effects_gpu_stat(0);Lg.I(FormattableString.Invariant($"[화면효과GPU] profile={instance.profile} samples={count} mean_ms={(count>0?(double)sf_effects_gpu_stat(1)/count/1e6:double.NaN):R} max_ms={(double)sf_effects_gpu_stat(2)/1e6:R} skipped={sf_effects_gpu_stat(3)} errors={sf_effects_gpu_stat(4)}"));}
         internal static void Stop(bool keepScene=false){if(instance!=null){Report();var r=instance;instance=null;r.enabled=false;r.Issue(3);r.command.Release();r.dst.Release();UnityEngine.Object.Destroy(r.dst);UnityEngine.Object.Destroy(r.gameObject);ScreenEffects.Apply();Fsr.Apply();}if(!keepScene&&frozen!=null){frozen.Release();UnityEngine.Object.Destroy(frozen);frozen=null;}}
     }
 }

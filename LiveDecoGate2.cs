@@ -24,7 +24,7 @@ namespace StutterFix
             profiling = false;
         }
         static double Song => scrConductor.instance ? scrConductor.instance.songposition_minusi : double.NaN;
-        static void Log(string s) => Main.Entry.Logger.Log("[livedeco2] " + s);
+        static void Log(string s) => Lg.I("[livedeco2] " + s);
         internal static void Fail(string reason) { if (evidence.Error == null) evidence.Error = reason; }
         internal static void OwnedLow(int owned, int awake)
         {

@@ -77,7 +77,7 @@ namespace StutterFix
             try
             {
                 var baseType = AccessTools.TypeByName("ffxPlusBase");
-                if (baseType == null) { Main.Entry.Logger.Error("ffxPlusBase 없음"); return; }
+                if (baseType == null) { Lg.E("ffxPlusBase 없음"); return; }
 
                 // 같은 이름의 함수가 여러 개인 타입이 있다. AccessTools.DeclaredMethod 는 그럴 때 예외를 던지고,
                 // 그 예외 하나 때문에 설치가 통째로 중단됐었다. 이름으로 전부 찾아 하나씩 따로 감싼다.
@@ -117,11 +117,11 @@ namespace StutterFix
                     catch { }
                 }
 
-                Main.Entry.Logger.Log("[효과] StartEffect " + count + "개, 걸러내기 " + checks + "개 감쌈");
+                Lg.I("[효과] StartEffect " + count + "개, 걸러내기 " + checks + "개 감쌈");
             }
             catch (Exception ex)
             {
-                Main.Entry.Logger.Error("[효과] 설치 실패: " + ex.Message);
+                Lg.E("[효과] 설치 실패: " + ex.Message);
             }
         }
 
@@ -143,14 +143,14 @@ namespace StutterFix
                 if (animTypeField == null) animTypeField = AccessTools.Field(t, "animType");
 
                 var floor = floorField != null ? floorField.GetValue(instance) as UnityEngine.Component : null;
-                if (floor == null) { Main.Entry.Logger.Log("[타일등장] 대상 없음"); return; }
+                if (floor == null) { Lg.I("[타일등장] 대상 없음"); return; }
 
                 var tr = floor.transform;
                 int renderers = floor.GetComponentsInChildren<UnityEngine.Renderer>(true).Length;
-                Main.Entry.Logger.Log(string.Format("[타일등장] {0} | 방식 {1} | 자식 {2}개, 렌더러 {3}개",
+                Lg.I(string.Format("[타일등장] {0} | 방식 {1} | 자식 {2}개, 렌더러 {3}개",
                     floor.name, animTypeField != null ? animTypeField.GetValue(instance) : "?", tr.childCount, renderers));
             }
-            catch (Exception ex) { Main.Entry.Logger.Log("[타일등장] 읽기 실패: " + ex.Message); }
+            catch (Exception ex) { Lg.I("[타일등장] 읽기 실패: " + ex.Message); }
         }
 
         // false 를 돌려주면 그 효과는 이번 프레임에 시작하지 않고 다음 프레임으로 밀린다.
@@ -178,7 +178,7 @@ namespace StutterFix
             mfLogged++;
             int tiles = (Math.Abs(mfEnd(m) - mfStart(m)) / (1 + Math.Max(0, mfGap(m)))) + 1;
             int after = DG.Tweening.DOTween.TotalActiveTweens();
-            Main.Entry.Logger.Log(string.Format("[타일 이동] {0:F1}ms | 타일 {1}~{2} 간격 {3} (약 {4}개, 타일당 {5:F2}us) | 길이 {6} | 살아 있는 트윈 {7} -> {8}",
+            Lg.I(string.Format("[타일 이동] {0:F1}ms | 타일 {1}~{2} 간격 {3} (약 {4}개, 타일당 {5:F2}us) | 길이 {6} | 살아 있는 트윈 {7} -> {8}",
                 ms, mfStart(m), mfEnd(m), mfGap(m), tiles, ms * 1000.0 / Math.Max(1, tiles), mfDur(m), mfTweens0, after));
         }
 
@@ -222,7 +222,7 @@ namespace StutterFix
             // 처음 쓰는 효과인지 알아야 한다. 처음만 느리다면 미리 한 번 돌려두는 것으로 해결된다.
             // 2400번째 사용에도 그대로 느린 것이 확인됐으므로, 이제는 무엇을 얼마나 건드리는지를 본다.
             if (ms >= LogOverMs && EffectBudget.OuterCall)
-                Main.Entry.Logger.Log(string.Format("[효과] {0} {1:F0}ms ({2}번째 사용) {3}", name, ms, n + 1, Detail(__instance)));
+                Lg.I(string.Format("[효과] {0} {1:F0}ms ({2}번째 사용) {3}", name, ms, n + 1, Detail(__instance)));
         }
 
         // 효과가 몇 개의 타일을 건드리는지 본다.

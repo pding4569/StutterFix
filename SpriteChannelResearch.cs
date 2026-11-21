@@ -217,14 +217,14 @@ namespace StutterFix
                 try
                 {
                     if(MatchesSource(e))continue;var now=e.Renderer?Source(e.Renderer):null;var old=e.Image;
-                    Main.Entry.Logger.Log("[spritechannels] SOURCE_CHANGED renderer="+(e.Renderer?e.Renderer.GetInstanceID():0)
+                    Lg.I("[spritechannels] SOURCE_CHANGED renderer="+(e.Renderer?e.Renderer.GetInstanceID():0)
                         +" expected_texture="+(old.Source?old.Source.GetInstanceID():0)+":"+(old.Source?Uri.EscapeDataString(old.Source.name):"destroyed")
                         +" expected_size="+old.Width+"x"+old.Height+" expected_sampler="+old.Filter+","+old.WrapU+","+old.WrapV+","+old.Aniso
                         +" actual_texture="+(now?now.GetInstanceID():0)+":"+(now?Uri.EscapeDataString(now.name):"missing")
                         +" actual_size="+(now?now.width+"x"+now.height:"missing")+" actual_sampler="+(now?now.filterMode+","+now.wrapModeU+","+now.wrapModeV+","+now.anisoLevel:"missing")
                         +" actual_format="+(now?now.graphicsFormat.ToString():"missing"));
                 }
-                catch(Exception ex){Main.Entry.Logger.Log("[spritechannels] SOURCE_CHANGED detail_error="+ex.GetType().Name);}
+                catch(Exception ex){Lg.I("[spritechannels] SOURCE_CHANGED detail_error="+ex.GetType().Name);}
             }
         }
         static string State()=>"SPRITE_CHANNELS loaded="+(bool)shader+" pending="+pending+" prepared="+images.Count+" valid="+images.Values.Count(i=>i.Valid)+" nongray="+(maskMode||rowMode?0:invalid)+" errors="+errors
@@ -250,15 +250,15 @@ namespace StutterFix
         }
         static void Release()
         {
-            if(entries.Any(e=>e.CallbackRegistered)||watched.Count!=0){Main.Entry.Logger.Log("[spritechannels] release=UNCONFIRMED callbacks_retained=True");return;}
-            if(shader&&Resources.FindObjectsOfTypeAll<Material>().Any(m=>m&&(m.shader==shader||(m.HasProperty(PackedId)&&images.Values.Any(i=>i.Packed&&m.GetTexture(PackedId)==i.Packed))))){Main.Entry.Logger.Log("[spritechannels] release=UNCONFIRMED foreign_material_reference=True");return;}
+            if(entries.Any(e=>e.CallbackRegistered)||watched.Count!=0){Lg.I("[spritechannels] release=UNCONFIRMED callbacks_retained=True");return;}
+            if(shader&&Resources.FindObjectsOfTypeAll<Material>().Any(m=>m&&(m.shader==shader||(m.HasProperty(PackedId)&&images.Values.Any(i=>i.Packed&&m.GetTexture(PackedId)==i.Packed))))){Lg.I("[spritechannels] release=UNCONFIRMED foreign_material_reference=True");return;}
             foreach(var i in images.Values){i.Invalid?.Dispose();if(i.Packed){i.Packed.Release();UnityEngine.Object.Destroy(i.Packed);}}
-            Main.Entry.Logger.Log("[spritechannels] callback_release registered="+registered+" unregistered="+unregistered+" active=0 events="+callbackCount+" restored="+callbackRestored+" error="+callbackError);
+            Lg.I("[spritechannels] callback_release registered="+registered+" unregistered="+unregistered+" active=0 events="+callbackCount+" restored="+callbackRestored+" error="+callbackError);
             images.Clear();entries.Clear();excludedBuckets.Clear();payload=0;invalid=errors=0;pack=null;shader=null;if(bundle)bundle.Unload(true);bundle=null;
             callbackCount=callbackRestored=callbackTicks=callbackMaxTicks=registered=unregistered=0;callbackError="none";
-            Main.Entry.Logger.Log("[spritechannels] released=True restored=True pending=0");
+            Lg.I("[spritechannels] released=True restored=True pending=0");
         }
-        internal static void Stop(){Restore();stopping=true;if(pending==0)Release();else Main.Entry.Logger.Log("[spritechannels] release_deferred=True pending="+pending);}
+        internal static void Stop(){Restore();stopping=true;if(pending==0)Release();else Lg.I("[spritechannels] release_deferred=True pending="+pending);}
     }
 }
 #endif

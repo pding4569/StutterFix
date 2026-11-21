@@ -11,7 +11,7 @@ namespace StutterFix
             if(owned>=minimum)return true;
             string reason="소유 장식 "+owned+"개 (최소 "+minimum+")";
             if(GpuDecoPlayer.Product)GpuDecoPlayer.Skip(reason);
-            else Main.Entry.Logger.Log("[GPU 장식] 건너뜀: "+reason);
+            else Lg.I("[GPU 장식] 건너뜀: "+reason);
             DisposeGpuLive();
             return false;
         }

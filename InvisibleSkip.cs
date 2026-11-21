@@ -54,9 +54,9 @@ namespace StutterFix
                 h.Patch(m, postfix: new HarmonyMethod(typeof(InvisibleSkip), nameof(After)));
                 InstallLazy(h);
                 LazySprite.Install(h);
-                Main.Entry.Logger.Log("[투명 장식] 설치");
+                Lg.I("[투명 장식] 설치");
             }
-            catch (Exception ex) { Main.Entry.Logger.Log("[투명 장식] 설치 실패: " + ex.Message); }
+            catch (Exception ex) { Lg.I("[투명 장식] 설치 실패: " + ex.Message); }
         }
 
         // Arche 는 장식 28,835개 중 28,811개가 투명한 채로 깔려 있고, 효과 몰림 프레임에 색·투명도 변경이 수천 개씩 몰린다.
@@ -217,7 +217,7 @@ namespace StutterFix
             isMask = AccessTools.MethodDelegate<Func<scrVisualDecoration, bool>>(AccessTools.Method(typeof(scrVisualDecoration), "isMask"));
             setPosition = AccessTools.MethodDelegate<Action<scrDecoration, Vector2, Vector2>>(set);
             h.Patch(set, prefix: new HarmonyMethod(typeof(InvisibleSkip), nameof(LazyPrefix)) { priority = Priority.First });
-            Main.Entry.Logger.Log("[투명 장식] 위치 늦게 반영 설치");
+            Lg.I("[투명 장식] 위치 늦게 반영 설치");
         }
 
         public static bool LazyPrefix(scrDecoration __instance, Vector2 pivotPos, Vector2 pivotOffset)
@@ -472,7 +472,7 @@ namespace StutterFix
                 foreach (var r in list) r.forceRenderingOff = false;
                 b = RenderCams();
             }
-            catch (Exception ex) { Main.Entry.Logger.Log("[투명 비교] 그리기 실패: " + ex.Message); }
+            catch (Exception ex) { Lg.I("[투명 비교] 그리기 실패: " + ex.Message); }
             finally { foreach (var r in list) if (r != null) r.forceRenderingOff = true; }
             comparing = false;
             if (a == null || b == null) yield break;
@@ -497,10 +497,10 @@ namespace StutterFix
                     System.IO.File.WriteAllBytes(System.IO.Path.Combine(dir, "다그림-" + stamp + ".png"), b.EncodeToPNG());
                     extra = " | 저장: " + dir + " (" + stamp + ")";
                 }
-                Main.Entry.Logger.Log(string.Format("[투명 비교] 뺀 장식 {0}개 | {1}x{2} 중 다른 픽셀 {3}개 (최대 차이 {4}/255){5}",
+                Lg.I(string.Format("[투명 비교] 뺀 장식 {0}개 | {1}x{2} 중 다른 픽셀 {3}개 (최대 차이 {4}/255){5}",
                     list.Count, a.width, a.height, differ, max, extra));
             }
-            catch (Exception ex) { Main.Entry.Logger.Log("[투명 비교] 실패: " + ex.Message); }
+            catch (Exception ex) { Lg.I("[투명 비교] 실패: " + ex.Message); }
             UnityEngine.Object.Destroy(a); UnityEngine.Object.Destroy(b);
         }
 

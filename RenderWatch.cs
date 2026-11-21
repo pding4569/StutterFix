@@ -82,11 +82,11 @@ namespace StutterFix
                     catch { }
                 }
 
-                Main.Entry.Logger.Log("render watch installed");
+                Lg.I("render watch installed");
             }
             catch (Exception ex)
             {
-                Main.Entry.Logger.Error("render watch 실패: " + ex.Message);
+                Lg.E("render watch 실패: " + ex.Message);
             }
         }
 
@@ -150,7 +150,7 @@ namespace StutterFix
                     // 필터가 바뀌는 순간이 비싼 것인지, 그 박자에 우연히 겹친 것인지 가리려면
                     // 끊기지 않은 전환도 전부 봐야 한다.
                     if (LogFilterChanges && GcControl.Paused)
-                        Main.Entry.Logger.Log(string.Format("[필터] {0} | 이 프레임 {1:F0}ms | 버퍼 {2}개 | 켜진 효과 {3}개",
+                        Lg.I(string.Format("[필터] {0} | 이 프레임 {1:F0}ms | 버퍼 {2}개 | 켜진 효과 {3}개",
                             lastChange, Hitch.LastFrameMs, TempRtThisFrame, CountOn()));
                 }
             }

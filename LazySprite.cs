@@ -59,9 +59,9 @@ namespace StutterFix
                     foreach (var m in typeof(scrDecorationManager).GetMethods(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly))
                         if (m.Name == name && !m.IsAbstract && m.GetMethodBody() != null) { h.Patch(m, prefix: all); n++; }
                 installed = true;
-                Main.Entry.Logger.Log("[투명 장식] 이미지 바꾸기 미루기 설치 (먼저 적용하는 곳 " + n + "개)");
+                Lg.I("[투명 장식] 이미지 바꾸기 미루기 설치 (먼저 적용하는 곳 " + n + "개)");
             }
-            catch (Exception ex) { installed = false; Main.Entry.Logger.Log("[투명 장식] 이미지 미루기 설치 실패: " + ex.Message); }
+            catch (Exception ex) { installed = false; Lg.I("[투명 장식] 이미지 미루기 설치 실패: " + ex.Message); }
         }
 
         public static void OnePrefix(scrVisualDecoration __instance) { if (!flushing && pending.Count > 0) Flush(__instance); }
@@ -120,7 +120,7 @@ namespace StutterFix
                 if (GpuDecoPlayer.Available) DecoBake.GpuImageSpriteFlushed(v);
 #endif
                 Flushed++; }
-            catch (Exception ex) { Main.Entry.Logger.Log("[투명 장식] 미룬 이미지 적용 오류: " + ex.Message); }
+            catch (Exception ex) { Lg.I("[투명 장식] 미룬 이미지 적용 오류: " + ex.Message); }
             finally { flushing = false; }
         }
 
@@ -144,7 +144,7 @@ namespace StutterFix
                             if (GpuDecoPlayer.Available) DecoBake.GpuImageSpriteFlushed(kv.Key);
 #endif
                             Flushed++; }
-                    catch (Exception ex) { Main.Entry.Logger.Log("[투명 장식] 미룬 이미지 적용 오류: " + ex.Message); }
+                    catch (Exception ex) { Lg.I("[투명 장식] 미룬 이미지 적용 오류: " + ex.Message); }
                 }
             }
             finally { flushing = false; }

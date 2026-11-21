@@ -23,7 +23,7 @@ namespace StutterFix {
         static int token; static Camera camera; static RenderTexture target; static Texture2DArray textures;
         static CommandBuffer commands; static object level; static IntPtr targetPtr; static int width,height;
         static readonly long[] mainSamples=new long[4096];static long mainCount,mainSum;
-        static void Log(string s)=>Main.Entry.Logger.Log("[dr] "+s);
+        static void Log(string s)=>Lg.I("[dr] "+s);
         internal static bool Step(string arg){
             var a=arg.Split(new[]{' '},StringSplitOptions.RemoveEmptyEntries);
             if(a.Length==1&&a[0]=="off"){Stop();Log("off");return true;}

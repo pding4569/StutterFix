@@ -27,7 +27,7 @@ namespace StutterFix
         // 메인 스레드에서 매 프레임 (PerfOverlay.MeasureFrame)
         internal static void Frame(bool playing, float ms, float wait)
         {
-            if (pending.Count > 0) lock (pending) { foreach (var p in pending) Main.Entry.Logger.Log(p); pending.Clear(); }
+            if (pending.Count > 0) lock (pending) { foreach (var p in pending) Lg.I(p); pending.Clear(); }
             if (Edition.Dev) WindowGhost.Flush();
 
 #if DEV || AUTOTEST
@@ -38,9 +38,9 @@ if (Edition.Dev && AutoTest.Active) AutoTest.Sample(playing, ms, wait);
             {
                 if (playing && Edition.Dev) SystemMonitor.Start();   // 곡 3초·8초 VRAM 기록용 (맵 열 때 이미 켜져 있던 것과 같은 것)
                 if (!playing && songHighSec > 0)
-                    Main.Entry.Logger.Log(string.Format("[화면 대기] 이번 판 {0}초 중 {1}초 동안 늘어나 있었음 (그때 평균 {2:F1}ms)", songSec, songHighSec, songHighWait / songHighSec));
+                    Lg.I(string.Format("[화면 대기] 이번 판 {0}초 중 {1}초 동안 늘어나 있었음 (그때 평균 {2:F1}ms)", songSec, songHighSec, songHighWait / songHighSec));
                 string gpu = GpuSummary();
-                if (!playing && gpu != null) Main.Entry.Logger.Log(gpu);
+                if (!playing && gpu != null) Lg.I(gpu);
                 wasPlaying = playing; secMs = secWait = 0; secN = 0; high = false; streak = 0; songSec = songHighSec = snaps = 0; songHighWait = 0;
             }
             if (!playing || ms > 500f) return;
@@ -51,7 +51,7 @@ if (Edition.Dev && AutoTest.Active) AutoTest.Sample(playing, ms, wait);
             bool h = avgWait >= HighMs && avgWait >= avgMs * 0.15f;
             songSec++; if (h) { songHighSec++; songHighWait += avgWait; }
             if (Edition.Dev && songSec == 3) FloorCensus();
-            if (Edition.Dev && (songSec == 3 || songSec == 8)) Main.Entry.Logger.Log(GfxProbe.Snapshot() + string.Format(" (곡 {0}초, 화면 대기 {1:F2}ms) | VRAM 전체 {2:F0}MB, 게임 전용 {3:F0}MB, 게임 공유(시스템 RAM) {4:F0}MB, 힙 {5}MB", songSec, avgWait, SystemMonitor.VramUsedMB, SystemMonitor.VramGameMB, SystemMonitor.SharedGameMB, GC.GetTotalMemory(false) >> 20));
+            if (Edition.Dev && (songSec == 3 || songSec == 8)) Lg.I(GfxProbe.Snapshot() + string.Format(" (곡 {0}초, 화면 대기 {1:F2}ms) | VRAM 전체 {2:F0}MB, 게임 전용 {3:F0}MB, 게임 공유(시스템 RAM) {4:F0}MB, 힙 {5}MB", songSec, avgWait, SystemMonitor.VramUsedMB, SystemMonitor.VramGameMB, SystemMonitor.SharedGameMB, GC.GetTotalMemory(false) >> 20));
             if (Edition.Dev && FreezeTest) FreezeStep(h, avgWait);
             if (Edition.Dev) SampleGpu(h);
             if (h == high) { streak = 0; return; }
@@ -59,7 +59,7 @@ if (Edition.Dev && AutoTest.Active) AutoTest.Sample(playing, ms, wait);
             high = h; streak = 0;
             string head = h ? string.Format("[화면 대기] 늘어남: 평균 {0:F1}ms (프레임 {1:F1}ms 중, 약 {2:F0} FPS)", avgWait, avgMs, 1000 / avgMs)
                             : string.Format("[화면 대기] 다시 줄어듦: 평균 {0:F1}ms (약 {1:F0} FPS)", avgWait, 1000 / avgMs);
-            if (snaps >= 6 || busy) { Main.Entry.Logger.Log(head); return; }
+            if (snaps >= 6 || busy) { Lg.I(head); return; }
             snaps++; busy = true;
             float fpsNow = 1000 / avgMs, fpsWithout = 1000 / Math.Max(0.5f, avgMs - avgWait);
             ThreadPool.QueueUserWorkItem(_ =>
@@ -104,7 +104,7 @@ if (Edition.Dev && AutoTest.Active) AutoTest.Sample(playing, ms, wait);
             if (ftState == 0)
             {
                 if (songSec < 3) return;
-                Main.Entry.Logger.Log(string.Format("[첫 판 FPS 시험] 시작: {0} (대기 {1:F2}ms)", Slow(wait) ? "느림" : "빠름", wait));
+                Lg.I(string.Format("[첫 판 FPS 시험] 시작: {0} (대기 {1:F2}ms)", Slow(wait) ? "느림" : "빠름", wait));
                 if (Slow(wait)) RunFreeze(ftReset, true); else RunFreeze(ftKinds[0], false);
                 return;
             }
@@ -114,7 +114,7 @@ if (Edition.Dev && AutoTest.Active) AutoTest.Sample(playing, ms, wait);
             int hung = WindowGhost.HungStarts - ftHung;
             if (ftResetting)
             {
-                Main.Entry.Logger.Log(string.Format("[첫 판 FPS 시험] 되돌리기 1초 멈춤 뒤: 대기 {0:F2}ms ({1})", wait, slow ? "그대로 느림" : "풀림"));
+                Lg.I(string.Format("[첫 판 FPS 시험] 되돌리기 1초 멈춤 뒤: 대기 {0:F2}ms ({1})", wait, slow ? "그대로 느림" : "풀림"));
                 if (slow) { if (++ftResets >= 3) { Done("되돌리기가 안 됨"); return; } RunFreeze(ftReset, true); return; }
                 if (ftIdx >= ftKinds.Length) { Done(null); return; }
                 RunFreeze(ftKinds[ftIdx], false);
@@ -122,7 +122,7 @@ if (Edition.Dev && AutoTest.Active) AutoTest.Sample(playing, ms, wait);
             }
             string r = string.Format("{0}: {1} (대기 {2:F2}ms, 멈춘 창 판정 {3}번)", ftKinds[ftIdx].Name, slow ? "느려짐" : "빠름", wait, hung);
             ftResults.Add(r);
-            Main.Entry.Logger.Log("[첫 판 FPS 시험] 6초 멈춘 뒤 " + r);
+            Lg.I("[첫 판 FPS 시험] 6초 멈춘 뒤 " + r);
             ftIdx++;
             if (slow) { RunFreeze(ftReset, true); return; }
             if (ftIdx >= ftKinds.Length) { Done(null); return; }
@@ -134,13 +134,13 @@ if (Edition.Dev && AutoTest.Active) AutoTest.Sample(playing, ms, wait);
         private static void Done(string why)
         {
             ftState = 3;
-            Main.Entry.Logger.Log("[첫 판 FPS 시험] 끝" + (why != null ? " (" + why + ")" : "") + ": " + string.Join(" | ", ftResults));
+            Lg.I("[첫 판 FPS 시험] 끝" + (why != null ? " (" + why + ")" : "") + ": " + string.Join(" | ", ftResults));
         }
 
         private static void RunFreeze(FreezeKind k, bool reset)
         {
             ftResetting = reset; ftHung = WindowGhost.HungStarts; ftState = 2; ftAfter = 0;
-            if (!reset) Main.Entry.Logger.Log("[첫 판 FPS 시험] " + k.Name + " - " + k.Ms + "ms 멈춤");
+            if (!reset) Lg.I("[첫 판 FPS 시험] " + k.Name + " - " + k.Ms + "ms 멈춤");
             long f = System.Diagnostics.Stopwatch.Frequency, t0 = System.Diagnostics.Stopwatch.GetTimestamp(), lastPeek = t0, lastPresent = t0;
             int presents = 0;
             while (true)
@@ -151,7 +151,7 @@ if (Edition.Dev && AutoTest.Active) AutoTest.Sample(playing, ms, wait);
                 if (k.Peek && now - lastPeek >= f / 2) { WindowGhost.PeekInput(); lastPeek = now; }
                 if (k.Present && now - lastPresent >= f / 2) { if (WindowGhost.PresentOnce(0x21)) presents++; lastPresent = now; }
             }
-            if (k.Present) Main.Entry.Logger.Log(string.Format("[첫 판 FPS 시험]   화면 다시 내보내기 {0}번{1}", presents, WindowGhost.PresentStatus.Length > 0 ? " (" + WindowGhost.PresentStatus + ")" : ""));
+            if (k.Present) Lg.I(string.Format("[첫 판 FPS 시험]   화면 다시 내보내기 {0}번{1}", presents, WindowGhost.PresentStatus.Length > 0 ? " (" + WindowGhost.PresentStatus + ")" : ""));
         }
 
         // (개발자용) 곡 중 켜진 타일 스크립트 수 (Update/LateUpdate 가 도는 것), 보이는 타일 렌더러 수
@@ -162,9 +162,9 @@ if (Edition.Dev && AutoTest.Active) AutoTest.Sample(playing, ms, wait);
                 var lm = ADOBase.lm; if (lm == null || lm.listFloors == null) return;
                 int n = lm.listFloors.Count, en = 0, vis = 0, startNot = 0;
                 foreach (var f in lm.listFloors) { if (f == null) continue; if (f.enabled) en++; var r = f.GetComponent<UnityEngine.Renderer>(); if (r != null && r.isVisible) vis++; }
-                Main.Entry.Logger.Log(string.Format("[타일] 곡 3초: 타일 {0}개 중 스크립트 켜짐 {1}개, 렌더러 보임 {2}개", n, en, vis));
+                Lg.I(string.Format("[타일] 곡 3초: 타일 {0}개 중 스크립트 켜짐 {1}개, 렌더러 보임 {2}개", n, en, vis));
             }
-            catch (Exception ex) { Main.Entry.Logger.Log("[타일] 세기 실패: " + ex.Message); }
+            catch (Exception ex) { Lg.I("[타일] 세기 실패: " + ex.Message); }
         }
 
         // ── (개발자용) 곡 중 GPU 클럭 (NVIDIA, GpuClock.cs) ──

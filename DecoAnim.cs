@@ -111,7 +111,7 @@ namespace StutterFix
                     if (m.Name != "SetPositionX" && m.Name != "SetPositionY" && m.Name != "SetPosition") continue;
                     var info = Harmony.GetPatchInfo(m);
                     if (info == null) continue;
-                    foreach (var o in info.Owners) if (!o.StartsWith("StutterFix")) { pairOk = 2; Main.Entry.Logger.Log("[장식 애니메이션] " + o + " 가 " + m.Name + " 을 감싸 위치 X·Y 합치기를 쓰지 않음"); return false; }
+                    foreach (var o in info.Owners) if (!o.StartsWith("StutterFix")) { pairOk = 2; Lg.I("[장식 애니메이션] " + o + " 가 " + m.Name + " 을 감싸 위치 X·Y 합치기를 쓰지 않음"); return false; }
                 }
             }
             catch { pairOk = 2; }
@@ -131,7 +131,7 @@ namespace StutterFix
         {
             try
             {
-                if (!ZeroTween.CanEase) { Main.Entry.Logger.Log("[장식 애니메이션] 이징 함수가 없어 끔"); return; }
+                if (!ZeroTween.CanEase) { Lg.I("[장식 애니메이션] 이징 함수가 없어 끔"); return; }
                 UpdateEvalMemo.Configure(Main.Entry.Path);
                 ConfigureGroup(Main.Entry.Path);
                 ConfigureFastLane(Main.Entry.Path);
@@ -153,7 +153,7 @@ namespace StutterFix
                     setParOffY = AccessTools.MethodDelegate<Action<scrDecoration, float>>(AccessTools.Method(d, "SetParallaxOffsetY", new[] { typeof(float) }));
                     CanPivotParallax = setPivX != null && setPivY != null && setParOffX != null && setParOffY != null;
                 }
-                catch (Exception ex) { CanPivotParallax = false; Main.Entry.Logger.Log("[장식 애니메이션] 피벗·시차 함수를 못 찾아 그 효과는 원래대로: " + ex.Message); }
+                catch (Exception ex) { CanPivotParallax = false; Lg.I("[장식 애니메이션] 피벗·시차 함수를 못 찾아 그 효과는 원래대로: " + ex.Message); }
                 var kill = AccessTools.Method(typeof(TweenExtensions), "Kill", new[] { typeof(Tween), typeof(bool) });
                 h.Patch(kill, prefix: new HarmonyMethod(typeof(DecoAnim), nameof(KillPrefix)) { priority = Priority.First });
                 foreach (var m in typeof(DOTween).GetMethods(AccessTools.all))
@@ -166,19 +166,19 @@ namespace StutterFix
                 // 진행 중인 모드 표를 목록 끝에 넣어 원래 DOTween 애니메이션과 똑같이 끊기거나 완료되게 한다.
                 var playing = AccessTools.Method(typeof(DOTween), "PlayingTweens");
                 if (playing != null) h.Patch(playing, postfix: new HarmonyMethod(typeof(DecoAnim), nameof(PlayingPostfix)));
-                else Main.Entry.Logger.Log("[장식 애니메이션] PlayingTweens 를 못 찾음");
+                else Lg.I("[장식 애니메이션] PlayingTweens 를 못 찾음");
                 foreach (var m in typeof(TweenExtensions).GetMethods(AccessTools.all))
                     if (m.Name == "Complete" && m.GetParameters().Length >= 1 && m.GetParameters()[0].ParameterType == typeof(Tween))
                         h.Patch(m, prefix: new HarmonyMethod(typeof(DecoAnim), nameof(CompletePrefix)) { priority = Priority.First });
                 var comp = AccessTools.TypeByName("DG.Tweening.Core.DOTweenComponent");
                 var upd = comp == null ? null : AccessTools.Method(comp, "Update");
-                if (upd == null) { Main.Entry.Logger.Log("[장식 애니메이션] DOTween 갱신 함수를 못 찾아 끔"); return; }
+                if (upd == null) { Lg.I("[장식 애니메이션] DOTween 갱신 함수를 못 찾아 끔"); return; }
                 h.Patch(upd, prefix: new HarmonyMethod(typeof(DecoAnim), nameof(UpdatePrefix)) { priority = Priority.First },
                     postfix: new HarmonyMethod(typeof(DecoAnim), nameof(UpdatePostfix)) { priority = Priority.Last });
                 Installed = true;
-                Main.Entry.Logger.Log("[장식 애니메이션] 설치");
+                Lg.I("[장식 애니메이션] 설치");
             }
-            catch (Exception ex) { Installed = false; Main.Entry.Logger.Log("[장식 애니메이션] 설치 실패: " + ex.Message); }
+            catch (Exception ex) { Installed = false; Lg.I("[장식 애니메이션] 설치 실패: " + ex.Message); }
         }
 
         internal static bool Active { get { return Enabled && Installed; } }
@@ -581,7 +581,7 @@ namespace StutterFix
             if (__result == null) __result = __0 ?? AddRunning(new List<Tween>(n));
             else if (!ReferenceEquals(__result, __0)) AddRunning(__result);
             Listed += n;
-            Main.Entry.Logger.Log("[장식 애니메이션] 게임이 재생 중인 애니메이션 목록을 가져감 (멈춤/체크포인트 시작): 모드 애니메이션 " + n + "개를 함께 넘김");
+            Lg.I("[장식 애니메이션] 게임이 재생 중인 애니메이션 목록을 가져감 (멈춤/체크포인트 시작): 모드 애니메이션 " + n + "개를 함께 넘김");
         }
         private static List<Tween> AddRunning(List<Tween> list)
         {

@@ -43,7 +43,7 @@ namespace StutterFix
         float deadline;
         int kernel, rendererCount;
         static readonly int DepthId = Shader.PropertyToID("_SfZDepth");
-        static void Log(string s) => Main.Entry.Logger.Log("[zcull] " + s);
+        static void Log(string s) => Lg.I("[zcull] " + s);
         static string Clean(string s) => (s ?? "null").Replace('\n', ' ').Replace('\r', ' ').Replace('\t', ' ');
         static string F(double n) => n.ToString("F3", CultureInfo.InvariantCulture);
 
@@ -108,12 +108,12 @@ namespace StutterFix
                 if (!shader || !shader.isSupported || !reduce) throw new InvalidOperationException("diagnostic shaders unavailable");
                 kernel = reduce.FindKernel("Reduce");
                 var cameraRT = c.targetTexture;
-                Main.Entry.Logger.Log("[stack] camera_target=" + (cameraRT
+                Lg.I("[stack] camera_target=" + (cameraRT
                     ? "format=" + cameraRT.format + " graphicsFormat=" + cameraRT.graphicsFormat + " sRGB=" + cameraRT.sRGB
                     : "backbuffer") + " allowHDR=" + c.allowHDR);
                 var gameCamera = scrCamera.instance;
                 var gameRT = gameCamera == null ? null : AccessTools.Field(typeof(scrCamera), "camRT").GetValue(gameCamera) as RenderTexture;
-                Main.Entry.Logger.Log("[stack] game_camRT=" + (gameRT
+                Lg.I("[stack] game_camRT=" + (gameRT
                     ? "format=" + gameRT.format + " graphicsFormat=" + gameRT.graphicsFormat + " sRGB=" + gameRT.sRGB
                     : "null"));
                 Discover(c);
@@ -229,12 +229,12 @@ namespace StutterFix
             double sum = qualifying.Sum(g => g.Sum(d => (double)d.Total));
             string top = qualifying.Count == 0 ? "none" : "tex=" + Clean(qualifying[0][0].StackTexture.name)
                 + " layers=" + qualifying[0].Count + " frags=" + F(qualifying[0].Sum(d => (double)d.Total));
-            Main.Entry.Logger.Log("[stack] fragments_total=" + F(total) + " in_stacks=" + F(sum)
+            Lg.I("[stack] fragments_total=" + F(total) + " in_stacks=" + F(sum)
                 + " (" + F(total == 0 ? 0 : 100 * sum / total) + "%) stacks=" + qualifying.Count + " top: " + top);
             for (int n = 0; n < stacks.Count; n++)
             {
                 var g = stacks[n]; var first = g[0]; double fragments = g.Sum(d => (double)d.Total);
-                Main.Entry.Logger.Log("[stack] id=" + n + " tex=" + Clean(first.StackTexture.name)
+                Lg.I("[stack] id=" + n + " tex=" + Clean(first.StackTexture.name)
                     + " texture_id=" + first.StackTexture.GetInstanceID() + " material_id=" + first.Source.GetInstanceID()
                     + " shader=" + Clean(first.Source.shader.name) + " layers=" + g.Count + " frags=" + F(fragments)
                     + " share_percent=" + F(total == 0 ? 0 : 100 * fragments / total)
@@ -245,7 +245,7 @@ namespace StutterFix
                     + " bounds_height=" + F(g.Min(d => d.StackSize.y)) + ".." + F(g.Max(d => d.StackSize.y))
                     + " order=" + first.Key.Order + ".." + g[g.Count - 1].Key.Order);
             }
-            Main.Entry.Logger.Log("[stack] scope=consecutive-compatible-draws summary_layers_min=4 detail_layers_min=2 metric=geometry-fragments;"
+            Lg.I("[stack] scope=consecutive-compatible-draws summary_layers_min=4 detail_layers_min=2 metric=geometry-fragments;"
                 + "not-overlap-proof;property-blocks-and-ambiguous-order-excluded;not-GPU-time-or-FPS");
         }
         internal static readonly System.Collections.Generic.Dictionary<string, int> Reasons = new System.Collections.Generic.Dictionary<string, int>();

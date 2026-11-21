@@ -41,7 +41,7 @@ namespace StutterFix
             {
                 int k = Array.IndexOf(Names, a[1]);
                 if (k < 0 || !skip[k] || skipped[k] == 0) throw new Exception("scriptskip INVALID: no active intercepted calls: " + a[1]);
-                State(); Main.Entry.Logger.Log("[scriptskip accepted] ceiling " + a[1]); return true;
+                State(); Lg.I("[scriptskip accepted] ceiling " + a[1]); return true;
             }
             if (a.Length == 2 && a[0] == "exact")
             {
@@ -50,7 +50,7 @@ namespace StutterFix
                     State();
                     if (!applied || diffs != 0 || eligible == 0 || (verify ? checkedCalls == 0 || checkedCalls != eligible : fast == 0))
                         throw new Exception("scriptskip exact INVALID: no admitted work or comparison mismatch");
-                    Main.Entry.Logger.Log("[scriptskip accepted] exact " + (verify ? "verify" : "on"));
+                    Lg.I("[scriptskip accepted] exact " + (verify ? "verify" : "on"));
                     return true;
                 }
                 if (a[1] == "off") { StopExact(); State(); return true; }
@@ -88,9 +88,9 @@ namespace StutterFix
 
         static void State()
         {
-            Main.Entry.Logger.Log("[scriptskip] CEILING changes gameplay/rendering: " +
+            Lg.I("[scriptskip] CEILING changes gameplay/rendering: " +
                 string.Join(" ", Names.Select((x, i) => x + "=" + skip[i] + "/" + skipped[i])));
-            Main.Entry.Logger.Log($"[scriptskip exact] on={exact} verify={verify} applied={applied} calls={calls} eligible={eligible} fast={fast} compared={checkedCalls} mismatches={diffs}");
+            Lg.I($"[scriptskip exact] on={exact} verify={verify} applied={applied} calls={calls} eligible={eligible} fast={fast} compared={checkedCalls} mismatches={diffs}");
         }
 
         static void StartExact(bool compare)
@@ -176,7 +176,7 @@ namespace StutterFix
             {
                 if (BitEqual(before[i], fields[i].GetValue(floor))) continue;
                 diffs++;
-                if (diffs <= 5) Main.Entry.Logger.Log("[scriptskip exact] mismatch: " + fields[i].Name);
+                if (diffs <= 5) Lg.I("[scriptskip exact] mismatch: " + fields[i].Name);
             }
             before = null;
             if (diffs != 0) exact = false; // automatically fall back; assert still fails

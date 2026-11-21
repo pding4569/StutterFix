@@ -152,7 +152,7 @@ namespace StutterFix
             }
         }
 
-        static void Log(string s) { Main.Entry.Logger.Log("[engknob] " + s); }
+        static void Log(string s) { Lg.I("[engknob] " + s); }
     }
 }
 #endif

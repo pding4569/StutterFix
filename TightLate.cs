@@ -378,7 +378,7 @@ namespace StutterFix
                     if (id != Main.Entry.Info.Id)
                     {
                         string message = spec.Item1.Name + "." + spec.Item2 + " owner=" + id;
-                        if (compatibility != message) Main.Entry.Logger.Log("[tightlate] original loop retained: " + message);
+                        if (compatibility != message) Lg.I("[tightlate] original loop retained: " + message);
                         compatibility = message; return false;
                     }
             }
@@ -461,7 +461,7 @@ namespace StutterFix
                 + " end=" + a.End.ToString("R") + "/" + b.End.ToString("R")
                 + " rotAngle=" + a.Angle.ToString("R") + "/" + b.Angle.ToString("R")
                 + " scaleVec=" + a.Scale.ToString("R") + "/" + b.Scale.ToString("R");
-            Main.Entry.Logger.Log("[tightlate] mismatch=" + mismatches + " decoration=" + e.D.name + "; fallback for this decoration; first=" + first);
+            Lg.I("[tightlate] mismatch=" + mismatches + " decoration=" + e.D.name + "; fallback for this decoration; first=" + first);
         }
         internal static string Command(string arg)
         {

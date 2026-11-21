@@ -342,7 +342,7 @@ namespace StutterFix
 
             // 이번 곡 통계: 곡이 시작되면 새로 센다 (곡이 끝난 뒤에도 다음 곡까지 남겨 둔다)
             bool playing = Hitch.Playing;
-            if (playing && !wasPlaying) { Main.Entry.Logger.Log("[곡 시작] " + ScreenState()); songStartT = Time.unscaledTime;
+            if (playing && !wasPlaying) { Lg.I("[곡 시작] " + ScreenState()); songStartT = Time.unscaledTime;
 #if AUTOTEST
                 System.Array.Clear(songHist, 0, songHist.Length);
 #endif
@@ -695,7 +695,7 @@ namespace StutterFix
         {
             if (!startPhase) return;
             startPhase = false;
-            Main.Entry.Logger.Log("[모니터] 첫 타일 전에 나감" + StartDiag());
+            Lg.I("[모니터] 첫 타일 전에 나감" + StartDiag());
         }
         // 첫 타일은 "지금 있는 타일 번호가 곡 시작 때와 달라졌는가" 로 본다. 처음에는 행성이 다음 타일로 옮겨 갈 때
         // (scrPlanet.MoveToNextFloor)로 봤는데, 곡 시작 준비 중에도 불려서 시작 연출 전에 구간이 끝나 버렸다.
@@ -707,7 +707,7 @@ namespace StutterFix
             if (Time.realtimeSinceStartup - startPhaseAt >= 5f)
             {
                 startPhase = false;
-                Main.Entry.Logger.Log("[모니터] 곡 시작 연출 구간 끝: 5초 지남" + StartDiag());
+                Lg.I("[모니터] 곡 시작 연출 구간 끝: 5초 지남" + StartDiag());
                 return;
             }
             int seq;
@@ -720,7 +720,7 @@ namespace StutterFix
                 // 바로 그 프레임에 몰리는데, 먼저 구간을 닫고 그 프레임을 판정해서 "게임 처리" 끊김으로 잡혔다.
                 startPhase = false;
                 startGraceFrame = Time.frameCount + 2;
-                Main.Entry.Logger.Log(string.Format("[모니터] 곡 시작 연출 구간 끝: 타일 {0} -> {1} ({2:F1}초)", startSeq, seq, Time.realtimeSinceStartup - startPhaseAt));
+                Lg.I(string.Format("[모니터] 곡 시작 연출 구간 끝: 타일 {0} -> {1} ({2:F1}초)", startSeq, seq, Time.realtimeSinceStartup - startPhaseAt));
             }
         }
         private static int startGraceFrame = -1;
@@ -783,7 +783,7 @@ namespace StutterFix
             // (문제 보고용 로그 파일로 원인을 볼 수 있게).
             bool logIt = Edition.Dev || (ms >= (Main.AutoTestBuild ? 20f : 40f) && ++playerLogLines <= 300);   // 측정용 빌드는 20ms 부터
             if (logIt)
-                Main.Entry.Logger.Log(string.Format("[모니터] {0:F0}ms -> {1} / gpu {2:F1} cpu {3:F1} (수집 {4}번) 효과 {5:F1} 모드 {6:F1}({7}) gc {8}" + (p.SongT >= 0 ? " | 곡 {9:F1}초, 다시 보이게 된 장식 {10}개" : "") + " | 시각 {11}",
+                Lg.I(string.Format("[모니터] {0:F0}ms -> {1} / gpu {2:F1} cpu {3:F1} (수집 {4}번) 효과 {5:F1} 모드 {6:F1}({7}) gc {8}" + (p.SongT >= 0 ? " | 곡 {9:F1}초, 다시 보이게 된 장식 {10}개" : "") + " | 시각 {11}",
                     ms, h.Cause, gpu, cpuMain, timingSamples, fx, mod, modWhat, gcDelta, p.SongT, p.Shown, DateTime.Now.ToString("HH:mm:ss.fff")));
             if (logIt && gpu > ms * 0.7f)
             {
@@ -791,7 +791,7 @@ namespace StutterFix
 #if DEV || AUTOTEST
             recentFilters=FilterTrace.Recent(p.Frame,6);
 #endif
-                Main.Entry.Logger.Log("[모니터]   직전 필터 변화 (6프레임): " + recentFilters
+                Lg.I("[모니터]   직전 필터 변화 (6프레임): " + recentFilters
                     + string.Format(" | VRAM 전체 {0:F0}/{1}MB, 게임 전용 {2:F0}MB, 게임 공유(시스템 RAM) {3:F0}MB",
                         SystemMonitor.VramUsedMB, SystemInfo.graphicsMemorySize, SystemMonitor.VramGameMB, SystemMonitor.SharedGameMB));
             }

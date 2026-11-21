@@ -62,9 +62,9 @@ namespace StutterFix
             var light = AccessTools.Method(typeof(scrFloor), "LightUp");
             var reset = AccessTools.Method(typeof(scrFloor), "Reset");
             var make = AccessTools.Method(typeof(scrLevelMaker), "MakeLevel");
-            if (onBeat == null || prop == null || light == null || reset == null || make == null) { Main.Entry.Logger.Log("[박자 알림] 게임 코드 모양이 달라 쓰지 않음"); return; }
+            if (onBeat == null || prop == null || light == null || reset == null || make == null) { Lg.I("[박자 알림] 게임 코드 모양이 달라 쓰지 않음"); return; }
             h.Patch(prop, prefix: new HarmonyMethod(typeof(BeatFix), nameof(PropPrefix)));
-            if (Edition.Dev) Main.Entry.Logger.Log("[박자 알림] 목록 바뀜 횟수 읽기: " + (verRef != null ? "됨" : "안 됨 (개수만 봄)"));
+            if (Edition.Dev) Lg.I("[박자 알림] 목록 바뀜 횟수 읽기: " + (verRef != null ? "됨" : "안 됨 (개수만 봄)"));
             h.Patch(light, postfix: new HarmonyMethod(typeof(BeatFix), nameof(LitChanged)));
             h.Patch(reset, postfix: new HarmonyMethod(typeof(BeatFix), nameof(LitChanged)));
             // 알려진 게임 내 변경 경로를 모두 잡을 수 있을 때만 새 정책을 허용한다.
@@ -80,9 +80,9 @@ namespace StutterFix
                     h.Patch(bridge, postfix: new HarmonyMethod(typeof(BeatFix), nameof(BridgeChanged)));
                     noChangeHooks = true;
                 }
-                catch (Exception ex) { noChangeHooks = false; Main.Entry.Logger.Log("[박자 알림] beatsettled 훅 설치 실패: " + ex.Message); }
+                catch (Exception ex) { noChangeHooks = false; Lg.I("[박자 알림] beatsettled 훅 설치 실패: " + ex.Message); }
             }
-            else Main.Entry.Logger.Log("[박자 알림] 플래그 변경 경로 확인 실패: beatsettled 사용 안 함");
+            else Lg.I("[박자 알림] 플래그 변경 경로 확인 실패: beatsettled 사용 안 함");
             var mark = new HarmonyMethod(typeof(BeatFix), nameof(MarkDirty));
             h.Patch(make, prefix: mark, postfix: mark);
             foreach (var n in new[] { "InstantiateStringFloors", "InstantiateFloatFloors" }) { var m = AccessTools.Method(typeof(scrLevelMaker), n); if (m != null) h.Patch(m, postfix: mark); }
@@ -228,7 +228,7 @@ namespace StutterFix
             lRef = list; lCount = list.Count; lOverride = ov; lVersion = verRef != null ? verRef(list) : 0;
             lDirty = dirtyGen != d0;   // 반복 중 타일 목록을 다시 만들었으면 다음 박자에 또 만든다
             RebuildMs += rebuildSw.Elapsed.TotalMilliseconds; Rebuilds++;
-            if (Edition.Dev && rebuildSw.ElapsedMilliseconds >= 3) Main.Entry.Logger.Log("[박자 알림] 첫 반복 다시 만들기 " + rebuildSw.ElapsedMilliseconds + "ms (항목 " + list.Count + "개)");
+            if (Edition.Dev && rebuildSw.ElapsedMilliseconds >= 3) Lg.I("[박자 알림] 첫 반복 다시 만들기 " + rebuildSw.ElapsedMilliseconds + "ms (항목 " + list.Count + "개)");
         }
         internal static double RebuildMs; internal static long Rebuilds, Appends;
 
@@ -395,7 +395,7 @@ namespace StutterFix
                 if (!ReferenceEquals(f, arr[i]))
                 {
                     NoChangeMismatch++; lDirty = true; Rebuild(lf);
-                    Main.Entry.Logger.Log("[박자 알림] beatsettled 타일 교체 누락 발견: " + NoChangeStatus);
+                    Lg.I("[박자 알림] beatsettled 타일 교체 누락 발견: " + NoChangeStatus);
                     return;
                 }
                 if (ReferenceEquals(f, null) || f.GetType() != typeof(scrFloor)) continue;
@@ -403,7 +403,7 @@ namespace StutterFix
                 NoChangeMismatch++;
                 LitChanged(f);
             }
-            if (NoChangeMismatch != before) Main.Entry.Logger.Log("[박자 알림] beatsettled 목록 수리: " + NoChangeStatus);
+            if (NoChangeMismatch != before) Lg.I("[박자 알림] beatsettled 목록 수리: " + NoChangeStatus);
         }
 
 #if DEV || AUTOTEST
@@ -422,10 +422,10 @@ namespace StutterFix
                     f.OnBeat();
                     if (before.Same(BeatNoChangeSnapshot.Read(f))) { NoChangeVerified++; return; }
                 }
-                catch (Exception ex) { Main.Entry.Logger.Log("[박자 알림 검증] " + ex.Message); }
+                catch (Exception ex) { Lg.I("[박자 알림 검증] " + ex.Message); }
                 NoChangeVerifyMismatch++;
                 verificationFailed = true; MarkDirty(); Rebuild(lf);
-                Main.Entry.Logger.Log("[박자 알림 검증] 제외 타일 상태 불일치: 이번 로드에서는 beatsettled 중단");
+                Lg.I("[박자 알림 검증] 제외 타일 상태 불일치: 이번 로드에서는 beatsettled 중단");
                 return;
             }
         }

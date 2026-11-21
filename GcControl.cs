@@ -57,7 +57,7 @@ namespace StutterFix
             if (sHeapStart < 0) { sHeapStart = heap; sT0 = Time.realtimeSinceStartup; }
             sN++; sMs += ms; if (ms > sMax) sMax = ms; if (done) sDone++; sGc += gcDelta;
             if (Time.realtimeSinceStartup - sT0 < 5f) return;
-            Main.Entry.Logger.Log(string.Format("[GC] (개발자용) 조각 치우기 {0:F1}초: {1}번, 합계 {2:F0}ms, 최대 {3:F1}ms, 바퀴 끝 {4}번, GC 횟수 +{5}, 힙 {6} -> {7}MB ({8})",
+            Lg.I(string.Format("[GC] (개발자용) 조각 치우기 {0:F1}초: {1}번, 합계 {2:F0}ms, 최대 {3:F1}ms, 바퀴 끝 {4}번, GC 횟수 +{5}, 힙 {6} -> {7}MB ({8})",
                 Time.realtimeSinceStartup - sT0, sN, sMs, sMax, sDone, sGc, sHeapStart, heap, SliceStyle));
             sN = sDone = sGc = 0; sMs = sMax = 0; sHeapStart = -1;
         }
@@ -142,12 +142,12 @@ namespace StutterFix
                             bool exit = e[1] == "SwitchToEditMode";
                             harmony.Patch(m, prefix: new HarmonyMethod(typeof(GcControl), nameof(OnSongEnd)), finalizer: exit ? new HarmonyMethod(typeof(GcControl), nameof(ExitFinalizer)) : null);
                             if (exit) exitFinalizer = true;
-                            Main.Entry.Logger.Log("end hook: " + e[0] + "." + e[1]);
+                            Lg.I("end hook: " + e[0] + "." + e[1]);
                         }
                     }
                     catch (Exception ex)
                     {
-                        Main.Entry.Logger.Error("end hook failed " + e[0] + "." + e[1] + ": " + ex.Message);
+                        Lg.E("end hook failed " + e[0] + "." + e[1] + ": " + ex.Message);
                     }
                 }
 
@@ -161,12 +161,12 @@ namespace StutterFix
                         {
                             if (m.Name != e[1] || m.IsAbstract || m.ContainsGenericParameters) continue;
                             harmony.Patch(m, prefix: new HarmonyMethod(typeof(GcControl), nameof(OnSongRestart)));
-                            Main.Entry.Logger.Log("restart hook: " + e[0] + "." + e[1]);
+                            Lg.I("restart hook: " + e[0] + "." + e[1]);
                         }
                     }
                     catch (Exception ex)
                     {
-                        Main.Entry.Logger.Error("restart hook failed " + e[0] + "." + e[1] + ": " + ex.Message);
+                        Lg.E("restart hook failed " + e[0] + "." + e[1] + ": " + ex.Message);
                     }
                 }
 
@@ -184,11 +184,11 @@ namespace StutterFix
                 UnityEngine.SceneManagement.SceneManager.activeSceneChanged += OnSceneChanged;
 
                 patched = true;
-                Main.Entry.Logger.Log("gc control installed");
+                Lg.I("gc control installed");
             }
             catch (Exception ex)
             {
-                Main.Entry.Logger.Error("gc control install failed: " + ex.Message);
+                Lg.E("gc control install failed: " + ex.Message);
             }
         }
 
@@ -246,7 +246,7 @@ namespace StutterFix
             {
                 GarbageCollector.GCMode = GarbageCollector.Mode.Enabled;
                 double ms = (System.Diagnostics.Stopwatch.GetTimestamp() - parseT0) * 1000.0 / System.Diagnostics.Stopwatch.Frequency;
-                Main.Entry.Logger.Log(string.Format("[맵 파일 읽기] GC 멈춤 {0:F0}ms(그중 이벤트로 바꾸기 {4:F0}ms{5}), 힙 {1}MB -> {2}MB (그 사이 GC {3}번)", ms, parseHeap0 / 1048576, GC.GetTotalMemory(false) / 1048576, GC.CollectionCount(0) - parseGc0, DecodeFix.LastDecodeMs, ParallelDecode.Last.Length > 0 ? ": " + ParallelDecode.Last : ""));
+                Lg.I(string.Format("[맵 파일 읽기] GC 멈춤 {0:F0}ms(그중 이벤트로 바꾸기 {4:F0}ms{5}), 힙 {1}MB -> {2}MB (그 사이 GC {3}번)", ms, parseHeap0 / 1048576, GC.GetTotalMemory(false) / 1048576, GC.CollectionCount(0) - parseGc0, DecodeFix.LastDecodeMs, ParallelDecode.Last.Length > 0 ? ": " + ParallelDecode.Last : ""));
             }
             catch { }
             return __exception;
@@ -258,14 +258,14 @@ namespace StutterFix
         {
 #if DEV || AUTOTEST
             try { DecoBake.NotifyGpuPlaybackEnded(__originalMethod.Name); }
-            catch (Exception ex) { Main.Entry.Logger.Error("[gpudeco] 종료 복원 실패: " + ex.Message); }
+            catch (Exception ex) { Lg.E("[gpudeco] 종료 복원 실패: " + ex.Message); }
 #endif
             endedByHook = true;
             long t0 = System.Diagnostics.Stopwatch.GetTimestamp();
             InvisibleSkip.LastAllN = 0; InvisibleSkip.LastAllMs = 0;
             Hitch.Report();
             double rms = Ms(t0);
-            if (rms >= 30) Main.Entry.Logger.Log(string.Format("[곡 끝] {0}: 곡 끝 요약 {1:F0}ms{2}", __originalMethod.Name, rms,
+            if (rms >= 30) Lg.I(string.Format("[곡 끝] {0}: 곡 끝 요약 {1:F0}ms{2}", __originalMethod.Name, rms,
                 InvisibleSkip.LastAllN > 0 ? string.Format(" (투명 장식 위치 반영 {0}개 {1:F0}ms)", InvisibleSkip.LastAllN, InvisibleSkip.LastAllMs) : ""));
             // 편집 화면으로 돌아가거나 메뉴로 나갈 때는 타일/장식을 다시 만드느라 멈춘다 (완주 연출은 끊김으로 본다)
             string n = __originalMethod.Name;
@@ -383,15 +383,15 @@ namespace StutterFix
                 if (!pausePending) { pausePending = true; pendingSince = Time.realtimeSinceStartup; PendingPauses++; }
                 PendingFrames++;
                 if (Time.realtimeSinceStartup - pendingSince < 5f) return false;
-                Main.Entry.Logger.Log("[GC] 곡 시작 때 돌던 GC 가 5초 안에 안 끝나 그냥 멈춤");
+                Lg.I("[GC] 곡 시작 때 돌던 GC 가 5초 안에 안 끝나 그냥 멈춤");
             }
             if (pausePending)
             {
-                if (Edition.Dev) Main.Entry.Logger.Log(string.Format("[GC] 곡 시작 때 돌던 점진적 GC 를 끝낸 뒤 멈춤 ({0:F2}초)", Time.realtimeSinceStartup - pendingSince));
+                if (Edition.Dev) Lg.I(string.Format("[GC] 곡 시작 때 돌던 점진적 GC 를 끝낸 뒤 멈춤 ({0:F2}초)", Time.realtimeSinceStartup - pendingSince));
                 pausePending = false;
             }
             try { GarbageCollector.GCMode = PausedMode; Paused = true; }
-            catch (Exception ex) { Main.Entry.Logger.Error("GC 멈춤 실패: " + ex.Message); }
+            catch (Exception ex) { Lg.E("GC 멈춤 실패: " + ex.Message); }
             return Paused;
         }
 
@@ -423,9 +423,9 @@ namespace StutterFix
                 lastCleanMB = GC.GetTotalMemory(false) / 1048576;
                 ForcedCollects++;
                 ModCost.Add(SettingsWindow.T("메모리 정리 (준비 직후)", "Memory cleanup (after prepare)"), sw.Elapsed.TotalMilliseconds);
-                Main.Entry.Logger.Log(string.Format("[GC] 장식 준비 직후 정리 {0}MB -> {1}MB, {2}ms", before, lastCleanMB, sw.ElapsedMilliseconds));
+                Lg.I(string.Format("[GC] 장식 준비 직후 정리 {0}MB -> {1}MB, {2}ms", before, lastCleanMB, sw.ElapsedMilliseconds));
             }
-            catch (Exception ex) { Main.Entry.Logger.Error("준비 직후 정리 실패: " + ex.Message); }
+            catch (Exception ex) { Lg.E("준비 직후 정리 실패: " + ex.Message); }
         }
         internal static void NoteClean() { try { lastCleanMB = GC.GetTotalMemory(false) / 1048576; } catch { } }   // 다른 곳에서 한 정리 뒤 기준
         internal static long SkippedCollects;
@@ -451,7 +451,7 @@ namespace StutterFix
         {
             if (!EditHold) return;
             try { GarbageCollector.GCMode = GarbageCollector.Mode.Manual; editHoldOn = true; editHoldBase = baseMB;
-                Main.Entry.Logger.Log("[GC] 편집 화면에서 자동 GC 막음 (기준 " + baseMB + "MB, " + EditHoldMB + "MB 넘게 쌓이면 풀어 줌)"); }
+                Lg.I("[GC] 편집 화면에서 자동 GC 막음 (기준 " + baseMB + "MB, " + EditHoldMB + "MB 넘게 쌓이면 풀어 줌)"); }
             catch { }
         }
         private static void EndEditHold(string why)
@@ -459,7 +459,7 @@ namespace StutterFix
             if (!editHoldOn) return;
             editHoldOn = false;
             try { if (!Paused) GarbageCollector.GCMode = GarbageCollector.Mode.Enabled; } catch { }
-            if (why != null) Main.Entry.Logger.Log("[GC] 편집 화면 자동 GC 막기 끝: " + why);
+            if (why != null) Lg.I("[GC] 편집 화면 자동 GC 막기 끝: " + why);
         }
         private static void EditHoldStep(bool playing)
         {
@@ -479,7 +479,7 @@ namespace StutterFix
             if (playing || Paused || !Enabled)
             {
                 bgActive = false;
-                Main.Entry.Logger.Log(string.Format("[GC] 편집 화면에서 조금씩 치우다 재생 시작으로 멈춤: {0}MB -> {1}MB, {2}프레임 {3:F0}ms", bgBefore, now, bgFrames, bgMs));
+                Lg.I(string.Format("[GC] 편집 화면에서 조금씩 치우다 재생 시작으로 멈춤: {0}MB -> {1}MB, {2}프레임 {3:F0}ms", bgBefore, now, bgFrames, bgMs));
                 return;
             }
             long t0 = System.Diagnostics.Stopwatch.GetTimestamp();
@@ -494,7 +494,7 @@ namespace StutterFix
             bgActive = false; BgRuns++;
             lastCleanMB = now;
             ModCost.Add(SettingsWindow.T("메모리 정리 (모드, 조금씩)", "Memory cleanup (mod, sliced)"), bgMs);
-            Main.Entry.Logger.Log(string.Format("[GC] 편집 화면에서 조금씩 치움 끝: {0}MB -> {1}MB, {2}바퀴, {3}프레임, 합계 {4:F0}ms, 한 프레임 최대 {5:F1}ms, {6:F1}초 걸림",
+            Lg.I(string.Format("[GC] 편집 화면에서 조금씩 치움 끝: {0}MB -> {1}MB, {2}바퀴, {3}프레임, 합계 {4:F0}ms, 한 프레임 최대 {5:F1}ms, {6:F1}초 걸림",
                 bgBefore, now, bgCycles, bgFrames, bgMs, bgMaxMs, Time.realtimeSinceStartup - bgSince));
         }
         private static bool QuickTransition(string reason)
@@ -530,7 +530,7 @@ namespace StutterFix
             startHold = false;
             if (Paused) return;   // 곡 중 멈춤이 이어받음
             try { GarbageCollector.GCMode = GarbageCollector.Mode.Enabled; } catch { }
-            if (why != null) Main.Entry.Logger.Log("[GC] 재생 준비 중 자동 GC 막기 끝: " + why);
+            if (why != null) Lg.I("[GC] 재생 준비 중 자동 GC 막기 끝: " + why);
         }
 
         internal static void Resume(string reason)
@@ -559,7 +559,7 @@ namespace StutterFix
                         resumeCountdown = -1f;
                         SkippedCollects++;
                         if (reason == "SwitchToEditMode") BeginEditHold(heap);
-                        Main.Entry.Logger.Log(string.Format("GC 재개 ({0}) 정리 생략: 지난 정리 뒤 쌓인 것 {1}MB < {2}MB (힙 {3}MB)", reason, debt, need, heap));
+                        Lg.I(string.Format("GC 재개 ({0}) 정리 생략: 지난 정리 뒤 쌓인 것 {1}MB < {2}MB (힙 {3}MB)", reason, debt, need, heap));
                         return;
                     }
                     // 편집으로 나가기: 한꺼번에 치우지 않고 편집 화면에서 프레임마다 조금씩 (아래 BgStep)
@@ -571,7 +571,7 @@ namespace StutterFix
                         Paused = false;
                         resumeCountdown = -1f;
                         bgActive = true; bgFrames = 0; bgCycles = 0; bgBefore = bgCycleStart = heap; bgMs = 0; bgMaxMs = 0; bgSince = Time.realtimeSinceStartup;
-                        Main.Entry.Logger.Log(string.Format("GC 재개 ({0}): 지난 정리 뒤 쌓인 것 {1}MB (힙 {2}MB) - 멈추지 않고 편집 화면에서 프레임마다 {3}ms 씩 치움", reason, debt, heap, ExitSliceMs));
+                        Lg.I(string.Format("GC 재개 ({0}): 지난 정리 뒤 쌓인 것 {1}MB (힙 {2}MB) - 멈추지 않고 편집 화면에서 프레임마다 {3}ms 씩 치움", reason, debt, heap, ExitSliceMs));
                         return;
                     }
                 }
@@ -606,11 +606,11 @@ namespace StutterFix
                 ModCost.Add(SettingsWindow.T("메모리 정리 (모드)", "Memory cleanup (mod)"), sw.Elapsed.TotalMilliseconds);
                 ForcedCollects++;
                 if (RestartAt != 0) RestartGcMs += sw.ElapsedMilliseconds;
-                Main.Entry.Logger.Log(string.Format("GC 재개 및 정리 ({0}) {1}MB -> {2}MB, {3}ms",
+                Lg.I(string.Format("GC 재개 및 정리 ({0}) {1}MB -> {2}MB, {3}ms",
                     reason, before, GC.GetTotalMemory(false) / 1048576, sw.ElapsedMilliseconds));
                 if (reason == "SwitchToEditMode") BeginEditHold(lastCleanMB);
             }
-            catch (Exception ex) { Main.Entry.Logger.Error("GC 재개 실패: " + ex.Message); }
+            catch (Exception ex) { Lg.E("GC 재개 실패: " + ex.Message); }
         }
 
         internal static void Tick(float dt)
@@ -635,7 +635,7 @@ namespace StutterFix
                 {
                     try { GarbageCollector.GCMode = GarbageCollector.Mode.Enabled; } catch { }
                     Paused = false; resumeCountdown = -1f; holdAfterFail = false; holdAfterWin = false;
-                    Main.Entry.Logger.Log("[GC] 곡 중에 꺼짐: 한꺼번에 치우지 않고 GC 만 원래대로 켬");
+                    Lg.I("[GC] 곡 중에 꺼짐: 한꺼번에 치우지 않고 GC 만 원래대로 켬");
                     return;
                 }
                 Resume("기능 꺼짐");
@@ -695,7 +695,7 @@ namespace StutterFix
             {
                 holdAfterFail = false;
                 try { GarbageCollector.GCMode = GarbageCollector.Mode.Enabled; Paused = false; resumeCountdown = -1f; } catch { }
-                Main.Entry.Logger.Log("[GC] 실패 뒤 곡이 다시 도는 것을 감지: 정리 없이 GC 를 켬 (힙 " + heapNow + "MB)");
+                Lg.I("[GC] 실패 뒤 곡이 다시 도는 것을 감지: 정리 없이 GC 를 켬 (힙 " + heapNow + "MB)");
                 return;
             }
             // 곡 소리만 보면 곡 없는 맵이나 음악이 채보보다 먼저 끝나는 맵에서, 타일을 치는 중인데도 "조용함" 으로 보고
@@ -742,7 +742,7 @@ namespace StutterFix
                     limitPhase = false;
                     restUntil = nowT + LimitRestSeconds; restCheck = true;
                     LimitCleans++;
-                    Main.Entry.Logger.Log(string.Format("[GC] 곡 중 힙 한계 치우기 끝: {0} -> {1}MB ({2:F1}초, 시작 {3}번). {4:F0}초 동안 다시 시작 안 함",
+                    Lg.I(string.Format("[GC] 곡 중 힙 한계 치우기 끝: {0} -> {1}MB ({2:F1}초, 시작 {3}번). {4:F0}초 동안 다시 시작 안 함",
                         kickHeap, heapNow, nowT - kickStart, kicks, LimitRestSeconds));
                 }
                 else if (nowT - kickAt >= KickWaitSeconds)
@@ -752,7 +752,7 @@ namespace StutterFix
                     {
                         limitPhase = false;
                         restUntil = nowT + LimitRestSeconds; restCheck = true;
-                        Main.Entry.Logger.Log(string.Format("[GC] 곡 중 힙 한계 치우기: {0}번 시작했는데 힙이 {1} -> {2}MB 로 덜 줄어 그만둠", kicks, kickHeap, heapNow));
+                        Lg.I(string.Format("[GC] 곡 중 힙 한계 치우기: {0}번 시작했는데 힙이 {1} -> {2}MB 로 덜 줄어 그만둠", kicks, kickHeap, heapNow));
                     }
                 }
             }
@@ -763,7 +763,7 @@ namespace StutterFix
                 if (!MemoryBudget.Active && heapNow > cur * 9L / 10)
                 {
                     raisedLimit = (int)Math.Min(limit * 14L / 10, Math.Max(cur, heapNow * 5L / 4));
-                    Main.Entry.Logger.Log("[GC] 치운 뒤에도 힙 " + heapNow + "MB (한계 " + cur + "MB 가까이): 이 곡 동안 한계를 " + raisedLimit + "MB 로 올림");
+                    Lg.I("[GC] 치운 뒤에도 힙 " + heapNow + "MB (한계 " + cur + "MB 가까이): 이 곡 동안 한계를 " + raisedLimit + "MB 로 올림");
                 }
             }
             int baseLimit = limit;
@@ -782,7 +782,7 @@ namespace StutterFix
                 {
                     // 곡 중에 한꺼번에 치우면 0.8초 넘게 멈춰 그 자리에서 죽을 수 있다: 점진적 GC 를 한 번 시작시킨다
                     limitPhase = true; kicks = 0; kickHeap = heapNow; kickStart = nowT;
-                    Main.Entry.Logger.Log("[GC] 곡 중 힙 한계 " + heapNow + "MB (한계 " + limit + "MB): 한꺼번에 치우지 않고 점진적 GC 를 한 번 시작시킴 (기다리는 동안 가장 긴 틈 " + maxGapSeen.ToString("F2") + "초)"); maxGapSeen = 0;
+                    Lg.I("[GC] 곡 중 힙 한계 " + heapNow + "MB (한계 " + limit + "MB): 한꺼번에 치우지 않고 점진적 GC 를 한 번 시작시킴 (기다리는 동안 가장 긴 틈 " + maxGapSeen.ToString("F2") + "초)"); maxGapSeen = 0;
                     Kick(heapNow);
                     return;
                 }
@@ -832,7 +832,7 @@ namespace StutterFix
                 wantGap = false;
                 limitPhase = true; kicks = 0; kickHeap = heap; kickStart = Time.realtimeSinceStartup;
                 if (ctl.paused) PauseKicks++; else GapKicks++;
-                Main.Entry.Logger.Log("[GC] 곡 중 힙 " + heap + "MB (한계 가까이): 입력이 없는 틈(" + why + ")에 점진적 GC 를 한 번 시작시킴");
+                Lg.I("[GC] 곡 중 힙 " + heap + "MB (한계 가까이): 입력이 없는 틈(" + why + ")에 점진적 GC 를 한 번 시작시킴");
                 Kick(heap, true);
             }
             catch { wantGap = false; }
@@ -855,7 +855,7 @@ namespace StutterFix
                 if (big) { lastBigMs = ms; if (more) BigUnfinished++; }
                 GarbageCollector.GCMode = PausedMode;
                 kicks++; kickAt = Time.realtimeSinceStartup; IncrementalSlices++;
-                if (Edition.Dev || big) Main.Entry.Logger.Log(string.Format("[GC] 점진적 GC 시작 {0}번째{4}: {1:F1}ms, 남은 일 {2}, 힙 {3}MB", kicks, ms, more, heapNow, big ? " (틈에서 한 번에)" : ""));
+                if (Edition.Dev || big) Lg.I(string.Format("[GC] 점진적 GC 시작 {0}번째{4}: {1:F1}ms, 남은 일 {2}, 힙 {3}MB", kicks, ms, more, heapNow, big ? " (틈에서 한 번에)" : ""));
             }
             catch { }
         }
@@ -863,12 +863,12 @@ namespace StutterFix
         // (시험, gc-slice.txt = old) 예전 방식: 몇 프레임마다 조각 치우기, "한계의 절반 아래이고 바퀴 끝" 이면 멈춤 - 무한 반복 재현용
         private static void OldLimitSlicing(long heapNow, int limit, bool playing)
         {
-            if (limitSlicing && playing && heapNow < limit / 2 && !lastSliceMore) { limitSlicing = false; Main.Entry.Logger.Log("[GC] (시험, 예전 방식) 힙 " + heapNow + "MB: 다시 곡 중 정리 멈춤"); }
+            if (limitSlicing && playing && heapNow < limit / 2 && !lastSliceMore) { limitSlicing = false; Lg.I("[GC] (시험, 예전 방식) 힙 " + heapNow + "MB: 다시 곡 중 정리 멈춤"); }
             if (heapNow > limit && !limitSlicing)
             {
                 bool canSlice = false;
                 try { canSlice = GarbageCollector.isIncremental; } catch { }
-                if (playing && canSlice && heapNow < limit * 3L / 2) { limitSlicing = true; Main.Entry.Logger.Log("[GC] 곡 중 힙 한계 " + heapNow + "MB (한계 " + limit + "MB): 한꺼번에 치우지 않고 조금씩 치움"); }
+                if (playing && canSlice && heapNow < limit * 3L / 2) { limitSlicing = true; Lg.I("[GC] 곡 중 힙 한계 " + heapNow + "MB (한계 " + limit + "MB): 한꺼번에 치우지 않고 조금씩 치움"); }
                 else { Resume("힙 한계 " + heapNow + "MB"); Pause(); return; }
             }
             if (!limitSlicing) return;
@@ -922,11 +922,11 @@ namespace StutterFix
                     playModeProp = AccessTools.Property(editor, "playMode");
                     pausedInPlayProp = AccessTools.Property(editor, "pausedInPlayMode");
                 }
-                Main.Entry.Logger.Log("gc reflection: state=" + (stateField != null) +
+                Lg.I("gc reflection: state=" + (stateField != null) +
                     " gameworld=" + (gameworldField != null) + " playMode=" + (playModeProp != null) +
                     " floor=" + (floorField != null));
             }
-            catch (Exception ex) { Main.Entry.Logger.Error("gc reflection 실패: " + ex.Message); }
+            catch (Exception ex) { Lg.E("gc reflection 실패: " + ex.Message); }
         }
 
         internal static int CurrentFloor()
@@ -970,7 +970,7 @@ namespace StutterFix
                 fastOk = ctrlGet != null && pausedGet != null && playModeGet != null && gameworldRef != null && stateRef != null
                          && AccessTools.Field(typeof(scnEditor), "instance") != null;
             }
-            catch (Exception ex) { fastOk = false; Main.Entry.Logger.Log("[GC] 빠른 판단 준비 실패, 예전 방식 사용: " + ex.Message); }
+            catch (Exception ex) { fastOk = false; Lg.I("[GC] 빠른 판단 준비 실패, 예전 방식 사용: " + ex.Message); }
             return fastOk;
         }
 
@@ -1010,7 +1010,7 @@ namespace StutterFix
                 if (LastScene != loggedScene)
                 {
                     loggedScene = LastScene;
-                    Main.Entry.Logger.Log("[상태] " + LastScene + (playing ? "  -> 플레이" : "  -> 정지"));
+                    Lg.I("[상태] " + LastScene + (playing ? "  -> 플레이" : "  -> 정지"));
                 }
             }
             return playing;
@@ -1080,7 +1080,7 @@ namespace StutterFix
                 if (LastScene != loggedScene)
                 {
                     loggedScene = LastScene;
-                    Main.Entry.Logger.Log("[상태] " + LastScene + (playing ? "  -> 플레이" : "  -> 정지"));
+                    Lg.I("[상태] " + LastScene + (playing ? "  -> 플레이" : "  -> 정지"));
                 }
                 return playing;
             }

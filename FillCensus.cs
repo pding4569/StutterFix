@@ -31,7 +31,7 @@ namespace StutterFix
         string path;StreamWriter detail;
         static string F(double v)=>v.ToString("F3",CultureInfo.InvariantCulture);
         static string Clean(string s)=>(s??"unknown").Replace('\t',' ').Replace('\r',' ').Replace('\n',' ');
-        static void Log(string s)=>Main.Entry.Logger.Log("[fillcensus] "+s);
+        static void Log(string s)=>Lg.I("[fillcensus] "+s);
         internal static bool Step(string arg)
         {
             if(arg.Trim()=="stop") {Stop();waiting=false;return true;}

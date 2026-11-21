@@ -23,7 +23,7 @@ namespace StutterFix
                 mono_set_defaults(0, mono_parse_default_optimizations(on ? Options : "-aggressive-inlining,-float32"));
                 applied = on;
             }
-            catch (System.Exception ex) { Main.Entry.Logger.Log("[JIT 최적화] 적용 안 함: " + ex.Message); }
+            catch (System.Exception ex) { Lg.I("[JIT 최적화] 적용 안 함: " + ex.Message); }
         }
     }
 }

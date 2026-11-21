@@ -40,7 +40,7 @@ namespace StutterFix
             internal int Label, Creation;
             internal Color Color;
         }
-        static void Log(string text) { Main.Entry.Logger.Log("[sortprobe] " + text); }
+        static void Log(string text) { Lg.I("[sortprobe] " + text); }
         internal static void Cancel() { if (current != null) Finish("cancelled: AutoTest finished"); }
         static bool EditorReady()
         { return ADOBase.isLevelEditor && scnEditor.instance != null && !scnEditor.instance.playMode; }

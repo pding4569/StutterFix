@@ -14,7 +14,7 @@ namespace StutterFix
         internal static void Run(string tag)
         {
             var cam = Camera.allCameras.FirstOrDefault(c => c.name == "Camera");
-            if (!cam) { Main.Entry.Logger.Log("[texdensity] 본 카메라 없음"); return; }
+            if (!cam) { Lg.I("[texdensity] 본 카메라 없음"); return; }
             float sw = cam.targetTexture ? cam.targetTexture.width : Screen.width, sh = cam.targetTexture ? cam.targetTexture.height : Screen.height;
             var per = new Dictionary<string, List<float>>();
             var area = new Dictionary<string, double>();
@@ -50,7 +50,7 @@ namespace StutterFix
                 area[key] += (double)cw * ch / (sw * sh);
                 n++;
             }
-            Main.Entry.Logger.Log(string.Format(CultureInfo.InvariantCulture, "[texdensity] {0} 보이는 스프라이트 {1}개, 화면 {2}x{3}", tag, n, sw, sh));
+            Lg.I(string.Format(CultureInfo.InvariantCulture, "[texdensity] {0} 보이는 스프라이트 {1}개, 화면 {2}x{3}", tag, n, sw, sh));
             foreach (var rr in UnityEngine.Object.FindObjectsByType<Renderer>(FindObjectsInactive.Exclude, FindObjectsSortMode.None))
             {
                 if (!rr.enabled || rr.forceRenderingOff || !rr.isVisible) continue;
@@ -60,7 +60,7 @@ namespace StutterFix
             foreach (var kv in per.OrderByDescending(k => area[k.Key]).Take(15))
             {
                 var v = kv.Value; v.Sort();
-                Main.Entry.Logger.Log(string.Format(CultureInfo.InvariantCulture, "[texdensity] {0} | 개수 {1} 화면덮음 {2:F1}장 | 텍스처/화면 비율 최소 {3:F2} 중앙 {4:F2} 최대 {5:F2}{6}",
+                Lg.I(string.Format(CultureInfo.InvariantCulture, "[texdensity] {0} | 개수 {1} 화면덮음 {2:F1}장 | 텍스처/화면 비율 최소 {3:F2} 중앙 {4:F2} 최대 {5:F2}{6}",
                     kv.Key, v.Count, area[kv.Key], v[0], v[v.Count / 2], v[v.Count - 1], tight[kv.Key] + OrderInfo(orders[kv.Key], perOrder, v.Count)));
             }
         }

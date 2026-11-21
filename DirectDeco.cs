@@ -139,7 +139,7 @@ namespace StutterFix
         static readonly GpuDecoScene.BlockCensus propertyBlocks = new GpuDecoScene.BlockCensus();
         const string TileShader = "Sprites/Tile", AddShader = "Legacy Shaders/Particles/Additive";
 
-        static void Log(string s) => Main.Entry.Logger.Log("[직통 장식] " + s);
+        static void Log(string s) => Lg.I("[직통 장식] " + s);
 
         // ---------------------------------------------------------------- 후크
         internal static void Install()

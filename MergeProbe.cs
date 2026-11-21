@@ -33,14 +33,14 @@ namespace StutterFix
             var tm = AccessTools.TypeByName("DG.Tweening.Core.TweenManager");
             var add = tm != null ? AccessTools.Method(tm, "AddActiveTween") : null;
             var kill = AccessTools.Method(typeof(TweenExtensions), "Kill", new[] { typeof(Tween), typeof(bool) });
-            if (start == null || add == null || kill == null) { Main.Entry.Logger.Log("[덮어쓰기 측정] 대상 없음"); return; }
+            if (start == null || add == null || kill == null) { Lg.I("[덮어쓰기 측정] 대상 없음"); return; }
             h.Patch(start, prefix: new HarmonyMethod(typeof(MergeProbe), nameof(Enter)), finalizer: new HarmonyMethod(typeof(MergeProbe), nameof(Exit)));
             h.Patch(add, postfix: new HarmonyMethod(typeof(MergeProbe), nameof(Added)));
             h.Patch(kill, prefix: new HarmonyMethod(typeof(MergeProbe), nameof(Killing)));
             h.Patch(start, transpiler: new HarmonyMethod(typeof(MergeProbe), nameof(CountTranspiler)));
             var comp = AccessTools.Method(tm, "Complete");
             if (comp != null) h.Patch(comp, prefix: new HarmonyMethod(typeof(MergeProbe), nameof(Completing)));
-            Main.Entry.Logger.Log("[덮어쓰기 측정] 설치");
+            Lg.I("[덮어쓰기 측정] 설치");
         }
 
         private static void Enter() { inMove++; }

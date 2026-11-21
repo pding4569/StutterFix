@@ -316,7 +316,7 @@ namespace StutterFix
             if (Main.Config == null || !Main.Config.RunLod) return;
             // 같은 맵을 다시 하면 모은 결과를 그대로 쓴다(재생 준비에서 이미 모았거나 지난 판에 모은 것)
             try { if (!On) Command("on"); active = false; savedEma = 0; anyMoved = false; }
-            catch (Exception e) { Main.Entry.Logger.Log("[묶음 LOD] 켜기 실패: " + e.Message); }
+            catch (Exception e) { Lg.I("[묶음 LOD] 켜기 실패: " + e.Message); }
         }
         // 설정으로 켠 경우만 곡 끝(일시정지 포함)에 멈춘다. 측정 명령으로 켠 경우는 그대로 둔다(같은 프레임 비교용).
         internal static void SongEnded() { if (On && Main.Config != null && Main.Config.RunLod) { try { Pause(); } catch { } } }
@@ -326,7 +326,7 @@ namespace StutterFix
         {
             // 장식이 모두 만들어진 뒤인 장식 다시 설정(재생 시작·다시 하기) 뒤에 모은다
             var rd = AccessTools.Method(typeof(scrDecorationManager), "ResetDecorations");
-            if (rd == null) { Main.Entry.Logger.Log("[묶음 LOD] 장식 다시 설정 함수를 못 찾음: 곡 시작 때 나눠 모음"); return; }
+            if (rd == null) { Lg.I("[묶음 LOD] 장식 다시 설정 함수를 못 찾음: 곡 시작 때 나눠 모음"); return; }
             h.Patch(rd, postfix: new HarmonyMethod(typeof(RunLod), nameof(PrepPostfix)) { priority = Priority.Last });
         }
         public static void PrepPostfix()
@@ -342,7 +342,7 @@ namespace StutterFix
                 int guard = 0;
                 while (gstate == 1 && guard++ < 100000) GatherStep();
             }
-            catch (Exception e) { Main.Entry.Logger.Log("[묶음 LOD] 준비 중 모으기 실패: " + e.Message); ForgetLevel(); }
+            catch (Exception e) { Lg.I("[묶음 LOD] 준비 중 모으기 실패: " + e.Message); ForgetLevel(); }
         }
         internal static void Unload() { try { Off(); } catch { } if (bundle) { bundle.Unload(true); bundle = null; } shader = null; }
 
@@ -468,7 +468,7 @@ namespace StutterFix
             mapOff = decoCount > MaxCands;
             // 장식이 아주 많은 맵(GPU 장식이 대부분 맡음)에서도 Tiled 를 켜면 Tiled 장식만 모은다(GPU 장식이 못 맡는 반복 배경)
             onlyTiled = mapOff && Tiled; if (onlyTiled) mapOff = false;
-            if (mapOff) { gstate = 2; gatheredFrame = Time.frameCount; Main.Entry.Logger.Log("[묶음 LOD] 이 맵은 끔: 장식 " + decoCount + " > " + MaxCands); return; }
+            if (mapOff) { gstate = 2; gatheredFrame = Time.frameCount; Lg.I("[묶음 LOD] 이 맵은 끔: 장식 " + decoCount + " > " + MaxCands); return; }
             gAll = UnityEngine.Object.FindObjectsByType<Renderer>(FindObjectsInactive.Include, FindObjectsSortMode.None);
             gPos = 0; gstate = 1; TiledCands = ParticleCands = particleCapacity = 0;
             gFind = System.Diagnostics.Stopwatch.GetTimestamp() - t0; gTicks += gFind;
@@ -532,7 +532,7 @@ namespace StutterFix
                 emptyBlockStamp = new int[(barrierByKey.Length + BarrierBlock - 1) / BarrierBlock]; queryStamp = 0;
                 gKeys.Clear(); gRens.Clear(); gAll = null; gstate = 2; gatheredFrame = Time.frameCount;
                 gTicks += System.Diagnostics.Stopwatch.GetTimestamp() - t0;
-                Main.Entry.Logger.Log("[묶음 LOD] 모음 끝: 합계 " + GMs(0, gTicks) + "ms (찾기 " + GMs(0, gFind) + ", 나머지는 프레임당 " + GatherChunk + "개씩), 후보 " + cands.Count + ", 후보 키 범위 안 장벽 " + barrierByKey.Length + " (전체 " + barriers.Count + ")");
+                Lg.I("[묶음 LOD] 모음 끝: 합계 " + GMs(0, gTicks) + "ms (찾기 " + GMs(0, gFind) + ", 나머지는 프레임당 " + GatherChunk + "개씩), 후보 " + cands.Count + ", 후보 키 범위 안 장벽 " + barrierByKey.Length + " (전체 " + barriers.Count + ")");
                 return;
             }
             gTicks += System.Diagnostics.Stopwatch.GetTimestamp() - t0;
@@ -636,7 +636,7 @@ namespace StutterFix
             if (!On || !c || c.name != "Camera") return;
             long t0 = System.Diagnostics.Stopwatch.GetTimestamp();
             try { PreCullBody(c); }
-            catch (Exception e) { ForgetLevel(); if (++errors <= 3) Main.Entry.Logger.Log("[runlod] 오류, 다시 모음: " + e.GetType().Name + " " + e.Message); }
+            catch (Exception e) { ForgetLevel(); if (++errors <= 3) Lg.I("[runlod] 오류, 다시 모음: " + e.GetType().Name + " " + e.Message); }
             finally { tTotal += System.Diagnostics.Stopwatch.GetTimestamp() - t0; }
         }
         static int errors;
@@ -864,7 +864,7 @@ namespace StutterFix
             if (!same)
             {
                 VerifyDiffs++;
-                if (VerifyDiffs <= 10) Main.Entry.Logger.Log("[묶음 LOD] 검증 다름 frame=" + Time.frameCount + " old=" + legacyRuns.Count + " new=" + fastRuns.Count);
+                if (VerifyDiffs <= 10) Lg.I("[묶음 LOD] 검증 다름 frame=" + Time.frameCount + " old=" + legacyRuns.Count + " new=" + fastRuns.Count);
             }
         }
 

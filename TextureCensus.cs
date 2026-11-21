@@ -79,7 +79,7 @@ namespace StutterFix
             }
             catch (Exception ex)
             {
-                Main.Entry.Logger.Error("[VRAM] 세기 실패: " + ex.Message);
+                Lg.E("[VRAM] 세기 실패: " + ex.Message);
             }
         }
 

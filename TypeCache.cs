@@ -29,10 +29,10 @@ namespace StutterFix
             foreach (var name in new[] { "Setup", "ResetFilters" })
             {
                 var m = AccessTools.Method(typeof(ffxSetFilterAdvancedPlus), name);
-                if (m == null) { Main.Entry.Logger.Log("[형식 찾기] ffxSetFilterAdvancedPlus." + name + " 없음 - 이 함수는 원래대로"); continue; }
+                if (m == null) { Lg.I("[형식 찾기] ffxSetFilterAdvancedPlus." + name + " 없음 - 이 함수는 원래대로"); continue; }
                 h.Patch(m, transpiler: new HarmonyMethod(typeof(TypeCache), nameof(Transpiler)));
             }
-            if (Edition.Dev) Main.Entry.Logger.Log("[형식 찾기] 고급 필터 형식 찾기 캐시 (바꾼 곳 " + replaced + ")");
+            if (Edition.Dev) Lg.I("[형식 찾기] 고급 필터 형식 찾기 캐시 (바꾼 곳 " + replaced + ")");
         }
 
         public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> ins)
@@ -56,7 +56,7 @@ namespace StutterFix
                 if (Edition.Dev && (Hits & 63) == 0)
                 {
                     DevChecks++;
-                    if (!ReferenceEquals(Type.GetType(name), t)) { DevMismatch++; Main.Entry.Logger.Log("[형식 찾기] 다름: " + name); }
+                    if (!ReferenceEquals(Type.GetType(name), t)) { DevMismatch++; Lg.I("[형식 찾기] 다름: " + name); }
                 }
                 return t;
             }

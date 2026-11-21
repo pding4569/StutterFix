@@ -37,7 +37,7 @@ namespace StutterFix
         {
             var aetf = AccessTools.Method(typeof(scnGame), "ApplyEventsToFloors", new[] { typeof(List<scrFloor>), typeof(LevelData), typeof(scrLevelMaker), typeof(List<LevelEvent>) });
             var fol = AccessTools.Method(typeof(AudioManager), "FindOrLoadAudioClip", new[] { typeof(string), typeof(string), typeof(bool) });
-            if (aetf == null || fol == null) { Main.Entry.Logger.Log("[소리 미리 불러오기] 게임 코드 모양이 달라 안 함"); return; }
+            if (aetf == null || fol == null) { Lg.I("[소리 미리 불러오기] 게임 코드 모양이 달라 안 함"); return; }
             var f = AccessTools.Field(typeof(ffxPlaySound), "useHitSound");
             var p = f == null ? AccessTools.Property(typeof(ffxPlaySound), "useHitSound") : null;
             if (f != null) useHit = x => (bool)f.GetValue(x);
@@ -53,13 +53,13 @@ namespace StutterFix
         {
             if (!folNew || folLogged >= 50) return;
             folLogged++;
-            Main.Entry.Logger.Log(string.Format("[소리 미리 불러오기] (개발자용) 새로 불러옴 '{0}' {1:F1}ms, 곡 중 {2}, 실시간 {3:F1}초", clipName, (Stopwatch.GetTimestamp() - __state) * 1000.0 / Stopwatch.Frequency, Hitch.Playing, Time.realtimeSinceStartup));
+            Lg.I(string.Format("[소리 미리 불러오기] (개발자용) 새로 불러옴 '{0}' {1:F1}ms, 곡 중 {2}, 실시간 {3:F1}초", clipName, (Stopwatch.GetTimestamp() - __state) * 1000.0 / Stopwatch.Frequency, Hitch.Playing, Time.realtimeSinceStartup));
         }
 
         public static void Postfix(LevelData levelData)
         {
             if (!Enabled) return;
-            try { Run(levelData); } catch (Exception ex) { Main.Entry.Logger.Log("[소리 미리 불러오기] 실패: " + ex.Message); }
+            try { Run(levelData); } catch (Exception ex) { Lg.I("[소리 미리 불러오기] 실패: " + ex.Message); }
         }
 
         private static void Run(LevelData levelData)
@@ -122,7 +122,7 @@ namespace StutterFix
                 if (am.FindOrLoadAudioClip(n) != null) loaded++;
             }
             if (loaded > 0 || Edition.Dev)
-                Main.Entry.Logger.Log(string.Format("[소리 미리 불러오기] 쓸 수 있는 소리 {0}가지 중 새로 불러온 것 {1}개 {2:F0}ms",
+                Lg.I(string.Format("[소리 미리 불러오기] 쓸 수 있는 소리 {0}가지 중 새로 불러온 것 {1}개 {2:F0}ms",
                     names.Count, loaded, (Stopwatch.GetTimestamp() - t0) * 1000.0 / Stopwatch.Frequency));
         }
     }

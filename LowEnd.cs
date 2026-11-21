@@ -24,10 +24,10 @@ namespace StutterFix
             try
             {
                 uint cur;int st=NtSetTimerResolution(5000,HalfMsTimer,out cur);
-                if(st>=0){ntOwned=HalfMsTimer;Main.Entry.Logger.Log("[저사양] 타이머 0.5ms 요청 "+(ntOwned?"켬":"해제")+" (현재 "+cur+"x100ns)");}
-                else Main.Entry.Logger.Log("[저사양] 타이머 0.5ms 요청 실패 status="+st+" (소유 상태 유지, 다시 시도)");
+                if(st>=0){ntOwned=HalfMsTimer;Lg.I("[저사양] 타이머 0.5ms 요청 "+(ntOwned?"켬":"해제")+" (현재 "+cur+"x100ns)");}
+                else Lg.I("[저사양] 타이머 0.5ms 요청 실패 status="+st+" (소유 상태 유지, 다시 시도)");
             }
-            catch(Exception ex){Main.Entry.Logger.Log("[저사양] 타이머 0.5ms 요청 오류: "+ex.Message);}
+            catch(Exception ex){Lg.I("[저사양] 타이머 0.5ms 요청 오류: "+ex.Message);}
         }
 #if DEV || AUTOTEST
         internal static bool TimerOwnedForFixture=>timer.Owned;
@@ -47,9 +47,9 @@ namespace StutterFix
                 if (Priority) { priorityBefore = p.PriorityClass; p.PriorityClass = ProcessPriorityClass.High; }
                 else p.PriorityClass = priorityBefore;
                 priorityOn = Priority;
-                Main.Entry.Logger.Log("[저사양] 게임 우선순위 " + (Priority ? "높음" : "원래대로 (" + priorityBefore + ")"));
+                Lg.I("[저사양] 게임 우선순위 " + (Priority ? "높음" : "원래대로 (" + priorityBefore + ")"));
             }
-            catch (Exception ex) { Main.Entry.Logger.Log("[저사양] 우선순위 바꾸기 실패: " + ex.Message); }
+            catch (Exception ex) { Lg.I("[저사양] 우선순위 바꾸기 실패: " + ex.Message); }
         }
 
         // ── 2. 윈도우 절전 제한 끄기 + 타이머 1ms ──
@@ -79,9 +79,9 @@ namespace StutterFix
                 var p = new PowerThrottling { Version = 1, ControlMask = NoThrottle ? ExecutionSpeed : 0u, StateMask = 0u };
                 bool ok = SetProcessInformation(GetCurrentProcess(), ProcessPowerThrottlingClass, ref p, Marshal.SizeOf(typeof(PowerThrottling)));
                 throttleOn = NoThrottle;
-                Main.Entry.Logger.Log("[저사양] 윈도우 절전 제한 " + (NoThrottle ? "끔" : "윈도우에 맡김") + (ok ? "" : " (절전 제한 설정 실패, 윈도우 10 이전일 수 있음)") + ", 타이머 1ms " + (timerOn ? "켬" : "끔")+(timerOk?"":" (요청 실패, 이전 소유 상태 유지)"));
+                Lg.I("[저사양] 윈도우 절전 제한 " + (NoThrottle ? "끔" : "윈도우에 맡김") + (ok ? "" : " (절전 제한 설정 실패, 윈도우 10 이전일 수 있음)") + ", 타이머 1ms " + (timerOn ? "켬" : "끔")+(timerOk?"":" (요청 실패, 이전 소유 상태 유지)"));
             }
-            catch (Exception ex) { Main.Entry.Logger.Log("[저사양] 절전 제한 바꾸기 실패: " + ex.Message); }
+            catch (Exception ex) { Lg.I("[저사양] 절전 제한 바꾸기 실패: " + ex.Message); }
         }
 
         // ── 3. 음악 반응 계산(FFT) 끄기 ──
@@ -162,7 +162,7 @@ namespace StutterFix
                 list[at[0] + 1].operand = AccessTools.Method(typeof(LowEnd), nameof(RTHeight));
             }
             RenderScaleReady = done == 1;
-            if (done != 1) Main.Entry.Logger.Log("[저사양] 게임 화면 해상도: 게임 코드 모양이 예상과 달라 적용하지 않음 (찾은 곳 " + done + ")");
+            if (done != 1) Lg.I("[저사양] 게임 화면 해상도: 게임 코드 모양이 예상과 달라 적용하지 않음 (찾은 곳 " + done + ")");
             return list;
         }
         internal static bool RenderScaleReady;
@@ -252,7 +252,7 @@ namespace StutterFix
                     sharpenTried = true;
                     var sh = Shader.Find("CameraFilterPack/Sharpen_Sharpen");
                     if (sh != null) { SharpenMat = new Material(sh) { hideFlags = HideFlags.HideAndDontSave }; SharpenReady = true; }
-                    Main.Entry.Logger.Log("[저사양] 선명도 보정 셰이더 " + (SharpenReady ? "찾음" : "없음 (사용 불가)"));
+                    Lg.I("[저사양] 선명도 보정 셰이더 " + (SharpenReady ? "찾음" : "없음 (사용 불가)"));
                 }
                 var cam = scrCamera.instance;
                 var oc = cam == null ? null : overlayRef(cam);
@@ -262,7 +262,7 @@ namespace StutterFix
                 if (comp == null) { if (!want) return; comp = oc.gameObject.AddComponent<UpscaleSharpen>(); }
                 if (comp.enabled != want) comp.enabled = want;
             }
-            catch (Exception ex) { Main.Entry.Logger.Log("[저사양] 선명도 보정 붙이기 실패: " + ex.Message); }
+            catch (Exception ex) { Lg.I("[저사양] 선명도 보정 붙이기 실패: " + ex.Message); }
         }
         internal static long SharpenFrames;
 
@@ -283,9 +283,9 @@ namespace StutterFix
                 if (nr != null && RenderScaleReady) h.Patch(nr, prefix: new HarmonyMethod(typeof(LowEnd), nameof(NeedsRecreationPrefix)));
                 var gf = AccessTools.PropertyGetter(typeof(RDUtils), "targetFrameRate");
                 if (gf != null) h.Patch(gf, postfix: new HarmonyMethod(typeof(LowEnd), nameof(GameFpsPostfix)));
-                Main.Entry.Logger.Log("[저사양] 설치 (게임 화면 해상도 " + (RenderScaleReady ? "사용 가능" : "사용 불가") + ")");
+                Lg.I("[저사양] 설치 (게임 화면 해상도 " + (RenderScaleReady ? "사용 가능" : "사용 불가") + ")");
             }
-            catch (Exception ex) { Main.Entry.Logger.Log("[저사양] 설치 실패: " + ex.Message); }
+            catch (Exception ex) { Lg.I("[저사양] 설치 실패: " + ex.Message); }
         }
 
         internal static void Apply()
@@ -361,9 +361,9 @@ namespace StutterFix
                     sb.AppendFormat(" | 카메라 {0}: MSAA {1}, HDR {2}, 경로 {3}, 대상 {4}, 깊이 {5}, 컬링 {6:X}",
                         c.name, c.allowMSAA, c.allowHDR, c.actualRenderingPath, c.targetTexture != null ? c.targetTexture.width + "x" + c.targetTexture.height : "화면", c.depth, c.cullingMask);
                 sb.AppendFormat(" | 화면 {0}x{1} {2}, 그래픽카드 {3}", Screen.width, Screen.height, Screen.fullScreenMode, SystemInfo.graphicsDeviceName);
-                Main.Entry.Logger.Log(sb.ToString());
+                Lg.I(sb.ToString());
             }
-            catch (Exception ex) { Main.Entry.Logger.Log("[저사양] 그래픽 설정 기록 실패: " + ex.Message); }
+            catch (Exception ex) { Lg.I("[저사양] 그래픽 설정 기록 실패: " + ex.Message); }
         }
 
         internal static string Summary()

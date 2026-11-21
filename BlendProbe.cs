@@ -27,13 +27,13 @@ namespace StutterFix
             if (Input.GetKeyDown(KeyCode.F12))
             {
                 ZeroTween.Enabled = !ZeroTween.Enabled;
-                Main.Entry.Logger.Log("[즉시 이동] " + (ZeroTween.Enabled ? "켬" : "끔") + " (저장 안 함) | " + ZeroTween.Summary());
+                Lg.I("[즉시 이동] " + (ZeroTween.Enabled ? "켬" : "끔") + " (저장 안 함) | " + ZeroTween.Summary());
                 PerfOverlay.Notice(SettingsWindow.T("즉시 이동 최적화", "Instant moves"), ZeroTween.Enabled ? SettingsWindow.T("켬", "on") : SettingsWindow.T("끔", "off"));
             }
             if (Input.GetKeyDown(KeyCode.F11))
             {
                 if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift)) FastBlend.Compare(PerfOverlay.Instance);
-                else { FastBlend.Enabled = !FastBlend.Enabled; Main.Entry.Logger.Log("[블렌드] 복사 없이 그리기 " + (FastBlend.Enabled ? "켬" : "끔") + " (저장 안 함)"); }
+                else { FastBlend.Enabled = !FastBlend.Enabled; Lg.I("[블렌드] 복사 없이 그리기 " + (FastBlend.Enabled ? "켬" : "끔") + " (저장 안 함)"); }
             }
             if (!Input.GetKeyDown(KeyCode.F10)) return;
             bool shift = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
@@ -67,12 +67,12 @@ namespace StutterFix
                     if (!groups.TryGetValue(key, out c)) groups[key] = c = new int[2];
                     c[0]++; if (vis) c[1]++;
                 }
-                Main.Entry.Logger.Log(string.Format("[블렌드] 전체 {0}개, 켜짐 {1}개, 화면에 보임 {2}개, 화면 {3}x{4}{5}",
+                Lg.I(string.Format("[블렌드] 전체 {0}개, 켜짐 {1}개, 화면에 보임 {2}개, 화면 {3}x{4}{5}",
                     all.Length, enabled, visible, Screen.width, Screen.height, UnifiedOn ? " (실험: 한 번만 복사 켜짐)" : ""));
                 foreach (var kv in groups.OrderByDescending(k => k.Value[0]).Take(20))
-                    Main.Entry.Logger.Log(string.Format("[블렌드]   {0}개 (보임 {1}) : {2}", kv.Value[0], kv.Value[1], kv.Key));
+                    Lg.I(string.Format("[블렌드]   {0}개 (보임 {1}) : {2}", kv.Value[0], kv.Value[1], kv.Key));
             }
-            catch (System.Exception ex) { Main.Entry.Logger.Log("[블렌드] 조사 실패: " + ex.Message); }
+            catch (System.Exception ex) { Lg.I("[블렌드] 조사 실패: " + ex.Message); }
         }
 
         private static void ToggleUnified()
@@ -84,7 +84,7 @@ namespace StutterFix
                     foreach (var kv in changed) if (kv.Key != null) kv.Key.UnifiedGrabEnabled = kv.Value;
                     int n = changed.Count;
                     changed.Clear();
-                    Main.Entry.Logger.Log("[블렌드] 실험 끔: " + n + "개 원래대로");
+                    Lg.I("[블렌드] 실험 끔: " + n + "개 원래대로");
                     return;
                 }
                 foreach (var b in All())
@@ -93,10 +93,10 @@ namespace StutterFix
                     changed[b] = b.UnifiedGrabEnabled;
                     b.UnifiedGrabEnabled = true;
                 }
-                Main.Entry.Logger.Log("[블렌드] 실험 켬: " + changed.Count + "개를 한 번만 복사로");
+                Lg.I("[블렌드] 실험 켬: " + changed.Count + "개를 한 번만 복사로");
                 Report();
             }
-            catch (System.Exception ex) { Main.Entry.Logger.Log("[블렌드] 실험 실패: " + ex.Message); }
+            catch (System.Exception ex) { Lg.I("[블렌드] 실험 실패: " + ex.Message); }
         }
     }
 }

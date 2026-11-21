@@ -51,7 +51,7 @@ namespace StutterFix
         static readonly int StencilId = Shader.PropertyToID("_Stencil");
         static readonly int StencilComp = Shader.PropertyToID("_StencilComp");
         static readonly int BlendStencil = Shader.PropertyToID("_BLENDMODES_BlendStencilComp");
-        static void Log(string s) => Main.Entry.Logger.Log("[occlude] " + s);
+        static void Log(string s) => Lg.I("[occlude] " + s);
 
         internal static void Command(string arg)
         {

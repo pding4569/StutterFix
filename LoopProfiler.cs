@@ -66,7 +66,7 @@ namespace StutterFix
             runtime = 0f;
             lastStamp = Stopwatch.GetTimestamp();
             lastName = null;
-            Main.Entry.Logger.Log("loop profiler installed");
+            Lg.I("loop profiler installed");
             // 씬 집계와 함수별 시간 측정은 같이 켜지 않는다.
             // 둘 다 자기가 메모리를 잡아서(문자열, 배열) 할당량 측정을 오염시킨다.
         }
@@ -115,7 +115,7 @@ namespace StutterFix
             totals.Clear();
             bytes.Clear();
             lastName = null;
-            Main.Entry.Logger.Log("loop profiler uninstalled");
+            Lg.I("loop profiler uninstalled");
         }
 
         internal static void Tick(float dt)
@@ -162,8 +162,8 @@ namespace StutterFix
 
             LastReport = $"FPS {frames / window:F0} | 할당 {totalMb:F0}MB/s: " + string.Join(", ", allocParts.ToArray());
             frames = 0;
-            Main.Entry.Logger.Log("[loop] " + LastReport);
-            Main.Entry.Logger.Log("[loop] 시간: " + string.Join(", ", parts.ToArray()));
+            Lg.I("[loop] " + LastReport);
+            Lg.I("[loop] 시간: " + string.Join(", ", parts.ToArray()));
         }
     }
 }

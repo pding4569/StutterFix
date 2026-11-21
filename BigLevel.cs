@@ -34,7 +34,7 @@ namespace StutterFix
             {
                 var inst = AccessTools.Method(typeof(scrLevelMaker), "InstantiateFloatFloors");
                 var make = AccessTools.Method(typeof(scrLevelMaker), "MakeLevel");
-                if (inst == null || make == null) { Main.Entry.Logger.Log("[큰 맵] 게임 코드 모양이 달라 끔"); return; }
+                if (inst == null || make == null) { Lg.I("[큰 맵] 게임 코드 모양이 달라 끔"); return; }
                 h.Patch(inst, prefix: new HarmonyMethod(typeof(BigLevel), nameof(InstPrefix)), transpiler: new HarmonyMethod(typeof(BigLevel), nameof(InstTranspiler)),
                         finalizer: new HarmonyMethod(typeof(BigLevel), nameof(InstFinalizer)));
                 if (Edition.Dev) h.Patch(make, finalizer: new HarmonyMethod(typeof(BigLevel), nameof(MakeFinalizer)));
@@ -42,10 +42,10 @@ namespace StutterFix
                 {
                     var m = AccessTools.Method(typeof(scnEditor), name, Type.EmptyTypes);
                     if (m != null) h.Patch(m, transpiler: new HarmonyMethod(typeof(BigLevel), nameof(NumTranspiler)));
-                    else Main.Entry.Logger.Log("[큰 맵] scnEditor." + name + " 없음");
+                    else Lg.I("[큰 맵] scnEditor." + name + " 없음");
                 }
             }
-            catch (Exception ex) { Main.Entry.Logger.Log("[큰 맵] 설치 실패: " + ex.Message); }
+            catch (Exception ex) { Lg.I("[큰 맵] 설치 실패: " + ex.Message); }
         }
 
         private static int FloorCount(scrLevelMaker lm)
@@ -58,8 +58,8 @@ namespace StutterFix
             int n = Enabled ? FloorCount(__instance) : 0;
             active = n >= MinFloors;
             strip = active && n >= NoNumMin;
-            if (strip) Main.Entry.Logger.Log("[큰 맵] 타일 " + n + "개: 타일마다 붙은 에디터 번호 표시를 없애 메모리를 줄임 (이 맵에서는 타일 번호 보기가 안 나옴)");
-            if (active) { Maps++; Main.Entry.Logger.Log("[큰 맵] 타일 " + n + "개: 새 타일을 Floors 밑으로 옮기지 않고 각자 둠 (열기가 타일 수의 제곱으로 느려지는 것 막기)"); }
+            if (strip) Lg.I("[큰 맵] 타일 " + n + "개: 타일마다 붙은 에디터 번호 표시를 없애 메모리를 줄임 (이 맵에서는 타일 번호 보기가 안 나옴)");
+            if (active) { Maps++; Lg.I("[큰 맵] 타일 " + n + "개: 새 타일을 Floors 밑으로 옮기지 않고 각자 둠 (열기가 타일 수의 제곱으로 느려지는 것 막기)"); }
         }
         public static Exception InstFinalizer(Exception __exception) { active = false; strip = false; return __exception; }
 
@@ -126,7 +126,7 @@ namespace StutterFix
                 { ci.operand = instMaybe; n++; }
                 yield return ci;
             }
-            if (p != 2 || n != 2) Main.Entry.Logger.Log("[큰 맵] 바꿔치기: 부모 지정 " + p + "곳, 타일 만들기 " + n + "곳 (예상 2곳씩)");
+            if (p != 2 || n != 2) Lg.I("[큰 맵] 바꿔치기: 부모 지정 " + p + "곳, 타일 만들기 " + n + "곳 (예상 2곳씩)");
         }
 
         // (개발자용) 큰 맵: 타일 하나의 구성(오브젝트, 컴포넌트)과 부모를 한 번 적는다. 메모리 줄이기 조사용
@@ -147,10 +147,10 @@ namespace StutterFix
                         sb.Append(" | ").Append(t == f.transform ? "(타일)" : t.name).Append(t.gameObject.activeSelf ? "" : "(꺼짐)").Append(":");
                         foreach (var c in t.GetComponents<Component>()) if (c != null) sb.Append(" ").Append(c.GetType().Name);
                     }
-                    Main.Entry.Logger.Log(string.Format("[큰 맵] 타일 하나: 오브젝트 {0}개{1} | 부모 {2}", objs, sb, f.transform.parent == null ? "없음(각자)" : f.transform.parent.name));
+                    Lg.I(string.Format("[큰 맵] 타일 하나: 오브젝트 {0}개{1} | 부모 {2}", objs, sb, f.transform.parent == null ? "없음(각자)" : f.transform.parent.name));
                 }
             }
-            catch (Exception ex) { Main.Entry.Logger.Log("[큰 맵] 타일 구성 기록 실패: " + ex.Message); }
+            catch (Exception ex) { Lg.I("[큰 맵] 타일 구성 기록 실패: " + ex.Message); }
             return __exception;
         }
     }

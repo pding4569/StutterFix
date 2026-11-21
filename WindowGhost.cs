@@ -76,7 +76,7 @@ namespace StutterFix
             try { f = UnityEngine.Time.frameCount; } catch { return; }   // 메인 스레드가 아니면 아무것도 안 한다
             if (f != frame)
             {
-                string note; while (notes.TryDequeue(out note)) Main.Entry.Logger.Log(note);
+                string note; while (notes.TryDequeue(out note)) Lg.I(note);
                 if (peeksThisFrame > 0) LogFrame();
                 // 프레임이 실제로 시작한 시각(유니티가 메시지를 처리하고 화면을 넘긴 직후): 이 프레임 첫 Tick 이 늦게 불려도 빈틈을 바로 잰다
                 long startTicks = now;
@@ -124,7 +124,7 @@ namespace StutterFix
             else if (!KeepPresent && PresentStatus.Length > 0) line += ", 화면 다시 내보내기 안 함: " + PresentStatus;
             line += string.Format(", 가장 긴 빈틈 {0:F1}초", maxGap / (double)System.Diagnostics.Stopwatch.Frequency);
             if (ScreenCheck) line += " | " + ScreenSummary();
-            Main.Entry.Logger.Log(line);
+            Lg.I(line);
         }
 
         // ── 멈춘 동안 화면 다시 내보내기 ──
@@ -262,7 +262,7 @@ namespace StutterFix
         }
         internal static void StopWatch() { watching = false; watch = null; }
         // 매 프레임 (PresentWatch.Frame): 옆 스레드가 모은 판정 기록을 적는다
-        internal static void Flush() { string note; while (notes.TryDequeue(out note)) Main.Entry.Logger.Log(note); }
+        internal static void Flush() { string note; while (notes.TryDequeue(out note)) Lg.I(note); }
 
         internal static bool Done;
         internal static string Status = "";
@@ -272,7 +272,7 @@ namespace StutterFix
             if (Done) return;
             try { DisableProcessWindowsGhosting(); Done = true; Status = "응답 없음 창 끔"; }
             catch (Exception ex) { Status = "응답 없음 창 끄기 실패: " + ex.Message; }
-            Main.Entry.Logger.Log("[첫 판 FPS] " + Status);
+            Lg.I("[첫 판 FPS] " + Status);
         }
     }
 }

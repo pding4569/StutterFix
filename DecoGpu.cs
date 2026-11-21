@@ -132,7 +132,7 @@ namespace StutterFix
             }
             return State();
         }
-        static void Log(string s) => Main.Entry.Logger.Log("[decogpu] " + s);
+        static void Log(string s) => Lg.I("[decogpu] " + s);
         static readonly string[] BlockColors = { "_Color", "_RendererColor" };
         static readonly string[] BlendFields = { "OverlayColorPropertyId", "OverlayTexturePropertyId", "OverlayTextureSTPropertyId",
             "BlendStencilCompPropertyId", "NormalStencilCompPropertyId", "StencilIdPropertyId" };

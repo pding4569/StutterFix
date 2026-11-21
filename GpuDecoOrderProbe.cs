@@ -67,7 +67,7 @@ namespace StutterFix
                         }
                         if(scene && mats.Select(m=>m.GetInstanceID()).Distinct().Count()!=3)continue;
                         if(scene)foreach(var mat in mats)if(loggedMaterials.Add(mat.GetInstanceID()))
-                            Main.Entry.Logger.Log("[gpudeco-order] material="+mat.GetInstanceID()+" signature="+GpuDecoSnapshot.MaterialSignature(mat));
+                            Lg.I("[gpudeco-order] material="+mat.GetInstanceID()+" signature="+GpuDecoSnapshot.MaterialSignature(mat));
                         for(int i=0;i<3;i++)
                         {
                             var item=new GameObject("GpuDeco native order") {hideFlags=HideFlags.HideAndDontSave,layer=layer};local.Add(item);
@@ -126,7 +126,7 @@ namespace StutterFix
                         var restored=capture();Require(expected.SequenceEqual(restored),"native A/A2 unstable");
                         if(changed[0]==0)forwardMatches++;if(changed[1]==0)reverseMatches++;if(changed[2]==0)texelMatches++;if(changed[3]==0)crcMatches++;if(changed[4]==0)crcReverseMatches++;
                         cases++;
-                        Main.Entry.Logger.Log("[gpudeco-order] scene="+scene+" patterned="+patterned+" alpha="+alpha.ToString("R",System.Globalization.CultureInfo.InvariantCulture)
+                        Lg.I("[gpudeco-order] scene="+scene+" patterned="+patterned+" alpha="+alpha.ToString("R",System.Globalization.CultureInfo.InvariantCulture)
                             +" ids="+string.Join(",",sorted.Select(i=>mats[i].GetInstanceID()))+" forward_changed="+changed[0]+" forward_max="+maxima[0]
                             +" reverse_changed="+changed[1]+" reverse_max="+maxima[1]+" texel_changed="+changed[2]+" texel_max="+maxima[2]+" aa2=0 shader=Sprites/Tile"
                             +" queues="+string.Join(",",sorted.Select(i=>mats[i].renderQueue))+" shaders="+string.Join(",",sorted.Select(i=>mats[i].shader.GetInstanceID()))
@@ -140,7 +140,7 @@ namespace StutterFix
                     }
                     finally {for(int i=local.Count-1;i>=0;i--)if(local[i])UnityEngine.Object.DestroyImmediate(local[i]);}
                 }
-                Main.Entry.Logger.Log("[gpudeco-order] result=MEASURED scene="+scene+" signatures="+(scene?sourceGroups.Length:0)+" cases="+cases+" forward_matches="+forwardMatches+" reverse_matches="+reverseMatches+" texel_matches="+texelMatches+" crc_matches="+crcMatches+" crc_reverse_matches="+crcReverseMatches+" permutation_cases_matched="+permutationMatches+" individual_cases_matched="+individualMatches+" isolated_matches="+isolatedMatches+" isolated_total="+isolatedTotal+" static_matches="+staticMatches+" static_batched_cases="+staticBatchedCases+" order_sensitive_cases="+negative+" G1=NOT_EVALUATED");
+                Lg.I("[gpudeco-order] result=MEASURED scene="+scene+" signatures="+(scene?sourceGroups.Length:0)+" cases="+cases+" forward_matches="+forwardMatches+" reverse_matches="+reverseMatches+" texel_matches="+texelMatches+" crc_matches="+crcMatches+" crc_reverse_matches="+crcReverseMatches+" permutation_cases_matched="+permutationMatches+" individual_cases_matched="+individualMatches+" isolated_matches="+isolatedMatches+" isolated_total="+isolatedTotal+" static_matches="+staticMatches+" static_batched_cases="+staticBatchedCases+" order_sensitive_cases="+negative+" G1=NOT_EVALUATED");
             }
             finally {RenderTexture.active=before;for(int i=owned.Count-1;i>=0;i--)if(owned[i])UnityEngine.Object.DestroyImmediate(owned[i]);}
         }
@@ -182,7 +182,7 @@ namespace StutterFix
                     source.SetData(original);Graphics.CopyBuffer(source,destination);
                     int setupChanged,setupMaximum;
                     Compare(expected,capture(),out setupChanged,out setupMaximum);
-                    Main.Entry.Logger.Log("[gpudeco-order] static_buffer vertices="+mesh.vertexCount+" stride="+destination.stride+" count="+destination.count+" readable="+mesh.isReadable
+                    Lg.I("[gpudeco-order] static_buffer vertices="+mesh.vertexCount+" stride="+destination.stride+" count="+destination.count+" readable="+mesh.isReadable
                         +" original_nonzero_words="+original.Count(w=>w!=0)+" setup_changed="+setupChanged+" setup_max="+setupMaximum);
                     try
                     {

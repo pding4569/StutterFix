@@ -24,7 +24,7 @@ namespace StutterFix
         {
             if (broken) return;
             try { TickImpl(); }
-            catch (Exception ex) { broken = true; Remove(); Main.Entry.Logger.Log("[게임 화면] 단추 끔 (게임 코드가 달라짐): " + ex.Message); }
+            catch (Exception ex) { broken = true; Remove(); Lg.I("[게임 화면] 단추 끔 (게임 코드가 달라짐): " + ex.Message); }
         }
         [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.NoInlining)]
         private static void TickImpl()
@@ -63,7 +63,7 @@ namespace StutterFix
                 var sc = btn.transform.Find("shortcut");
                 if (sc != null) sc.gameObject.SetActive(false);
             }
-            catch (Exception ex) { Main.Entry.Logger.Log("[게임 화면] 단추 만들기 실패: " + ex.Message); Remove(); }
+            catch (Exception ex) { Lg.I("[게임 화면] 단추 만들기 실패: " + ex.Message); Remove(); }
         }
 
         internal static void Remove()
@@ -77,7 +77,7 @@ namespace StutterFix
             var ed = scnEditor.instance;
             if (ed == null || ed.playMode) return;
             try { PlayTweaks.CallLoose(ed, "CheckUnsavedChanges", (Action)Go); }   // 저장하지 않은 변경이 있으면 게임의 "저장할까요" 창을 먼저 띄운다
-            catch (Exception ex) { Main.Entry.Logger.Log("[게임 화면] 저장 확인 실패: " + ex.Message); }
+            catch (Exception ex) { Lg.I("[게임 화면] 저장 확인 실패: " + ex.Message); }
         }
 
         // 자동 시험(gamebtn)도 이것을 부른다
@@ -93,9 +93,9 @@ namespace StutterFix
                 if (ed != null && m != null) Application.wantsToQuit -= (Func<bool>)Delegate.CreateDelegate(typeof(Func<bool>), ed, m);
             }
             catch { }
-            Main.Entry.Logger.Log("[게임 화면] 에디터에서 게임 화면으로 열기: " + Path.GetFileName(path));
+            Lg.I("[게임 화면] 에디터에서 게임 화면으로 열기: " + Path.GetFileName(path));
             try { PlayTweaks.CallLoose(ADOBase.controller, "LoadCustomLevel", path); }
-            catch (Exception ex) { Main.Entry.Logger.Log("[게임 화면] 열기 실패: " + ex.Message); }
+            catch (Exception ex) { Lg.I("[게임 화면] 열기 실패: " + ex.Message); }
         }
 
         // 화면(모니터 테두리) 안에 재생 삼각형

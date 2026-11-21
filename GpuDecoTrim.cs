@@ -155,7 +155,7 @@ namespace StutterFix
             gpuTrimTrimmed++;
 #if AUTOTEST
             if(GpuDecoPlayer.Product && gpuTrimTrimmed<=60)
-                Main.Entry.Logger.Log("[GPU 트림] "+texture.name+" "+texture.width+"x"+texture.height+" fmt="+texture.format+" uv["+uA.ToString("F3")+","+uB.ToString("F3")+"]x["+vA.ToString("F3")+","+vB.ToString("F3")
+                Lg.I("[GPU 트림] "+texture.name+" "+texture.width+"x"+texture.height+" fmt="+texture.format+" uv["+uA.ToString("F3")+","+uB.ToString("F3")+"]x["+vA.ToString("F3")+","+vB.ToString("F3")
                     +"] 경계 u["+b.x.ToString("F3")+","+b.z.ToString("F3")+"] v["+b.y.ToString("F3")+","+b.w.ToString("F3")+"] 면적 "+(((u1-u0)*(v1-v0))/(du*dv)).ToString("F3")
                     +" 정점0 ("+v.Vertices[0].x.ToString("F2")+","+v.Vertices[0].y.ToString("F2")+") 정점2 ("+v.Vertices[2].x.ToString("F2")+","+v.Vertices[2].y.ToString("F2")+")");
 #endif

@@ -46,10 +46,10 @@ namespace StutterFix
             // 다른 CPU 유지 강등과 동일하게, 제외 장식의 보조 렌더러도 장벽으로 돌린다.
             foreach(var row in rows)if(cpu.Contains(row.AuxiliaryOwner))row.AuxiliaryOwner=-1;
             int Count(string reason)=>counts.TryGetValue(reason,out int n)?n:0;
-            Main.Entry.Logger.Log("[GPU 장식] 준비 검사 장식 제외: 머티리얼/마스크 "+Count("material/mask")
+            Lg.I("[GPU 장식] 준비 검사 장식 제외: 머티리얼/마스크 "+Count("material/mask")
                 +" / 키워드 "+Count("keywords")+" / 색조·불투명도 "+Count("tint/opacity")
                 +" / 텍스처 밉맵 "+Count("mipmap")+" / 텍스처 랩 "+Count("wrap")+" / 텍스처 바뀜 "+Count("texture-changed"));
-            Main.Entry.Logger.Log("[GPU 장식] 준비 검사 위반 텍스처 샘플: "+(samples.Count==0?"없음":string.Join(" | ",samples)));
+            Lg.I("[GPU 장식] 준비 검사 위반 텍스처 샘플: "+(samples.Count==0?"없음":string.Join(" | ",samples)));
         }
     }
 }

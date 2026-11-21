@@ -28,7 +28,7 @@ namespace StutterFix
             internal int Layer, Order;
             internal float Distance;
         }
-        static void Log(string s) => Main.Entry.Logger.Log("[matshare] " + s);
+        static void Log(string s) => Lg.I("[matshare] " + s);
         static Camera MainCamera => scrCamera.instance ? scrCamera.instance.camobj : Camera.main;
         internal static void Command(string arg)
         {

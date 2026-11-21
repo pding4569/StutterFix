@@ -153,7 +153,7 @@ namespace StutterFix
                 bool bad=GpuDecoBlend.NeedsGrab(it.BlendMode) ? (count.TryGetValue(bk,out int c) && c>1) : (shaders.TryGetValue(bk,out var hs2) && hs2.Count>1);
                 if(bad){row.Item=-1;demoted++;}
             }
-            if(demoted>0 && GpuDecoPlayer.Product)Main.Entry.Logger.Log("[GPU 장식] 화면 복사 혼합 장식 중 다른 렌더러와 같은 정렬 묶음이라 원래 렌더러로 남긴 것: "+demoted+"개");
+            if(demoted>0 && GpuDecoPlayer.Product)Lg.I("[GPU 장식] 화면 복사 혼합 장식 중 다른 렌더러와 같은 정렬 묶음이라 원래 렌더러로 남긴 것: "+demoted+"개");
         }
 #if AUTOTEST
         static readonly Dictionary<(int,int,int,float),string> tieDiagKind=new Dictionary<(int,int,int,float),string>();
@@ -200,12 +200,12 @@ namespace StutterFix
                 row.Item=-1;
             }
 #if AUTOTEST
-            if(GpuDecoPlayer.Product)Main.Entry.Logger.Log("[GPU 장식] 동점 정리 장벽 종류(내린 장식 수): "+string.Join(" | ",tieCount.OrderByDescending(x=>x.Value).Take(12).Select(x=>x.Key+"="+x.Value)));
+            if(GpuDecoPlayer.Product)Lg.I("[GPU 장식] 동점 정리 장벽 종류(내린 장식 수): "+string.Join(" | ",tieCount.OrderByDescending(x=>x.Value).Take(12).Select(x=>x.Key+"="+x.Value)));
             tieDiagKind.Clear();
 #endif
             if(demoted.Count==0)return;
             foreach(var row in rows)if(demoted.Contains(row.AuxiliaryOwner))row.AuxiliaryOwner=-1;
-            if(GpuDecoPlayer.Product)Main.Entry.Logger.Log("[GPU 장식] 동점 묶음 사전 정리(원본 컬링 유지): 내린 장식 "+demoted.Count+"개");
+            if(GpuDecoPlayer.Product)Lg.I("[GPU 장식] 동점 묶음 사전 정리(원본 컬링 유지): 내린 장식 "+demoted.Count+"개");
         }
         static string CollapseTier(Texture2D t)=>CollapseSize(t)+"/"+t.graphicsFormat;
         // The graphics format determines payload size. A texel is not always
@@ -309,7 +309,7 @@ namespace StutterFix
             if (GpuDecoPlayer.Product)
             {
                 var all=textures.Values.ToArray();
-                Main.Entry.Logger.Log("[GPU 장식] 곡 전체 텍스처 "+all.Length+"개 (배열 후보 "+all.Count(t=>CollapseSize(t)>0)+", 직접 "+all.Count(t=>CollapseSize(t)==0)+", 배열 종류 "+all.Where(t=>CollapseSize(t)>0).Select(CollapseTier).Distinct().Count()+")");
+                Lg.I("[GPU 장식] 곡 전체 텍스처 "+all.Length+"개 (배열 후보 "+all.Count(t=>CollapseSize(t)>0)+", 직접 "+all.Count(t=>CollapseSize(t)==0)+", 배열 종류 "+all.Where(t=>CollapseSize(t)>0).Select(CollapseTier).Distinct().Count()+")");
             }
             var addresses=new Dictionary<int,Vector4>();long total=0;int copies=0;
             RequireLive(SystemInfo.maxTextureArraySlices>0,"drawcollapse texture array slices unavailable");
@@ -367,7 +367,7 @@ namespace StutterFix
             }
             gpuCollapseBudgetLog="vram_budget_mb="+(vramBudget==long.MaxValue?"off":(vramBudget/1048576).ToString(Inv))+" planned_mb="+(budgetUsed/1048576).ToString(Inv)
                 +" dropped_textures="+budgetDropped+" basis="+budgetWhy;
-            if(GpuDecoPlayer.Product)Main.Entry.Logger.Log("[GPU 장식] 배열 VRAM 예산: "+gpuCollapseBudgetLog);
+            if(GpuDecoPlayer.Product)Lg.I("[GPU 장식] 배열 VRAM 예산: "+gpuCollapseBudgetLog);
             var small=admittedSmall.ToArray();
             var smallIds=new HashSet<int>(small.Select(t=>t.GetInstanceID()));
             var direct=textures.Values.Where(t=>!smallIds.Contains(t.GetInstanceID()) && !exactIds.Contains(t.GetInstanceID()))
@@ -550,7 +550,7 @@ namespace StutterFix
             slice.CopyMask=new GpuDecoCopyMask(n,order);
             slice.NativeCopy=GpuDecoCopy.TryCreate(gpuLiveShader,slice.Gpu.VertexBuffer,slice.Buffers,n*4,order);
             RequireLive(slice.NativeCopy!=null,"native copy unavailable after reorder: "+GpuDecoCopy.Status);
-            if(GpuDecoPlayer.Product)Main.Entry.Logger.Log("[GPU 장식] 독립 렌더러 장식 "+gpuCollapseTextureFallbackCount+"개를 복사 순서 앞으로 모음 "+DcMs(t0).ToString("F0")+"ms");
+            if(GpuDecoPlayer.Product)Lg.I("[GPU 장식] 독립 렌더러 장식 "+gpuCollapseTextureFallbackCount+"개를 복사 순서 앞으로 모음 "+DcMs(t0).ToString("F0")+"ms");
         }
         static bool PlayerCollapseTextureBudget(IEnumerable<Texture2D> textures)
         {
@@ -650,7 +650,7 @@ namespace StutterFix
                 for(int k=0;k<gpuCollapseSpans.Count && k<diagShareOrig.Length;k++){var r=gpuCollapseSpans[k].Renderer;if(r)r.sharedMaterial=diagShareOrig[k];}
                 diagShareOrig=null;
             }
-            Main.Entry.Logger.Log("[gpudeco] 구간 머티리얼 공유 "+(on?"켬":"끔"));
+            Lg.I("[gpudeco] 구간 머티리얼 공유 "+(on?"켬":"끔"));
         }
         internal static void ForceIndexRebuild(){if(gpuSpanOfItem==null)return;for(int k=0;k<gpuCollapseSpans.Count;k++){gpuCollapseSpans[k].IndexDirty=true;MarkSpanDirty(k);}}
         internal static void MarkAllSpansDirty(){if(gpuSpanOfItem==null)return;for(int k=0;k<gpuCollapseSpans.Count;k++)MarkSpanDirty(k);}
@@ -771,7 +771,7 @@ namespace StutterFix
                 if(gpuItemInstIds==null)gpuItemInstIds=new Dictionary<int,List<int>>();
                 gpuItemInstIds[i]=ids;made+=ids.Count;
             }
-            Main.Entry.Logger.Log("[GPU 장식] 깊이 인스턴스 "+made+"줄(항목 "+(gpuItemInstIds!=null?gpuItemInstIds.Count:0)+"개), 순서 모호로 통합에서 뺀 항목 "+dropped+"개");
+            Lg.I("[GPU 장식] 깊이 인스턴스 "+made+"줄(항목 "+(gpuItemInstIds!=null?gpuItemInstIds.Count:0)+"개), 순서 모호로 통합에서 뺀 항목 "+dropped+"개");
         }
         // 활성화 직전(곡 중간 시작 포함): 원래 렌더러의 지금 깊이로 자리를 맞춘다.
         static void SyncAllDepthItems()
@@ -929,7 +929,7 @@ namespace StutterFix
             gpuWatchSig=new (int,float,int,int)[n];gpuWatchActive=new bool[n];gpuWatchBucket=new (int,int,int,int)[n];gpuWatchMat=new long[n];
             gpuBucketMembers.Clear();gpuBucketDirty.Clear();
 #if AUTOTEST
-            Main.Entry.Logger.Log("[GPU 장식] 감시 장벽 "+n+"개(비소유 장식 렌더러 + 구간 묶음의 장벽), 구간 묶음 "+gpuSpansByBucket.Count+"개");
+            Lg.I("[GPU 장식] 감시 장벽 "+n+"개(비소유 장식 렌더러 + 구간 묶음의 장벽), 구간 묶음 "+gpuSpansByBucket.Count+"개");
 #endif
         }
         // SetDepth 후크(제품에도 설치)에서 부른다: 깊이가 바뀐 장식이 장벽이면 감시 목록에 넣는다.
@@ -987,7 +987,7 @@ namespace StutterFix
                 if(gpuWatchActive[w] && !gpuWatchBucket[w].Equals(nb))WatchRemove(w);
                 gpuWatchActive[w]=true;gpuWatchBucket[w]=nb;gpuWatchMat[w]=cur.Rank;
 #if AUTOTEST
-                if(false)Main.Entry.Logger.Log("[GPU 장식] 감시 활성 w="+w+" "+r.GetType().Name+":"+r.name+" 키 "+DcKey(cur)+" 버킷 "+nb+" 구간 묶음에 있음 "+(gpuSpansByBucket!=null&&gpuSpansByBucket.ContainsKey(nb))+" shift "+shift.ToString("F2"));
+                if(false)Lg.I("[GPU 장식] 감시 활성 w="+w+" "+r.GetType().Name+":"+r.name+" 키 "+DcKey(cur)+" 버킷 "+nb+" 구간 묶음에 있음 "+(gpuSpansByBucket!=null&&gpuSpansByBucket.ContainsKey(nb))+" shift "+shift.ToString("F2"));
 #endif
                 if(!gpuBucketMembers.TryGetValue(nb,out var members)){members=new HashSet<int>();gpuBucketMembers[nb]=members;}
                 members.Add(w);gpuBucketDirty.Add(nb);
@@ -1009,7 +1009,7 @@ namespace StutterFix
                 if(members!=null)foreach(int w in members){long a=gpuWatchMat[w];if((a>>32)!=(first>>32))continue; /* 다른 셰이더 장벽은 엔진 순서 */ if(a<first)before=true;else if(a>last)after=true;else straddle=true;}
                 int state=(straddle||(before&&after))?2:(before?1:(after?3:0));
 #if AUTOTEST
-                if(state!=0 && gpuDynLogged2++<6)Main.Entry.Logger.Log("[GPU 장식] 분류 묶음 "+key+" 구간 "+k+" (항목 "+sp.Items.Length+") 첫 id "+first+" 끝 id "+last+" 켜진 장벽 "+(members==null?0:members.Count)+" 앞 "+before+" 뒤 "+after+" 가름 "+straddle+" → 상태 "+state+" (이전 "+sp.DynState+")");
+                if(state!=0 && gpuDynLogged2++<6)Lg.I("[GPU 장식] 분류 묶음 "+key+" 구간 "+k+" (항목 "+sp.Items.Length+") 첫 id "+first+" 끝 id "+last+" 켜진 장벽 "+(members==null?0:members.Count)+" 앞 "+before+" 뒤 "+after+" 가름 "+straddle+" → 상태 "+state+" (이전 "+sp.DynState+")");
 #endif
                 if(state==sp.DynState)continue;
                 if(state==2)ExcludeSpanDynamic(k);else if(sp.DynState==2)IncludeSpanDynamic(k);
@@ -1091,7 +1091,7 @@ namespace StutterFix
                 gpuCollapseAllMap.SetData(gpuCollapseMapCpu);
 #endif
             if(gpuSpanVisible!=null){gpuSpanVisible[k]=0;MarkSpanDirty(k);}
-            Main.Entry.Logger.Log("[GPU 장식] 곡 중 깊이가 바뀐 장벽과 순서가 어긋나 구간 "+k+"(항목 "+sp.Items.Length+"개)를 독립 렌더러로 전환 (누적 "+gpuDynExcludedSpans+"개)");
+            Lg.I("[GPU 장식] 곡 중 깊이가 바뀐 장벽과 순서가 어긋나 구간 "+k+"(항목 "+sp.Items.Length+"개)를 독립 렌더러로 전환 (누적 "+gpuDynExcludedSpans+"개)");
         }
         static void IncludeSpanDynamic(int k)
         {
@@ -1119,7 +1119,7 @@ namespace StutterFix
 #endif
             if(gpuSpanHasInst!=null && gpuSpanHasInst[k])visible=sp.Items.Length;
             if(gpuSpanVisible!=null){gpuSpanVisible[k]=visible;MarkSpanDirty(k);}
-            Main.Entry.Logger.Log("[GPU 장식] 어긋나게 하던 장벽이 숨어 구간 "+k+"(항목 "+sp.Items.Length+"개)를 다시 통합으로 되돌림");
+            Lg.I("[GPU 장식] 어긋나게 하던 장벽이 숨어 구간 "+k+"(항목 "+sp.Items.Length+"개)를 다시 통합으로 되돌림");
         }
         static int gpuCollapsePlannedFallback;
         // 제품: 활성화 때 CPU 처리로 남은 장식(진행 중인 네이티브 트윈 등)은 통합에서 빼고 원본 렌더러를 정렬 장벽으로 둔다.
@@ -1262,7 +1262,7 @@ namespace StutterFix
                     string k=(row.R?row.R.GetType().Name:"null")+":"+(row.R?row.R.name:"")+(act?" [활성]":" [숨김]");
                     kinds.TryGetValue(k,out int c);kinds[k]=c+1;
                 }
-                Main.Entry.Logger.Log("[GPU 장식] 장벽 종류: "+string.Join(" | ",kinds.OrderByDescending(x=>x.Value).Take(14).Select(x=>x.Key+"="+x.Value)));
+                Lg.I("[GPU 장식] 장벽 종류: "+string.Join(" | ",kinds.OrderByDescending(x=>x.Value).Take(14).Select(x=>x.Key+"="+x.Value)));
             }
             if(GpuDecoPlayer.Product)
             {
@@ -1275,7 +1275,7 @@ namespace StutterFix
                     var bk=row.Key;if(!ob.Contains(BKey(bk.Layer,bk.Order,bk.Queue,bk.Distance)))continue;
                     string k=row.R.GetType().Name+":"+row.R.name;kk.TryGetValue(k,out int c);kk[k]=c+1;
                 }
-                Main.Entry.Logger.Log("[GPU 장식] 계획 시점에 켜져 있고 소유 장식과 같은 묶음인 장벽: "+(kk.Count==0?"없음":string.Join(" | ",kk.OrderByDescending(x=>x.Value).Take(10).Select(x=>x.Key+"="+x.Value))));
+                Lg.I("[GPU 장식] 계획 시점에 켜져 있고 소유 장식과 같은 묶음인 장벽: "+(kk.Count==0?"없음":string.Join(" | ",kk.OrderByDescending(x=>x.Value).Take(10).Select(x=>x.Key+"="+x.Value))));
             }
 #endif
             int tieExcluded=0;var newBarriers=new List<GpuLiveRow>();
@@ -1304,10 +1304,10 @@ namespace StutterFix
             dcTieMs=DcMs(dcT1);
             GpuLog("DRAWCOLLAPSE_TIE_EXCLUDED owned_items="+tieExcluded+" active_buckets="+activeBucketMinMat.Count);
 #if AUTOTEST
-            if(GpuDecoPlayer.Product)Main.Entry.Logger.Log("[GPU 장식] 제외 장식과 같은 묶음의 장벽(제외 항목 수 기준): "+string.Join(" | ",diagExcludeKinds.OrderByDescending(x=>x.Value).Take(16).Select(x=>x.Key+"="+x.Value)));
+            if(GpuDecoPlayer.Product)Lg.I("[GPU 장식] 제외 장식과 같은 묶음의 장벽(제외 항목 수 기준): "+string.Join(" | ",diagExcludeKinds.OrderByDescending(x=>x.Value).Take(16).Select(x=>x.Key+"="+x.Value)));
             diagExcludeKinds.Clear();
 #endif
-            if(GpuDecoPlayer.Product)Main.Entry.Logger.Log("[GPU 장식] 동점 묶음 때문에 독립 렌더러로 남긴 장식 "+tieExcluded+"개 (동점 묶음 "+activeBucketMinMat.Count+"개)");
+            if(GpuDecoPlayer.Product)Lg.I("[GPU 장식] 동점 묶음 때문에 독립 렌더러로 남긴 장식 "+tieExcluded+"개 (동점 묶음 "+activeBucketMinMat.Count+"개)");
             GpuLog("DRAWCOLLAPSE_REPLAN barriers_removed="+lostBarriers+" stale_tie_removed="+staleTie+" barriers_added="+addedBarriers+" barriers_now="+gpuCollapseBarriers.Count+" reread="+rereadBarriers+" keys_cached="+keysValid+" shift="+keyShift.ToString("R",Inv));
             BuildDepthInstanceRows(rows,source,activeBucketMinMat);
             foreach(var row in gpuCollapseBarriers)
@@ -1517,12 +1517,12 @@ namespace StutterFix
             BuildSpanAlphaTracking();
             gpuSpanExcluded=null;
             GpuLog("DRAWCOLLAPSE_SAME_BUCKET_SPANS spans_in_multi_runs="+multiSpans+" nudged_spans="+nudgedSpans);
-            if(GpuDecoPlayer.Product)Main.Entry.Logger.Log("[GPU 장식] 동점 묶음 구간 "+multiSpans+"개(재질 따로), 거리 보정 "+nudgedSpans+"개, 공유 재질 종류 "+gpuCollapseSharedMats.Count);
+            if(GpuDecoPlayer.Product)Lg.I("[GPU 장식] 동점 묶음 구간 "+multiSpans+"개(재질 따로), 거리 보정 "+nudgedSpans+"개, 공유 재질 종류 "+gpuCollapseSharedMats.Count);
             GpuLog("DRAWCOLLAPSE_NODIRECT spans="+noDirectSpans+" of "+gpuCollapseSpans.Count);
 #if AUTOTEST
             if(singleArrayShader)GpuLog("SINGLE_ARRAY_SPANS selected="+gpuCollapseSpans.Count(sp=>sp.SingleArray>=0)+" total="+gpuCollapseSpans.Count+" items="+gpuCollapseSpans.Where(sp=>sp.SingleArray>=0).Sum(sp=>sp.Items.Length)+" ordering_plan_unchanged=True");
 #endif
-            if(GpuDecoPlayer.Product)Main.Entry.Logger.Log("[GPU 장식] 그리기 구간 "+gpuCollapseSpans.Count+"개 중 배열 텍스처만 쓰는 구간 "+noDirectSpans+"개, 직접 텍스처 적은 구간 "+fewSpans+"개, 화면 복사 구간 "+gpuCollapseSpans.Count(sp=>sp.Material && sp.Material.shader==gpuCollapseBlendShader)+"개 (모드별 항목: "+string.Join(",",gpuCollapseSpans.SelectMany(sp=>sp.Items).Select(id=>source.Data.Items[CR(id)].BlendMode).Where(b=>b>0).GroupBy(b=>b).OrderBy(g=>g.Key).Select(g=>g.Key+"="+g.Count()))+")");
+            if(GpuDecoPlayer.Product)Lg.I("[GPU 장식] 그리기 구간 "+gpuCollapseSpans.Count+"개 중 배열 텍스처만 쓰는 구간 "+noDirectSpans+"개, 직접 텍스처 적은 구간 "+fewSpans+"개, 화면 복사 구간 "+gpuCollapseSpans.Count(sp=>sp.Material && sp.Material.shader==gpuCollapseBlendShader)+"개 (모드별 항목: "+string.Join(",",gpuCollapseSpans.SelectMany(sp=>sp.Items).Select(id=>source.Data.Items[CR(id)].BlendMode).Where(b=>b>0).GroupBy(b=>b).OrderBy(g=>g.Key).Select(g=>g.Key+"="+g.Count()))+")");
         }
         // 텍스처 정보 앞쪽: x = 바인딩 + 점 샘플링 128 + U 랩 반복 256 + V 랩 반복 512 + 혼합 모드*1024, y = 배열 층,
         // zw = UV 배율(재질 RepeatX/Y 실효값, 1 이면 0). 랩 비트는 그 텍스처의 실제 랩 모드(Repeat 일 때만 frac, 아니면 가장자리 고정)를 따른다.
@@ -1592,7 +1592,7 @@ namespace StutterFix
         }
 #if AUTOTEST
         internal static bool DiagFull; static int diagOrderLogged;
-        static void DiagOrder(string reason){if(diagOrderLogged++<25)Main.Entry.Logger.Log("[gpudeco] fullcheck 위반: "+reason);}
+        static void DiagOrder(string reason){if(diagOrderLogged++<25)Lg.I("[gpudeco] fullcheck 위반: "+reason);}
         // 진단: 지금 씬의 그리는 렌더러 중 곡 시작 때 계획의 장벽 목록에 없던 것(곡 중에 새로 생긴 것)을 센다.
         static void DiagNewBarriers()
         {
@@ -1608,7 +1608,7 @@ namespace StutterFix
                 bool act=r.enabled && r.gameObject.activeInHierarchy && !r.forceRenderingOff;
                 string k=r.GetType().Name+":"+r.name+(act?"[활성]":"[숨김]");kinds.TryGetValue(k,out int c);kinds[k]=c+1;total++;
             }
-            Main.Entry.Logger.Log("[gpudeco] 곡 중 새로 생긴 그리는 렌더러(계획에 없던 것) "+total+"개: "+string.Join(" | ",kinds.OrderByDescending(x=>x.Value).Take(10).Select(x=>x.Key+"="+x.Value)));
+            Lg.I("[gpudeco] 곡 중 새로 생긴 그리는 렌더러(계획에 없던 것) "+total+"개: "+string.Join(" | ",kinds.OrderByDescending(x=>x.Value).Take(10).Select(x=>x.Key+"="+x.Value)));
         }
         static Dictionary<int,string> diagSpanSnap;
         // 진단: 구간(첫 항목 기준)마다 대표 렌더러의 정렬·위치·머티리얼·켜짐 값을 저장/비교한다.
@@ -1624,11 +1624,11 @@ namespace StutterFix
             if(mode=="enableall")
             {
                 int off=0,offItems=0,big=0;
-                for(int k=0;k<gpuCollapseSpans.Count;k++){var sp=gpuCollapseSpans[k];if(sp.Renderer && !sp.Renderer.enabled){off++;offItems+=sp.Items.Length;if(sp.Items.Length>100){big++;Main.Entry.Logger.Log("[gpudeco] 꺼져 있던 큰 구간 "+k+" 항목 "+sp.Items.Length+" 보임수 "+(gpuSpanVisible!=null?gpuSpanVisible[k]:-1));}sp.Renderer.enabled=true;}}
-                Main.Entry.Logger.Log("[gpudeco] 구간 전부 켬: 꺼져 있던 구간 "+off+"개(항목 "+offItems+", 큰 구간 "+big+") / 전체 "+gpuCollapseSpans.Count);
+                for(int k=0;k<gpuCollapseSpans.Count;k++){var sp=gpuCollapseSpans[k];if(sp.Renderer && !sp.Renderer.enabled){off++;offItems+=sp.Items.Length;if(sp.Items.Length>100){big++;Lg.I("[gpudeco] 꺼져 있던 큰 구간 "+k+" 항목 "+sp.Items.Length+" 보임수 "+(gpuSpanVisible!=null?gpuSpanVisible[k]:-1));}sp.Renderer.enabled=true;}}
+                Lg.I("[gpudeco] 구간 전부 켬: 꺼져 있던 구간 "+off+"개(항목 "+offItems+", 큰 구간 "+big+") / 전체 "+gpuCollapseSpans.Count);
                 return;
             }
-            if(mode=="snap"){diagSpanSnap=cur;Main.Entry.Logger.Log("[gpudeco] 구간 값 저장 "+cur.Count+"개");return;}
+            if(mode=="snap"){diagSpanSnap=cur;Lg.I("[gpudeco] 구간 값 저장 "+cur.Count+"개");return;}
             if(diagSpanSnap==null)return;
             int same=0,diff=0,onlyA=0,onlyB=0;var ex=new List<string>();
             foreach(var kv in diagSpanSnap)
@@ -1638,8 +1638,8 @@ namespace StutterFix
                 diff++;if(ex.Count<8)ex.Add("첫항목"+kv.Key+" 저장["+kv.Value+"] 지금["+v+"]");
             }
             foreach(var kv in cur)if(!diagSpanSnap.ContainsKey(kv.Key))onlyB++;
-            Main.Entry.Logger.Log("[gpudeco] 구간 값 비교: 같음 "+same+", 다름 "+diff+", 저장에만 "+onlyA+", 지금에만 "+onlyB);
-            foreach(var e in ex)Main.Entry.Logger.Log("[gpudeco] 구간 차이 "+e);
+            Lg.I("[gpudeco] 구간 값 비교: 같음 "+same+", 다름 "+diff+", 저장에만 "+onlyA+", 지금에만 "+onlyB);
+            foreach(var e in ex)Lg.I("[gpudeco] 구간 차이 "+e);
         }
         static HashSet<int> diagExclSnap;
         // 진단: 지금 통합에서 빠져 독립 렌더러로 그려지는 항목(준비 때부터 빠진 것 제외)을 저장/비교한다.
@@ -1647,19 +1647,19 @@ namespace StutterFix
         {
             var cur=new HashSet<int>();
             for(int i=0;i<gpuCollapseIncluded.Length;i++)if(!gpuCollapseIncluded[i] && !(gpuCollapseIncludedSaved!=null && !gpuCollapseIncludedSaved[i]))cur.Add(i);
-            if(mode=="snap"){diagExclSnap=cur;Main.Entry.Logger.Log("[gpudeco] 독립 렌더러 항목 저장 "+cur.Count+"개");return;}
-            if(diagExclSnap==null){Main.Entry.Logger.Log("[gpudeco] 저장된 항목 없음");return;}
+            if(mode=="snap"){diagExclSnap=cur;Lg.I("[gpudeco] 독립 렌더러 항목 저장 "+cur.Count+"개");return;}
+            if(diagExclSnap==null){Lg.I("[gpudeco] 저장된 항목 없음");return;}
             int onlyA=0,onlyB=0;var sa=new List<string>();var sb=new List<string>();
             foreach(int i in diagExclSnap)if(!cur.Contains(i)){onlyA++;if(sa.Count<4){var k=gpuCollapseOwnedRows[i].Key;sa.Add(i+":"+DcKey(k));}}
             foreach(int i in cur)if(!diagExclSnap.Contains(i)){onlyB++;if(sb.Count<4){var k=gpuCollapseOwnedRows[i].Key;sb.Add(i+":"+DcKey(k));}}
-            Main.Entry.Logger.Log("[gpudeco] 독립 렌더러 항목 비교: 저장 "+diagExclSnap.Count+"개 / 지금 "+cur.Count+"개 | 저장에만 "+onlyA+" ["+string.Join(" ",sa)+"] | 지금에만 "+onlyB+" ["+string.Join(" ",sb)+"]");
+            Lg.I("[gpudeco] 독립 렌더러 항목 비교: 저장 "+diagExclSnap.Count+"개 / 지금 "+cur.Count+"개 | 저장에만 "+onlyA+" ["+string.Join(" ",sa)+"] | 지금에만 "+onlyB+" ["+string.Join(" ",sb)+"]");
         }
         internal static void RunFullCheck()
         {
             DiagFull=true;diagOrderLogged=0;
-            try{try{DiagNewBarriers();}catch(Exception e0){Main.Entry.Logger.Log("[gpudeco] 새 렌더러 점검 예외: "+e0);}
-                ValidateDrawCollapse(true);Main.Entry.Logger.Log("[gpudeco] fullcheck 끝: 위반 "+diagOrderLogged+"개(치명 없음) 구간 "+gpuCollapseSpans.Count+" 장벽 "+gpuCollapseBarriers.Count+" | 동적 점검 횟수 "+gpuDynTickCount+", 활성 장벽 본 횟수 "+gpuDynActiveSeen+", 서명 바뀜 "+gpuDynSigChanged+", 제외한 구간 "+gpuDynExcludedSpans);}
-            catch(Exception e){Main.Entry.Logger.Log("[gpudeco] fullcheck 치명: "+e.Message.Substring(0,Math.Min(400,e.Message.Length))+" | 위반 "+diagOrderLogged);}
+            try{try{DiagNewBarriers();}catch(Exception e0){Lg.I("[gpudeco] 새 렌더러 점검 예외: "+e0);}
+                ValidateDrawCollapse(true);Lg.I("[gpudeco] fullcheck 끝: 위반 "+diagOrderLogged+"개(치명 없음) 구간 "+gpuCollapseSpans.Count+" 장벽 "+gpuCollapseBarriers.Count+" | 동적 점검 횟수 "+gpuDynTickCount+", 활성 장벽 본 횟수 "+gpuDynActiveSeen+", 서명 바뀜 "+gpuDynSigChanged+", 제외한 구간 "+gpuDynExcludedSpans);}
+            catch(Exception e){Lg.I("[gpudeco] fullcheck 치명: "+e.Message.Substring(0,Math.Min(400,e.Message.Length))+" | 위반 "+diagOrderLogged);}
             finally{DiagFull=false;}
         }
 #endif

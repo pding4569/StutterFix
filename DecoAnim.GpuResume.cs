@@ -305,7 +305,7 @@ namespace StutterFix
                 if(a.Position>=s.Duration)a.R=null;
             }
             if(resumeAuditFrames>=12)
-            {resumeAuditOn=false;Main.Entry.Logger.Log("[gpudeco] "+GpuResumeAuditResult);resumeAudit.Clear();}
+            {resumeAuditOn=false;Lg.I("[gpudeco] "+GpuResumeAuditResult);resumeAudit.Clear();}
         }
 #endif
     }

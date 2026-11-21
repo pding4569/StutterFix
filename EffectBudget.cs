@@ -152,7 +152,7 @@ namespace StutterFix
             if (depth > 0) return;
             depth = 0;
             // (개발자용) 무거운 효과 하나가 시작될 때의 예산 상태: 몰린 무거운 효과가 왜 한 프레임에 같이 도는지 보려고 (2026-10-04, Lost Requiem 타일 이동 3개 46ms)
-            if (Edition.Dev && ms > 8.0 && heavyLogged < 60) { heavyLogged++; Main.Entry.Logger.Log(string.Format("[효과나누기] 무거운 효과 {0:F1}ms | 그 전 쓴 시간 {1:F1}ms, 대기 {2}개, 밀린 것 처리 중 {3}, 유예 {4}, 켜짐 {5}, 프레임 {6}", ms, usedMs, queue.Count, replaying, InGrace, Enabled, Time.frameCount)); }
+            if (Edition.Dev && ms > 8.0 && heavyLogged < 60) { heavyLogged++; Lg.I(string.Format("[효과나누기] 무거운 효과 {0:F1}ms | 그 전 쓴 시간 {1:F1}ms, 대기 {2}개, 밀린 것 처리 중 {3}, 유예 {4}, 켜짐 {5}, 프레임 {6}", ms, usedMs, queue.Count, replaying, InGrace, Enabled, Time.frameCount)); }
             if (!replaying) usedMs += ms;   // 밀린 것을 처리할 때는 Drain 쪽에서 따로 센다
         }
         private static int heavyLogged;
@@ -204,7 +204,7 @@ namespace StutterFix
             // 밀린 효과를 실행한 시간은 게임 효과 자체의 비용이다(효과 시간으로 따로 잡힌다). 모드 작업으로 세면
             // 모니터가 "모드 작업 (밀린 효과 실행)" 이라고 모드 탓으로 보여 줘서 뺐다. 실시간 모니터에는 "효과 몰림" 으로 나온다.
             if (total > BudgetMs * 2)
-                Main.Entry.Logger.Log(string.Format(
+                Lg.I(string.Format(
                     "[효과나누기] 밀린 것 {0}개 처리에 {1:F0}ms (예산 {2:F0}ms), 실패 {3}개, 최악 {4} {5:F0}ms, 남은 대기 {6}개",
                     done, total, BudgetMs, failed, worstName, worst, queue.Count));
         }

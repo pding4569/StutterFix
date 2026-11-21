@@ -145,7 +145,7 @@ namespace StutterFix
             return result;
         }
         static readonly CultureInfo Inv = CultureInfo.InvariantCulture;
-        static void Log(string s) => Main.Entry.Logger.Log("[framecmp] " + s);
+        static void Log(string s) => Lg.I("[framecmp] " + s);
         static FrameCompare Get()
         {
             if (instance && instance.retiring) throw new InvalidOperationException("timed-out GPU readback still draining; retry after completion");

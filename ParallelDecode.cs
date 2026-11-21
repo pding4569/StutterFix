@@ -41,15 +41,15 @@ namespace StutterFix
                 foreach (var m in ld.GetMethods(AccessTools.all))
                     if (m.Name == "Decode" && m.GetParameters().Length == 2 && m.GetParameters()[0].ParameterType == typeof(Dictionary<string, object>)) decode = m;
                 var evDecode = AccessTools.Method(typeof(LevelEvent), "Decode", new[] { typeof(Dictionary<string, object>), typeof(string), typeof(bool) });
-                if (decode == null || evDecode == null) { Main.Entry.Logger.Log("[맵 파일 읽기] 여러 코어로 이벤트 만들기: 게임 코드 모양이 달라 끔"); return; }
+                if (decode == null || evDecode == null) { Lg.I("[맵 파일 읽기] 여러 코어로 이벤트 만들기: 게임 코드 모양이 달라 끔"); return; }
                 installedPatches = 0;
                 h.Patch(decode, prefix: new HarmonyMethod(typeof(ParallelDecode), nameof(DecodePrefix)), transpiler: new HarmonyMethod(typeof(ParallelDecode), nameof(DecodeTranspiler)),
                     finalizer: new HarmonyMethod(typeof(ParallelDecode), nameof(DecodeFinalizer)));
                 h.Patch(evDecode, transpiler: new HarmonyMethod(typeof(ParallelDecode), nameof(EventTranspiler)));
-                if (installedPatches < 3) { Main.Entry.Logger.Log("[맵 파일 읽기] 여러 코어로 이벤트 만들기: 바꿀 곳이 모자라 끔 (" + installedPatches + ")"); Enabled = false; return; }
-                Main.Entry.Logger.Log("[맵 파일 읽기] 여러 코어로 이벤트 만들기 설치");
+                if (installedPatches < 3) { Lg.I("[맵 파일 읽기] 여러 코어로 이벤트 만들기: 바꿀 곳이 모자라 끔 (" + installedPatches + ")"); Enabled = false; return; }
+                Lg.I("[맵 파일 읽기] 여러 코어로 이벤트 만들기 설치");
             }
-            catch (Exception ex) { Enabled = false; Main.Entry.Logger.Log("[맵 파일 읽기] 여러 코어로 이벤트 만들기 설치 실패: " + ex.Message); }
+            catch (Exception ex) { Enabled = false; Lg.I("[맵 파일 읽기] 여러 코어로 이벤트 만들기 설치 실패: " + ex.Message); }
         }
 
         // LevelData.Decode 안의 new LevelEvent(Dictionary) -> Take(Dictionary)
@@ -111,7 +111,7 @@ namespace StutterFix
                 var info = Harmony.GetPatchInfo(m);
                 if (info == null) continue;
                 foreach (var o in info.Owners)
-                    if (!o.StartsWith("StutterFix", StringComparison.OrdinalIgnoreCase)) { othersFound = true; Main.Entry.Logger.Log("[맵 파일 읽기] 여러 코어로 이벤트 만들기: 다른 모드(" + o + ")가 " + m.Name + " 을 고쳐 끔"); }
+                    if (!o.StartsWith("StutterFix", StringComparison.OrdinalIgnoreCase)) { othersFound = true; Lg.I("[맵 파일 읽기] 여러 코어로 이벤트 만들기: 다른 모드(" + o + ")가 " + m.Name + " 을 고쳐 끔"); }
             }
             return othersFound;
         }
@@ -176,7 +176,7 @@ namespace StutterFix
                 made = map;
                 Last = string.Format("이벤트 {0}개 여러 코어({1}개)로 {2:F0}ms{3}", items.Count, n, sw.Elapsed.TotalMilliseconds, failed > 0 ? ", 실패해 원래대로 " + failed + "개" : "");
             }
-            catch (Exception ex) { active = false; made = null; Main.Entry.Logger.Log("[맵 파일 읽기] 여러 코어로 이벤트 만들기 실패, 원래대로: " + ex.Message); }
+            catch (Exception ex) { active = false; made = null; Lg.I("[맵 파일 읽기] 여러 코어로 이벤트 만들기 실패, 원래대로: " + ex.Message); }
         }
 
         public static Exception DecodeFinalizer(Exception __exception)
@@ -200,7 +200,7 @@ namespace StutterFix
                 string why = Same(results[i], b);
                 if (why != null) { diff++; if (first == null) first = "#" + i + " " + why; }
             }
-            Main.Entry.Logger.Log(string.Format("[맵 파일 읽기 검증] 여러 코어로 만든 이벤트 {0}개를 차례로 다시 만든 것과 비교: 다름 {1}개{2}", checkedN, diff, first != null ? " (처음: " + first + ")" : ""));
+            Lg.I(string.Format("[맵 파일 읽기 검증] 여러 코어로 만든 이벤트 {0}개를 차례로 다시 만든 것과 비교: 다름 {1}개{2}", checkedN, diff, first != null ? " (처음: " + first + ")" : ""));
         }
 
         private static readonly FieldInfo dataF = AccessTools.Field(typeof(LevelEvent), "data");

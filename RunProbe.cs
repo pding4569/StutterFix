@@ -51,7 +51,7 @@ namespace StutterFix
             runs.Sort(); runs.Reverse();
             int saved = runs.Sum(k => k - 1);
             string others = string.Join("; ", other.OrderByDescending(kv => kv.Value.cov).Take(8).Select(kv => kv.Key + " " + kv.Value.n + "개 " + kv.Value.cov.ToString("F1", CultureInfo.InvariantCulture) + "장"));
-            Main.Entry.Logger.Log("[runprobe] 후보 밖 큰 렌더러(화면 1/4 넘게 덮음): " + others);
+            Lg.I("[runprobe] 후보 밖 큰 렌더러(화면 1/4 넘게 덮음): " + others);
             return string.Format(CultureInfo.InvariantCulture, "투명 렌더러 {0}, 확대 {1}배 이상 {2}개, 연속 묶음 {3}개 (길이 상위: {4}), 합치면 줄어드는 전체 화면 층 {5}",
                 t.Count, minMag, bigCount, runs.Count, string.Join(",", runs.Take(20)), saved);
         }

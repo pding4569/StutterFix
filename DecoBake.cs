@@ -106,7 +106,7 @@ namespace StutterFix
         internal static int Generation => ready ? generation : -1;
         internal static DecoBakeCore.Table CaptureTable => ready ? table : null;
         internal static bool Enabled => enabled;
-        private static void Log(string s) { if (GpuDecoPlayer.Product) return; Main.Entry.Logger.Log("[장식굽기/그림자] " + s); }
+        private static void Log(string s) { if (GpuDecoPlayer.Product) return; Lg.I("[장식굽기/그림자] " + s); }
         private static string N(double x) => x.ToString("G9", CultureInfo.InvariantCulture);
         private static MethodInfo Exact(Type type, string name, bool isStatic, params Type[] parameters)
         {

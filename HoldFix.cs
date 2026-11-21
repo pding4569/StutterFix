@@ -47,7 +47,7 @@ namespace StutterFix
         // 시험용: 건너뛸 자리에서 원본을 돌려 재질 값이 안 바뀌는지 본다
         internal static void Command(string arg)
         {
-            if (arg == "report") { Main.Entry.Logger.Log("[holdskip] 호출 " + Calls + " 건너뜀 " + Skips + " 대조 " + Checked + " 다름 " + Mismatch + " 홀드 " + recs.Count); return; }
+            if (arg == "report") { Lg.I("[holdskip] 호출 " + Calls + " 건너뜀 " + Skips + " 대조 " + Checked + " 다름 " + Mismatch + " 홀드 " + recs.Count); return; }
             verify = arg == "verify";
         }
 

@@ -182,12 +182,12 @@ namespace StutterFix
                     if(gpuCollapseIncluded!=null&&gpuCollapseIncluded[i]){inc++;if(p)posInc++;}
                     if(GpuCpuFallback(src.MasterItems[i]))fb++;
                 }
-                Main.Entry.Logger.Log("[gpudeco] alphacount 항목 "+n+" 알파>0 "+pos+" | 통합 포함 "+inc+" 중 알파>0 "+posInc+" | CPU처리 "+fb);return true;
+                Lg.I("[gpudeco] alphacount 항목 "+n+" 알파>0 "+pos+" | 통합 포함 "+inc+" 중 알파>0 "+posInc+" | CPU처리 "+fb);return true;
             }
             if(args.Length==2 && args[0]=="spans"){DiagSpans(args[1]);return true;}
             if(args.Length==2 && args[0]=="excl"){DiagExcl(args[1]);return true;}
             if(args.Length==1 && args[0]=="fullcheck"){RunFullCheck();return true;}
-            if(args.Length==1 && args[0]=="trimstats"){Main.Entry.Logger.Log("[gpudeco] GPUTRIM_STATS bounds="+gpuTrimBounds.Count+" trimmed="+gpuTrimTrimmed+" kept="+gpuTrimKept);return true;}
+            if(args.Length==1 && args[0]=="trimstats"){Lg.I("[gpudeco] GPUTRIM_STATS bounds="+gpuTrimBounds.Count+" trimmed="+gpuTrimTrimmed+" kept="+gpuTrimKept);return true;}
             if(args.Length==1 && args[0]=="dumpverts")
             {
                 if(gpuCollapseAllVerts==null){GpuLog("DRAWCOLLAPSE_DUMP none");return true;}

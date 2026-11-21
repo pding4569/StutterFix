@@ -38,16 +38,16 @@ namespace StutterFix
             try
             {
                 var tweenManager = AccessTools.TypeByName("DG.Tweening.Core.TweenManager");
-                if (tweenManager == null) { Main.Entry.Logger.Error("TweenManager 없음"); return; }
+                if (tweenManager == null) { Lg.E("TweenManager 없음"); return; }
 
                 isUpdateLoopField = AccessTools.Field(tweenManager, "isUpdateLoop");
-                if (isUpdateLoopField == null) { Main.Entry.Logger.Error("isUpdateLoop 없음"); return; }
+                if (isUpdateLoopField == null) { Lg.E("isUpdateLoop 없음"); return; }
 
                 var vfx = AccessTools.TypeByName("scrVfxPlus");
-                if (vfx == null) { Main.Entry.Logger.Error("scrVfxPlus 없음"); return; }
+                if (vfx == null) { Lg.E("scrVfxPlus 없음"); return; }
 
                 var update = AccessTools.Method(vfx, "Update");
-                if (update == null) { Main.Entry.Logger.Error("scrVfxPlus.Update 없음"); return; }
+                if (update == null) { Lg.E("scrVfxPlus.Update 없음"); return; }
 
                 // 예외가 나도 반드시 원래대로 돌려놓아야 한다. 켜진 채로 남으면 DOTween 이 망가진다.
                 harmony.Patch(update,
@@ -55,11 +55,11 @@ namespace StutterFix
                     finalizer: new HarmonyMethod(typeof(TweenFix), nameof(After)));
 
                 ready = true;
-                Main.Entry.Logger.Log("tween fix installed");
+                Lg.I("tween fix installed");
             }
             catch (Exception ex)
             {
-                Main.Entry.Logger.Error("tween fix 실패: " + ex.Message);
+                Lg.E("tween fix 실패: " + ex.Message);
             }
         }
 

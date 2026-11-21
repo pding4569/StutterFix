@@ -101,9 +101,9 @@ namespace StutterFix
                     }
                 }
                 foreach (var kv in cnt) { int mx; maxCount.TryGetValue(kv.Key, out mx); if (kv.Value > mx) { maxCount[kv.Key] = kv.Value; maxAt[kv.Key] = songClock; } }
-                if (added > 0) Main.Entry.Logger.Log("[느린함수] 곡 중 새로 감쌈 " + added + "개: " + string.Join(", ", names.ToArray()));
+                if (added > 0) Lg.I("[느린함수] 곡 중 새로 감쌈 " + added + "개: " + string.Join(", ", names.ToArray()));
             }
-            catch (Exception ex) { Main.Entry.Logger.Log("[느린함수] 곡 중 훑기 실패: " + ex.Message); }
+            catch (Exception ex) { Lg.I("[느린함수] 곡 중 훑기 실패: " + ex.Message); }
         }
 
         // 곡이 시작될 때 한 번만 감싼다. 맵마다 등장하는 컴포넌트가 다르다.
@@ -201,11 +201,11 @@ namespace StutterFix
                     }
                 }
 
-                Main.Entry.Logger.Log($"[느린함수] {count}개 감쌈 ({watch.ElapsedMilliseconds}ms)");
+                Lg.I($"[느린함수] {count}개 감쌈 ({watch.ElapsedMilliseconds}ms)");
             }
             catch (Exception ex)
             {
-                Main.Entry.Logger.Error("[느린함수] 설치 실패: " + ex.Message);
+                Lg.E("[느린함수] 설치 실패: " + ex.Message);
             }
         }
 
@@ -276,15 +276,15 @@ namespace StutterFix
             if (!Installed || all.Count == 0) return;
             int frames = PerfOverlay.SongFrameCount;
             if (frames < 30) return;
-            Main.Entry.Logger.Log("[프레임 비용] 곡 평균, 프레임당: " + Rank(s => s.SongTicks, frames, s => s.SongCalls, 40));
-            Main.Entry.Logger.Log("[프레임 비용] 곡 중 켜진 컴포넌트 수 최대 (타입별, 5초마다 셈): " + CountText());
-            Main.Entry.Logger.Log("[프레임 비용] DLL별 합계, 프레임당: " + ByAsm(frames) + " (감싼 함수 " + all.Count + "개) | StutterFix OnUpdate " + (Main.UpdateTicks * 1000.0 / Stopwatch.Frequency / frames).ToString("F3") + "ms [" + TickText(frames) + "]");
+            Lg.I("[프레임 비용] 곡 평균, 프레임당: " + Rank(s => s.SongTicks, frames, s => s.SongCalls, 40));
+            Lg.I("[프레임 비용] 곡 중 켜진 컴포넌트 수 최대 (타입별, 5초마다 셈): " + CountText());
+            Lg.I("[프레임 비용] DLL별 합계, 프레임당: " + ByAsm(frames) + " (감싼 함수 " + all.Count + "개) | StutterFix OnUpdate " + (Main.UpdateTicks * 1000.0 / Stopwatch.Frequency / frames).ToString("F3") + "ms [" + TickText(frames) + "]");
             int best, bestFrames;
             if (PerfOverlay.BestBucket(out best, out bestFrames))
-                Main.Entry.Logger.Log("[프레임 비용] 가장 가벼운 구간 " + best * 10 + "초, 프레임당: " + Rank(s => s.Bucket[best], bestFrames, null, 12));
+                Lg.I("[프레임 비용] 가장 가벼운 구간 " + best * 10 + "초, 프레임당: " + Rank(s => s.Bucket[best], bestFrames, null, 12));
             int worst, worstFrames;
             if (PerfOverlay.WorstBucket(out worst, out worstFrames))
-                Main.Entry.Logger.Log("[프레임 비용] 가장 무거운 구간 " + worst * 10 + "초, 프레임당: " + Rank(s => s.Bucket[worst], worstFrames, null, 12));
+                Lg.I("[프레임 비용] 가장 무거운 구간 " + worst * 10 + "초, 프레임당: " + Rank(s => s.Bucket[worst], worstFrames, null, 12));
         }
 
         // 게임 본체와 모드별로 Update/LateUpdate 에 쓴 시간을 합친다 (다른 모드가 매 프레임 얼마나 쓰는지)

@@ -67,9 +67,9 @@ namespace StutterFix
 #if AUTOTEST
             // Publish rejection details before renderer/sort validation can roll
             // activation back (including an ambiguous material tie).
-            if(DrawCollapsePolicy.AdoptNativeTweens)Main.Entry.Logger.Log("[GPU 장식] 이어받기 분류: 후보 "+gpuNativeAdoptions.Count
+            if(DrawCollapsePolicy.AdoptNativeTweens)Lg.I("[GPU 장식] 이어받기 분류: 후보 "+gpuNativeAdoptions.Count
                 +"개(장식), 채널 "+NativeAdoptionChannelCount()+"개, 거절 "+NativeRejectSummary());
-            if(gpuLiveCpuFallbackCount>0 || gpuNativeAdoptions.Count>0)Main.Entry.Logger.Log("[GPU 장식] CPU 처리 이유: 죽은 객체 "+whyDead+" | 네이티브 트윈 진행 중 "+whyNative+" (종류 "+string.Join(", ",whyKeys.OrderByDescending(x=>x.Value).Take(8).Select(x=>x.Key+"="+x.Value))+") | 이어받기 "+gpuNativeAdoptions.Count+" | 기록 키 어긋남 "+whyMismatch+" | 길이 0 "+whyDur0+" | 지원 안 하는 이징 "+whyEase+" ("+string.Join(", ",whyEases.OrderByDescending(x=>x.Value).Take(6).Select(x=>"ease"+x.Key+"="+x.Value))+") | 따라잡기 중 "+EffectBudget.InCatchUp+" 곡 위치 "+(scrConductor.instance?scrConductor.instance.songposition_minusi.ToString("F1"):"-")+" | FastMove 원래 코드로 보낸 이유별 "+FastMove.WhySummary());
+            if(gpuLiveCpuFallbackCount>0 || gpuNativeAdoptions.Count>0)Lg.I("[GPU 장식] CPU 처리 이유: 죽은 객체 "+whyDead+" | 네이티브 트윈 진행 중 "+whyNative+" (종류 "+string.Join(", ",whyKeys.OrderByDescending(x=>x.Value).Take(8).Select(x=>x.Key+"="+x.Value))+") | 이어받기 "+gpuNativeAdoptions.Count+" | 기록 키 어긋남 "+whyMismatch+" | 길이 0 "+whyDur0+" | 지원 안 하는 이징 "+whyEase+" ("+string.Join(", ",whyEases.OrderByDescending(x=>x.Value).Take(6).Select(x=>"ease"+x.Key+"="+x.Value))+") | 따라잡기 중 "+EffectBudget.InCatchUp+" 곡 위치 "+(scrConductor.instance?scrConductor.instance.songposition_minusi.ToString("F1"):"-")+" | FastMove 원래 코드로 보낸 이유별 "+FastMove.WhySummary());
 #endif
             if(DrawCollapsePolicy.AdoptNativeTweens && nativeUninitSeen>0)
             {

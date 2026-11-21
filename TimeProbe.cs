@@ -50,7 +50,7 @@ namespace StutterFix
                 }
             }
             ticks = new long[names.Count]; calls = new long[names.Count];
-            Main.Entry.Logger.Log("[시간 후보] 함수 " + index.Count + "개 감쌈");
+            Lg.I("[시간 후보] 함수 " + index.Count + "개 감쌈");
         }
 
         public static void Pre(out long __state) { __state = Stopwatch.GetTimestamp(); }
@@ -77,7 +77,7 @@ namespace StutterFix
             foreach (var i in ix)
                 sb.Append(", ").Append(names[i]).Append(' ').Append((ticks[i] * ms / f).ToString("F3")).Append("ms (").Append(((double)calls[i] / f).ToString("F1")).Append("번, 한 번 ")
                   .Append((ticks[i] * ms * 1000 / calls[i]).ToString("F1")).Append("us)");
-            Main.Entry.Logger.Log("[시간 후보] 곡 " + f + "프레임, 프레임당 (안에서 부른 것 포함)" + sb);
+            Lg.I("[시간 후보] 곡 " + f + "프레임, 프레임당 (안에서 부른 것 포함)" + sb);
         }
     }
 }

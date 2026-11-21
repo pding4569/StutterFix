@@ -11,7 +11,7 @@ namespace StutterFix
         static GpuDecoThreadCpu sample;
         static int frame;
         static long clock;
-        static void Log(string message)=>Main.Entry.Logger.Log("[cpuwindow] "+message);
+        static void Log(string message)=>Lg.I("[cpuwindow] "+message);
         internal static string Command(string arg)
         {
             if(arg=="off"){Stop();return "CPU_WINDOW stopped=True handles=0";}

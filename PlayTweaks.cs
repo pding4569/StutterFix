@@ -83,7 +83,7 @@ namespace StutterFix
                     {
                         var t = AccessTools.TypeByName(cls);
                         var m = t == null ? null : t.GetMethod("StartEffect", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly, null, new[] { typeof(scrPlanet) }, null);   // StartEffect(scrPlanet) (부모의 StartEffect() 도 이걸 부른다)
-                        if (m == null) { Main.Entry.Logger.Log("[연출 끄기] " + k.Ko + ": 효과 함수 없음 (" + cls + ")"); continue; }
+                        if (m == null) { Lg.I("[연출 끄기] " + k.Ko + ": 효과 함수 없음 (" + cls + ")"); continue; }
                         h.Patch(m, prefix: new HarmonyMethod(typeof(PlayTweaks), nameof(EffectPrefix)) { priority = Priority.First });
                         byMethod[m] = k; n++;
                         if (k.Deco) { var f = AccessTools.Field(t, "targetTags"); if (f != null) tagField[m] = f; }
@@ -91,7 +91,7 @@ namespace StutterFix
                         if (k.Event == "SetFilter") h.Patch(m, postfix: new HarmonyMethod(typeof(PlayTweaks), nameof(FilterPostfix)) { priority = Priority.Last });
                         if (k.Event == "SetFilterAdvanced") h.Patch(m, postfix: new HarmonyMethod(typeof(PlayTweaks), nameof(AdvFilterPostfix)) { priority = Priority.Last });
                     }
-                    catch (Exception ex) { Main.Entry.Logger.Log("[연출 끄기] " + k.Ko + " 설치 실패: " + ex.Message); }
+                    catch (Exception ex) { Lg.I("[연출 끄기] " + k.Ko + " 설치 실패: " + ex.Message); }
                 }
             }
             try
@@ -108,7 +108,7 @@ namespace StutterFix
                 var sw = AccessTools.Method(typeof(scnEditor), "SwitchToEditMode");
                 if (sw != null) h.Patch(sw, prefix: new HarmonyMethod(typeof(PlayTweaks), nameof(UnhideDecorations)) { priority = Priority.First });
             }
-            catch (Exception ex) { Main.Entry.Logger.Log("[연출 끄기] 장식 설치 실패: " + ex.Message); }
+            catch (Exception ex) { Lg.I("[연출 끄기] 장식 설치 실패: " + ex.Message); }
             try
             {
                 // 타일 기본 모양·나타나기 없애기: 게임이 재생 준비 때 타일마다 부르는 ffxChangeTrack.PrepFloor 직전에 값을 바꾼다
@@ -123,7 +123,7 @@ namespace StutterFix
                 var vid = AccessTools.Method(typeof(scnGame), "UpdateVideo");
                 if (vid != null) h.Patch(vid, postfix: new HarmonyMethod(typeof(PlayTweaks), nameof(VideoPostfix)));
             }
-            catch (Exception ex) { Main.Entry.Logger.Log("[연출 끄기] 타일·배경 설치 실패: " + ex.Message); }
+            catch (Exception ex) { Lg.I("[연출 끄기] 타일·배경 설치 실패: " + ex.Message); }
             try
             {
                 var show = AccessTools.Method(AccessTools.TypeByName("scrHitTextManager"), "ShowHitText");
@@ -131,8 +131,8 @@ namespace StutterFix
                 var zoom = AccessTools.Method(typeof(scnEditor), "ZoomCamera");
                 if (zoom != null) h.Patch(zoom, prefix: new HarmonyMethod(typeof(PlayTweaks), nameof(ZoomPrefix)) { priority = Priority.First });
             }
-            catch (Exception ex) { Main.Entry.Logger.Log("[연출 끄기] 판정 글자·확대 설치 실패: " + ex.Message); }
-            Main.Entry.Logger.Log("[연출 끄기] 설치 (효과 " + n + "종)");
+            catch (Exception ex) { Lg.I("[연출 끄기] 판정 글자·확대 설치 실패: " + ex.Message); }
+            Lg.I("[연출 끄기] 설치 (효과 " + n + "종)");
         }
 
         private static readonly Dictionary<MethodBase, FieldInfo> tagField = new Dictionary<MethodBase, FieldInfo>();
@@ -143,7 +143,7 @@ namespace StutterFix
         {
             if (prepBroken) return;
             try { PrepFloorImpl(__instance); }
-            catch (Exception ex) { prepBroken = true; Main.Entry.Logger.Log("[연출 끄기] 타일 모양 바꾸기 끔 (게임 코드가 달라짐): " + ex.Message); }
+            catch (Exception ex) { prepBroken = true; Lg.I("[연출 끄기] 타일 모양 바꾸기 끔 (게임 코드가 달라짐): " + ex.Message); }
         }
         [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.NoInlining)]
         private static void PrepFloorImpl(ffxChangeTrack __instance)
@@ -211,7 +211,7 @@ namespace StutterFix
                 if (__instance.custBG != null) CallLoose(__instance.custBG, "SetCustomBG", null, Color.white);   // 원래 그림(baseSprite)은 두어 끄면 다음 재생에 돌아온다
                 CallLoose(__instance, "ShowTutorialBackground", false);
             }
-            catch (Exception ex) { Main.Entry.Logger.Log("[연출 끄기] 배경 끄기 실패: " + ex.Message); }
+            catch (Exception ex) { Lg.I("[연출 끄기] 배경 끄기 실패: " + ex.Message); }
         }
         private static FieldInfo videoField;
         public static void VideoPostfix(scnGame __instance)
@@ -285,7 +285,7 @@ namespace StutterFix
             decoLoad = false;
             if (reloadDecorations) notMadeIn = DecoNotMade > 0 && !ADOBase.isLevelEditor ? __instance : null;
             if (reloadDecorations && DecoOff)
-                Main.Entry.Logger.Log("[연출 끄기] " + (NoFx ? "노이펙: " : "") + (ADOBase.isLevelEditor ? "에디터라 장식은 재생 때 숨김"
+                Lg.I("[연출 끄기] " + (NoFx ? "노이펙: " : "") + (ADOBase.isLevelEditor ? "에디터라 장식은 재생 때 숨김"
                     : "장식 " + DecoNotMade + "개 안 만듦 (히트박스 장식만 남김), 장식 이동용 이미지 " + ImagesNotLoaded + "개 안 불러옴"));
             return __exception;
         }
@@ -332,7 +332,7 @@ namespace StutterFix
                 }
                 DecoHidden = hidden.Count;
             }
-            catch (Exception ex) { Main.Entry.Logger.Log("[연출 끄기] 장식 숨기기 실패: " + ex.Message); }
+            catch (Exception ex) { Lg.I("[연출 끄기] 장식 숨기기 실패: " + ex.Message); }
         }
         // 게임 화면에서 장식을 안 만든 채 일시정지 메뉴로 에디터를 열면(같은 scnGame 을 쓴다) 장식을 다시 만든다.
         // 에디터는 장식 목록 번호로 장식을 찾으므로 빠진 채 두면 안 된다. 이때는 에디터가 있어 전부 만든다.
@@ -342,8 +342,8 @@ namespace StutterFix
             if (clsToEditor && notMadeIn != null && ReferenceEquals(notMadeIn, scnGame.instance))
             {
                 notMadeIn = null;
-                try { CallLoose(scnGame.instance, "UpdateDecorationObjects", true); Main.Entry.Logger.Log("[연출 끄기] 게임 화면에서 에디터로: 안 만든 장식을 다시 만듦"); }
-                catch (Exception ex) { Main.Entry.Logger.Log("[연출 끄기] 장식 다시 만들기 실패: " + ex.Message); }
+                try { CallLoose(scnGame.instance, "UpdateDecorationObjects", true); Lg.I("[연출 끄기] 게임 화면에서 에디터로: 안 만든 장식을 다시 만듦"); }
+                catch (Exception ex) { Lg.I("[연출 끄기] 장식 다시 만들기 실패: " + ex.Message); }
             }
             if (hidden.Count == 0) return;
             foreach (var go in hidden) if (go != null) go.SetActive(true);

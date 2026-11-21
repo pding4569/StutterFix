@@ -25,7 +25,7 @@ namespace StutterFix
             "SetColor(string)/same", "SetColor(id)/same", "SetColor(string)/vary", "SetColor(id)/vary",
             "SetFloat(string)/missing/vary"
         };
-        private static void Log(string s) { Main.Entry.Logger.Log("[마이크로벤치] " + s); }
+        private static void Log(string s) { Lg.I("[마이크로벤치] " + s); }
         private static double Ms(long ticks) { return ticks * 1000.0 / Stopwatch.Frequency; }
 
         internal static bool Step(string command, string arg)

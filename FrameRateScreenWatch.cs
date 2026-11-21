@@ -28,13 +28,13 @@ namespace StutterFix
             {
                 var cam = AccessTools.TypeByName("scrCamera");
                 var m = cam == null ? null : AccessTools.Method(cam, "UpdateCustomFrameRateScreen");
-                if (m == null) { Main.Entry.Logger.Error("UpdateCustomFrameRateScreen 없음"); return; }
+                if (m == null) { Lg.E("UpdateCustomFrameRateScreen 없음"); return; }
                 harmony.Patch(m,
                     prefix: new HarmonyMethod(typeof(FrameRateScreenWatch), nameof(Pre)),
                     postfix: new HarmonyMethod(typeof(FrameRateScreenWatch), nameof(Post)));
-                Main.Entry.Logger.Log("frame-rate screen watch installed");
+                Lg.I("frame-rate screen watch installed");
             }
-            catch (Exception ex) { Main.Entry.Logger.Error("frame-rate screen watch 실패: " + ex.Message); }
+            catch (Exception ex) { Lg.E("frame-rate screen watch 실패: " + ex.Message); }
         }
 
         public static void Pre(out long __state) { __state = Stopwatch.GetTimestamp(); }

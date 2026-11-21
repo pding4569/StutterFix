@@ -29,7 +29,7 @@ namespace StutterFix
             Directory.CreateDirectory(dir);
             string path = Path.Combine(dir, "rtcensus-" + tag + ".txt");
             File.WriteAllText(path, o.ToString(), new UTF8Encoding(false));
-            Main.Entry.Logger.Log("[rtcensus] " + path + " " + sw.ElapsedMilliseconds + "ms");
+            Lg.I("[rtcensus] " + path + " " + sw.ElapsedMilliseconds + "ms");
         }
 
         private static void Behaviours(StringBuilder o)
@@ -150,7 +150,7 @@ namespace StutterFix
             // renderdoc_app.h: 함수표에서 TriggerCapture 는 GetAPIVersion=0 부터 15번째
             IntPtr fn = Marshal.ReadIntPtr(api, 15 * IntPtr.Size);
             Marshal.GetDelegateForFunctionPointer<TriggerCapture>(fn)();
-            Main.Entry.Logger.Log("[rdcapture] 다음 프레임 캡처 요청 frame=" + Time.frameCount);
+            Lg.I("[rdcapture] 다음 프레임 캡처 요청 frame=" + Time.frameCount);
         }
     }
 }

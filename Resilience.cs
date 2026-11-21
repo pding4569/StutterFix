@@ -50,7 +50,7 @@ namespace StutterFix
         internal static void RecordFeatureFailure(string feature, string reason)
         {
             int n; lock (sync) { errors.TryGetValue(feature, out n); errors[feature] = ++n; }
-            Main.Entry.Logger.Log("[안정성] " + feature + " 실패 " + n + "회: " + reason);
+            Lg.I("[안정성] " + feature + " 실패 " + n + "회: " + reason);
         }
 #endif
         internal static bool Off(string key) { lock (sync) return off.Contains(key); }
@@ -65,7 +65,7 @@ namespace StutterFix
                 {
                     LastCrashPhase = File.ReadAllText(lockPath).Trim();
                     Main.Config.CrashStreak++;
-                    Main.Entry.Logger.Log("[안정성] 지난번 게임이 비정상 종료됨 (그때 단계: " + LastCrashPhase + ", 연속 " + Main.Config.CrashStreak + "번)");
+                    Lg.I("[안정성] 지난번 게임이 비정상 종료됨 (그때 단계: " + LastCrashPhase + ", 연속 " + Main.Config.CrashStreak + "번)");
                 }
                 else Main.Config.CrashStreak = 0;
                 if (Main.Config.CrashStreak >= 2) EnterSafeMode("게임이 " + Main.Config.CrashStreak + "번 연속 비정상 종료됨 (마지막 단계: " + LastCrashPhase + ")");
@@ -77,7 +77,7 @@ namespace StutterFix
                 Application.quitting += OnQuit;
                 Application.logMessageReceivedThreaded += OnLog;
             }
-            catch (Exception ex) { Main.Entry.Logger.Log("[안정성] 준비 실패: " + ex.Message); }
+            catch (Exception ex) { Lg.I("[안정성] 준비 실패: " + ex.Message); }
         }
 
         internal static void Shutdown()
@@ -109,7 +109,7 @@ namespace StutterFix
                 Notes.Add(SettingsWindow.T("안전 모드: " + why + ". 게임 동작에 깊이 관여하는 기능을 이번 실행 동안 껐습니다. 정상적으로 끝내면 다음 실행부터 원래대로 켜집니다.",
                     "Safe mode: " + why + ". Features that hook deep into the game are off for this run. After a normal exit they come back next launch."));
             }
-            Main.Entry.Logger.Log("[안정성] 안전 모드로 켬: " + why);
+            Lg.I("[안정성] 안전 모드로 켬: " + why);
         }
 
         internal static void EnterSafeModeManual()
@@ -162,7 +162,7 @@ namespace StutterFix
                 string msg = string.Format("{0} 기능에서 오류가 {1}번 나서 이번 실행 동안 껐습니다 (첫 오류: {2}). 다른 모드와 부딪혔을 수 있습니다{3}",
                     string.Join(", ", keys), Threshold, first, SharedHint());
                 lock (sync) Notes.Add(msg);
-                Main.Entry.Logger.Log("[안정성] " + msg + "\n" + stack);
+                Lg.I("[안정성] " + msg + "\n" + stack);
                 pendingApply = true;   // 설정 반영은 메인 스레드에서 (Tick)
             }
             catch { }

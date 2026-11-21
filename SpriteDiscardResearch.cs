@@ -103,7 +103,7 @@ namespace StutterFix
                     if(s.Material&&s.Material.shader==candidate){s.Material.DisableKeyword("SF_SPRITE_DISCARD");s.Material.DisableKeyword("SF_REPEAT_IN_VERTEX");s.Material.shader=s.Shader;if(s.Material.shader!=s.Shader)throw new InvalidOperationException("shader restore failed");}
                     saved.RemoveAt(i);
                 }
-                catch(Exception e){failed++;Main.Entry.Logger.Log("[spritediscard] restore=UNCONFIRMED error="+e.GetType().Name);}
+                catch(Exception e){failed++;Lg.I("[spritediscard] restore=UNCONFIRMED error="+e.GetType().Name);}
             }
             if(failed!=0)throw new InvalidOperationException("sprite restore failures retained="+failed);
         }
@@ -114,9 +114,9 @@ namespace StutterFix
             // A foreign clone is outside ownership. Retain its shader rather
             // than unloading an asset still referenced by an unknown material.
             if(UnityEngine.Resources.FindObjectsOfTypeAll<Material>().Any(m=>m&&m.shader==candidate))
-            {Main.Entry.Logger.Log("[spritediscard] release=UNCONFIRMED foreign_material_reference=True");return;}
+            {Lg.I("[spritediscard] release=UNCONFIRMED foreign_material_reference=True");return;}
             candidate=null;if(bundle)bundle.Unload(true);bundle=null;
-            Main.Entry.Logger.Log("[spritediscard] released=True restored=True");
+            Lg.I("[spritediscard] released=True restored=True");
         }
     }
 }
