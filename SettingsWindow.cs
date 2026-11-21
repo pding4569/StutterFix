@@ -2008,8 +2008,8 @@ namespace StutterFix
                   "Effects that move more than 1000 tiles are processed over a few frames, nearest tiles first. Far tiles start moving a frame or a few later but finish at the same moment. The effect split strength sets the per-frame budget. Needs tile move animations on."),
                 null);
             ch |= Option("lowparticle", ref c.LowPauseParticles, T("화면 밖 파티클 멈추기", "Pause off-screen particles"),
-                T("파티클 장식이 화면 밖에 있는 동안 시뮬레이션을 멈춰 CPU 를 아낍니다. 파티클이 많은 맵에서 효과가 있습니다. 다시 화면에 들어오면 멈춘 곳부터 이어가서 원래와 모양·시점이 조금 달라질 수 있습니다." + (Compat.QPauseOffscreenParticles ? " (지금은 Quartz 가 같은 일을 하고 있어 쉬는 중)" : ""),
-                  "Stops simulating particle decorations while they are off-screen to save CPU on particle-heavy levels. When they come back on screen they resume where they stopped, so they may look slightly different from the original." + (Compat.QPauseOffscreenParticles ? " (Idle now: Quartz is doing the same)" : "")),
+                T("파티클 장식이 화면 밖에 있는 동안 시뮬레이션을 멈춰 CPU 를 아낍니다. 파티클이 많은 맵에서 효과가 있습니다. 다시 화면에 들어오면 멈춘 곳부터 이어가서 원래와 모양·시점이 달라질 수 있고, 맵에 따라 화면 안 파티클이 사라지기도 해서(eLadia) 기본은 꺼져 있습니다." + (Compat.QPauseOffscreenParticles ? " (지금은 Quartz 가 같은 일을 하고 있어 쉬는 중)" : ""),
+                  "Stops simulating particle decorations while they are off-screen to save CPU on particle-heavy levels. When they come back on screen they resume where they stopped, so they may look different from the original, and on some levels particles that should be visible disappear (eLadia), so this is off by default." + (Compat.QPauseOffscreenParticles ? " (Idle now: Quartz is doing the same)" : "")),
                 null);
             ch |= Option("hitsoundbatch", ref c.HitSoundBatch, T("히트음 예약 묶기", "Batch hit sound scheduling"),
                 T("타일마다 히트음을 하나씩 예약하는 대신 0.5초 단위로 미리 합쳐 예약해 곡 중 CPU 를 아낍니다(Arche 전곡 약 +6.6%). 사용자 지정 히트음 등 지원하지 않는 경우는 자동으로 원래 방식으로 돌아갑니다. 소리 타이밍·음량이 아주 조금 달라질 수 있습니다.",
