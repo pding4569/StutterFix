@@ -46,14 +46,14 @@ namespace StutterFix
             if (start == null) return;
             var em = AccessTools.TypeByName("DG.Tweening.Core.Easing.EaseManager");
             var ev = em == null ? null : AccessTools.Method(em, "Evaluate", new[] { typeof(Ease), typeof(EaseFunction), typeof(float), typeof(float), typeof(float), typeof(float) });
-            if (ev == null) { Main.Entry.Logger.Log("[즉시 이동] 이징 함수를 못 찾아 적용 안 함"); return; }
+            if (ev == null) { Lg.I("[즉시 이동] 이징 함수를 못 찾아 적용 안 함"); return; }
             easeEval = (EvalFn)Delegate.CreateDelegate(typeof(EvalFn), ev);
             try { activeRef = AccessTools.FieldRefAccess<Tween, bool>("<active>k__BackingField"); }
             catch { activeRef = null; }
-            if (activeRef == null) { Main.Entry.Logger.Log("[즉시 이동] 대역을 만들 수 없어 적용 안 함"); return; }
+            if (activeRef == null) { Lg.I("[즉시 이동] 대역을 만들 수 없어 적용 안 함"); return; }
             h.Patch(start, transpiler: new HarmonyMethod(typeof(ZeroTween), nameof(Transpiler)));
-            try { BuildPairs(); } catch (Exception ex) { Main.Entry.Logger.Log("[즉시 이동] 짝 찾기 실패: " + ex.Message); }
-            Main.Entry.Logger.Log("[즉시 이동] 설치" + (Patched ? "" : " - 모양이 달라 적용 안 함"));
+            try { BuildPairs(); } catch (Exception ex) { Lg.I("[즉시 이동] 짝 찾기 실패: " + ex.Message); }
+            Lg.I("[즉시 이동] 설치" + (Patched ? "" : " - 모양이 달라 적용 안 함"));
         }
 
         public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
@@ -359,7 +359,7 @@ namespace StutterFix
                 foreach (var m in u.DeclaringType.GetMethods(AccessTools.all)) if (m.DeclaringType == u.DeclaringType && m.ReturnType == typeof(void) && m.GetParameters().Length == 0 && !m.IsConstructor) voids++;
                 if (voids == 1) { updTypes.Add(u.DeclaringType); cmpTypes.Add(c.DeclaringType); }
             }
-            Main.Entry.Logger.Log("[즉시 이동] OnUpdate 건너뛸 짝 " + pairs.Count + "개, 타입으로 판별 가능 " + updTypes.Count + "개 (예상 9개)");
+            Lg.I("[즉시 이동] OnUpdate 건너뛸 짝 " + pairs.Count + "개, 타입으로 판별 가능 " + updTypes.Count + "개 (예상 9개)");
         }
 
         private static bool Calls(MethodInfo m, string name)
@@ -480,7 +480,7 @@ namespace StutterFix
         }
 
         private static int logged;
-        private static void Log(Exception ex) { if (logged++ < 5) Main.Entry.Logger.Log("[즉시 이동] 오류 (DOTween 안전 모드처럼 넘어감): " + ex.Message); }
+        private static void Log(Exception ex) { if (logged++ < 5) Lg.I("[즉시 이동] 오류 (DOTween 안전 모드처럼 넘어감): " + ex.Message); }
 
         // ── (개발자용) 비교: 표본은 원래 DOTween 으로 처리하고, 우리 계산과 결과를 비교한다 ─────────
         private class Info { public Func<object> Get; public object End; }

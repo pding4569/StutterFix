@@ -136,6 +136,7 @@ namespace StutterFix
             var c = Main.Config;
             if (c != null)
             {
+                sb.AppendLine("자세한 로그 / VerboseLog " + On(c.VerboseLog) + " (지금 / effective " + On(Lg.Verbose) + ")");
                 sb.AppendLine("메모리 정리 미루기 " + On(c.GcPause) + ", 효과 몰림 나누기 " + On(c.EffectSplit) + ", 타일 색 나누기 " + On(c.RecolorSplit));
                 sb.AppendLine("애니메이션 최적화 " + On(c.TweenGuard) + ", 글자 장식 최적화 " + On(c.SkipSameText) + ", 고급 필터 빠르게 끄기 " + On(c.FilterTypeCache) + ", 타일 모양 미리 만들기 " + On(c.MeshWarm) + ", 효과음 미리 불러오기 " + On(c.SoundWarm) + ", 함수 미리 컴파일 " + On(c.JitWarm) + ", 그래픽 미리 준비 " + On(c.ShaderWarm));
                 sb.AppendLine("저사양: 우선순위 " + On(c.LowPriority) + ", 절전 제한 끄기 " + On(c.LowNoThrottle) + ", 음악 반응 계산 끄기 " + On(c.LowNoFft) + ", 게임 화면 해상도 " + c.LowRenderScale + "%" + (c.LowSharpUpscale ? " 선명하게" : c.LowFsr ? " FSR1" : "") + ", 장식 이미지 최대 " + (c.LowImageCap > 0 ? c.LowImageCap + "" : "그대로") + ", (실험) 선명도 보정 " + (c.LowSharpen ? c.LowSharpenValue.ToString("F2") : "꺼짐") + ", (실험) 반만 그리기 " + On(c.LowHalfRender) + ", 자동 해상도 " + (c.LowAutoRes ? c.LowAutoFps + "FPS 최소 " + c.LowAutoMin + "%" : "꺼짐") + ", 효과 나누기 세기 " + c.LowSplit + ", 메뉴 FPS 제한 " + (c.LowMenuFps > 0 ? c.LowMenuFps + "" : "꺼짐") + ", 화면 밖 파티클 멈추기 " + On(c.LowPauseParticles) + ", 독점 전체 화면 " + On(c.ExpFullscreen == 1) + ", 타일 이동 나눠 처리 " + On(c.LowFloorSplit) + ", 이미지 압축해서 불러오기 " + On(c.LowCompressImages));

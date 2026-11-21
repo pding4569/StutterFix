@@ -77,7 +77,7 @@ namespace StutterFix
                         if ((m.Name == "StartEffect" || m.Name == "ScrubToTime") && m.DeclaringType == type && !m.IsAbstract) Add(h, m, type.Name + "." + m.Name, pre, post);
                 }
             bytes = new long[names.Count]; calls = new long[names.Count];
-            Main.Entry.Logger.Log("[할당 후보] 함수 " + index.Count + "개 감쌈");
+            Lg.I("[할당 후보] 함수 " + index.Count + "개 감쌈");
         }
 
         private static void Add(Harmony h, MethodBase m, string name, HarmonyMethod pre, HarmonyMethod post)
@@ -124,7 +124,7 @@ namespace StutterFix
                 var nb = new long[names.Count]; Array.Copy(bytes, nb, bytes.Length); bytes = nb;
                 var nc = new long[names.Count]; Array.Copy(calls, nc, calls.Length); calls = nc;
             }
-            Main.Entry.Logger.Log("[할당 후보] 카메라 콜백 " + (names.Count - before) + "개 더 감쌈");
+            Lg.I("[할당 후보] 카메라 콜백 " + (names.Count - before) + "개 더 감쌈");
         }
         internal static void ResetSong() { WrapCameraCallbacks(); Array.Clear(bytes, 0, bytes.Length); Array.Clear(calls, 0, calls.Length); since = UnityEngine.Time.realtimeSinceStartup; }
 
@@ -142,7 +142,7 @@ namespace StutterFix
                 if (n > 0) sb.Append(", ");
                 sb.Append(names[i]).Append(' ').Append((bytes[i] / 1048576.0 / secs).ToString("F3")).Append("MB/s (").Append((bytes[i] / Math.Max(1, calls[i])).ToString()).Append("B x ").Append((calls[i] / secs).ToString("F0")).Append("/s)");
             }
-            Main.Entry.Logger.Log("[할당 후보] 곡 중 (안에서 부른 것 포함): " + sb);
+            Lg.I("[할당 후보] 곡 중 (안에서 부른 것 포함): " + sb);
         }
     }
 }

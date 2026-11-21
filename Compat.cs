@@ -100,9 +100,9 @@ namespace StutterFix
                 string j = File.ReadAllText(f);
                 bool feature = Regex.IsMatch(j, "\"MemoryOptimizer\"\\s*:\\s*\\{\\s*\"Enabled\"\\s*:\\s*true");
                 Pacl2Lossy = feature && Flag(j, "AllowLossyCompression");
-                Main.Entry.Logger.Log("[다른 모드] PACL2 메모리 최적화 " + (feature ? "켜짐" : "꺼짐") + ", 이미지 손실 압축 " + (Pacl2Lossy ? "켜짐 (이미지 미리 풀기에서 여러 코어로 미리 압축)" : "꺼짐"));
+                Lg.I("[다른 모드] PACL2 메모리 최적화 " + (feature ? "켜짐" : "꺼짐") + ", 이미지 손실 압축 " + (Pacl2Lossy ? "켜짐 (이미지 미리 풀기에서 여러 코어로 미리 압축)" : "꺼짐"));
             }
-            catch (Exception ex) { Main.Entry.Logger.Log("[다른 모드] PACL2 설정 읽기 실패: " + ex.Message); }
+            catch (Exception ex) { Lg.I("[다른 모드] PACL2 설정 읽기 실패: " + ex.Message); }
         }
 
         // 2초마다만 파일을 다시 본다 (설정 창에서 매 프레임 불려도 싸게)
@@ -131,9 +131,9 @@ namespace StutterFix
                 QSkipNoOpFilters = Flag(j, "SkipNoOpScreenFilters"); QLeakGuard = Flag(j, "LeakGuard"); QLossyTexture = Flag(j, "LossyTextureCompression");
                 QFastBloom = Flag(j, "FastBloom"); QCacheScreenScale = Flag(j, "CacheScreenScale");
                 QRenderAllHitSounds = Flag(j, "RenderAllHitSounds");
-                Main.Entry.Logger.Log("[다른 모드] Quartz 최적화: " + Describe());
+                Lg.I("[다른 모드] Quartz 최적화: " + Describe());
             }
-            catch (Exception ex) { Main.Entry.Logger.Log("[다른 모드] Quartz 설정 읽기 실패: " + ex.Message); }
+            catch (Exception ex) { Lg.I("[다른 모드] Quartz 설정 읽기 실패: " + ex.Message); }
         }
 
         private static void SetAll(bool v)
@@ -220,9 +220,9 @@ namespace StutterFix
                 var parts = new List<string>(); foreach (var kv in mods) parts.Add(kv.Key + " " + kv.Value + "곳");
                 SharedSummary = string.Join(", ", parts.ToArray());
                 SharedDetail = shared;
-                Main.Entry.Logger.Log("[다른 모드] 같은 게임 함수를 고치는 곳 " + shared.Count + "개" + (shared.Count > 0 ? ": " + string.Join(" | ", shared.ToArray()) : ""));
+                Lg.I("[다른 모드] 같은 게임 함수를 고치는 곳 " + shared.Count + "개" + (shared.Count > 0 ? ": " + string.Join(" | ", shared.ToArray()) : ""));
             }
-            catch (Exception ex) { Main.Entry.Logger.Log("[다른 모드] 겹침 확인 실패: " + ex.Message); }
+            catch (Exception ex) { Lg.I("[다른 모드] 겹침 확인 실패: " + ex.Message); }
         }
     }
 }

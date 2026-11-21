@@ -31,7 +31,7 @@ namespace StutterFix
                 if (upd != null) h.Patch(upd, transpiler: new HarmonyMethod(typeof(AllocFix), nameof(FloorTranspiler)));
                 InstallInput(h);
             }
-            catch (Exception ex) { Main.Entry.Logger.Log("[쓰레기 줄이기] 설치 실패: " + ex.Message); }
+            catch (Exception ex) { Lg.I("[쓰레기 줄이기] 설치 실패: " + ex.Message); }
         }
 
         // 볼륨 모드가 될 수 있으면 true (원래대로 새로 만든다)
@@ -51,7 +51,7 @@ namespace StutterFix
             // 첫 명령이 DisplayClass 의 newobj 인지 확인 (게임이 바뀌었으면 손대지 않는다)
             if (list.Count == 0 || list[0].opcode != OpCodes.Newobj || !(list[0].operand is ConstructorInfo ctor) || !ctor.DeclaringType.Name.Contains("DisplayClass"))
             {
-                Main.Entry.Logger.Log("[쓰레기 줄이기] scrFloor.Update 모양이 달라 끔");
+                Lg.I("[쓰레기 줄이기] scrFloor.Update 모양이 달라 끔");
                 return list;
             }
             floorDisplay = ctor.DeclaringType;
@@ -63,7 +63,7 @@ namespace StutterFix
                 new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(AllocFix), nameof(MakeOrReuse))),
                 new CodeInstruction(OpCodes.Castclass, floorDisplay),
             });
-            Main.Entry.Logger.Log("[쓰레기 줄이기] scrFloor.Update: 볼륨 색 모드용 객체를 필요한 타일만 새로 만듦");
+            Lg.I("[쓰레기 줄이기] scrFloor.Update: 볼륨 색 모드용 객체를 필요한 타일만 새로 만듦");
             return list;
         }
 
@@ -92,17 +92,17 @@ namespace StutterFix
             var gsi = AccessTools.Method(typeof(RDInputType_AsyncKeyboard), "GetSpecialInput");
             // 2026-10-19 게임 업데이트(Unity 6000.3.25): GetSpecialInput 이 List 를 돌려주지 않고 인자 목록을 채우는 void 로 바뀌었고 RDInput 에 정적 버퍼가 생겼다
             // (게임이 직접 임시 객체를 줄임). 옛 모양이 아니면 입력 쪽은 건드리지 않는다.
-            if (gsi != null && gsi.ReturnType != typeof(List<AsyncKeyCode>)) { Main.Entry.Logger.Log("[쓰레기 줄이기] 비동기 키 입력: 게임 코드가 바뀌어(GetSpecialInput " + gsi.ReturnType.Name + ") 끔"); return; }
-            if (main == null || gsc == null || gsi == null) { Main.Entry.Logger.Log("[쓰레기 줄이기] 비동기 키 입력: 게임 코드 모양이 달라 끔"); return; }
+            if (gsi != null && gsi.ReturnType != typeof(List<AsyncKeyCode>)) { Lg.I("[쓰레기 줄이기] 비동기 키 입력: 게임 코드가 바뀌어(GetSpecialInput " + gsi.ReturnType.Name + ") 끔"); return; }
+            if (main == null || gsc == null || gsi == null) { Lg.I("[쓰레기 줄이기] 비동기 키 입력: 게임 코드 모양이 달라 끔"); return; }
             // 2026-11-04 게임 업데이트 뒤에는 이 필드가 없다(위 GetSpecialInput 검사에서 먼저 끈다). 필드가 없으면 설치하지 않는다.
             // (LoadCheck 는 이름이 인자로 들어오는 호출을 실행 중 확인으로 넘긴다.)
-            if (AccessTools.Field(typeof(RDInputType_AsyncKeyboard), "mainKeys") == null) { Main.Entry.Logger.Log("[쓰레기 줄이기] 비동기 키 입력: 게임에 mainKeys 필드가 없어 끔"); return; }
+            if (AccessTools.Field(typeof(RDInputType_AsyncKeyboard), "mainKeys") == null) { Lg.I("[쓰레기 줄이기] 비동기 키 입력: 게임에 mainKeys 필드가 없어 끔"); return; }
             mainKeysRef = MainKeysRefFor("mainKeys");
             getStateCount = AccessTools.MethodDelegate<Func<RDInputType, ButtonState, RDInputType.MainStateCount>>(gsc);
             getSpecial = AccessTools.MethodDelegate<Func<RDInputType_AsyncKeyboard, List<AsyncKeyCode>>>(gsi);
             if (Edition.Dev) VerifyInput = System.IO.File.Exists(System.IO.Path.Combine(Main.Entry.Path, "input-verify"));
             h.Patch(main, prefix: new HarmonyMethod(typeof(AllocFix), nameof(AsyncMainPrefix)), postfix: VerifyInput ? new HarmonyMethod(typeof(AllocFix), nameof(AsyncMainVerify)) : null);
-            Main.Entry.Logger.Log("[쓰레기 줄이기] 비동기 키 입력: 임시 객체 없이" + (VerifyInput ? " (개발자용: 원래 코드와 매번 비교)" : ""));
+            Lg.I("[쓰레기 줄이기] 비동기 키 입력: 임시 객체 없이" + (VerifyInput ? " (개발자용: 원래 코드와 매번 비교)" : ""));
             InstallMouse(h);
             InstallKeyboard(h);
         }
@@ -164,7 +164,7 @@ namespace StutterFix
             }
             if (same) return;
             VerifyDiffs++;
-            if (VerifyDiffs <= 5) Main.Entry.Logger.Log(string.Format("[쓰레기 줄이기 검증] 비동기 키 입력 {0}: 원래 {1}개, 우리 {2}개", state, __result, __state.Count));
+            if (VerifyDiffs <= 5) Lg.I(string.Format("[쓰레기 줄이기 검증] 비동기 키 입력 {0}: 원래 {1}개, 우리 {2}개", state, __result, __state.Count));
         }
 
         // 3) 마우스 입력(RDInputType_Mouse.Main): 프레임마다 상태별로 (from key in MouseKeys where CheckKeyState(key, state) select new AnyKeyCode(key)).ToList()
@@ -181,12 +181,12 @@ namespace StutterFix
             var keysField = AccessTools.Field(typeof(RDInputType_Mouse), "MouseKeys");
             var playing = AccessTools.PropertyGetter(typeof(RDInputType), "isPlaying");
             var ck = AccessTools.Method(typeof(RDInputType_Keyboard), "CheckKeyState", new[] { typeof(KeyCode), typeof(ButtonState) });
-            if (main == null || keysField == null || playing == null || ck == null || getStateCount == null) { Main.Entry.Logger.Log("[쓰레기 줄이기] 마우스 입력: 게임 코드 모양이 달라 끔"); return; }
+            if (main == null || keysField == null || playing == null || ck == null || getStateCount == null) { Lg.I("[쓰레기 줄이기] 마우스 입력: 게임 코드 모양이 달라 끔"); return; }
             mouseKeys = (KeyCode[])keysField.GetValue(null);
             isPlayingGet = AccessTools.MethodDelegate<Func<RDInputType, bool>>(playing);
             checkKey = AccessTools.MethodDelegate<Func<KeyCode, ButtonState, bool>>(ck);
             h.Patch(main, prefix: new HarmonyMethod(typeof(AllocFix), nameof(MousePrefix)), postfix: VerifyInput ? new HarmonyMethod(typeof(AllocFix), nameof(MouseVerifyPost)) : null);
-            Main.Entry.Logger.Log("[쓰레기 줄이기] 마우스 입력: 임시 객체 없이");
+            Lg.I("[쓰레기 줄이기] 마우스 입력: 임시 객체 없이");
         }
 
         private static bool MouseOff(RDInputType_Mouse m)
@@ -229,7 +229,7 @@ namespace StutterFix
             }
             if (same) return;
             MouseDiffs++;
-            if (MouseDiffs <= 5) Main.Entry.Logger.Log(string.Format("[쓰레기 줄이기 검증] 마우스 입력 {0}: 원래 {1}개, 우리 {2}개", state, __result, expect));
+            if (MouseDiffs <= 5) Lg.I(string.Format("[쓰레기 줄이기 검증] 마우스 입력 {0}: 원래 {1}개, 우리 {2}개", state, __result, expect));
         }
 
         // 4) 레거시 키보드 입력(RDInputType_Keyboard.MainIgnoreActive): 비동기 입력을 써도 scrController.UpdateInput 이 매 프레임 부른다.
@@ -245,11 +245,11 @@ namespace StutterFix
         {
             var m = AccessTools.Method(typeof(RDInputType_Keyboard), "MainIgnoreActive", new[] { typeof(ButtonState) });
             var sp = AccessTools.Method(typeof(RDInputType_Keyboard), "CountSpecialInput");
-            if (m == null || sp == null || getStateCount == null || checkKey == null) { Main.Entry.Logger.Log("[쓰레기 줄이기] 레거시 키보드 입력: 게임 코드 모양이 달라 끔"); return; }
+            if (m == null || sp == null || getStateCount == null || checkKey == null) { Lg.I("[쓰레기 줄이기] 레거시 키보드 입력: 게임 코드 모양이 달라 끔"); return; }
             kbMainKeys = AccessTools.FieldRefAccess<RDInputType_Keyboard, KeyCode[]>("mainKeys");
             kbSpecial = AccessTools.MethodDelegate<Func<RDInputType_Keyboard, List<KeyCode>>>(sp);
             h.Patch(m, prefix: new HarmonyMethod(typeof(AllocFix), nameof(KbPrefix)), postfix: VerifyInput ? new HarmonyMethod(typeof(AllocFix), nameof(KbVerifyPost)) : null);
-            Main.Entry.Logger.Log("[쓰레기 줄이기] 레거시 키보드 입력: 임시 객체 없이");
+            Lg.I("[쓰레기 줄이기] 레거시 키보드 입력: 임시 객체 없이");
         }
 
         private static void KbCompute(RDInputType_Keyboard kb, ButtonState state, List<AnyKeyCode> outKeys)
@@ -289,7 +289,7 @@ namespace StutterFix
             for (int i = 0; same && i < __state.Count; i++) same = (KeyCode)keys[i].value == (KeyCode)__state[i].value;
             if (same) return;
             KbDiffs++;
-            if (KbDiffs <= 5) Main.Entry.Logger.Log(string.Format("[쓰레기 줄이기 검증] 레거시 키보드 {0}: 원래 {1}개, 우리 {2}개", state, __result, __state.Count));
+            if (KbDiffs <= 5) Lg.I(string.Format("[쓰레기 줄이기 검증] 레거시 키보드 {0}: 원래 {1}개, 우리 {2}개", state, __result, __state.Count));
         }
 
         internal static string VerifySummary()

@@ -43,14 +43,14 @@ namespace StutterFix
                 var create = AccessTools.Method(typeof(scrDecorationManager), "CreateDecoration");
                 decorationsProp = AccessTools.Property(typeof(scnGame), "decorations");
                 decorationsField = decorationsProp == null ? AccessTools.Field(typeof(scnGame), "decorations") : null;
-                if (update == null || create == null || (decorationsProp == null && decorationsField == null)) { Main.Entry.Logger.Log("[장식 한 번에 복제] 게임 코드 모양이 달라 끔"); return; }
+                if (update == null || create == null || (decorationsProp == null && decorationsField == null)) { Lg.I("[장식 한 번에 복제] 게임 코드 모양이 달라 끔"); return; }
                 swapped = 0;
                 h.Patch(create, prefix: new HarmonyMethod(typeof(DecoBatch), nameof(CreatePrefix)), transpiler: new HarmonyMethod(typeof(DecoBatch), nameof(CreateTranspiler)));
-                if (swapped != 1) { Main.Entry.Logger.Log("[장식 한 번에 복제] 바꿀 곳이 " + swapped + "개라 끔"); Enabled = false; return; }
+                if (swapped != 1) { Lg.I("[장식 한 번에 복제] 바꿀 곳이 " + swapped + "개라 끔"); Enabled = false; return; }
                 h.Patch(update, prefix: new HarmonyMethod(typeof(DecoBatch), nameof(UpdatePrefix)) { priority = Priority.Last }, finalizer: new HarmonyMethod(typeof(DecoBatch), nameof(UpdateFinalizer)));
-                Main.Entry.Logger.Log("[장식 한 번에 복제] 설치");
+                Lg.I("[장식 한 번에 복제] 설치");
             }
-            catch (Exception ex) { Enabled = false; Main.Entry.Logger.Log("[장식 한 번에 복제] 설치 실패: " + ex.Message); }
+            catch (Exception ex) { Enabled = false; Lg.I("[장식 한 번에 복제] 설치 실패: " + ex.Message); }
         }
 
         private static int swapped;
@@ -100,7 +100,7 @@ namespace StutterFix
                 }
                 active = true;
             }
-            catch (Exception ex) { active = false; Main.Entry.Logger.Log("[장식 한 번에 복제] 준비 실패, 원래대로: " + ex.Message); }
+            catch (Exception ex) { active = false; Lg.I("[장식 한 번에 복제] 준비 실패, 원래대로: " + ex.Message); }
         }
 
         public static void CreatePrefix(LevelEvent levelEvent)
@@ -143,7 +143,7 @@ namespace StutterFix
             if (active)
             {
                 try { EndRun(); } catch { }
-                if (Batches > 0) Main.Entry.Logger.Log(string.Format("[장식 한 번에 복제] {0}번에 {1}개 (안 쓰고 지움 {2}개){3}", Batches, Batched, Leftover,
+                if (Batches > 0) Lg.I(string.Format("[장식 한 번에 복제] {0}번에 {1}개 (안 쓰고 지움 {2}개){3}", Batches, Batched, Leftover,
                     Edition.Dev ? string.Format(" | 원래 방식과 비교 {0}번 다름 {1}{2}", DevChecks, DevDiff, DevFirst != null ? " (" + DevFirst + ")" : "") : ""));
             }
             active = false; indexOf = null; kind = null; mgr = null; imagePrefab = null; cur = -1;

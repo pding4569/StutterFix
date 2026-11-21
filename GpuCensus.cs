@@ -101,21 +101,21 @@ namespace StutterFix
             var go = new GameObject("StutterFix.GpuCensus"); DontDestroyOnLoad(go);
             pending = go.AddComponent<GpuCensus>();
             Camera.onPreRender += Capture;
-            Main.Entry.Logger.Log("[gpucensus] queued: next Camera onPreRender, after LateUpdate/culling; timeout 10 realtime seconds");
+            Lg.I("[gpucensus] queued: next Camera onPreRender, after LateUpdate/culling; timeout 10 realtime seconds");
             pending.StartCoroutine(pending.Timeout());
         }
         void OnDestroy() { if (pending == this) { Camera.onPreRender -= Capture; pending = null; } }
         System.Collections.IEnumerator Timeout()
         {
             yield return new WaitForSecondsRealtime(10);
-            Main.Entry.Logger.Log("[gpucensus] no Camera render callback; snapshot not captured"); Stop();
+            Lg.I("[gpucensus] no Camera render callback; snapshot not captured"); Stop();
         }
         static void Capture(Camera c)
         {
             if (pending == null || c.name != "Camera") return;
             Stop();
             try { RunNow(c); }
-            catch (Exception ex) { Main.Entry.Logger.Log("[gpucensus] failed: " + ex); }
+            catch (Exception ex) { Lg.I("[gpucensus] failed: " + ex); }
         }
         // A local Sprite bound transformed to world space also diagnoses stale/zero native bounds.
         // Never replace the engine culling bound with this estimate: tiled/sliced sprites and custom
@@ -260,7 +260,7 @@ namespace StutterFix
                     var d = sorted[j];
                     text.AppendLine("draw\t" + j + "\t" + Clean(PathOf(d.Renderer.transform)) + "#" + d.Renderer.GetInstanceID() + "\t" + d.Renderer.GetType().Name + "\t" + IsDecoration(d.Renderer) + "\t" + Clean(d.Material.name) + "#" + d.Material.GetInstanceID() + "\t" + usage[d.Material.GetInstanceID()] + "\t" + (d.Material.GetInstanceID() < 0) + "\t" + d.PropertyBlock + "\t" + Clean(d.Material.shader ? d.Material.shader.name : "null") + "\t" + d.Keywords + "\t" + d.Material.renderQueue + "\t" + d.Renderer.sortingLayerName + "\t" + d.Renderer.sortingOrder + "\t" + F(d.Distance) + "\t" + TextureInfo(d.Texture));
                 }
-                text.AppendLine("# " + summary); Main.Entry.Logger.Log("[gpucensus] " + head + " " + summary);
+                text.AppendLine("# " + summary); Lg.I("[gpucensus] " + head + " " + summary);
                 text.AppendLine("count\taabb_pixels\talpha0_slots\talpha0_pixels\tproperty_blocks\tmaterial\tshader\tkeywords\trenderQueue\tsortingLayer\tsortingOrder\tprimaryTexture\tallTextures");
                 foreach (var g in list.GroupBy(d => d.Group).OrderByDescending(g => g.Sum(d => d.Area)))
                 {
@@ -271,7 +271,7 @@ namespace StutterFix
             string dir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "StutterFix"); Directory.CreateDirectory(dir);
             string path = Path.Combine(dir, "gpu-census-" + DateTime.Now.ToString("yyyyMMdd-HHmmss-fff") + ".tsv");
             File.WriteAllText(path, text.ToString(), new UTF8Encoding(false));
-            Main.Entry.Logger.Log("[gpucensus] " + path + " elapsed_ms=" + sw.ElapsedMilliseconds + "; exclude census and following recovery frames from timing. AABB overdraw and material transitions are estimates; alpha0 is not proof of invisibility.");
+            Lg.I("[gpucensus] " + path + " elapsed_ms=" + sw.ElapsedMilliseconds + "; exclude census and following recovery frames from timing. AABB overdraw and material transitions are estimates; alpha0 is not proof of invisibility.");
             }
             finally { textureDescriptions = null; nativeAvailable = false; }
         }

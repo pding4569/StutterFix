@@ -48,7 +48,7 @@ namespace StutterFix
                 var set = AccessTools.Method(typeof(scrDecoration), "SetPosition");
                 var mClamp = AccessTools.Method(typeof(scrDecoration), "UpdateScreenClamp");
                 var mUpdate = AccessTools.Method(typeof(scrDecoration), "UpdatePosition");
-                if (set == null || mClamp == null || mUpdate == null) { Main.Entry.Logger.Log("[장식 마무리] 대상 없음"); return; }
+                if (set == null || mClamp == null || mUpdate == null) { Lg.I("[장식 마무리] 대상 없음"); return; }
                 clamp = (Action<scrDecoration>)Delegate.CreateDelegate(typeof(Action<scrDecoration>), mClamp);
                 update = (Action<scrDecoration>)Delegate.CreateDelegate(typeof(Action<scrDecoration>), mUpdate);
                 var mPivot = AccessTools.Method(typeof(ADOFAI.DecorationPivot), "UpdatePivotCrossImage");
@@ -70,9 +70,9 @@ namespace StutterFix
                 if (mLogic != null) logicUpdate = (Action<scrDecoration, bool>)Delegate.CreateDelegate(typeof(Action<scrDecoration, bool>), mLogic);
                 if (mgrLate != null) h.Patch(mgrLate, prefix: new HarmonyMethod(typeof(MoveApply), nameof(ManagerLatePrefix)), postfix: new HarmonyMethod(typeof(MoveApply), nameof(ManagerLatePostfix)),
                     transpiler: logicUpdate != null ? new HarmonyMethod(typeof(MoveApply), nameof(ManagerLateTranspiler)) : null);
-                Main.Entry.Logger.Log("[장식 마무리] 설치" + (Patched ? "" : " - 모양이 달라 적용 안 함"));
+                Lg.I("[장식 마무리] 설치" + (Patched ? "" : " - 모양이 달라 적용 안 함"));
             }
-            catch (Exception ex) { Main.Entry.Logger.Error("[장식 마무리] 설치 실패: " + ex.Message); }
+            catch (Exception ex) { Lg.E("[장식 마무리] 설치 실패: " + ex.Message); }
         }
 
         // SetPosition 끝의 두 호출만 우리 것으로 바꾼다.
@@ -341,7 +341,7 @@ namespace StutterFix
                 }
                 yield return c;
             }
-            if (lists != 2) Main.Entry.Logger.Log("[히트박스 순회] 목록 읽기 " + lists + "곳 (예상 2곳)");
+            if (lists != 2) Lg.I("[히트박스 순회] 목록 읽기 " + lists + "곳 (예상 2곳)");
         }
 
         public static IEnumerable<CodeInstruction> ManagerLateTranspiler(IEnumerable<CodeInstruction> instructions)
@@ -366,7 +366,7 @@ namespace StutterFix
                 }
                 yield return c;
             }
-            if (n != 1 || lists != 2) Main.Entry.Logger.Log("[장식 순회] LogicUpdate 호출 " + n + "곳, 목록 읽기 " + lists + "곳 (예상 1곳, 2곳)");
+            if (n != 1 || lists != 2) Lg.I("[장식 순회] LogicUpdate 호출 " + n + "곳, 목록 읽기 " + lists + "곳 (예상 1곳, 2곳)");
         }
 
         public static void ClampNow(scrDecoration d)

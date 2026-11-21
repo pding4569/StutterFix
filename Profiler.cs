@@ -81,22 +81,22 @@ namespace StutterFix
                                 postfix: new HarmonyMethod(typeof(Profiler), nameof(Post)));
                             patched++;
                             if (t[1] == "ColorFloor" || t[1] == "TweenColor" || t[1] == "SetColor")
-                                Main.Entry.Logger.Log("[sig] " + method.DeclaringType.Name + "." + method.ToString());
+                                Lg.I("[sig] " + method.DeclaringType.Name + "." + method.ToString());
                         }
                         catch (Exception ex)
                         {
-                            Main.Entry.Logger.Error($"profiler patch failed for {t[0]}.{t[1]}: {ex.Message}");
+                            Lg.E($"profiler patch failed for {t[0]}.{t[1]}: {ex.Message}");
                         }
                     }
                 }
                 catch (Exception ex)
                 {
-                    Main.Entry.Logger.Error($"profiler target failed {t[0]}.{t[1]}: {ex.Message}");
+                    Lg.E($"profiler target failed {t[0]}.{t[1]}: {ex.Message}");
                 }
             }
 
             Running = true;
-            Main.Entry.Logger.Log($"profiler started ({patched} methods)");
+            Lg.I($"profiler started ({patched} methods)");
         }
 
         internal static void Stop()
@@ -105,7 +105,7 @@ namespace StutterFix
             harmony.UnpatchAll("StutterFix.Profiler");
             Running = false;
             lock (gate) stats.Clear();
-            Main.Entry.Logger.Log("profiler stopped");
+            Lg.I("profiler stopped");
         }
 
         public static void Pre(MethodBase __originalMethod, out long __state)
@@ -194,7 +194,7 @@ SceneScan.Run();
             if (lines.Count == 0) return;
             lines.Sort();
             LastReport = string.Join("  |  ", lines);
-            Main.Entry.Logger.Log("[profile] " + LastReport);
+            Lg.I("[profile] " + LastReport);
         }
     }
 }

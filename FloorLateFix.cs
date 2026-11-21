@@ -23,11 +23,11 @@ namespace StutterFix
             try
             {
                 var m = AccessTools.Method(typeof(scrFloor), "LateUpdate");
-                if (m == null) { Main.Entry.Logger.Log("[타일 LateUpdate] 없음"); return; }
+                if (m == null) { Lg.I("[타일 LateUpdate] 없음"); return; }
                 h.Patch(m, transpiler: new HarmonyMethod(typeof(FloorLateFix), nameof(Transpiler)));
-                Main.Entry.Logger.Log("[타일 LateUpdate] 다중 행성 아닌 타일의 위치·크기 읽기 생략 (바꾼 곳 " + Replaced + "/4)");
+                Lg.I("[타일 LateUpdate] 다중 행성 아닌 타일의 위치·크기 읽기 생략 (바꾼 곳 " + Replaced + "/4)");
             }
-            catch (Exception ex) { Main.Entry.Logger.Log("[타일 LateUpdate] 설치 실패: " + ex.Message); }
+            catch (Exception ex) { Lg.I("[타일 LateUpdate] 설치 실패: " + ex.Message); }
         }
 
         public static Vector3 Pos(Transform t, scrFloor f) { return Enabled && ReferenceEquals(lineRef(f), null) ? default(Vector3) : t.position; }

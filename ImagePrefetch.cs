@@ -76,13 +76,13 @@ namespace StutterFix
         {
             string p = Extract("libdeflate.dll");
             if (p == null) NativeInflate.Status = "모드 안에 DLL 없음"; else NativeInflate.Init(p);
-            Main.Entry.Logger.Log("[이미지] 빠른 압축 풀기(libdeflate): " + NativeInflate.Status);
+            Lg.I("[이미지] 빠른 압축 풀기(libdeflate): " + NativeInflate.Status);
             p = Extract("sfnative.dll");
             if (p == null) SfNative.Status = "모드 안에 DLL 없음"; else SfNative.Init(p);
-            Main.Entry.Logger.Log("[이미지] 네이티브 필터 되돌리기·DXT 압축(sfnative): " + SfNative.Status);
+            Lg.I("[이미지] 네이티브 필터 되돌리기·DXT 압축(sfnative): " + SfNative.Status);
             p = Extract("turbojpeg.dll");
             if (p == null) TurboJpeg.Status = "모드 안에 DLL 없음"; else TurboJpeg.Init(p);
-            Main.Entry.Logger.Log("[이미지] JPG 풀기(libjpeg-turbo): " + TurboJpeg.Status);
+            Lg.I("[이미지] JPG 풀기(libjpeg-turbo): " + TurboJpeg.Status);
         }
 
         // 이미지 미리 풀기를 꺼도 첫 판 FPS 떨어짐 막기(WindowGhost)가 sfnative 를 쓴다
@@ -108,10 +108,10 @@ namespace StutterFix
                 }
                 bool same = false;
                 try { if (File.Exists(path)) { var have = File.ReadAllBytes(path); same = have.Length == want.Length && System.Linq.Enumerable.SequenceEqual(have, want); } } catch { }
-                if (!same) { try { File.WriteAllBytes(path, want); } catch (Exception ex) { Main.Entry.Logger.Log("[이미지] " + name + " 쓰기 실패 (" + ex.Message + ")"); } }
+                if (!same) { try { File.WriteAllBytes(path, want); } catch (Exception ex) { Lg.I("[이미지] " + name + " 쓰기 실패 (" + ex.Message + ")"); } }
                 return path;
             }
-            catch (Exception ex) { Main.Entry.Logger.Log("[이미지] " + name + " 꺼내기 실패: " + ex.Message); return null; }
+            catch (Exception ex) { Lg.I("[이미지] " + name + " 꺼내기 실패: " + ex.Message); return null; }
         }
 
         internal static void Install(Harmony harmony)
@@ -120,7 +120,7 @@ namespace StutterFix
             {
                 var update = AccessTools.Method(typeof(scnGame), "UpdateDecorationObjects");
                 var load = AccessTools.Method(typeof(TextureManager), "LoadTexture");
-                if (update == null || load == null) { Main.Entry.Logger.Error("[이미지] 대상 없음"); return; }
+                if (update == null || load == null) { Lg.E("[이미지] 대상 없음"); return; }
                 harmony.Patch(update,
                     prefix: new HarmonyMethod(typeof(ImagePrefetch), nameof(Begin)),
                     finalizer: new HarmonyMethod(typeof(ImagePrefetch), nameof(End)));
@@ -158,11 +158,11 @@ namespace StutterFix
                     var ps = ctor.GetParameters();
                     if (ps.Length < 5 || ps[0].ParameterType != typeof(Texture2D) || ps[4].Name != "pixelsPerUnit") continue;
                     harmony.Patch(ctor, prefix: new HarmonyMethod(typeof(ImagePrefetch), nameof(SpritePrefix)));
-                    Main.Entry.Logger.Log("[이미지] 스프라이트 크기 보정 설치 (큰 이미지 줄이기용)");
+                    Lg.I("[이미지] 스프라이트 크기 보정 설치 (큰 이미지 줄이기용)");
                 }
-                Main.Entry.Logger.Log("[이미지] 미리 풀기 설치" + (swapped == 2 ? "" : " (LoadTexture 모양이 달라 적용 안 됨)"));
+                Lg.I("[이미지] 미리 풀기 설치" + (swapped == 2 ? "" : " (LoadTexture 모양이 달라 적용 안 됨)"));
             }
-            catch (Exception ex) { Main.Entry.Logger.Error("[이미지] 설치 실패: " + ex.Message); }
+            catch (Exception ex) { Lg.E("[이미지] 설치 실패: " + ex.Message); }
         }
 
         // ── 큰 이미지 줄이기 (선택) ──────────────────────────────────────
@@ -187,7 +187,7 @@ namespace StutterFix
             {
                 var holder = scnGame.instance != null ? scnGame.instance.imgHolder : null;
                 var c2 = holder != null && spritesField != null ? spritesField.GetValue(holder) as System.Collections.IDictionary : null;
-                Main.Entry.Logger.Log(string.Format("[이미지] 맵 연 뒤: 올라와 있는 이미지 {0}장, VRAM 전체 {1:F0}MB / 게임 {2:F0}MB", c2 != null ? c2.Count : -1, SystemMonitor.VramUsedMB, SystemMonitor.VramGameMB));
+                Lg.I(string.Format("[이미지] 맵 연 뒤: 올라와 있는 이미지 {0}장, VRAM 전체 {1:F0}MB / 게임 {2:F0}MB", c2 != null ? c2.Count : -1, SystemMonitor.VramUsedMB, SystemMonitor.VramGameMB));
                 VramGuard.AfterOpen(SystemMonitor.VramUsedMB, SystemMonitor.VramGameMB);
             }
             catch { }
@@ -239,9 +239,9 @@ namespace StutterFix
                     if (!usable) drop.Add(e.Key);
                 }
                 foreach (var k in drop) { try { unload.Invoke(holder, new[] { k }); } catch { } }
-                if (drop.Count > 0) Main.Entry.Logger.Log("[이미지] 이전 맵 이미지 " + drop.Count + "장을 내림 (남은 것 " + cached.Count + "장)");
+                if (drop.Count > 0) Lg.I("[이미지] 이전 맵 이미지 " + drop.Count + "장을 내림 (남은 것 " + cached.Count + "장)");
             }
-            catch (Exception ex) { Main.Entry.Logger.Log("[이미지] 이전 맵 이미지 내리기 실패: " + ex.Message); }
+            catch (Exception ex) { Lg.I("[이미지] 이전 맵 이미지 내리기 실패: " + ex.Message); }
         }
 
         public static void SpritePrefix(Texture2D texture, ref float pixelsPerUnit) { AdjustPixelsPerUnit(texture, ref pixelsPerUnit); }
@@ -275,7 +275,7 @@ namespace StutterFix
             status = ADOFAI.LoadResult.Error;
             if (running && filePath != null) brokenThisLoad.Add(filePath);
             if (filePath != null) brokenFiles.Add(FullPath(filePath));
-            if (filePath != null && brokenSeen.Add(filePath) && BrokenImages++ < 20) Main.Entry.Logger.Log("[이미지] 풀 수 없는 이미지(파일이 깨짐), 게임이 건너뛰게 함: " + filePath);
+            if (filePath != null && brokenSeen.Add(filePath) && BrokenImages++ < 20) Lg.I("[이미지] 풀 수 없는 이미지(파일이 깨짐), 게임이 건너뛰게 함: " + filePath);
         }
 
         // 깨졌다고 확인한 파일 (전체 경로, 이번 실행 동안)
@@ -508,7 +508,7 @@ namespace StutterFix
                 sb.Append(", 읽다 예외 난 장식 이동 ").Append(img);
                 if (firstBad != null) sb.Append(", 처음: ").Append(firstBad);
             }
-            Main.Entry.Logger.Log(sb.ToString());
+            Lg.I(sb.ToString());
         }
 
         public static void Begin(scnGame __instance)
@@ -534,9 +534,9 @@ namespace StutterFix
                         if (pre > 0) { sideNow = pre; AutoNote = "자동: 첫 판부터 긴 변 " + pre + " 으로 줄임 (" + why + ")"; }
                         else if (why.Length > 0) AutoNote += " (" + why + ")";
                     }
-                    Main.Entry.Logger.Log("[이미지] " + AutoNote);
+                    Lg.I("[이미지] " + AutoNote);
                 }
-                if (Resilience.SafeMode && sideNow <= 0) { Main.Entry.Logger.Log("[이미지] 안전 모드: 줄일 필요가 없는 맵이라 원래 방식으로 불러옴"); return; }
+                if (Resilience.SafeMode && sideNow <= 0) { Lg.I("[이미지] 안전 모드: 줄일 필요가 없는 맵이라 원래 방식으로 불러옴"); return; }
                 var list = new List<Item>();
                 var seen = new Dictionary<string, Item>(StringComparer.OrdinalIgnoreCase);
                 var cached = spritesField != null ? spritesField.GetValue(__instance.imgHolder) as System.Collections.IDictionary : null;
@@ -572,8 +572,8 @@ namespace StutterFix
                 foreach (var ev in __instance.decorations) if (!PlayTweaks.SkipDecoAtLoad(ev)) add(ev);
                 if (!PlayTweaks.SkipMoveImagesAtLoad) foreach (var ev in __instance.events) if ((int)ev.eventType == 29) add(ev);
 
-                Main.Entry.Logger.Log(string.Format("[이미지] 맵 열기 전: 이미 올라와 있는 이미지 {0}장, VRAM 전체 {1:F0}MB / 게임 {2:F0}MB", cached != null ? cached.Count : -1, SystemMonitor.VramUsedMB, SystemMonitor.VramGameMB));
-                if (unloaded > 0) Main.Entry.Logger.Log("[이미지] 한도가 바뀌어 이미 올라온 이미지 " + unloaded + "장을 다시 불러옴 (긴 변 " + (sideNow > 0 ? sideNow.ToString() : "원본") + ")");
+                Lg.I(string.Format("[이미지] 맵 열기 전: 이미 올라와 있는 이미지 {0}장, VRAM 전체 {1:F0}MB / 게임 {2:F0}MB", cached != null ? cached.Count : -1, SystemMonitor.VramUsedMB, SystemMonitor.VramGameMB));
+                if (unloaded > 0) Lg.I("[이미지] 한도가 바뀌어 이미 올라온 이미지 " + unloaded + "장을 다시 불러옴 (긴 변 " + (sideNow > 0 ? sideNow.ToString() : "원본") + ")");
                 // 이미 올라온 이미지를 다시 쓰는 경우(같은 맵 다시 열기)에는 그때의 한도가 그대로 남는다
                 VramGuard.OnLevelLoaded(__instance.levelPath, sideNow, list.Count >= 8);
                 if (list.Count < 8) return;   // 몇 장 안 되면 그냥 원래대로
@@ -611,9 +611,9 @@ namespace StutterFix
                     workers[i] = new Thread(Work) { IsBackground = true, Name = "StutterFix.Image" + i, Priority = System.Threading.ThreadPriority.BelowNormal };
                     workers[i].Start();
                 }
-                Main.Entry.Logger.Log("[이미지] " + list.Count + "장 미리 풀기 시작 (작업 스레드 " + n + "개" + (TexCompress.Planned ? ", DXT 로 미리 압축: " + (Compat.Pacl2Lossy ? "PACL2 손실 압축" : "저사양 옵션") : "") + ")");
+                Lg.I("[이미지] " + list.Count + "장 미리 풀기 시작 (작업 스레드 " + n + "개" + (TexCompress.Planned ? ", DXT 로 미리 압축: " + (Compat.Pacl2Lossy ? "PACL2 손실 압축" : "저사양 옵션") : "") + ")");
             }
-            catch (Exception ex) { Main.Entry.Logger.Error("[이미지] 시작 실패: " + ex.Message); Stop(); }
+            catch (Exception ex) { Lg.E("[이미지] 시작 실패: " + ex.Message); Stop(); }
         }
 
         // ── 2) 작업 스레드 ─────────────────────────────────────────────
@@ -875,7 +875,7 @@ namespace StutterFix
                 {
                     fallbackNotes++;
                     long len = -1; try { len = new FileInfo(path).Length; } catch { }
-                    Main.Entry.Logger.Log(string.Format("[이미지] 원래 방식으로: {0} ({1}, {2}KB)", Path.GetFileName(path), why, len / 1024));
+                    Lg.I(string.Format("[이미지] 원래 방식으로: {0} ({1}, {2}KB)", Path.GetFileName(path), why, len / 1024));
                 }
                 if (running) fallback++;
                 return RDFile.ReadAllBytes(path, out loadResult);
@@ -974,7 +974,7 @@ namespace StutterFix
             }
             catch (Exception ex)
             {
-                Main.Entry.Logger.Error("[이미지] 넣기 실패, 원래 방식으로: " + ex.Message);
+                Lg.E("[이미지] 넣기 실패, 원래 방식으로: " + ex.Message);
                 fallback++;
                 return ImageConversion.LoadImage(tex, File.ReadAllBytes(it.Path));
             }
@@ -1005,7 +1005,7 @@ namespace StutterFix
             string desc;
             string why = DiffFromUnity(it, out desc);
             if (why == null) ExtraSame++; else ExtraDiff++;
-            Main.Entry.Logger.Log("[이미지] 추가 형식 확인 " + Path.GetFileName(it.Path) + " (" + desc + "): " + (why == null ? "유니티와 같음" : "다름 - " + why));
+            Lg.I("[이미지] 추가 형식 확인 " + Path.GetFileName(it.Path) + " (" + desc + "): " + (why == null ? "유니티와 같음" : "다름 - " + why));
             return why == null;
         }
 
@@ -1020,7 +1020,7 @@ namespace StutterFix
             if (why != null)
             {
                 Interlocked.Increment(ref TurboJpeg.DevMismatch);
-                Main.Entry.Logger.Log("[이미지] JPG 유니티와 다름 " + Path.GetFileName(it.Path) + " (" + desc + "): " + why + " -> 원래 방식으로");
+                Lg.I("[이미지] JPG 유니티와 다름 " + Path.GetFileName(it.Path) + " (" + desc + "): " + why + " -> 원래 방식으로");
             }
             return why == null;
         }
@@ -1058,7 +1058,7 @@ namespace StutterFix
         public static Exception End(scnGame __instance, Exception __exception)
         {
             UploadBudget.Restore();
-            if (__exception is NullReferenceException) { try { WhyNull(__instance); } catch (Exception ex) { Main.Entry.Logger.Log("[장식 불러오기] 원인 찾기 실패: " + ex.Message); } }
+            if (__exception is NullReferenceException) { try { WhyNull(__instance); } catch (Exception ex) { Lg.I("[장식 불러오기] 원인 찾기 실패: " + ex.Message); } }
             if (running)
             {
                 double total = (Stopwatch.GetTimestamp() - startTicks) * 1000.0 / Stopwatch.Frequency;
@@ -1066,9 +1066,9 @@ namespace StutterFix
                 Last = string.Format("미리 푼 것 {0}장(넣기 {5:F0}ms), 원래 방식 {1}장({6:F0}ms, 순서 어긋남 {2}), 기다림 {3:F0}ms, GC {7}번, 전체 {4:F1}초" + (shrunkCount > 0 ? ", 줄인 이미지 " + shrunkCount + "장 (긴 변 " + sideNow + ", VRAM 약 " + LastSavedMB.ToString("F0") + "MB 아낌)" : ""),
                     used, fallback, notReady, waitMs, total / 1000.0, putMs, fallbackMs, GC.CollectionCount(0) - gcAtStart) + TexCompress.EndLoad() + (lateCompress > 0 ? ", 압축이 늦어 원래대로 " + lateCompress + "장" : "") + (brokenSkipped > 0 ? ", 깨진 이미지 다시 읽지 않음 " + brokenSkipped + "번" : "")
                     + string.Format(" | 장식 만들기 {0}개 {1:F0}ms, 그중 텍스처 불러오기 {2:F0}ms", createCount, createTicks * 1000.0 / Stopwatch.Frequency, loadTicks * 1000.0 / Stopwatch.Frequency) + (compressWaitMs > 0 ? string.Format(", 압축 마저 기다림 {0:F0}ms", compressWaitMs) : "");
-                Main.Entry.Logger.Log("[이미지] " + Last);
+                Lg.I("[이미지] " + Last);
                 double tk = Stopwatch.Frequency / 1000.0;
-                Main.Entry.Logger.Log(string.Format("[이미지] 해독 시간(작업 스레드 {0}개 합계): 압축 풀기 {1:F0}ms, 필터 되돌리기 {2:F0}ms, 줄이기 {7:F0}ms({8:F0}M 픽셀), 필터·줄이기 한 번에 {9}장 {10:F0}ms({11:F0}M 픽셀), 흘려 풀기·줄이기 {12}장 {13:F0}ms({14:F0}M 픽셀, 못 한 것 {15}) | 새로 맡은 형식(흑백·인터레이스) {3}장 | libdeflate {4}장, 원래 zlib 로 다시 푼 것 {5}장 ({6})",
+                Lg.I(string.Format("[이미지] 해독 시간(작업 스레드 {0}개 합계): 압축 풀기 {1:F0}ms, 필터 되돌리기 {2:F0}ms, 줄이기 {7:F0}ms({8:F0}M 픽셀), 필터·줄이기 한 번에 {9}장 {10:F0}ms({11:F0}M 픽셀), 흘려 풀기·줄이기 {12}장 {13:F0}ms({14:F0}M 픽셀, 못 한 것 {15}) | 새로 맡은 형식(흑백·인터레이스) {3}장 | libdeflate {4}장, 원래 zlib 로 다시 푼 것 {5}장 ({6})",
                     workers.Length, PngDecoder.InflateTicks / tk, PngDecoder.FilterTicks / tk, PngDecoder.NewKinds, PngDecoder.NativeImages, PngDecoder.NativeFallbacks, NativeInflate.Status, PngDecoder.DownscaleTicks / tk, PngDecoder.DownscalePixels / 1e6, PngDecoder.FusedImages, PngDecoder.FusedTicks / tk, PngDecoder.FusedPixels / 1e6, PngDecoder.StreamImages, PngDecoder.StreamTicks / tk, PngDecoder.StreamPixels / 1e6, PngDecoder.StreamFallbacks) + SfNative.Summary() + TurboJpeg.Summary());
                 Resilience.Phase("메뉴·편집");
             }
@@ -1083,7 +1083,7 @@ namespace StutterFix
                     long t0 = Stopwatch.GetTimestamp();
                     GC.Collect();
                     GcControl.NoteClean();
-                    Main.Entry.Logger.Log(string.Format("[이미지] 로딩 뒤 GC 한 번 {0:F0}ms",
+                    Lg.I(string.Format("[이미지] 로딩 뒤 GC 한 번 {0:F0}ms",
                         (Stopwatch.GetTimestamp() - t0) * 1000.0 / Stopwatch.Frequency));
                 }
                 catch { }

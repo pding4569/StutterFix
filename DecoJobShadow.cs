@@ -214,7 +214,7 @@ namespace StutterFix
             {
                 stopped = ex.ToString();
                 Stop();
-                Main.Entry.Logger.Log("[decojob] shadow stopped: " + stopped);
+                Lg.I("[decojob] shadow stopped: " + stopped);
             }
         }
 

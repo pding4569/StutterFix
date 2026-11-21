@@ -26,7 +26,7 @@ namespace StutterFix
                 if (l != null) h.Patch(l, prefix: new HarmonyMethod(typeof(FrameParts), nameof(LatePre)) { priority = Priority.First }, postfix: new HarmonyMethod(typeof(FrameParts), nameof(LatePost)) { priority = Priority.Last });
                 if (Edition.Dev || Main.MeasureBuild) InstallSetters(h);
             }
-            catch (Exception ex) { Main.Entry.Logger.Log("[프레임 구성] 설치 실패: " + ex.Message); }
+            catch (Exception ex) { Lg.I("[프레임 구성] 설치 실패: " + ex.Message); }
         }
 
         public static void TweenPre() { tweenT = Stopwatch.GetTimestamp(); inTween = true; setDepth = 0; }
@@ -50,7 +50,7 @@ namespace StutterFix
                     if (m.Name != name || m.DeclaringType != d || m.IsAbstract) continue;
                     try { h.Patch(m, prefix: new HarmonyMethod(typeof(FrameParts), nameof(SetPre)) { priority = Priority.First }, postfix: new HarmonyMethod(typeof(FrameParts), nameof(SetPost)) { priority = Priority.Last }); n++; } catch { }
                 }
-            Main.Entry.Logger.Log("[프레임 구성] 설정 함수 " + n + "개 잼 (측정용)");
+            Lg.I("[프레임 구성] 설정 함수 " + n + "개 잼 (측정용)");
         }
         public static void SetPre() { if (inTween && setDepth++ == 0) setT = Stopwatch.GetTimestamp(); }
         public static void SetPost() { if (inTween && setDepth > 0 && --setDepth == 0) { TweenSet += (Stopwatch.GetTimestamp() - setT) * TickMs; TweenSetN++; } }

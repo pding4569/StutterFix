@@ -207,7 +207,7 @@ namespace StutterFix
         // 여는 것은 바로, 닫는 것은 사라지는 애니메이션이 끝난 뒤에 한다.
         private void SetOpen(bool open)
         {
-            if (Edition.Dev) Main.Entry.Logger.Log("[설정 창] " + (open ? "열기" : "닫기") + " 요청, 프레임 " + Time.frameCount + ", 지금 열림 " + Open + ", 닫는 중 " + closing + ", 준비됨 " + built + ", 글자 미리 만듦 " + prewarmed);
+            if (Edition.Dev) Lg.I("[설정 창] " + (open ? "열기" : "닫기") + " 요청, 프레임 " + Time.frameCount + ", 지금 열림 " + Open + ", 닫는 중 " + closing + ", 준비됨 " + built + ", 글자 미리 만듦 " + prewarmed);
             SetOpenCore(open);
         }
         private void SetOpenCore(bool open)
@@ -363,7 +363,7 @@ namespace StutterFix
                 glassDock = Crop(cur, dock, sc, W, H);
                 glassState = 3;
             }
-            catch (Exception ex) { glassState = 0; Main.Entry.Logger.Log("[설정 창] 유리 배경 실패: " + ex.Message); }
+            catch (Exception ex) { glassState = 0; Lg.I("[설정 창] 유리 배경 실패: " + ex.Message); }
             finally
             {
                 if (full != null) RenderTexture.ReleaseTemporary(full);
@@ -1501,7 +1501,7 @@ namespace StutterFix
             if (Event.current.type != EventType.Repaint || string.IsNullOrEmpty(text)) return;
             float need = st.CalcSize(new GUIContent(text)).x;
             if (need > width + 0.5f && clipSeen.Add(kind + "|" + text))
-                Main.Entry.Logger.Log("[UI 잘림] " + kind + " '" + text + "' 필요 " + need.ToString("F0") + " > 칸 " + width.ToString("F0") + " (페이지 " + page + "." + subSel[Mathf.Clamp(page, 0, 8)] + ", " + (English ? "EN" : "KO") + ")");
+                Lg.I("[UI 잘림] " + kind + " '" + text + "' 필요 " + need.ToString("F0") + " > 칸 " + width.ToString("F0") + " (페이지 " + page + "." + subSel[Mathf.Clamp(page, 0, 8)] + ", " + (English ? "EN" : "KO") + ")");
         }
 #endif
         private void Section(string title)
@@ -2243,6 +2243,10 @@ namespace StutterFix
         private void ReportCard()
         {
             GUILayout.BeginVertical(sCard);
+            if (Option("verboselog", ref Main.Config.VerboseLog, T("자세한 로그", "Verbose log"),
+                T("켜면 모드가 자세한 진단 줄을 남기고 끄면 필수 줄만 남깁니다. 문제를 제보할 때 켜고 재현해 주세요.",
+                  "When on, the mod writes detailed diagnostics; when off, it keeps essential lines only. Turn this on and reproduce the issue when reporting a problem."), null)) Save();
+            GUILayout.Space(10);
             GUILayout.Label(T("문제 보고용 로그 만들기", "Create a log for bug reports"), sBody);
             GUILayout.Space(4);
             P(T("게임이 끊기거나 오류가 났다면, 그 판을 끝낸 뒤(게임이 튕겼다면 다시 켠 뒤) 눌러 주세요. 바탕화면에 zip 파일이 생기고, 그 파일을 <b>모드 디스코드 서버</b>에 올리거나 디스코드 <b>narooh</b> 에게 DM 으로 보내 주세요. 사양, 설정, 모드 목록, 게임 로그, 끊김 기록이 들어가며 윈도우 사용자 이름은 가려집니다.",
@@ -2696,7 +2700,7 @@ namespace StutterFix
                         !float.IsNaN(parsed) && !float.IsInfinity(parsed)) value=Mathf.Clamp(parsed,min,max);
                 }
 #if DEV || AUTOTEST
-                if(injected)Main.Entry.Logger.Log(FormattableString.Invariant($"[화면효과입력] key={key} text={text} value={value:R}"));
+                if(injected)Lg.I(FormattableString.Invariant($"[화면효과입력] key={key} text={text} value={value:R}"));
 #endif
                 if(commit){GUI.FocusControl(null);sliderEditKey=null;Event.current.Use();}
             }
@@ -2966,9 +2970,9 @@ namespace StutterFix
                     n++;
                 }
                 PerfOverlay.MarkLoading(T("글꼴 준비", "Preparing font"));
-                if (Edition.Dev) Main.Entry.Logger.Log("[모니터] 글자 미리 만들기 (" + owner.GetType().Name + "): 배율 " + scale.ToString("F2") + ", 스타일 " + n + "개, " + sw.ElapsedMilliseconds + "ms");
+                if (Edition.Dev) Lg.I("[모니터] 글자 미리 만들기 (" + owner.GetType().Name + "): 배율 " + scale.ToString("F2") + ", 스타일 " + n + "개, " + sw.ElapsedMilliseconds + "ms");
             }
-            catch (Exception ex) { if (Edition.Dev) Main.Entry.Logger.Log("[모니터] 글자 미리 만들기 실패: " + ex.Message); }
+            catch (Exception ex) { if (Edition.Dev) Lg.I("[모니터] 글자 미리 만들기 실패: " + ex.Message); }
             finally { GUI.matrix = oldM; GUI.color = oldC; }
             return true;
         }

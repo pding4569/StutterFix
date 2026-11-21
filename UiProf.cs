@@ -42,9 +42,9 @@ namespace StutterFix
                 InstallMore(harmony);
                 SetHarmony(harmony);
                 installed = true;
-                Main.Entry.Logger.Log("[UI 측정] 설치 (PerformUpdate " + (pu != null) + ", Graphic.Rebuild " + (gr != null) + ", 레이아웃 " + (lr != null) + ", TMP " + tmp + "개)");
+                Lg.I("[UI 측정] 설치 (PerformUpdate " + (pu != null) + ", Graphic.Rebuild " + (gr != null) + ", 레이아웃 " + (lr != null) + ", TMP " + tmp + "개)");
             }
-            catch (Exception ex) { Main.Entry.Logger.Log("[UI 측정] 설치 실패: " + ex.Message); }
+            catch (Exception ex) { Lg.I("[UI 측정] 설치 실패: " + ex.Message); }
         }
 
         // ── 보강: PerformUpdate 안을 쪼갠다 ──
@@ -76,8 +76,8 @@ namespace StutterFix
                     if (m.DeclaringType != fat || m.IsAbstract || !(m.Name.StartsWith("TryAddCharacter") || m.Name.StartsWith("TryAddGlyph"))) continue;
                     try { harmony.Patch(m, prefix: new HarmonyMethod(typeof(UiProf), nameof(FontPre)), postfix: new HarmonyMethod(typeof(UiProf), nameof(FontPost))); fa++; } catch { }
                 }
-            Main.Entry.Logger.Log("[UI 측정] TMP 글자 넣기 함수 " + fa + "개 감쌈");
-            Main.Entry.Logger.Log("[UI 측정] 보강 설치 (자르기 " + (cr != null) + ", Cull " + (mc != null) + "/" + (cc != null) + ", 입력칸 " + (ir != null) + ")");
+            Lg.I("[UI 측정] TMP 글자 넣기 함수 " + fa + "개 감쌈");
+            Lg.I("[UI 측정] 보강 설치 (자르기 " + (cr != null) + ", Cull " + (mc != null) + "/" + (cc != null) + ", 입력칸 " + (ir != null) + ")");
         }
         private static string CanvasList()
         {
@@ -107,7 +107,7 @@ namespace StutterFix
             if (--fontDepth != 0) return;
             double ms = (Stopwatch.GetTimestamp() - fontT0) * 1000.0 / Stopwatch.Frequency;
             callFontMs += ms;
-            if (ms > 1 && fontLogged < 40) { fontLogged++; Main.Entry.Logger.Log(string.Format("[UI 측정] TMP 글자 넣기 {0} '{1}' {2:F1}ms, 곡 중 {3}, 실시간 {4:F1}초", __originalMethod.Name, __instance != null ? __instance.name : "?", ms, Hitch.Playing, Time.realtimeSinceStartup)); }
+            if (ms > 1 && fontLogged < 40) { fontLogged++; Lg.I(string.Format("[UI 측정] TMP 글자 넣기 {0} '{1}' {2:F1}ms, 곡 중 {3}, 실시간 {4:F1}초", __originalMethod.Name, __instance != null ? __instance.name : "?", ms, Hitch.Playing, Time.realtimeSinceStartup)); }
         }
         private static string snap; // 곡 도중(시작 1000프레임 뒤) 한 번 찍은 캔버스 목록 (곡 끝에 찍으면 에디터가 다시 나온 뒤라)
         public static void PerfPost()
@@ -116,7 +116,7 @@ namespace StutterFix
             if (callMs > 5 && heavyLogged < 40 && Hitch.Playing)
             {
                 heavyLogged++;
-                Main.Entry.Logger.Log(string.Format("[UI 측정] 무거운 UI 갱신 {0:F1}ms (다시 만들기 {1}번, TMP 글자 넣기 {2:F1}ms) 가장 오래: {3} {4:F1}ms, {5} {6:F1}ms | 실시간 {7:F1}초",
+                Lg.I(string.Format("[UI 측정] 무거운 UI 갱신 {0:F1}ms (다시 만들기 {1}번, TMP 글자 넣기 {2:F1}ms) 가장 오래: {3} {4:F1}ms, {5} {6:F1}ms | 실시간 {7:F1}초",
                     callMs, callRebuilds, callFontMs, slowName1 ?? "-", slow1, slowName2 ?? "-", slow2, Time.realtimeSinceStartup));
             }
             performTicks += Stopwatch.GetTimestamp() - t0; performCalls++; if (snap == null && startFrame >= 0 && Hitch.Playing && Time.frameCount - startFrame > 1000) snap = CanvasList(); }
@@ -179,9 +179,9 @@ namespace StutterFix
                     try { wrH.Patch(m, prefix: new HarmonyMethod(typeof(UiProf), nameof(WrPre)), postfix: new HarmonyMethod(typeof(UiProf), nameof(WrPost))); wrapped.Add(m); }
                     catch (Exception ex) { sb.Append("(감싸기 실패 ").Append(ex.Message).Append(')'); }
                 }
-                Main.Entry.Logger.Log("[UI 측정] 캔버스 그리기 전 콜백 " + list.Count + "개:" + sb);
+                Lg.I("[UI 측정] 캔버스 그리기 전 콜백 " + list.Count + "개:" + sb);
             }
-            catch (Exception ex) { Main.Entry.Logger.Log("[UI 측정] 캔버스 콜백 목록 실패: " + ex.Message); }
+            catch (Exception ex) { Lg.I("[UI 측정] 캔버스 콜백 목록 실패: " + ex.Message); }
         }
         // TMP_UpdateManager.DoRebuilds 안: 글자 오브젝트마다 InternalUpdate / Rebuild / UpdateCulling 시간 (2ms 넘는 것만 이름과 함께)
         private static bool tmpInner;
@@ -215,7 +215,7 @@ namespace StutterFix
                     try { wrH.Patch(m, prefix: new HarmonyMethod(typeof(UiProf), nameof(TiPre)), postfix: new HarmonyMethod(typeof(UiProf), nameof(InPost))); n++; } catch { }
                 }
             }
-            Main.Entry.Logger.Log("[UI 측정] TMP 안쪽 함수 " + n + "개 감쌈");
+            Lg.I("[UI 측정] TMP 안쪽 함수 " + n + "개 감쌈");
         }
         private static int tiLogged, inLogged;
         private static readonly Dictionary<int, int> rebuildN = new Dictionary<int, int>();
@@ -227,7 +227,7 @@ namespace StutterFix
             var c = __instance as Component;
             int auto = -1;
             try { if (c != null) auto = Traverse.Create(c).Field("m_AutoSizeIterationCount").GetValue<int>(); } catch { }
-            Main.Entry.Logger.Log(string.Format("[UI 측정]   TMP 안쪽 {0}.{1} {2:F1}ms {3}{4}", __originalMethod.DeclaringType.Name, __originalMethod.Name, ms, c != null ? c.name : (__instance == null ? "(정적)" : __instance.ToString()), auto >= 0 ? " 자동 크기 반복 " + auto : ""));
+            Lg.I(string.Format("[UI 측정]   TMP 안쪽 {0}.{1} {2:F1}ms {3}{4}", __originalMethod.DeclaringType.Name, __originalMethod.Name, ms, c != null ? c.name : (__instance == null ? "(정적)" : __instance.ToString()), auto >= 0 ? " 자동 크기 반복 " + auto : ""));
         }
         public static void TiPre(out long __state) { __state = Stopwatch.GetTimestamp(); }
         public static void TiPost(Component __instance, MethodBase __originalMethod, long __state)
@@ -249,7 +249,7 @@ namespace StutterFix
                 var hm = __instance.GetComponent("scrHitTextMesh"); if (hm != null) txt += ", 판정 " + Traverse.Create(hm).Field("hitMargin").GetValue();
             }
             catch { }
-            Main.Entry.Logger.Log(string.Format("[UI 측정] TMP {0}.{1} {2:F1}ms: {3}{4} (곡 중 {5}, 실시간 {6:F1}초)", __instance.GetType().Name, __originalMethod.Name, ms, path, txt, Hitch.Playing, Time.realtimeSinceStartup));
+            Lg.I(string.Format("[UI 측정] TMP {0}.{1} {2:F1}ms: {3}{4} (곡 중 {5}, 실시간 {6:F1}초)", __instance.GetType().Name, __originalMethod.Name, ms, path, txt, Hitch.Playing, Time.realtimeSinceStartup));
         }
 
         public static void WrPre(out long __state) { __state = Stopwatch.GetTimestamp(); }
@@ -260,7 +260,7 @@ namespace StutterFix
             if (ms > 5 && wrLogged < 60)
             {
                 wrLogged++;
-                Main.Entry.Logger.Log(string.Format("[UI 측정] 캔버스 콜백 {0}.{1} {2:F1}ms ({3}번째 호출, 곡 중 {4}, 실시간 {5:F1}초)",
+                Lg.I(string.Format("[UI 측정] 캔버스 콜백 {0}.{1} {2:F1}ms ({3}번째 호출, 곡 중 {4}, 실시간 {5:F1}초)",
                     __originalMethod.DeclaringType != null ? __originalMethod.DeclaringType.FullName : "?", __originalMethod.Name, ms, n + 1, Hitch.Playing, Time.realtimeSinceStartup));
             }
         }
@@ -289,7 +289,7 @@ namespace StutterFix
             for (int i = 0; i < top.Count && i < 12; i++)
                 sb.AppendFormat(" [{0} {1:F2}/프레임]", names[top[i].Key], (double)top[i].Value / frames);
             sb.Append(snap ?? " | (곡 도중 캔버스 목록 없음)"); snap = null;
-            Main.Entry.Logger.Log(sb.ToString());
+            Lg.I(sb.ToString());
             startFrame = -1;
         }
     }

@@ -49,9 +49,9 @@ namespace StutterFix
                     var m = AccessTools.Method(t, name);
                     if (m != null) h.Patch(m, postfix: new HarmonyMethod(typeof(ParticleFix), nameof(Forget)));
                 }
-                Main.Entry.Logger.Log("[파티클] 설치 (바꾼 호출 " + replaced + "곳)");
+                Lg.I("[파티클] 설치 (바꾼 호출 " + replaced + "곳)");
             }
-            catch (Exception ex) { Main.Entry.Logger.Log("[파티클] 설치 실패: " + ex.Message); }
+            catch (Exception ex) { Lg.I("[파티클] 설치 실패: " + ex.Message); }
         }
 
         private static int replaced;

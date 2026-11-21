@@ -245,7 +245,7 @@ namespace StutterFix
         internal static void Tick()
         {
             if (shut) return;
-            if (active && lastStep < Time.frameCount - 1) { StopAll(); Main.Entry.Logger.Log("[화면 밖 타일] 단계가 한 프레임 안 돌아 전부 켜고 멈춤"); loopLost = true; }
+            if (active && lastStep < Time.frameCount - 1) { StopAll(); Lg.I("[화면 밖 타일] 단계가 한 프레임 안 돌아 전부 켜고 멈춤"); loopLost = true; }
             if (Ready || found == null || Hitch.Playing) return;
             var list = found;
             var psw = Stopwatch.StartNew();
@@ -256,14 +256,14 @@ namespace StutterFix
                 var m = list[patchAt];
                 if (m == null || m.ContainsGenericParameters || (m.DeclaringType != null && m.DeclaringType.ContainsGenericParameters)) continue;
                 try { harmony.Patch(m, transpiler: new HarmonyMethod(typeof(TileCull), nameof(Transpiler))); }
-                catch (Exception ex) { patchFail++; if (Edition.Dev) Main.Entry.Logger.Log("[화면 밖 타일] 바꿔 끼우기 실패 " + m.DeclaringType + "." + m.Name + ": " + ex.Message); }
+                catch (Exception ex) { patchFail++; if (Edition.Dev) Lg.I("[화면 밖 타일] 바꿔 끼우기 실패 " + m.DeclaringType + "." + m.Name + ": " + ex.Message); }
             }
             patchMs += psw.ElapsedMilliseconds; patchFrames++; if (psw.ElapsedMilliseconds > patchWorst) patchWorst = psw.ElapsedMilliseconds;
             if (patchAt >= list.Count)
             {
                 Ready = patchFail == 0;
                 InstallLoop();
-                Main.Entry.Logger.Log("[화면 밖 타일] 렌더러 켜기/끄기 부르는 함수 " + list.Count + "개 바꿔 끼움, 세대 " + gen + (scanMs >= 0 ? " (훑기 " + scanMs + "ms)" : " (지난 결과)")
+                Lg.I("[화면 밖 타일] 렌더러 켜기/끄기 부르는 함수 " + list.Count + "개 바꿔 끼움, 세대 " + gen + (scanMs >= 0 ? " (훑기 " + scanMs + "ms)" : " (지난 결과)")
                     + ", " + patchFrames + "프레임에 나눠 " + patchMs + "ms, 한 프레임 최대 " + patchWorst + "ms"
                     + (patchFail > 0 ? " - 실패 " + patchFail + "개라 쓰지 않음 " + scanError : ""));
                 found = null;
@@ -318,7 +318,7 @@ namespace StutterFix
                 RecolorDefer.AfterStep();
                 if (++frames % 30 == 0) Requalify();
             }
-            catch (Exception ex) { StopAll(); Main.Entry.Logger.Log("[화면 밖 타일] 오류로 멈춤: " + ex.Message); loopLost = true; }
+            catch (Exception ex) { StopAll(); Lg.I("[화면 밖 타일] 오류로 멈춤: " + ex.Message); loopLost = true; }
         }
 
         private static long Key(int x, int y) { return ((long)x << 32) ^ (uint)y; }
@@ -347,7 +347,7 @@ namespace StutterFix
                 Register(i);
             }
             active = true;
-            Main.Entry.Logger.Log("[화면 밖 타일] 곡 시작: 타일 " + n + "개 등록 " + sw.ElapsedMilliseconds + "ms");
+            Lg.I("[화면 밖 타일] 곡 시작: 타일 " + n + "개 등록 " + sw.ElapsedMilliseconds + "ms");
         }
 
         // 관리에 넣기: 지금 크기로 칸에 등록 (켜진 상태에서)
@@ -524,7 +524,7 @@ namespace StutterFix
             foreach (var kv in culled) { var r = kv.Key; int v = kv.Value; if (r != null && (v >= 0 ? want[v] : wantGlow[-v - 1])) r.enabled = true; }
             culled.Clear(); cells.Clear(); byGo.Clear(); floorIndex.Clear(); haveRect = false;
             fl = new scrFloor[0]; rend = new Renderer[0]; builtList = null;
-            if (Verify || Edition.Dev) Main.Entry.Logger.Log("[화면 밖 타일] 멈춤: 끔 " + Culls + "번, 켬 " + Unculls + "번, 움직여 뺌 " + Pins + "번, 게임의 enabled 읽기/쓰기 대신 " + ReadHits + "번"
+            if (Verify || Edition.Dev) Lg.I("[화면 밖 타일] 멈춤: 끔 " + Culls + "번, 켬 " + Unculls + "번, 움직여 뺌 " + Pins + "번, 게임의 enabled 읽기/쓰기 대신 " + ReadHits + "번"
                 + (Verify ? " | 검증: 화면과 겹친 꺼진 타일 " + Violations + "번, 꺼진 채 움직인 타일 " + Moved + "번" : ""));
             Culls = Unculls = Pins = ReadHits = Violations = Moved = 0;
         }

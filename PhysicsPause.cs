@@ -33,7 +33,7 @@ namespace StutterFix
                 if(Convert.ToInt32(cur)==mode)return false;   // 이미 Script 이면 우리 것이 아니니 복구 대상도 아니다
                 saved=cur;p.SetValue(null,Enum.ToObject(p.PropertyType,mode),null);return true;
             }
-            catch(Exception ex){Main.Entry.Logger.Log("[물리] 변경 실패: "+ex.Message);return false;}
+            catch(Exception ex){Lg.I("[물리] 변경 실패: "+ex.Message);return false;}
         }
         private static void Restore(Type t,ref object saved,ref bool changed)
         {
@@ -45,7 +45,7 @@ namespace StutterFix
                 if(Convert.ToInt32(p.GetValue(null,null))==2)p.SetValue(null,saved,null);
                 changed=false;saved=null;
             }
-            catch(Exception ex){Main.Entry.Logger.Log("[물리] 복구 실패(소유 유지, 다시 시도): "+ex.Message);}
+            catch(Exception ex){Lg.I("[물리] 복구 실패(소유 유지, 다시 시도): "+ex.Message);}
         }
         private static bool AutoSync2D()
         {
@@ -55,9 +55,9 @@ namespace StutterFix
         internal static void SongStarted()
         {
             if(!Enabled||Active)return;
-            if(!AutoSync2D()){Main.Entry.Logger.Log("[물리] autoSyncTransforms 꺼짐: 시뮬레이션 중지 건너뜀");return;}
+            if(!AutoSync2D()){Lg.I("[물리] autoSyncTransforms 꺼짐: 시뮬레이션 중지 건너뜀");return;}
             changed2D=Set(P2D,ref before2D,2);changed3D=Set(P3D,ref before3D,2);
-            Main.Entry.Logger.Log("[물리] 곡 중 시뮬레이션 중지: 2D="+changed2D+" 3D="+changed3D);
+            Lg.I("[물리] 곡 중 시뮬레이션 중지: 2D="+changed2D+" 3D="+changed3D);
         }
         internal static void SongEnded(){Restore(P2D,ref before2D,ref changed2D);Restore(P3D,ref before3D,ref changed3D);}
         internal static void Shutdown(){Enabled=false;SongEnded();}

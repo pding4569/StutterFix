@@ -52,11 +52,11 @@ namespace StutterFix
                 }
 
                 Available = recorders.Count > 0;
-                Main.Entry.Logger.Log($"[계측점] 전체 {all.Count}개 중 {recorders.Count}개 켬");
+                Lg.I($"[계측점] 전체 {all.Count}개 중 {recorders.Count}개 켬");
             }
             catch (Exception ex)
             {
-                Main.Entry.Logger.Error("[계측점] 설치 실패: " + ex.Message);
+                Lg.E("[계측점] 설치 실패: " + ex.Message);
             }
         }
 

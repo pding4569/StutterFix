@@ -92,7 +92,7 @@ namespace StutterFix
                 if (r.result != UnityWebRequest.Result.Success)
                 {
                     Status = (downloading ? SettingsWindow.T("받기 실패: ", "Download failed: ") : SettingsWindow.T("확인 실패: ", "Check failed: ")) + r.error;
-                    Main.Entry.Logger.Log("[업데이트] " + Status);
+                    Lg.I("[업데이트] " + Status);
                     if (downloading) zipUrl = "";   // 같은 파일을 곧바로 다시 받지 않는다(다음 확인 때 다시)
                     return;
                 }
@@ -115,7 +115,7 @@ namespace StutterFix
                     if (Available && zipUrl.Length > 0 && Main.Config.CheckUpdates) Download();   // 새 버전이면 바로 받는다
                 }
             }
-            catch (Exception ex) { Status = SettingsWindow.T("실패: ", "Failed: ") + ex.Message; Main.Entry.Logger.Log("[업데이트] 실패: " + ex); }
+            catch (Exception ex) { Status = SettingsWindow.T("실패: ", "Failed: ") + ex.Message; Lg.I("[업데이트] 실패: " + ex); }
             finally { r.Dispose(); }
         }
 
@@ -127,13 +127,13 @@ namespace StutterFix
             {
                 Installed = true; Available = false; noticeUntil = -1f;
                 Status = string.Format(SettingsWindow.T("v{0} 로 자동 업데이트했습니다. 게임을 다시 켜면 적용됩니다", "Updated to v{0}. Restart the game to apply"), Latest);
-                Main.Entry.Logger.Log("[업데이트] v" + Latest + " 설치 (다시 켜면 적용)");
+                Lg.I("[업데이트] v" + Latest + " 설치 (다시 켜면 적용)");
             }
             else
             {
                 zipUrl = "";
                 Status = SettingsWindow.T("설치 실패: ", "Install failed: ") + installError;
-                Main.Entry.Logger.Log("[업데이트] 설치 실패: " + installError);
+                Lg.I("[업데이트] 설치 실패: " + installError);
             }
         }
 
@@ -154,7 +154,7 @@ namespace StutterFix
                 ? string.Format(SettingsWindow.T("새 버전 v{0} 이 있습니다 (지금 v{1})", "New version v{0} available (you have v{1})"), Latest, Current)
                 : string.Format(SettingsWindow.T("최신 버전입니다 (v{0})", "Up to date (v{0})"), Current);
             if (Available && zipUrl.Length == 0) Status += SettingsWindow.T(" - 검증 가능한 파일이 없어 릴리스 페이지에서 직접 받아야 합니다", " - no verifiable download file; get it from the release page");
-            Main.Entry.Logger.Log("[업데이트] 최신 v" + Latest + ", 지금 v" + Current + (Available ? " -> 새 버전 있음" : ""));
+            Lg.I("[업데이트] 최신 v" + Latest + ", 지금 v" + Current + (Available ? " -> 새 버전 있음" : ""));
         }
 
         internal static string Notes = "";   // 패치노트 (릴리스 본문, 마크다운 기호를 걷어낸 것)

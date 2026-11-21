@@ -26,7 +26,7 @@ namespace StutterFix
         private static int depth;
         private static Scope[] MakePool() { var p = new Scope[128]; for (int i = 0; i < p.Length; i++) p[i] = new Scope(); return p; }
         internal sealed class Scope { internal long Start, Children; internal int Stage; internal Scope Parent; }
-        private static void Log(string s) { Main.Entry.Logger.Log("[타일비용] " + s); }
+        private static void Log(string s) { Lg.I("[타일비용] " + s); }
         private static void Reason(string s) { long n; reasons.TryGetValue(s, out n); reasons[s] = n + 1; Log("reason=" + s + " count=" + (n + 1)); }
         private static bool Sampled { get { return active && (Time.frameCount - firstFrame) % Stride == 0; } }
         internal static long EvalBegin() { return Sampled ? Stopwatch.GetTimestamp() : 0; }

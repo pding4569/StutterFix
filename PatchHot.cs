@@ -110,7 +110,7 @@ namespace StutterFix
                 Log(string.Format("{0} 호출 {1} (초당 {2:F2}) 표본 평균 {3:F3} µs, 우리 패치 수 {4}, 표본 {5}{6}", names[i], calls[i], seconds > 0 ? calls[i] / seconds : 0,
                     samples[i] == 0 ? 0 : ticks[i] * 1000000.0 / Stopwatch.Frequency / samples[i], patchCounts[i], samples[i], samples[i] == 0 ? " (표본 없음)" : ""));
         }
-        private static void Log(string text) => Main.Entry.Logger.Log("[패치 호출] " + text);
+        private static void Log(string text) => Lg.I("[패치 호출] " + text);
     }
 }
 #endif

@@ -38,7 +38,7 @@ namespace StutterFix
                 case "reset":
                     if (instance == null) throw new InvalidOperationException("gpuprobe off");
                     instance.Issue(5); instance.sampledFrames = instance.unknownCameras = instance.unknownEffects = 0;
-                    Main.Entry.Logger.Log("[gpuprobe] reset queued (existing hooks and queries retained)"); break;
+                    Lg.I("[gpuprobe] reset queued (existing hooks and queries retained)"); break;
                 case "off": Stop(); break;
                 default: throw new ArgumentException("gpuprobe on|state|off|reset");
             }
@@ -61,7 +61,7 @@ namespace StutterFix
                 p.Refresh();
                 Camera.onPreCull += PreCull; Camera.onPreRender += PreRender;
                 p.StartCoroutine(p.EndFrames());
-                Main.Entry.Logger.Log("[gpuprobe] on sample=1/8 cameras=" + p.cameraCount + " effects=" + p.effectCount + " install/warmup frames excluded; use on again after scene load");
+                Lg.I("[gpuprobe] on sample=1/8 cameras=" + p.cameraCount + " effects=" + p.effectCount + " install/warmup frames excluded; use on again after scene load");
             }
             catch { Stop(); throw; }
         }
@@ -148,17 +148,17 @@ namespace StutterFix
         internal static void Report()
         {
             var p = instance;
-            if (p == null) { Main.Entry.Logger.Log("[gpuprobe] off"); return; }
+            if (p == null) { Lg.I("[gpuprobe] off"); return; }
             var data = new ulong[ScopeCount * 4];
-            if (gp_snapshot(data, data.Length) == 0) { Main.Entry.Logger.Log("[gpuprobe] snapshot busy; retry state"); return; }
+            if (gp_snapshot(data, data.Length) == 0) { Lg.I("[gpuprobe] snapshot busy; retry state"); return; }
             ulong n = data[0];
-            Main.Entry.Logger.Log($"[gpuprobe] ready={gp_status(0)} completed={n} requested={p.sampledFrames} invalid={gp_status(2)} ring_full={gp_status(3)} overflow={gp_status(4)} not_ready={gp_status(5)} errors={gp_status(6)} effect_outside_camera={gp_status(7)} unknown_camera={p.unknownCameras} unknown_effect={p.unknownEffects}");
+            Lg.I($"[gpuprobe] ready={gp_status(0)} completed={n} requested={p.sampledFrames} invalid={gp_status(2)} ring_full={gp_status(3)} overflow={gp_status(4)} not_ready={gp_status(5)} errors={gp_status(6)} effect_outside_camera={gp_status(7)} unknown_camera={p.unknownCameras} unknown_effect={p.unknownEffects}");
             for (int i = 0; i < ScopeCount; i++)
             {
                 if (p.names[i] == null || data[i * 4] == 0) continue;
-                Main.Entry.Logger.Log(FormattableString.Invariant($"[gpuprobe] {p.names[i]} active_frames={data[i*4]} calls={data[i*4+3]} mean_frame_ms={(n == 0 ? 0 : data[i*4+1]/1e6/n):F4} mean_active_ms={data[i*4+1]/1e6/data[i*4]:F4} max_frame_ms={data[i*4+2]/1e6:F4}"));
+                Lg.I(FormattableString.Invariant($"[gpuprobe] {p.names[i]} active_frames={data[i*4]} calls={data[i*4+3]} mean_frame_ms={(n == 0 ? 0 : data[i*4+1]/1e6/n):F4} mean_active_ms={data[i*4+1]/1e6/data[i*4]:F4} max_frame_ms={data[i*4+2]/1e6:F4}"));
             }
-            Main.Entry.Logger.Log(FormattableString.Invariant($"[gpuprobe] residual_frame_minus_cameras_ms={(n == 0 ? 0 : ((double)data[1]-data[5])/1e6/n):F4}; effects nested inside camera: DO NOT ADD; nested Camera.Render can double-count cameras; interval is GPU elapsed, not GPU busy"));
+            Lg.I(FormattableString.Invariant($"[gpuprobe] residual_frame_minus_cameras_ms={(n == 0 ? 0 : ((double)data[1]-data[5])/1e6/n):F4}; effects nested inside camera: DO NOT ADD; nested Camera.Render can double-count cameras; interval is GPU elapsed, not GPU busy"));
         }
         internal static void Stop()
         {
@@ -173,7 +173,7 @@ namespace StutterFix
             if (p.issue != null) { p.Issue(3); p.issue.Release(); }
             if (p.anchor) { p.anchor.Release(); Destroy(p.anchor); }
             Destroy(p.gameObject);
-            Main.Entry.Logger.Log("[gpuprobe] off (hooks, camera buffers and query release queued)");
+            Lg.I("[gpuprobe] off (hooks, camera buffers and query release queued)");
         }
     }
 }

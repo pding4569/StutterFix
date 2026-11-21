@@ -57,7 +57,7 @@ namespace StutterFix
                 var rd = AccessTools.Method(typeof(scrDecorationManager), "ResetDecorations");
                 var setup = AccessTools.Method(typeof(scrDecoration), "Setup");
                 var ac = AccessTools.Method(typeof(scrDecoration), "ApplyColor");
-                if (sw == null || rd == null || setup == null || ac == null) { Main.Entry.Logger.Log("[나가기] 게임 코드 모양이 달라 끔"); return; }
+                if (sw == null || rd == null || setup == null || ac == null) { Lg.I("[나가기] 게임 코드 모양이 달라 끔"); return; }
                 applyColor = AccessTools.MethodDelegate<Action<scrDecoration>>(ac);   // 가상 호출 (scrVisualDecoration.ApplyColor, 여기 붙은 패치 포함)
                 h.Patch(sw, prefix: new HarmonyMethod(typeof(ExitFix), nameof(SwitchPrefix)), finalizer: new HarmonyMethod(typeof(ExitFix), nameof(SwitchFinalizer)));
                 var play = AccessTools.Method(typeof(scnEditor), "Play", Type.EmptyTypes);
@@ -74,13 +74,13 @@ namespace StutterFix
                 {
                     Verify = System.IO.File.Exists(System.IO.Path.Combine(Main.Entry.Path, "exit-verify.txt"));
                     Sabotage = Verify && System.IO.File.ReadAllText(System.IO.Path.Combine(Main.Entry.Path, "exit-verify.txt")).Contains("sabotage");
-                    if (Verify) Main.Entry.Logger.Log("[나가기] (개발자용) 나가기마다 원래 방식과 비교함");
+                    if (Verify) Lg.I("[나가기] (개발자용) 나가기마다 원래 방식과 비교함");
                 }
                 foreach (var m in typeof(scnGame).GetMethods(AccessTools.all))
                     if (m.Name == "LoadLevel" && m.DeclaringType == typeof(scnGame) && !m.IsAbstract) h.Patch(m, prefix: new HarmonyMethod(typeof(ExitFix), nameof(LoadLevelPrefix)));
-                Main.Entry.Logger.Log("[나가기] 설치");
+                Lg.I("[나가기] 설치");
             }
-            catch (Exception ex) { Main.Entry.Logger.Log("[나가기] 설치 실패: " + ex.Message); }
+            catch (Exception ex) { Lg.I("[나가기] 설치 실패: " + ex.Message); }
         }
 
         internal static bool Exiting, PlayStarting;
@@ -152,7 +152,7 @@ namespace StutterFix
             if (((Exiting || PlayStarting || restartOk) && ADOBase.isLevelEditor || GameRestartReset) && Enabled && haveBase)
             {
                 try { if (Light(__instance)) { lightRan = true; haveBase = false; return false; } }
-                catch (Exception ex) { Fallbacks++; Main.Entry.Logger.Log("[나가기] 가볍게 다시 설정 실패, 원래대로: " + ex.Message); }
+                catch (Exception ex) { Fallbacks++; Lg.I("[나가기] 가볍게 다시 설정 실패, 원래대로: " + ex.Message); }
             }
             haveBase = false;   // 원래 다시 설정 중에는 표시하지 않는다(끝나면 새로 찍는다)
             return true;
@@ -164,7 +164,7 @@ namespace StutterFix
             lightRan = false;   // 가볍게 한 뒤에도 찍는다(결과가 원래 방식과 같음 - 검증)
             if (!Enabled || !(ADOBase.isLevelEditor || GameRestartReset)) return;
             baseAtSceneReset = TransitionFix.InRestart && SceneReset.Resetting;
-            try { Capture(__instance); } catch (Exception ex) { haveBase = false; Main.Entry.Logger.Log("[나가기] 값 찍기 실패: " + ex.Message); }
+            try { Capture(__instance); } catch (Exception ex) { haveBase = false; Lg.I("[나가기] 값 찍기 실패: " + ex.Message); }
         }
 
         private static void Capture(scrDecorationManager mgr)
@@ -192,8 +192,8 @@ namespace StutterFix
             baseList = all; baseCount = all.Count;
             touched.Clear();
             haveBase = true;
-            if (Edition.Dev && whyCount.Count > 0) { Main.Entry.Logger.Log("[나가기] (개발자용) 값 찍기: 가볍게 못 하는 종류 " + StateDump.Top(whyCount, 12)); whyCount.Clear(); }
-            if (Edition.Dev && DevRemoveMismatch > 0) { Main.Entry.Logger.Log("[나가기] (개발자용) 빼는 태그 계산이 원래 계산과 다른 장식 " + DevRemoveMismatch + "개 (원래 계산으로 씀)"); DevRemoveMismatch = 0; }
+            if (Edition.Dev && whyCount.Count > 0) { Lg.I("[나가기] (개발자용) 값 찍기: 가볍게 못 하는 종류 " + StateDump.Top(whyCount, 12)); whyCount.Clear(); }
+            if (Edition.Dev && DevRemoveMismatch > 0) { Lg.I("[나가기] (개발자용) 빼는 태그 계산이 원래 계산과 다른 장식 " + DevRemoveMismatch + "개 (원래 계산으로 씀)"); DevRemoveMismatch = 0; }
         }
         private static readonly Dictionary<string, int> whyCount = new Dictionary<string, int>();
         private static void Why(scrVisualDecoration v, LevelEvent ev)
@@ -270,7 +270,7 @@ namespace StutterFix
             var rd = Harmony.GetPatchInfo(AccessTools.Method(typeof(scrDecorationManager), "ResetDecorations"));
             if (rd != null) foreach (var p in rd.Transpilers) if (!p.owner.StartsWith("StutterFix", StringComparison.OrdinalIgnoreCase)) who.Add(p.owner + ":ResetDecorations");
             foreign = who.Count > 0;
-            if (foreign) Main.Entry.Logger.Log("[나가기] 다른 모드가 장식 설정을 고쳐서 가볍게 다시 설정은 끔: " + string.Join(", ", who.ToArray()));
+            if (foreign) Lg.I("[나가기] 다른 모드가 장식 설정을 고쳐서 가볍게 다시 설정은 끔: " + string.Join(", ", who.ToArray()));
             return foreign;
         }
 
@@ -303,7 +303,7 @@ namespace StutterFix
             else if (!ReferenceEquals(all, baseList) || all.Count != baseCount) why = "장식 목록이 바뀜";
             else if (Foreign()) why = "다른 모드";
             else if (!LoadFix.SameDecorationData()) why = "장식 데이터가 바뀜";
-            if (why != null) { Main.Entry.Logger.Log(Label + " 장식 다시 설정 원래대로 (" + why + ")"); return false; }
+            if (why != null) { Lg.I(Label + " 장식 다시 설정 원래대로 (" + why + ")"); return false; }
 
             long t0 = System.Diagnostics.Stopwatch.GetTimestamp();
             Exits++;
@@ -334,7 +334,7 @@ namespace StutterFix
             double ms = (System.Diagnostics.Stopwatch.GetTimestamp() - t0) * 1000.0 / System.Diagnostics.Stopwatch.Frequency;
             LightTotal += light; FullTotal += full;
             LastLine = string.Format("장식 {0}개 중 판 중에 안 바뀐 {1}개는 가볍게, {2}개는 원래대로 다시 설정 {3:F0}ms", all.Count, light, full, ms);
-            Main.Entry.Logger.Log(Label + " " + LastLine);
+            Lg.I(Label + " " + LastLine);
             if (Verify) RunVerify(mgr, all, lightIdx, alphaBefore, tileBefore, refreshBefore);
             return true;
         }
@@ -439,11 +439,11 @@ namespace StutterFix
                 int gd = StateDump.Compare(ga, StateDump.Manager(mgr), gKeys, null);
                 VerifyRuns++; VerifyDiffDecos += diffDecos; VerifyDiffGlobal += gd;
                 double ms = (System.Diagnostics.Stopwatch.GetTimestamp() - t0) * 1000.0 / System.Diagnostics.Stopwatch.Frequency;
-                Main.Entry.Logger.Log(string.Format((Exiting ? "[나가기 검증]" : "[재생 시작 검증]") + " 가볍게 한 장식 {0}개 중 원래 방식과 다른 것 {1}개{2}{3} | 매니저 {4} | 검증 {5:F0}ms",
+                Lg.I(string.Format((Exiting ? "[나가기 검증]" : "[재생 시작 검증]") + " 가볍게 한 장식 {0}개 중 원래 방식과 다른 것 {1}개{2}{3} | 매니저 {4} | 검증 {5:F0}ms",
                     lightIdx.Count, diffDecos, diffDecos > 0 ? " (" + StateDump.Top(byKey, 8) + ")" : "", ex,
                     gd == 0 ? "같음" : "다름 (" + StateDump.Top(gKeys, 6) + ")", ms));
             }
-            catch (Exception e) { Main.Entry.Logger.Log("[나가기 검증] 실패: " + e); }
+            catch (Exception e) { Lg.I("[나가기 검증] 실패: " + e); }
         }
     }
 }

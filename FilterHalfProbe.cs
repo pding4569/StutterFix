@@ -44,7 +44,7 @@ internal static class FilterHalfProbe {
  int max=0,ctrl=0;double error=0;
  for(int i=0;i<a.Length;i++)for(int k=0;k<4;k++){int x=k==0?a[i].r:k==1?a[i].g:k==2?a[i].b:a[i].a;int y=k==0?b[i].r:k==1?b[i].g:k==2?b[i].b:b[i].a;int z=k==0?d[i].r:k==1?d[i].g:k==2?d[i].b:d[i].a;max=Math.Max(max,Math.Abs(x-y));ctrl=Math.Max(ctrl,Math.Abs(x-z));error+=(x-y)*(x-y);}
  double e=error/(a.Length*4.0);mse+=e;samples++;maximum=Math.Max(maximum,max);controlMax=Math.Max(controlMax,ctrl);
- Main.Entry.Logger.Log(FormattableString.Invariant($"[filterhalf] {__instance.GetType().Name} sample={samples} max={max} psnr={(e==0?double.PositiveInfinity:10*Math.Log10(255.0*255/e)):R} control_max={ctrl} size={c.source.width}x{c.source.height} cumulative_max={maximum} cumulative_psnr={(mse==0?double.PositiveInfinity:10*Math.Log10(255.0*255/(mse/samples))):R}"));
+ Lg.I(FormattableString.Invariant($"[filterhalf] {__instance.GetType().Name} sample={samples} max={max} psnr={(e==0?double.PositiveInfinity:10*Math.Log10(255.0*255/e)):R} control_max={ctrl} size={c.source.width}x{c.source.height} cumulative_max={maximum} cumulative_psnr={(mse==0?double.PositiveInfinity:10*Math.Log10(255.0*255/(mse/samples))):R}"));
  }finally{nested=false;UnityEngine.Random.state=postRandom;for(int i=0;i<fields.Length;i++)if(!fields[i].IsInitOnly)fields[i].SetValue(__instance,values[i]);if(control!=null)RenderTexture.ReleaseTemporary(control);if(low!=null)RenderTexture.ReleaseTemporary(low);if(lowOut!=null)RenderTexture.ReleaseTemporary(lowOut);if(up!=null)RenderTexture.ReleaseTemporary(up);}
  }
  public static Exception Final(Exception __exception,Capture __state){if(__state!=null)RenderTexture.ReleaseTemporary(__state.output);return __exception;}

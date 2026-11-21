@@ -31,7 +31,7 @@ namespace StutterFix
             {
                 try{module.Uninstall();}catch{}
                 try{if(h!=null)h.UnpatchAll(h.Id);}catch{}
-                Main.Entry.Logger.Log("[최적화 모듈] "+key+" 설치 안 함: "+ex.Message);
+                Lg.I("[최적화 모듈] "+key+" 설치 안 함: "+ex.Message);
             }
         }
         internal static void Uninstall(string key)
@@ -39,8 +39,8 @@ namespace StutterFix
             for(int i=active.Count-1;i>=0;i--)
             {
                 var e=active[i];if(e.Key!=key)continue;
-                try{e.Module.Uninstall();}catch(Exception ex){Main.Entry.Logger.Log("[최적화 모듈] 정리: "+ex.Message);}
-                finally{try{e.Harmony.UnpatchAll(e.Harmony.Id);}catch(Exception ex){Main.Entry.Logger.Log("[최적화 모듈] 패치 해제: "+ex.Message);}active.RemoveAt(i);}
+                try{e.Module.Uninstall();}catch(Exception ex){Lg.I("[최적화 모듈] 정리: "+ex.Message);}
+                finally{try{e.Harmony.UnpatchAll(e.Harmony.Id);}catch(Exception ex){Lg.I("[최적화 모듈] 패치 해제: "+ex.Message);}active.RemoveAt(i);}
             }
         }
         internal static void Shutdown(){while(active.Count>0)Uninstall(active[active.Count-1].Key);}

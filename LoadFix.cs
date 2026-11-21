@@ -31,7 +31,7 @@ namespace StutterFix
                 foreach (var name in new[] { "GetOrAddSprite", "AddTexture" })
                     foreach (var m in typeof(TextureManager).GetMethods(AccessTools.all))
                         if (m.Name == name && !m.IsAbstract) h.Patch(m, transpiler: new HarmonyMethod(typeof(LoadFix), nameof(TimeTranspiler)));
-                Main.Entry.Logger.Log("[로딩] 이미지 파일 시각 캐시 설치 (바꾼 곳 " + replaced + ")");
+                Lg.I("[로딩] 이미지 파일 시각 캐시 설치 (바꾼 곳 " + replaced + ")");
                 // 에디터 클릭용 충돌 상자를 끌 때 넣은 반대 순서로 (아래 ToggleReverse 설명)
                 var tog = AccessTools.Method(typeof(scrDecorationManager), "ToggleClickableBoxColliderForLevelEditor");
                 var sc = AccessTools.Method(typeof(scrDecoration), "SetCollider", new[] { typeof(bool) });
@@ -48,7 +48,7 @@ namespace StutterFix
                         if (m.Name == "Compress") h.Patch(m, prefix: new HarmonyMethod(typeof(LoadFix), nameof(ApplyPrefix)), postfix: new HarmonyMethod(typeof(LoadFix), nameof(CompressPostfix)));
                 }
             }
-            catch (Exception ex) { Main.Entry.Logger.Log("[로딩] 설치 실패: " + ex.Message); }
+            catch (Exception ex) { Lg.I("[로딩] 설치 실패: " + ex.Message); }
         }
 
         // newobj FileInfo(string) ; callvirt FileSystemInfo.get_LastWriteTimeUtc  ->  call LoadFix.WriteTime(string) ; nop
@@ -165,7 +165,7 @@ namespace StutterFix
                 var reset = AccessTools.Method(typeof(scrDecorationManager), "ResetDecorations");
                 var mark = AccessTools.Method(typeof(TextureManager), "MarkAllUnused");
                 var unload = AccessTools.Method(typeof(TextureManager), "Unload");
-                if (play == null || reload == null || reset == null || mark == null || unload == null || dataField == null) { Main.Entry.Logger.Log("[로딩] 장식 다시 설정 줄이기: 게임 코드 모양이 달라 끔"); return; }
+                if (play == null || reload == null || reset == null || mark == null || unload == null || dataField == null) { Lg.I("[로딩] 장식 다시 설정 줄이기: 게임 코드 모양이 달라 끔"); return; }
                 h.Patch(play, prefix: new HarmonyMethod(typeof(LoadFix), nameof(PlayPrefix)), postfix: new HarmonyMethod(typeof(LoadFix), nameof(PlayPostfix)), finalizer: new HarmonyMethod(typeof(LoadFix), nameof(PlayFinalizer)));
                 h.Patch(reload, prefix: new HarmonyMethod(typeof(LoadFix), nameof(ReloadPrefix)), finalizer: new HarmonyMethod(typeof(LoadFix), nameof(ReloadFinalizer)));
                 h.Patch(reset, prefix: new HarmonyMethod(typeof(LoadFix), nameof(ResetPrefix)) { priority = Priority.First }, postfix: new HarmonyMethod(typeof(LoadFix), nameof(ResetPostfix)));
@@ -173,9 +173,9 @@ namespace StutterFix
                 h.Patch(unload, prefix: new HarmonyMethod(typeof(LoadFix), nameof(SkipIfSkipping)));
                 var create = AccessTools.Method(typeof(scnGame), "UpdateDecorationObjects", new[] { typeof(bool) });
                 if (create != null) h.Patch(create, postfix: new HarmonyMethod(typeof(LoadFix), nameof(CreatedPostfix)));
-                Main.Entry.Logger.Log("[로딩] 에디터 재생 시작 때 장식 다시 설정 줄이기 설치" + (create != null ? " (맵 연 뒤 첫 재생 포함)" : ""));
+                Lg.I("[로딩] 에디터 재생 시작 때 장식 다시 설정 줄이기 설치" + (create != null ? " (맵 연 뒤 첫 재생 포함)" : ""));
             }
-            catch (Exception ex) { Main.Entry.Logger.Log("[로딩] 장식 다시 설정 줄이기 설치 실패: " + ex.Message); }
+            catch (Exception ex) { Lg.I("[로딩] 장식 다시 설정 줄이기 설치 실패: " + ex.Message); }
         }
 
         public static void PlayPrefix() { inEditorPlay = true; }
@@ -193,10 +193,10 @@ namespace StutterFix
                 // 첫 판 FPS 느린 상태가 27번 중 5번 생겼고, 건너뛴 Play(4.6~5.4초)는 한 번도 새로 생기지 않았다 - 번갈아 하던 비교가 개발자용을 더 느리게 했다.
                 skipping = same && (fpFromOpen || !Edition.Dev || devVerifiedFp == lastFp);
                 if (Edition.Dev && same && !skipping) devVerifiedFp = lastFp;
-                if (skipping && fpFromOpen) { OpenSkips++; Main.Entry.Logger.Log("[로딩] 장식을 새로 만든 뒤 첫 재생: 장식 다시 설정 한 번 건너뜀"); }
-                if (!same) Main.Entry.Logger.Log("[로딩] 장식이 바뀌어 장식 다시 설정을 원래대로 두 번 함");
+                if (skipping && fpFromOpen) { OpenSkips++; Lg.I("[로딩] 장식을 새로 만든 뒤 첫 재생: 장식 다시 설정 한 번 건너뜀"); }
+                if (!same) Lg.I("[로딩] 장식이 바뀌어 장식 다시 설정을 원래대로 두 번 함");
             }
-            catch (Exception ex) { skipping = false; Main.Entry.Logger.Log("[로딩] 장식 지문 실패, 원래대로: " + ex.Message); }
+            catch (Exception ex) { skipping = false; Lg.I("[로딩] 장식 지문 실패, 원래대로: " + ex.Message); }
             lastPlaySkipped = skipping;
         }
         public static Exception ReloadFinalizer(Exception __exception) { inReload = false; skipping = false; return __exception; }
@@ -268,7 +268,7 @@ namespace StutterFix
                 if (openSkipOff) return;
                 lastFp = Fingerprint(); haveFp = true; fpFromOpen = true;
             }
-            catch (Exception ex) { fpFromOpen = false; Main.Entry.Logger.Log("[로딩] 맵 연 뒤 장식 지문 실패: " + ex.Message); }
+            catch (Exception ex) { fpFromOpen = false; Lg.I("[로딩] 맵 연 뒤 장식 지문 실패: " + ex.Message); }
         }
 
         // 판정: (1) 두 다시 설정 사이에 쓰이는 태그·히트박스 목록이 새로 만든 직후와 다시 설정한 뒤 같은가,
@@ -289,9 +289,9 @@ namespace StutterFix
             int diff12 = CompareOpen(all, s1, s2, out d12);
             bool ok = t0 == t1 && h0 == h1 && t1 == t2 && h1 == h2 && diff12 == 0;
             if (!ok) openSkipOff = true;
-            Main.Entry.Logger.Log(string.Format("[로딩 검증] 맵 연 뒤 첫 재생 건너뛰기: 다시 설정 1번 뒤 대 2번 뒤 장식 {0}개 중 다른 것 {1}개{2} | 태그 목록 {3}, 히트박스 태그 목록 {4} -> {5} ({6}ms)",
+            Lg.I(string.Format("[로딩 검증] 맵 연 뒤 첫 재생 건너뛰기: 다시 설정 1번 뒤 대 2번 뒤 장식 {0}개 중 다른 것 {1}개{2} | 태그 목록 {3}, 히트박스 태그 목록 {4} -> {5} ({6}ms)",
                 all.Count, diff12, d12, t0 == t1 && t1 == t2 ? "같음" : "다름", h0 == h1 && h1 == h2 ? "같음" : "다름", ok ? "통과" : "실패, 이번 실행 동안 끔", sw.ElapsedMilliseconds));
-            Main.Entry.Logger.Log(string.Format("[로딩 검증]   (참고) 새로 만든 직후 대 다시 설정 1번 뒤: 다른 것 {0}개{1}", diff01, d01));
+            Lg.I(string.Format("[로딩 검증]   (참고) 새로 만든 직후 대 다시 설정 1번 뒤: 다른 것 {0}개{1}", diff01, d01));
         }
 
         // Snapshot 7부분 + 8번째(기타): 켜짐, hitOnce, 태그 집합, 히트박스 이벤트 태그, 렌더러마다 켜짐·정렬·재질
@@ -441,12 +441,12 @@ namespace StutterFix
                     int diff = Compare(all, lastSnap, snap, out detail);
                     string kind = lastSnapSkipped == lastPlaySkipped ? (lastPlaySkipped ? "건너뜀끼리(기준선)" : "안 건너뜀끼리(기준선)") : "건너뜀 대 안 건너뜀";
                     if (lastSnapSkipped != lastPlaySkipped) { VerifyN++; VerifyDiffs += diff; }
-                    Main.Entry.Logger.Log(string.Format("[로딩 검증] {0}: 장식 {1}개 중 재생 준비 끝 상태가 다른 것 {2}개{3}{4}", kind, all.Count, diff,
+                    Lg.I(string.Format("[로딩 검증] {0}: 장식 {1}개 중 재생 준비 끝 상태가 다른 것 {2}개{3}{4}", kind, all.Count, diff,
                         detail, tags != lastTags ? ", 태그 목록 다름" : ", 태그 목록 같음"));
                 }
                 lastSnap = snap; lastTags = tags; lastSnapFp = lastFp; lastSnapSkipped = lastPlaySkipped;
             }
-            catch (Exception ex) { Main.Entry.Logger.Log("[로딩 검증] 실패: " + ex.Message); }
+            catch (Exception ex) { Lg.I("[로딩 검증] 실패: " + ex.Message); }
         }
 
         // 장식마다 부분별 해시 (TransitionFix 검증도 쓴다)
@@ -535,13 +535,13 @@ namespace StutterFix
                         if (nt.Name.StartsWith("<ResetCustomLevel>", StringComparison.Ordinal)) move = AccessTools.Method(nt, "MoveNext");
                 var baseSet = AccessTools.Method(typeof(scrDecoration), "SetCollider", new[] { typeof(bool) });
                 var objSet = AccessTools.DeclaredMethod(typeof(scrObjectDecoration), "SetCollider", new[] { typeof(bool) });
-                if (move == null || baseSet == null || toggleMethod == null || colField == null) { Main.Entry.Logger.Log("[로딩] 다시 할 때 충돌 상자: 게임 코드 모양이 달라 끔"); return; }
+                if (move == null || baseSet == null || toggleMethod == null || colField == null) { Lg.I("[로딩] 다시 할 때 충돌 상자: 게임 코드 모양이 달라 끔"); return; }
                 h.Patch(move, prefix: new HarmonyMethod(typeof(LoadFix), nameof(RetryPrefix)), finalizer: new HarmonyMethod(typeof(LoadFix), nameof(RetryFinalizer)));
                 h.Patch(baseSet, prefix: new HarmonyMethod(typeof(LoadFix), nameof(ColliderPrefix)));
                 if (objSet != null) h.Patch(objSet, prefix: new HarmonyMethod(typeof(LoadFix), nameof(ColliderPrefix)));
-                Main.Entry.Logger.Log("[로딩] 에디터에서 다시 할 때 클릭용 충돌 상자 켜지 않기 설치");
+                Lg.I("[로딩] 에디터에서 다시 할 때 클릭용 충돌 상자 켜지 않기 설치");
             }
-            catch (Exception ex) { Main.Entry.Logger.Log("[로딩] 다시 할 때 충돌 상자 설치 실패: " + ex.Message); }
+            catch (Exception ex) { Lg.I("[로딩] 다시 할 때 충돌 상자 설치 실패: " + ex.Message); }
         }
 
         public static void RetryPrefix() { if (RetryColliders && ADOBase.isLevelEditor) retrying = true; }
@@ -576,9 +576,9 @@ namespace StutterFix
                 if (on == 0) return;
                 RetryFixes++;
                 toggleMethod.Invoke(mgr, new object[] { false });
-                Main.Entry.Logger.Log("[로딩] 다시 할 때 켜져 있던 클릭용 충돌 상자 " + on + "개를 끔 (재생 시작과 같게)");
+                Lg.I("[로딩] 다시 할 때 켜져 있던 클릭용 충돌 상자 " + on + "개를 끔 (재생 시작과 같게)");
             }
-            catch (Exception ex) { Main.Entry.Logger.Log("[로딩] 충돌 상자 확인 실패: " + ex.Message); }
+            catch (Exception ex) { Lg.I("[로딩] 충돌 상자 확인 실패: " + ex.Message); }
         }
 
         // ── 5) 같은 이미지를 쓰는 장식 목록에 넣기 ──
@@ -608,12 +608,12 @@ namespace StutterFix
                 var f = AccessTools.Field(typeof(scrDecorationManager), "decorationsWithSameTexture");
                 if (m == null || m.GetParameters().Length != 1 || m.GetParameters()[0].ParameterType != typeof(scrVisualDecoration)
                     || f == null || f.FieldType != typeof(Dictionary<string, List<scrVisualDecoration>>))
-                { Main.Entry.Logger.Log("[로딩] 같은 이미지 목록: 게임 코드 모양이 달라 끔"); return; }
+                { Lg.I("[로딩] 같은 이미지 목록: 게임 코드 모양이 달라 끔"); return; }
                 sameTexRef = AccessTools.FieldRefAccess<scrDecorationManager, Dictionary<string, List<scrVisualDecoration>>>(f);
                 h.Patch(m, prefix: new HarmonyMethod(typeof(LoadFix), nameof(TexDictPrefix)));
-                Main.Entry.Logger.Log("[로딩] 같은 이미지 장식 목록 넣기 빠르게 설치");
+                Lg.I("[로딩] 같은 이미지 장식 목록 넣기 빠르게 설치");
             }
-            catch (Exception ex) { sameTexRef = null; Main.Entry.Logger.Log("[로딩] 같은 이미지 목록 설치 실패: " + ex.Message); }
+            catch (Exception ex) { sameTexRef = null; Lg.I("[로딩] 같은 이미지 목록 설치 실패: " + ex.Message); }
         }
 
         public static bool TexDictPrefix(scrDecorationManager __instance, scrVisualDecoration __0)

@@ -77,7 +77,7 @@ namespace StutterFix
                 // Partial sample must not be interpreted as a valid census.
                 active = false; Camera.onPreRender -= Capture;
                 states.Clear(); renderers.Clear(); expired.Clear();
-                Main.Entry.Logger.Log("[offscreenstat] ABORTED; discard entire interval: " + aborted);
+                Lg.I("[offscreenstat] ABORTED; discard entire interval: " + aborted);
             }
             finally { ticks += Stopwatch.GetTimestamp() - t0; }
         }

@@ -82,7 +82,7 @@ namespace StutterFix
             }
             return null;
         }
-        private static void Log(string value){Main.Entry.Logger.Log(value);}
+        private static void Log(string value){Lg.I(value);}
     }
 }
 #endif

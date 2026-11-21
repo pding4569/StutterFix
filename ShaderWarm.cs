@@ -42,7 +42,7 @@ namespace StutterFix
             long t0 = Stopwatch.GetTimestamp();
             int n = 0;
             try { n = WarmFilters(); } catch { }
-            if (n > 0) Main.Entry.Logger.Log(string.Format("[셰이더] 곡 시작: 새로 넣은 필터 셰이더 {0}개 미리 준비 {1:F0}ms", n, (Stopwatch.GetTimestamp() - t0) * 1000.0 / Stopwatch.Frequency));
+            if (n > 0) Lg.I(string.Format("[셰이더] 곡 시작: 새로 넣은 필터 셰이더 {0}개 미리 준비 {1:F0}ms", n, (Stopwatch.GetTimestamp() - t0) * 1000.0 / Stopwatch.Frequency));
             ModCost.Add(SettingsWindow.T("셰이더 준비", "Shader warm-up"), (Stopwatch.GetTimestamp() - t0) * 1000.0 / Stopwatch.Frequency);
         }
 
@@ -61,7 +61,7 @@ namespace StutterFix
                 LevelChanged = false;
                 int n = 0;
                 try { n = WarmFilters(); } catch { }
-                if (n > 0) Main.Entry.Logger.Log("[셰이더] 편집 뒤: 새로 넣은 필터 셰이더 " + n + "개 미리 준비");
+                if (n > 0) Lg.I("[셰이더] 편집 뒤: 새로 넣은 필터 셰이더 " + n + "개 미리 준비");
                 return;
             }
             lastLevel = level;
@@ -74,7 +74,7 @@ namespace StutterFix
             long t0 = Stopwatch.GetTimestamp();
             int filters = 0;
             try { filters = WarmFilters(); }
-            catch (Exception ex) { Main.Entry.Logger.Error("[셰이더] 필터 준비 실패: " + ex.Message); }
+            catch (Exception ex) { Lg.E("[셰이더] 필터 준비 실패: " + ex.Message); }
             try
             {
                 int count = Resources.FindObjectsOfTypeAll<Shader>().Length;
@@ -86,9 +86,9 @@ namespace StutterFix
                 double ms = (Stopwatch.GetTimestamp() - t0) * 1000.0 / Stopwatch.Frequency;
                 ModCost.Add(SettingsWindow.T("셰이더 준비", "Shader warm-up"), ms);
                 Last = where + ": 셰이더 " + count + "개, 새 필터 " + filters + "개(필터 텍스처 " + ResourcesLoaded + "개) 미리 준비 " + ms.ToString("F0") + "ms";
-                Main.Entry.Logger.Log("[셰이더] " + Last);
+                Lg.I("[셰이더] " + Last);
             }
-            catch (Exception ex) { Main.Entry.Logger.Error("[셰이더] 미리 준비 실패: " + ex.Message); }
+            catch (Exception ex) { Lg.E("[셰이더] 미리 준비 실패: " + ex.Message); }
         }
 
         // ── 카메라 필터 ─────────────────────────────────────────────────
@@ -193,7 +193,7 @@ namespace StutterFix
                 warmed++;
             }
             foreach (var name in completed) shaders.Remove(name);
-            if (warmed > 0 && Edition.Dev) Main.Entry.Logger.Log("[셰이더] 이 맵의 필터 셰이더 " + warmed + "개 새로 데움");
+            if (warmed > 0 && Edition.Dev) Lg.I("[셰이더] 이 맵의 필터 셰이더 " + warmed + "개 새로 데움");
             return warmed;
         }
 

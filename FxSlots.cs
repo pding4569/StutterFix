@@ -123,10 +123,10 @@ namespace StutterFix
             bool ok;
             switch (op)
             {
-                case "selftest": Main.Entry.Logger.Log("[fxslot] " + SelfTest()); return;
+                case "selftest": Lg.I("[fxslot] " + SelfTest()); return;
                 case "list":
-                    Main.Entry.Logger.Log("[fxslot] count=" + (c.FxSlots?.Count ?? 0));
-                    if (c.FxSlots != null) foreach (var slot in c.FxSlots) if (slot != null) Main.Entry.Logger.Log("[fxslot] " + slot.Name);
+                    Lg.I("[fxslot] count=" + (c.FxSlots?.Count ?? 0));
+                    if (c.FxSlots != null) foreach (var slot in c.FxSlots) if (slot != null) Lg.I("[fxslot] " + slot.Name);
                     return;
                 case "save": ok = Save(c, name, false, out message); break;
                 case "apply": ok = Apply(c, name, out message); if (ok) ScreenEffects.Apply(); break;
@@ -135,7 +135,7 @@ namespace StutterFix
             }
             if (!ok) throw new InvalidOperationException(message);
             c.Save(Main.Entry);
-            Main.Entry.Logger.Log("[fxslot] " + message + " active=" + ActiveCount(c));
+            Lg.I("[fxslot] " + message + " active=" + ActiveCount(c));
         }
 
         // Detached settings only: never changes or saves Main.Config, never calls Unity.

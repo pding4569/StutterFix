@@ -34,7 +34,7 @@ namespace StutterFix
             var awake = AccessTools.Method(typeof(FloorRenderer), "Awake");
             var set = AccessTools.Method(typeof(FloorRenderer), "SetMaterial");
             var make = AccessTools.Method(typeof(scrLevelMaker), "MakeLevel");
-            if (awake == null || set == null || make == null) { Main.Entry.Logger.Log("[타일 머티리얼] 게임 코드 모양이 달라 쓰지 않음"); return; }
+            if (awake == null || set == null || make == null) { Lg.I("[타일 머티리얼] 게임 코드 모양이 달라 쓰지 않음"); return; }
             h.Patch(awake, postfix: new HarmonyMethod(typeof(MatReuse), nameof(Track)));
             h.Patch(set, postfix: new HarmonyMethod(typeof(MatReuse), nameof(Track)));
             h.Patch(make, finalizer: new HarmonyMethod(typeof(MatReuse), nameof(Sweep)));
@@ -83,9 +83,9 @@ namespace StutterFix
                     n++;
                 }
                 Freed += n;
-                if (n > 0 && (Edition.Dev || n > 1000)) Main.Entry.Logger.Log("[타일 머티리얼] 버려진 타일 머티리얼 " + n + "개 풀어 줌");
+                if (n > 0 && (Edition.Dev || n > 1000)) Lg.I("[타일 머티리얼] 버려진 타일 머티리얼 " + n + "개 풀어 줌");
             }
-            catch (Exception ex) { Main.Entry.Logger.Log("[타일 머티리얼] 실패: " + ex.Message); }
+            catch (Exception ex) { Lg.I("[타일 머티리얼] 실패: " + ex.Message); }
             finally { dropped.Clear(); }
             return __exception;
         }

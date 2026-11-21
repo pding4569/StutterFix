@@ -84,16 +84,16 @@ namespace StutterFix
             {
                 foreach (var m in typeof(ffxMoveDecorationsPlus).GetMethods(AccessTools.all))
                     if (m.Name == "StartEffect" && m.DeclaringType == typeof(ffxMoveDecorationsPlus) && !m.IsAbstract) start = m;
-                if (start == null) { Main.Entry.Logger.Log("[장식 이동 루프] StartEffect 없음 - 적용 안 함"); return; }
+                if (start == null) { Lg.I("[장식 이동 루프] StartEffect 없음 - 적용 안 함"); return; }
                 var d = typeof(scrDecoration);
                 setPlacement = AccessTools.MethodDelegate<Action<scrDecoration, DecPlacementType>>(AccessTools.Method(d, "SetPlacementType", new[] { typeof(DecPlacementType) }));
                 setVisible = AccessTools.MethodDelegate<Action<scrDecoration, bool>>(AccessTools.Method(d, "SetVisible", new[] { typeof(bool) }));
                 setDepth = AccessTools.MethodDelegate<Action<scrDecoration, int>>(AccessTools.Method(d, "SetDepth", new[] { typeof(int) }));
                 h.Patch(start, prefix: new HarmonyMethod(typeof(FastMove), nameof(Prefix)) { priority = Priority.Last });
                 Installed = true;
-                Main.Entry.Logger.Log("[장식 이동 루프] 설치");
+                Lg.I("[장식 이동 루프] 설치");
             }
-            catch (Exception ex) { Main.Entry.Logger.Log("[장식 이동 루프] 설치 실패: " + ex.Message); }
+            catch (Exception ex) { Lg.I("[장식 이동 루프] 설치 실패: " + ex.Message); }
         }
 
         // 다른 모드 코드(효과 나누기 등)가 원래 실행을 막았으면 아무것도 안 한다. 맡으면 false(원래 코드 건너뜀).
@@ -140,7 +140,7 @@ namespace StutterFix
             heavyLogged++;
             string props = "";
             try { props = (posUsed(fx) ? "위치 " : "") + (rotUsed(fx) ? "회전 " : "") + (scaleUsed(fx) ? "크기 " : "") + (colUsed(fx) ? "색 " : "") + (opaUsed(fx) ? "불투명도 " : "") + (visUsed(fx) ? "보임 " : "") + (depthUsed(fx) ? "깊이 " : "") + (AnyImg(fx) ? "이미지 " : "") + (parUsed(fx) ? "시차 " : ""); } catch { }
-            Main.Entry.Logger.Log(string.Format("[장식 이동 루프] (개발자용) 무거운 효과 {0:F1}ms: 장식 {1}개, 길이 {2}, 속성 {3}| {4}{5}", ms, src != null ? src.Count : -1, durRef(fx), props, how, sample ? ", 검증 표본(원래 코드로 한 번 더)" : ""));
+            Lg.I(string.Format("[장식 이동 루프] (개발자용) 무거운 효과 {0:F1}ms: 장식 {1}개, 길이 {2}, 속성 {3}| {4}{5}", ms, src != null ? src.Count : -1, durRef(fx), props, how, sample ? ", 검증 표본(원래 코드로 한 번 더)" : ""));
         }
 
         // 원래 코드로 돈다. 원래 코드는 대상 장식의 애니메이션 사전을 바꿀 수 있으므로, 미리 확인 중인 계획이 그 장식을 보고 있으면 취소한다.
@@ -650,7 +650,7 @@ namespace StutterFix
                     if (total >= 1.0 && probeLogged < 60)
                     {
                         probeLogged++;
-                        Main.Entry.Logger.Log(string.Format("[장식 이동 쪼개 보기] 곡 {0:F1}초 장식 {1}개 합계 {2:F2}ms: 위치·회전 {13:F2}, 색·투명도 {14:F2}, 크기 {3:F2}, 보이기 {4:F2}, 깊이·이미지 {5:F2}, 나머지 {6:F2} | 크기={7}{8} 보이기={9}({10}) 이미지={11} 길이={12}",
+                        Lg.I(string.Format("[장식 이동 쪼개 보기] 곡 {0:F1}초 장식 {1}개 합계 {2:F2}ms: 위치·회전 {13:F2}, 색·투명도 {14:F2}, 크기 {3:F2}, 보이기 {4:F2}, 깊이·이미지 {5:F2}, 나머지 {6:F2} | 크기={7}{8} 보이기={9}({10}) 이미지={11} 길이={12}",
                             scrConductor.instance != null ? scrConductor.instance.songposition_minusi : -1.0, src.Count, total, pScaleT / f, pVisT / f, pImgT / f, total - (pScaleT + pVisT + pImgT + pHeadT + pColT) / f,
                             sx ? "X" : "", sy ? "Y" : "", vis, visV, img, durRef(fx), pHeadT / f, pColT / f) + " | 쓰는 것 위치" + pos + " 회전" + rot + " 색" + col + " 투명도" + opa + " 시차" + par + " 배치" + placement);
                     }

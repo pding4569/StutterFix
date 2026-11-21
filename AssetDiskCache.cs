@@ -24,11 +24,11 @@ namespace StutterFix
                 try
                 {
                     var drive=new DriveInfo(Path.GetPathRoot(Path.GetFullPath(directory)));
-                    if(drive.IsReady&&drive.AvailableFreeSpace<quota+(4L<<30)){Main.Entry.Logger.Log("[캐시] 남은 공간 부족("+(drive.AvailableFreeSpace>>20)+"MB): 디스크 캐시 쓰지 않음");return;}
+                    if(drive.IsReady&&drive.AvailableFreeSpace<quota+(4L<<30)){Lg.I("[캐시] 남은 공간 부족("+(drive.AvailableFreeSpace>>20)+"MB): 디스크 캐시 쓰지 않음");return;}
                 }catch{}
                 Store=new PersistentBlobCache(directory,quota);
             }
-            catch(Exception ex){try{Main.Entry.Logger.Log("[캐시] 사용할 수 없어 기존 방식: "+ex.Message);}catch{}}
+            catch(Exception ex){try{Lg.I("[캐시] 사용할 수 없어 기존 방식: "+ex.Message);}catch{}}
         }
         internal static string ImageKey(string path,int side)=>PersistentBlobCache.Key(path,"dxt-v1/"+side+"/"+Codec);
         internal static byte[] PackDxt(int w,int h,int format,float factor,bool dxt5,byte[] data)

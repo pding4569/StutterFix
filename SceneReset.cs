@@ -22,12 +22,12 @@ namespace StutterFix
             try
             {
                 var m = AccessTools.Method(typeof(scnGame), "ResetScene");
-                if (m == null) { Main.Entry.Logger.Log("[장면 정리] scnGame.ResetScene 을 못 찾음"); return; }
+                if (m == null) { Lg.I("[장면 정리] scnGame.ResetScene 을 못 찾음"); return; }
                 h.Patch(m, prefix: new HarmonyMethod(typeof(SceneReset), nameof(Prefix)) { priority = Priority.First },
                     finalizer: new HarmonyMethod(typeof(SceneReset), nameof(Finalizer)));
-                Main.Entry.Logger.Log("[장면 정리] 설치");
+                Lg.I("[장면 정리] 설치");
             }
-            catch (Exception ex) { Main.Entry.Logger.Log("[장면 정리] 설치 실패: " + ex.Message); }
+            catch (Exception ex) { Lg.I("[장면 정리] 설치 실패: " + ex.Message); }
         }
 
         public static void Prefix()
@@ -38,14 +38,14 @@ namespace StutterFix
 #endif
             TightLate.Forget();
             // 게임의 Kill() 처럼 진행 중인 것은 그 자리에서 버린다 (뒤이어 게임이 Setup 으로 되돌린다)
-            try { DecoAnim.DropAll(); } catch (Exception ex) { Main.Entry.Logger.Log("[장면 정리] 장식 애니메이션: " + ex.Message); }
+            try { DecoAnim.DropAll(); } catch (Exception ex) { Lg.I("[장면 정리] 장식 애니메이션: " + ex.Message); }
             try { NativeMotion.ResetArena(); } catch { NativeMotion.Reset(); }
-            try { FloorAnim.DropAll(); } catch (Exception ex) { Main.Entry.Logger.Log("[장면 정리] 타일 애니메이션: " + ex.Message); }
-            try { EffectBudget.Reset(); } catch (Exception ex) { Main.Entry.Logger.Log("[장면 정리] 효과 나누기: " + ex.Message); }
+            try { FloorAnim.DropAll(); } catch (Exception ex) { Lg.I("[장면 정리] 타일 애니메이션: " + ex.Message); }
+            try { EffectBudget.Reset(); } catch (Exception ex) { Lg.I("[장면 정리] 효과 나누기: " + ex.Message); }
             // 미뤄 둔 위치를 먼저 반영해 목록을 비우고, ResetScene 동안은 미루지 않는다 (되돌린 위치가 곧바로 엔진에 들어가게)
-            try { InvisibleSkip.ApplyAllLazy(); } catch (Exception ex) { Main.Entry.Logger.Log("[장면 정리] 투명 장식: " + ex.Message); }
+            try { InvisibleSkip.ApplyAllLazy(); } catch (Exception ex) { Lg.I("[장면 정리] 투명 장식: " + ex.Message); }
             // 미리 확인해 둔 계획은 장식을 되돌리면 의미가 없다. 되돌리는 동안에는 위치 설정 알림(LazyPrefix)도 쉬므로 먼저 버린다.
-            try { Precheck.ResetAll(); } catch (Exception ex) { Main.Entry.Logger.Log("[장면 정리] 미리 확인: " + ex.Message); }
+            try { Precheck.ResetAll(); } catch (Exception ex) { Lg.I("[장면 정리] 미리 확인: " + ex.Message); }
             Resetting = true;
         }
 

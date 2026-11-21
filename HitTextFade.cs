@@ -38,16 +38,16 @@ namespace StutterFix
                 var setColor = AccessTools.PropertySetter(typeof(TMP_Text), "color");
                 var setAlpha = AccessTools.PropertySetter(typeof(TMP_Text), "alpha");
                 var gen = AccessTools.Method(typeof(TextMeshPro), "GenerateTextMesh");
-                if (init == null || setColor == null || setAlpha == null || gen == null) { Main.Entry.Logger.Log("[판정 글자] 게임 코드 모양이 달라 끔"); return; }
+                if (init == null || setColor == null || setAlpha == null || gen == null) { Lg.I("[판정 글자] 게임 코드 모양이 달라 끔"); return; }
                 h.Patch(init, postfix: new HarmonyMethod(typeof(HitTextFade), nameof(InitPostfix)));
                 h.Patch(gen, postfix: new HarmonyMethod(typeof(HitTextFade), nameof(GenPostfix)));
                 h.Patch(setColor, prefix: new HarmonyMethod(typeof(HitTextFade), nameof(ColorPrefix)) { priority = Priority.Last });
                 h.Patch(setAlpha, prefix: new HarmonyMethod(typeof(HitTextFade), nameof(AlphaPrefix)) { priority = Priority.Last });
                 // 이미 만들어진 판정 글자(모드를 다시 불러온 경우)
                 foreach (var m in UnityEngine.Object.FindObjectsOfType<scrHitTextMesh>(true)) if (m.text != null) hitTexts.Add(m.text);
-                Main.Entry.Logger.Log("[판정 글자] 사라질 때 색만 바꾸기 설치");
+                Lg.I("[판정 글자] 사라질 때 색만 바꾸기 설치");
             }
-            catch (Exception ex) { Enabled = false; Main.Entry.Logger.Log("[판정 글자] 설치 실패: " + ex.Message); }
+            catch (Exception ex) { Enabled = false; Lg.I("[판정 글자] 설치 실패: " + ex.Message); }
         }
 
         internal static void Unload() { hitTexts.Clear(); genLossy.Clear(); }

@@ -108,7 +108,7 @@ namespace StutterFix
             }
         }
 
-        private static void Log(string text) { Main.Entry.Logger.Log("[낭비 측정] " + text); }
+        private static void Log(string text) { Lg.I("[낭비 측정] " + text); }
         private static void Before0(out Stamp __state) { Before(0, out __state); }
         private static void After0(Stamp __state) { After(0, __state); }
         private static void Before1(out Stamp __state) { Before(1, out __state); }

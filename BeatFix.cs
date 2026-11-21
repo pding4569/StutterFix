@@ -40,9 +40,9 @@ namespace StutterFix
             var light = AccessTools.Method(typeof(scrFloor), "LightUp");
             var reset = AccessTools.Method(typeof(scrFloor), "Reset");
             var make = AccessTools.Method(typeof(scrLevelMaker), "MakeLevel");
-            if (onBeat == null || prop == null || light == null || reset == null || make == null) { Main.Entry.Logger.Log("[박자 알림] 게임 코드 모양이 달라 쓰지 않음"); return; }
+            if (onBeat == null || prop == null || light == null || reset == null || make == null) { Lg.I("[박자 알림] 게임 코드 모양이 달라 쓰지 않음"); return; }
             h.Patch(prop, prefix: new HarmonyMethod(typeof(BeatFix), nameof(PropPrefix)));
-            if (Edition.Dev) Main.Entry.Logger.Log("[박자 알림] 목록 바뀜 횟수 읽기: " + (verRef != null ? "됨" : "안 됨 (개수만 봄)"));
+            if (Edition.Dev) Lg.I("[박자 알림] 목록 바뀜 횟수 읽기: " + (verRef != null ? "됨" : "안 됨 (개수만 봄)"));
             h.Patch(light, postfix: new HarmonyMethod(typeof(BeatFix), nameof(LitChanged)));
             h.Patch(reset, postfix: new HarmonyMethod(typeof(BeatFix), nameof(LitChanged)));
             var mark = new HarmonyMethod(typeof(BeatFix), nameof(MarkDirty));
@@ -176,7 +176,7 @@ namespace StutterFix
             lRef = list; lCount = list.Count; lOverride = ov; lVersion = verRef != null ? verRef(list) : 0;
             lDirty = dirtyGen != d0;   // 반복 중 타일 목록을 다시 만들었으면 다음 박자에 또 만든다
             RebuildMs += rebuildSw.Elapsed.TotalMilliseconds; Rebuilds++;
-            if (Edition.Dev && rebuildSw.ElapsedMilliseconds >= 3) Main.Entry.Logger.Log("[박자 알림] 첫 반복 다시 만들기 " + rebuildSw.ElapsedMilliseconds + "ms (항목 " + list.Count + "개)");
+            if (Edition.Dev && rebuildSw.ElapsedMilliseconds >= 3) Lg.I("[박자 알림] 첫 반복 다시 만들기 " + rebuildSw.ElapsedMilliseconds + "ms (항목 " + list.Count + "개)");
         }
         internal static double RebuildMs; internal static long Rebuilds, Appends;
 

@@ -19,14 +19,14 @@ namespace StutterFix
         {
             var t = AccessTools.TypeByName("WorkshopThumbnailMaker");
             var start = t != null ? AccessTools.Method(t, "Start") : null;
-            if (start == null) { Main.Entry.Logger.Log("[썸네일 카메라] WorkshopThumbnailMaker.Start 없음 - 건너뜀"); return; }
+            if (start == null) { Lg.I("[썸네일 카메라] WorkshopThumbnailMaker.Start 없음 - 건너뜀"); return; }
             h.Patch(start, postfix: new HarmonyMethod(typeof(ThumbCam), nameof(StartPostfix)));
         }
 
         public static void StartPostfix(Component __instance)
         {
             try { cam = __instance.GetComponent<Camera>(); Apply(); }
-            catch (Exception ex) { Main.Entry.Logger.Log("[썸네일 카메라] 실패: " + ex.Message); }
+            catch (Exception ex) { Lg.I("[썸네일 카메라] 실패: " + ex.Message); }
         }
 
         // 설정이 바뀌었을 때도 부른다

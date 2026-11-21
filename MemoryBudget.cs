@@ -32,7 +32,7 @@ namespace StutterFix
             catch(Exception ex)
             {
                 failed=true;
-                try { Main.Entry.Logger.Log("[GC] 동적 메모리 한도 실패: 기존 한도 사용 ("+ex.Message+")"); }catch{}
+                try { Lg.I("[GC] 동적 메모리 한도 실패: 기존 한도 사용 ("+ex.Message+")"); }catch{}
                 return legacy;
             }
         }

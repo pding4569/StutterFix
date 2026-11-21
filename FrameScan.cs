@@ -79,7 +79,7 @@ namespace StutterFix
             Snapshot();
         }
 
-        private static void Log(string s) { Main.Entry.Logger.Log("[프레임 조사] " + s); }
+        private static void Log(string s) { Lg.I("[프레임 조사] " + s); }
 
         private static string PathOf(Transform t)
         {
