@@ -24,6 +24,7 @@ namespace StutterFix
         static FillCensus active;static bool waiting,success;
         readonly Dictionary<int,Row> rows=new Dictionary<int,Row>();
         readonly MaterialPropertyBlock sharedMpb=new MaterialPropertyBlock();
+        readonly Dictionary<string,int> rigidWhy=new Dictionary<string,int>();
         readonly Dictionary<Texture2D,float> alphas=new Dictionary<Texture2D,float>();
         readonly Dictionary<string,int> states=new Dictionary<string,int>();
         readonly Dictionary<string,double> shaderAreas=new Dictionary<string,double>(),blendAreas=new Dictionary<string,double>();
@@ -46,7 +47,7 @@ namespace StutterFix
                 if(Main.Config.GpuDeco!=0 || Main.Config.RunLod || GpuPlaybackState.Paused)
                     throw new InvalidOperationException("fillcensus requires live rlNR: GpuDeco=0 RunLod=false unpaused");
                 // 2026-11-22: DD(렌더러 3만)·Arche(12만)에서 곡 중(GC 멈춤) 30프레임 계수가 OutOfMemory 를 냈고, 그때 페이지 파일이 21.8GB 로 커져 C: 가 가득 차고 GPU 드라이버가 멈췄다(장치 오류 43). 큰 장면은 거부한다.
-                {int renderers=Resources.FindObjectsOfTypeAll<Renderer>().Length;if(renderers>50000)throw new InvalidOperationException("fillcensus refused: "+renderers+" renderers (OOM risk with GC paused)");}
+                {int renderers=Resources.FindObjectsOfTypeAll<Renderer>().Length;if(renderers>80000)throw new InvalidOperationException("fillcensus refused: "+renderers+" renderers (OOM risk with GC paused)");}
                 success=false;waiting=true;
                 try
                 {
@@ -212,7 +213,10 @@ namespace StutterFix
                     {
                         // 회전·크기(3x3)는 그대로이고 위치만 옮겨졌는지. 옮겨진 양을 1e-4 단위로 해시해 같이 움직이는 묶음을 가른다(시차 배율이 같은 장식).
                         bool basis=true;for(int k=0;k<3;k++)for(int q=0;q<3;q++)if(row.World[k,q]!=world[k,q])basis=false;
-                        if(!basis||cc||sp||row.MaterialState!=materialState||row.State!=state||row.LastFrame!=count-1||!mpb.isEmpty)row.RigidOrOtherChanged++;
+                        // SpriteRenderer 는 유니티가 내부 속성 블록(스프라이트 텍스처·색)을 늘 채운다. 그 둘은 sp·cc 로 따로 보므로 블록이 비어 있지 않은 것을 변경으로 치지 않는다.
+                        bool blockChange=!mpb.isEmpty && !sr;
+                        string why=!basis?"basis":cc?"color":sp?"sprite":row.MaterialState!=materialState?"material":row.State!=state||row.LastFrame!=count-1?"state":blockChange?"block":null;
+                        if(why!=null){row.RigidOrOtherChanged++;if(row.RigidOrOtherChanged==1){rigidWhy.TryGetValue(why,out int wn);rigidWhy[why]=wn+1;}}
                         long dx=(long)Math.Round((world.m03-row.World.m03)*10000),dy=(long)Math.Round((world.m13-row.World.m13)*10000);
                         row.MoveHash=(row.MoveHash^(ulong)dx)*1099511628211UL;row.MoveHash=(row.MoveHash^(ulong)dy)*1099511628211UL;
                     }
@@ -259,6 +263,7 @@ namespace StutterFix
                 // 같이 움직이는 정지 묶음: 모양·색·재질은 그대로이고 위치만 같은 양씩 옮겨진 렌더러들(정렬 순서 연속 여부는 미확인 = 상한).
                 Func<Row,bool> rigid=r=>count>1&&r.Seen==count&&r.Eligible==count&&r.RigidOrOtherChanged==0;
                 var groups=all.Where(rigid).GroupBy(r=>r.MoveHash).Select(g=>new{N=g.Count(),Area=g.Sum(r=>r.Area)/count,Top=g.OrderByDescending(r=>r.Area).First()}).OrderByDescending(g=>g.Area).ToArray();
+                write("rigidFirstFailure["+string.Join(",",rigidWhy.Select(kv=>kv.Key+"="+kv.Value))+"]");
                 write("rigidStaticMeanPx="+F(groups.Sum(g=>g.Area))+" renderers="+groups.Sum(g=>g.N)+" groups="+groups.Length+" multiRendererGroupsMeanPx="+F(groups.Where(g=>g.N>1).Sum(g=>g.Area))+" ofEligibleMeanPx="+F(total/count)+" upper-bound-order-contiguity-blend-unverified");
                 foreach(var g in groups.Take(12))write("RIGIDGROUP	"+g.N+"	"+F(g.Area)+"	"+g.Top.Name+"	"+g.Top.Shader+"	"+g.Top.Texture+"	"+g.Top.Sort);
                 foreach(var r in all.Where(worldFixed).OrderByDescending(r=>r.Area).Take(15))
