@@ -86,6 +86,11 @@ namespace StutterFix
                 // Quartz 최적화 모듈은 파티클·히트음·텍스처·카메라만 고친다(장식 setter 0곳, 2026-11-01 Arche 로그). 실제 겹침은 setter 패치 검사로 본다.
                 if (DecoBake.ForeignSetter()) throw new InvalidOperationException("다른 모드의 장식 처리와 겹침");
                 if (Screen.width <= 0 || Screen.height <= 0) throw new InvalidOperationException("화면 크기를 확인할 수 없음");
+                {
+                    int decoTotal = scrDecorationManager.instance ? scrDecorationManager.instance.allDecorations.Count : 0;
+                    if (decoTotal < Main.Config.GpuDecoMinDecorations)
+                        throw new InvalidOperationException("장식 " + decoTotal + "개 < 기준 " + Main.Config.GpuDecoMinDecorations + "개: 이 맵에서는 이득이 없어 원래 경로 사용");
+                }
                 var camera = GpuDecoScene.FindMain();
                 if (!camera.orthographic || camera.stereoEnabled || camera.rect != new Rect(0, 0, 1, 1))
                     throw new InvalidOperationException("지원하지 않는 카메라 설정 (직교 "+camera.orthographic+", 렌더 텍스처 "+(camera.targetTexture?camera.targetTexture.name:"없음")+", VR "+camera.stereoEnabled+", 영역 "+camera.rect+")");

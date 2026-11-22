@@ -2672,6 +2672,7 @@ BlendProbe.Tick();
 
         public int GpuDeco = 1;             // GPU 장식 처리: 기본 켬(3.0.0, DefaultsGen 5). 장식이 아주 많은 맵에서만 실제로 켜진다
 
+        public int GpuDecoMinDecorations = 15000; // 이 수보다 장식이 적은 맵에서는 GPU 장식 처리를 켜지 않는다(2026-11-22 8맵 켬/끔 비교: 장식 6천 개 이하 맵은 -7%~+2%, Arche 2만 9천 개만 큰 이득)
         public int GpuDecoImages = 1;       // GPU 장식 처리 사용 시 이미지 소유: 기본 켬
 
         public int ExpFullscreen = 0;       // (실험, 설정 창 그래픽) 1 = 전체 화면일 때 독점 전체 화면 (화면 지연 절반, FPS 약 -10%, 찢어짐)
