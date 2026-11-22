@@ -18,6 +18,8 @@ namespace DG.Tweening
 }
 namespace StutterFix
 {
+    // Production logging was moved from Main.Entry.Logger to Lg.
+    internal static class Lg { internal static void I(string s) => System.Console.WriteLine(s); }
     internal static class Main
     {
         internal static EntryType Entry = new EntryType();

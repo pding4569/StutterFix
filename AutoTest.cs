@@ -1389,6 +1389,7 @@ namespace StutterFix
                 case "hitboxq": if (arg.Trim() == "verify") HitboxQuery.Verify = true; Log("[hitboxq] skipped_empty_list=" + HitboxQuery.Skipped + " skipped_inactive=" + HitboxQuery.SkippedInactive + " queried=" + HitboxQuery.Queried + " verify=" + HitboxQuery.Verify + " checks=" + HitboxQuery.VerifyChecks + " mismatch=" + HitboxQuery.VerifyMismatch + " why_nulllist=" + HitboxQuery.WhyNullList + " big=" + HitboxQuery.WhyBig + " nulldeco=" + HitboxQuery.WhyNullDeco + " active=" + HitboxQuery.WhyActive + " last=" + HitboxQuery.LastActive + " hbcount=" + Dormancy.HitboxCount + " dorm=" + Dormancy.Enabled + " listener_skipped=" + HitboxQuery.ListenerSkipped); return true;
                 case "audiooff": Log("[audiooff] " + EngineCensus.AudioOff(arg)); return true;
                 case "enginecensus": Log("[enginecensus] " + EngineCensus.Run()); return true;
+                case "meterinfo": Log("[meterinfo] " + EngineCensus.MeterInfo()); return true;
                 case "scriptcensus": Log("[scriptcensus] " + ScriptCensus.Command(arg)); return true;
                 case "updatecost": Log("[updatecost] " + UpdateCostProbe.Command(arg)); return true;
                 case "decojob": Log("[decojob] " + DecoJobShadow.Command(arg)); return true;

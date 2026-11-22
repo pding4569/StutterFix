@@ -26,10 +26,53 @@ namespace StutterFix
         {
             var a = (arg ?? "").Trim();
             if (a == "on") { int n0 = 0; foreach (var s in disabled) if (s) { s.enabled = true; n0++; } disabled.Clear(); return "restored " + n0; }
-            int n = 0;
+            int n = 0; bool all = a.StartsWith("all ");   // "all <이름>": 재생 중인 것까지 끈다(측정 전용, 소리가 빠진다)
+            if (all) a = a.Substring(4).Trim();
             foreach (var s in Object.FindObjectsByType<AudioSource>(FindObjectsInactive.Exclude, FindObjectsSortMode.None))
-                if (s.enabled && !s.isPlaying && s.transform.root.name.Contains(a)) { s.enabled = false; disabled.Add(s); n++; }
+                if (s.enabled && (all || !s.isPlaying) && s.transform.root.name.Contains(a)) { s.enabled = false; disabled.Add(s); n++; }
             return "disabled " + n + " idle sources under '" + a + "'";
+        }
+
+        // 진단: 판정 오차 막대가 실제로 화면에 보이는지(캔버스·그룹 투명도·화면 위치·보이는 그림 수).
+        internal static string MeterInfo()
+        {
+            var sb = new StringBuilder();
+            foreach (var m in Object.FindObjectsByType<scrHitErrorMeter>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+            {
+                sb.Append("meter '").Append(m.name).Append("' active=").Append(m.gameObject.activeInHierarchy).Append(" enabled=").Append(m.enabled);
+                foreach (var c in m.GetComponentsInChildren<Canvas>(true))
+                    sb.Append(" | canvas ").Append(c.name).Append(" en=").Append(c.enabled).Append(" act=").Append(c.gameObject.activeInHierarchy)
+                      .Append(" mode=").Append(c.renderMode).Append(" order=").Append(c.sortingOrder).Append(" scale=").Append(c.scaleFactor.ToString("F3"));
+                for (var t = m.transform; t != null; t = t.parent)
+                    foreach (var g in t.GetComponents<CanvasGroup>()) sb.Append(" | group ").Append(t.name).Append(" a=").Append(g.alpha.ToString("F3")).Append(" en=").Append(g.enabled);
+                foreach (var g in m.GetComponentsInChildren<CanvasGroup>(true)) sb.Append(" | childgroup ").Append(g.name).Append(" a=").Append(g.alpha.ToString("F3")).Append(" en=").Append(g.enabled);
+                var corners = new Vector3[4];
+                var rt = m.transform as RectTransform;
+                if (rt != null)
+                {
+                    rt.GetWorldCorners(corners);
+                    sb.Append(" | rect ").Append(corners[0].ToString("F0")).Append("..").Append(corners[2].ToString("F0")).Append(" lossy=").Append(rt.lossyScale.ToString("F3"));
+                }
+                int gTotal = 0, gEnabled = 0, gVisible = 0; var vis = new Dictionary<string, int>();
+                foreach (var g in m.GetComponentsInChildren<UnityEngine.UI.Graphic>(true))
+                {
+                    gTotal++;
+                    if (!g.enabled || !g.gameObject.activeInHierarchy) continue;
+                    gEnabled++;
+                    float a = g.color.a * g.canvasRenderer.GetAlpha() * g.canvasRenderer.GetInheritedAlpha();
+                    if (a > 0f && !g.canvasRenderer.cull) { gVisible++; Add(vis, g.name); }
+                    if (g.name == "StraightMeter" || g.name == "Hand" || (g.name == "Body" && gEnabled < 6))
+                    {
+                        g.rectTransform.GetWorldCorners(corners);
+                        sb.Append(" | ").Append(g.name).Append(" ").Append(corners[0].ToString("F0")).Append("..").Append(corners[2].ToString("F0"))
+                          .Append(" a=").Append(g.color.a.ToString("F2")).Append("/").Append(g.canvasRenderer.GetAlpha().ToString("F2"))
+                          .Append(" sprite=").Append(g is UnityEngine.UI.Image im && im.sprite != null ? im.sprite.name : "-");
+                    }
+                }
+                sb.Append(" | graphics total=").Append(gTotal).Append(" enabled=").Append(gEnabled).Append(" visible=").Append(gVisible).Append(" [").Append(Top(vis, 6)).Append("]");
+                sb.Append(" | screen=").Append(Screen.width).Append("x").Append(Screen.height).Append("\n");
+            }
+            return sb.Length == 0 ? "no meter" : sb.ToString();
         }
 
         internal static string Run()
