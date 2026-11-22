@@ -127,6 +127,9 @@ namespace StutterFix
             // 7세대(2026-11-22): 히트박스 질의 건너뛰기 기본 켬. 결과가 같은 무손실 수정(히트박스 장식이 없는 프레임의 빈 질의만 건너뜀). ABBA 40초: HELLO +3.0%, Exit +1.3%, DD +3.2%, Windflower +0.4%.
             if (Config.DefaultsGen < 7) { Config.HitboxQuerySkip = true; Config.DefaultsGen = 7; try { Config.Save(modEntry); } catch { } }
 
+            // 8세대(2026-11-23): 엔진 마스크 배열 확장 패치 기본 켬. 화면 그대로(배열 크기 늘리는 방식만 바꿈), 게임 버전이 다르면 바이트 확인에서 스스로 건너뜀. ABBA 40초: Exit +2.3%, HELLO +3.8%, Windflower +4.0%.
+            if (Config.DefaultsGen < 8) { Config.EngineMaskGrow = true; Config.DefaultsGen = 8; try { Config.Save(modEntry); } catch { } }
+
             Resilience.Init();   // 비정상 종료 감지 (안전 모드면 이번 실행 동안 일부 기능을 끔)
 
 
@@ -2496,7 +2499,7 @@ BlendProbe.Tick();
         public bool RunLod = false;           // 곡 중에만: 그리기 순서에서 연속된 크게 확대된 이미지 장식을 1/4 해상도로 모아 그려 한 번에 합치기(GPU 병목일 때만 켜짐, 저사양 기능·손실 있음)
         public bool DisplayPace = false;    // 화면에 나갈 프레임만 그리기: 곡 전체 2~2.5배 (재시작 후 적용)
 
-        public bool EngineMaskGrow = false; // 엔진 코드 6바이트 패치: 마스크 많은 맵 Exit +11.8%
+        public bool EngineMaskGrow = true;  // 8세대부터 기본 켬. 엔진 코드 6바이트 패치: 마스크 많은 맵 Exit +11.8%
 
         public bool EngineWaitSkip = true; // 엔진 코드 패치: 지난 화면 출력을 기다리지 않음. 2026-11-08 기본 켬(DefaultsGen 2), 화면 지연 미측정
         public bool FastBlend = true;       // 더하기 블렌드 장식을 화면 복사 없이 그리기
@@ -2551,7 +2554,7 @@ BlendProbe.Tick();
 
         public bool HitSoundBatch = true;   // 2026-10-20: 기본 켬 (Arche 전곡 +6.6%, 막히면 자동으로 원래 방식). 저사양 페이지에 있다
 
-        public int DefaultsGen = 0;         // 기본값을 바꿔 한 번 덮어쓴 세대 (1 = 히트음 묶기·화면 밖 파티클 멈추기 켬, 2 = 앞서 준비 프레임 4·화면 대기 건너뛰기 켬, 3 = 확대 장식 묶어 그리기 켬, 4 = 그것을 저사양 기능으로 되돌려 끔, 5 = GPU 장식 처리 켬, 6 = 화면 밖 파티클 멈추기 끔·타이머 0.5ms 켬, 7 = 히트박스 질의 건너뛰기 켬)
+        public int DefaultsGen = 0;         // 기본값을 바꿔 한 번 덮어쓴 세대 (1 = 히트음 묶기·화면 밖 파티클 멈추기 켬, 2 = 앞서 준비 프레임 4·화면 대기 건너뛰기 켬, 3 = 확대 장식 묶어 그리기 켬, 4 = 그것을 저사양 기능으로 되돌려 끔, 5 = GPU 장식 처리 켬, 6 = 화면 밖 파티클 멈추기 끔·타이머 0.5ms 켬, 7 = 히트박스 질의 건너뛰기 켬, 8 = 엔진 마스크 패치 켬)
 
         public bool JitWarm = true;         // 모드·게임 효과 함수를 켤 때 미리 컴파일 (곡 초반 첫 효과의 JIT)       // 곡 중에 처음 쓰는 효과음(박자 소리 등)을 재생 준비 때 미리 불러오기
 
