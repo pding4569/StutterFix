@@ -41,6 +41,28 @@ namespace StutterFix
         private static readonly FieldInfo VoiceVolume = AccessTools.Field(
             AccessTools.Inner(typeof(scrConductor), "HitSoundsData"), "volume");
 
+        // 곡 시작 때 히트음 수천 개를 훑는 반복문이 reflection GetValue 3번 + 문자열 이어붙이기로 HELLO 에서 약 45ms 걸렸다(2026-11-22 프로파일). 같은 필드를 읽는 작은 동적 메서드로 바꾼다.
+        private static readonly Func<object, double> FastTime = MakeGetter<double>(VoiceTime);
+        private static readonly Func<object, float> FastVolume = MakeGetter<float>(VoiceVolume);
+        private static readonly Func<object, int> FastType = MakeGetter<int>(VoiceType);
+        private static Func<object, T> MakeGetter<T>(FieldInfo f)
+        {
+            try
+            {
+                if (f == null) return null;
+                var ft = f.FieldType.IsEnum ? Enum.GetUnderlyingType(f.FieldType) : f.FieldType;
+                if (ft != typeof(T)) return null;
+                var dm = new System.Reflection.Emit.DynamicMethod("sfhit_" + f.Name, typeof(T), new[] { typeof(object) }, typeof(HitSoundBatch).Module, true);
+                var il = dm.GetILGenerator();
+                il.Emit(System.Reflection.Emit.OpCodes.Ldarg_0);
+                il.Emit(f.DeclaringType.IsValueType ? System.Reflection.Emit.OpCodes.Unbox : System.Reflection.Emit.OpCodes.Castclass, f.DeclaringType);
+                il.Emit(System.Reflection.Emit.OpCodes.Ldfld, f);
+                il.Emit(System.Reflection.Emit.OpCodes.Ret);
+                return (Func<object, T>)dm.CreateDelegate(typeof(Func<object, T>));
+            }
+            catch { return null; }
+        }
+
         internal static bool Enabled
         {
             get => enabled;
@@ -223,14 +245,33 @@ namespace StutterFix
             if (!Finite(s.Pitch) || s.Pitch <= 0 || !Finite(s.SongClock)) throw new NotSupportedException("invalid clock/pitch");
             var cache = new Dictionary<AudioClip, float[]>();
             double end = double.NegativeInfinity;
+            var clipByType = new Dictionary<int, AudioClip>();
+            var knownClip = new Dictionary<AudioClip, KeyValuePair<int, double>>(); // 이미 검사한 클립: (형식 묶음 번호, 길이 초)
+            double dspNow = AudioSettings.dspTime;
             for (int i = 0; i < list.Count; i++)
             {
                 object item = list[i];
-                double time = (double)VoiceTime.GetValue(item);
-                float volume = (float)VoiceVolume.GetValue(item);
-                if (!Finite(time) || !Finite(volume) || time < AudioSettings.dspTime || (i > 0 && time < s.Times[i - 1]))
+                double time = FastTime != null ? FastTime(item) : (double)VoiceTime.GetValue(item);
+                float volume = FastVolume != null ? FastVolume(item) : (float)VoiceVolume.GetValue(item);
+                if (!Finite(time) || !Finite(volume) || time < dspNow || (i > 0 && time < s.Times[i - 1]))
                     throw new NotSupportedException("invalid/past/unsorted event");
-                var clip = am.FindOrLoadAudioClip("snd" + (HitSound)VoiceType.GetValue(item));
+                int typeId = FastType != null ? FastType(item) : (int)(HitSound)VoiceType.GetValue(item);
+                AudioClip clip;
+                if (!clipByType.TryGetValue(typeId, out clip))
+                {
+                    clip = am.FindOrLoadAudioClip("snd" + (HitSound)typeId);
+                    clipByType[typeId] = clip;
+                }
+                KeyValuePair<int, double> known;
+                if (clip != null && knownClip.TryGetValue(clip, out known))
+                {
+                    s.Formats[known.Key].Indices.Add(i);
+                    s.Inputs[i] = clip; s.Times[i] = time; s.Volumes[i] = volume;
+                    if (time < s.Origin) s.Origin = time;
+                    double fastEnd = time + known.Value;
+                    if (fastEnd > end) end = fastEnd;
+                    continue;
+                }
                 // 게임 히트음은 CompressedInMemory 이고 처음 쓰기 전에는 Unloaded 다(2026-10-20 실게임 확인). 스트리밍만 막고, 안 불러온 클립은 짧게 불러온다.
                 if (clip != null && clip.loadType != AudioClipLoadType.Streaming && clip.loadState == AudioDataLoadState.Unloaded) clip.LoadAudioData();
                 if (clip != null && clip.loadState == AudioDataLoadState.Loading)
@@ -266,6 +307,7 @@ namespace StutterFix
                 s.Inputs[i] = clip; s.Times[i] = time; s.Volumes[i] = volume;
                 s.Origin = Math.Min(s.Origin, time);
                 end = Math.Max(end, time + (double)clip.samples / clip.frequency);
+                knownClip[clip] = new KeyValuePair<int, double>(groupIndex, (double)clip.samples / clip.frequency);
             }
             s.Frames = s.Rate / 2;
             s.Origin -= (double)HitSoundMix.LeadFrames / s.Rate;

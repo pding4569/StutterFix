@@ -77,7 +77,8 @@ namespace StutterFix
                 int v=dictVersion(src);var built=new CompiledTagTable<scrDecoration>(src);
                 if(v!=dictVersion(src))return;
                 plans=new ConditionalWeakTable<ffxMoveDecorationsPlus,Plan>();source=src;version=v;table=built;
-                var effects=UnityEngine.Resources.FindObjectsOfTypeAll<ffxMoveDecorationsPlus>();
+                // 효과를 미리 찾으려는 장면 전체 훑기(FindObjectsOfType)는 엔진 안에서 80ms 걸려 곡 시작 끊김이 됐다(HELLO, 2026-11-22 프로파일; 에셋 포함/정렬 여부와 무관). 효과별 계획은 TryPlan 이 처음 쓸 때 만든다(효과당 약 2us). 정수 영역(실험)만 총 개수를 미리 알아야 해서 그때만 훑는다.
+                var effects=NativePlans?UnityEngine.Object.FindObjectsByType<ffxMoveDecorationsPlus>(UnityEngine.FindObjectsInactive.Include,UnityEngine.FindObjectsSortMode.None):null;
                 if(NativePlans)
                 {
                     long count=0;
@@ -90,7 +91,7 @@ namespace StutterFix
                     try{primitive=new PrimitiveIdStore((int)Math.Max(1L,Math.Min(2*1024*1024,count)));}catch{primitive=null;}
                 }
                 int prepared=0;
-                foreach(var fx in effects)
+                if(effects!=null)foreach(var fx in effects)
                 {
                     if(fx==null||!ReferenceEquals(FastMove.ManagerForIndex(fx),mgr))continue;
                     var tags=FastMove.TagsForIndex(fx);if(tags==null)continue;
