@@ -231,7 +231,7 @@ namespace StutterFix
                     if(area>0 && !catalogued)unknownGrabRendererFrames++;
                     row.Area+=area;row.LastArea=area;row.AlphaKnown &= alpha>=0 || area==0;row.Alive+=area*Math.Max(0,alpha);
                     if(area>0){row.Eligible++;if(color.a<0.05f&&mpb.isEmpty)row.Faint+=area;}total+=area;
-                    detail.WriteLine(string.Join("\t",count,id,row.Name,state+";isVisible="+r.isVisible+";enabled="+r.enabled+";active="+r.gameObject.activeInHierarchy+";forceRenderingOff="+r.forceRenderingOff,F(area),alpha<0?"unknown":F(area*alpha),F(color.a),row.Approx,row.Shader,row.Blend,row.Texture,row.Sort,Clean(row.Deco),row.Parent));
+                    if(area>0)detail.WriteLine(string.Join("\t",count,id,row.Name,state+";isVisible="+r.isVisible+";enabled="+r.enabled+";active="+r.gameObject.activeInHierarchy+";forceRenderingOff="+r.forceRenderingOff,F(area),alpha<0?"unknown":F(area*alpha),F(color.a),row.Approx,row.Shader,row.Blend,row.Texture,row.Sort,Clean(row.Deco),row.Parent));
                 }
                 count++;if(count==target){Report();success=true;Stop();}
             }
