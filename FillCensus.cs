@@ -18,6 +18,7 @@ namespace StutterFix
             internal string Name,Deco,Texture,Shader,Blend,Parent,Approx,State,Sort,MaterialState;
             internal double Area,Alive,Faint,LastArea; internal bool AlphaKnown=true,Grab;
             internal Vector4[] Last;internal Color Color;internal int Sprite;
+            internal Matrix4x4 World;internal bool HasWorld;internal int WorldOrOtherChanged;
         }
         static FillCensus active;static bool waiting,success;
         readonly Dictionary<int,Row> rows=new Dictionary<int,Row>();
@@ -42,6 +43,8 @@ namespace StutterFix
                 if(active)throw new InvalidOperationException("fillcensus busy");
                 if(Main.Config.GpuDeco!=0 || Main.Config.RunLod || GpuPlaybackState.Paused)
                     throw new InvalidOperationException("fillcensus requires live rlNR: GpuDeco=0 RunLod=false unpaused");
+                // 2026-11-22: DD(렌더러 3만)·Arche(12만)에서 곡 중(GC 멈춤) 30프레임 계수가 OutOfMemory 를 냈고, 그때 페이지 파일이 21.8GB 로 커져 C: 가 가득 차고 GPU 드라이버가 멈췄다(장치 오류 43). 큰 장면은 거부한다.
+                {int renderers=Resources.FindObjectsOfTypeAll<Renderer>().Length;if(renderers>50000)throw new InvalidOperationException("fillcensus refused: "+renderers+" renderers (OOM risk with GC paused)");}
                 success=false;waiting=true;
                 try
                 {
@@ -199,6 +202,9 @@ namespace StutterFix
                     bool geometry=!Same(row.Last,projected),cc=!row.Color.Equals(color),sp=row.Sprite!=sprite;
                     if(row.Last!=null) {if(geometry)row.GeometryChanged++;if(cc)row.ColorChanged++;if(sp)row.SpriteChanged++;
                         if(geometry||cc||sp||row.MaterialState!=materialState||row.State!=state||row.LastFrame!=count-1||!mpb.isEmpty)row.Changed++;}
+                    var world=r.localToWorldMatrix;
+                    if(row.HasWorld && (!row.World.Equals(world)||cc||sp||row.MaterialState!=materialState||row.State!=state||row.LastFrame!=count-1||!mpb.isEmpty))row.WorldOrOtherChanged++;
+                    row.World=world;row.HasWorld=true;
                     row.MaterialState=materialState;
                     row.Last=projected;row.Color=color;row.Sprite=sprite;row.LastFrame=count;row.State=state;
                     row.Approx=approx+(!mpb.isEmpty?";propertyBlock-unmodeled":"")+(r.sharedMaterials.Length>1?";multiple-materials-unmodeled":"");
@@ -235,6 +241,11 @@ namespace StutterFix
                 foreach(var group in blendAreas)write("blend "+group.Key+" meanPx="+F(group.Value/count));
                 Func<Row,bool> fixedLayer=r=>count>1&&r.Seen==count&&r.Eligible==count&&r.Changed==0&&r.Approx=="sprite-triangles;shader-deformation-unmodeled";
                 write("unchangedScreenGeometryCandidateMeanPx="+F(all.Where(fixedLayer).Sum(r=>r.Area)/count)+" changedOrIntermittentMeanPx="+F(all.Where(r=>!fixedLayer(r)).Sum(r=>r.Area)/count)+" faintMeanPx="+F(all.Sum(r=>r.Faint)/count)+" static-is-candidate-not-cache-proof-material-texture-animation-order-unverified");
+                // 월드 기준으로 안 움직이는 층(화면에서는 카메라 때문에 움직여도 됨): 월드 공간 묶음 캐시의 상한 단서. 시차(parallax) 장식은 월드 행렬이 바뀌어 여기서 빠진다.
+                Func<Row,bool> worldFixed=r=>count>1&&r.Seen==count&&r.Eligible==count&&r.WorldOrOtherChanged==0;
+                write("unchangedWorldCandidateMeanPx="+F(all.Where(worldFixed).Sum(r=>r.Area)/count)+" renderers="+all.Count(worldFixed)+" ofEligibleMeanPx="+F(total/count)+" world-static-is-upper-bound-order-blend-contiguity-unverified");
+                foreach(var r in all.Where(worldFixed).OrderByDescending(r=>r.Area).Take(15))
+                    write("WORLDFIXED	"+F(r.Area/count)+"	"+r.Name+"	"+r.Shader+"	"+r.Blend+"	"+r.Texture+"	"+r.Sort);
                 write("grabShaderRendererFrames="+grabRendererFrames+" meanRendererPx="+F(grabArea/count)+" copyPixelUpperEstimatePerFrame="+F(grabCopyUpper/count)+" uncataloguedRendererFrames="+unknownGrabRendererFrames+" actualGrabPassDrawCount=unknown-batching-shared-named-grabs;uncatalogued-uses-name-heuristic");
                 write("TOP40 meanPx alphaPositiveEstimatePx id name colorAlpha changes geometryChanges colorChanges spriteChanges seen eligible shader blend texture sort deco parents geometry");
                 foreach(var r in all.OrderByDescending(r=>r.Area).Take(40))
