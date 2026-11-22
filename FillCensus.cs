@@ -19,6 +19,7 @@ namespace StutterFix
             internal double Area,Alive,Faint,LastArea; internal bool AlphaKnown=true,Grab;
             internal Vector4[] Last;internal Color Color;internal int Sprite;
             internal Matrix4x4 World;internal bool HasWorld;internal int WorldOrOtherChanged;
+            internal int RigidOrOtherChanged;internal ulong MoveHash=1469598103934665603UL;
         }
         static FillCensus active;static bool waiting,success;
         readonly Dictionary<int,Row> rows=new Dictionary<int,Row>();
@@ -204,6 +205,14 @@ namespace StutterFix
                         if(geometry||cc||sp||row.MaterialState!=materialState||row.State!=state||row.LastFrame!=count-1||!mpb.isEmpty)row.Changed++;}
                     var world=r.localToWorldMatrix;
                     if(row.HasWorld && (!row.World.Equals(world)||cc||sp||row.MaterialState!=materialState||row.State!=state||row.LastFrame!=count-1||!mpb.isEmpty))row.WorldOrOtherChanged++;
+                    if(row.HasWorld)
+                    {
+                        // 회전·크기(3x3)는 그대로이고 위치만 옮겨졌는지. 옮겨진 양을 1e-4 단위로 해시해 같이 움직이는 묶음을 가른다(시차 배율이 같은 장식).
+                        bool basis=true;for(int k=0;k<3;k++)for(int q=0;q<3;q++)if(row.World[k,q]!=world[k,q])basis=false;
+                        if(!basis||cc||sp||row.MaterialState!=materialState||row.State!=state||row.LastFrame!=count-1||!mpb.isEmpty)row.RigidOrOtherChanged++;
+                        long dx=(long)Math.Round((world.m03-row.World.m03)*10000),dy=(long)Math.Round((world.m13-row.World.m13)*10000);
+                        row.MoveHash=(row.MoveHash^(ulong)dx)*1099511628211UL;row.MoveHash=(row.MoveHash^(ulong)dy)*1099511628211UL;
+                    }
                     row.World=world;row.HasWorld=true;
                     row.MaterialState=materialState;
                     row.Last=projected;row.Color=color;row.Sprite=sprite;row.LastFrame=count;row.State=state;
@@ -244,6 +253,11 @@ namespace StutterFix
                 // 월드 기준으로 안 움직이는 층(화면에서는 카메라 때문에 움직여도 됨): 월드 공간 묶음 캐시의 상한 단서. 시차(parallax) 장식은 월드 행렬이 바뀌어 여기서 빠진다.
                 Func<Row,bool> worldFixed=r=>count>1&&r.Seen==count&&r.Eligible==count&&r.WorldOrOtherChanged==0;
                 write("unchangedWorldCandidateMeanPx="+F(all.Where(worldFixed).Sum(r=>r.Area)/count)+" renderers="+all.Count(worldFixed)+" ofEligibleMeanPx="+F(total/count)+" world-static-is-upper-bound-order-blend-contiguity-unverified");
+                // 같이 움직이는 정지 묶음: 모양·색·재질은 그대로이고 위치만 같은 양씩 옮겨진 렌더러들(정렬 순서 연속 여부는 미확인 = 상한).
+                Func<Row,bool> rigid=r=>count>1&&r.Seen==count&&r.Eligible==count&&r.RigidOrOtherChanged==0;
+                var groups=all.Where(rigid).GroupBy(r=>r.MoveHash).Select(g=>new{N=g.Count(),Area=g.Sum(r=>r.Area)/count,Top=g.OrderByDescending(r=>r.Area).First()}).OrderByDescending(g=>g.Area).ToArray();
+                write("rigidStaticMeanPx="+F(groups.Sum(g=>g.Area))+" renderers="+groups.Sum(g=>g.N)+" groups="+groups.Length+" multiRendererGroupsMeanPx="+F(groups.Where(g=>g.N>1).Sum(g=>g.Area))+" ofEligibleMeanPx="+F(total/count)+" upper-bound-order-contiguity-blend-unverified");
+                foreach(var g in groups.Take(12))write("RIGIDGROUP	"+g.N+"	"+F(g.Area)+"	"+g.Top.Name+"	"+g.Top.Shader+"	"+g.Top.Texture+"	"+g.Top.Sort);
                 foreach(var r in all.Where(worldFixed).OrderByDescending(r=>r.Area).Take(15))
                     write("WORLDFIXED	"+F(r.Area/count)+"	"+r.Name+"	"+r.Shader+"	"+r.Blend+"	"+r.Texture+"	"+r.Sort);
                 write("grabShaderRendererFrames="+grabRendererFrames+" meanRendererPx="+F(grabArea/count)+" copyPixelUpperEstimatePerFrame="+F(grabCopyUpper/count)+" uncataloguedRendererFrames="+unknownGrabRendererFrames+" actualGrabPassDrawCount=unknown-batching-shared-named-grabs;uncatalogued-uses-name-heuristic");
