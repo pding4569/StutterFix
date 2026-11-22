@@ -18,7 +18,10 @@ namespace StutterFix
     {
         internal static bool Quartz, QuartzOptimizer;
         internal static bool QSmoothGC, QCollectOnLoad, QPriority, QSkipIdleParticles, QPauseOffscreenParticles, QSkipNoOpFilters, QLeakGuard, QLossyTexture, QFastBloom, QCacheScreenScale, QRenderAllHitSounds;
-        private const string QuartzHitOwner = "quartz.module.optimizer";
+        // Quartz 2.x 는 "quartz.module.optimizer", 3.0 알파부터 "quartz.feature.optimizer" 로 Harmony 소유자 이름이 바뀌었다.
+        // 옛 이름만 찾으면 3.0 의 히트음 렌더러를 멈추지 못해, 두 모드가 같은 히트음을 모두 예약해 두 번 겹쳐 났다(2026-11-23).
+        private static readonly string[] QuartzHitOwners = { "quartz.module.optimizer", "quartz.feature.optimizer" };
+        private static bool IsQuartzHitOwner(string owner) => Array.IndexOf(QuartzHitOwners, owner) >= 0;
         private static readonly List<Patch> suspendedHitPostfixes = new List<Patch>();
         internal static bool HitSoundGuardReady = true;
         internal static string HitSoundGuardState = "inactive";
@@ -36,14 +39,14 @@ namespace StutterFix
                 var found = new List<Patch>();
                 if (info != null) foreach (var p in info.Postfixes)
                 {
-                    if (p.owner != QuartzHitOwner) continue;
+                    if (!IsQuartzHitOwner(p.owner)) continue;
                     var method = p.PatchMethod;
                     if (method.Name != "Postfix" || method.DeclaringType == null ||
                         method.DeclaringType.Name != "PlayHitTimesPatch" ||
                         method.DeclaringType.DeclaringType?.Name != "HitSoundRendererPatches")
                         throw new NotSupportedException("unrecognized Quartz PlayHitTimes postfix");
                     foreach (var other in info.Postfixes)
-                        if (other.PatchMethod == method && other.owner != QuartzHitOwner)
+                        if (other.PatchMethod == method && other.owner != p.owner)
                             throw new NotSupportedException("Quartz postfix also registered by another owner");
                     found.Add(p);
                 }
@@ -52,7 +55,7 @@ namespace StutterFix
                 {
                     suspendedHitPostfixes.Clear(); // A module reload replaces the previous registration.
                     suspendedHitPostfixes.Add(patch);
-                    new Harmony(QuartzHitOwner).Unpatch(target, patch.PatchMethod);
+                    new Harmony(patch.owner).Unpatch(target, patch.PatchMethod);
                 }
                 HitSoundGuardReady = true;
                 HitSoundGuardState = suspendedHitPostfixes.Count == 0 ? "no Quartz hit postfix" : "suspended exact Quartz postfix";
@@ -64,14 +67,15 @@ namespace StutterFix
         {
             var target = AccessTools.Method(typeof(scrConductor), "PlayHitTimes");
             var mod = UnityModManager.FindMod("Quartz");
-            if (mod != null && mod.Active && Harmony.HasAnyPatches(QuartzHitOwner))
+            if (mod != null && mod.Active)
                 foreach (var patch in suspendedHitPostfixes)
                 {
+                    if (!Harmony.HasAnyPatches(patch.owner)) continue;
                     bool present = false;
                     var info = Harmony.GetPatchInfo(target);
                     if (info != null) foreach (var p in info.Postfixes)
-                        if (p.owner == QuartzHitOwner && p.PatchMethod == patch.PatchMethod) present = true;
-                    if (!present) new Harmony(QuartzHitOwner).Patch(target, postfix: new HarmonyMethod(patch.PatchMethod) {
+                        if (p.owner == patch.owner && p.PatchMethod == patch.PatchMethod) present = true;
+                    if (!present) new Harmony(patch.owner).Patch(target, postfix: new HarmonyMethod(patch.PatchMethod) {
                         priority = patch.priority, before = patch.before, after = patch.after, debug = patch.debug });
                 }
             suspendedHitPostfixes.Clear();
