@@ -30,6 +30,30 @@ namespace StutterFix
         private static ImageRange[] images;
         private static long nativeFrames;
         private static string failure;
+        // 링 모드(profsamp begin 500 native ring): 곡 내내 표본을 링 버퍼에 돌려 쓰고, 모니터가 끊김을 잡으면 그 프레임 구간의 표본만 따로 보관한다(2026-11-22, "게임 바깥" 끊김 중 메인 스레드가 어디서 기다렸는지 보려고).
+        private static bool ringMode; private const int RingN = 8192, MaxHitches = 80;
+        private static long[] rts; private static long ringHead;
+        private sealed class HitchCap { internal float Ms, SongT; internal string Wall; internal List<ulong[]> Stacks = new List<ulong[]>(); internal List<double> AgeMs = new List<double>(); }
+        private static readonly List<HitchCap> hitchCaps = new List<HitchCap>();
+        internal static void OnHitch(float ms, float songT)
+        {
+            if (!ringMode || !run || hitchCaps.Count >= MaxHitches) return;
+            long now = Stopwatch.GetTimestamp();
+            long from = now - (long)((ms + 6f) * Stopwatch.Frequency / 1000.0);
+            long head = Interlocked.Read(ref ringHead);
+            var cap = new HitchCap { Ms = ms, SongT = songT, Wall = DateTime.Now.ToString("HH:mm:ss.fff") };
+            long first = Math.Max(0, head - RingN + 4);
+            for (long k = first; k < head - 1; k++)
+            {
+                int slot = (int)(k % RingN);
+                long ts = rts[slot];
+                if (ts < from || ts > now) continue;
+                var st = new ulong[Depth];
+                Array.Copy(ips, slot * Depth, st, 0, Depth);
+                cap.Stacks.Add(st); cap.AgeMs.Add((now - ts) * 1000.0 / Stopwatch.Frequency);
+            }
+            hitchCaps.Add(cap);
+        }
         [DllImport("kernel32.dll")] private static extern void RtlCaptureContext(IntPtr context);
         [DllImport("kernel32.dll")] private static extern IntPtr RtlLookupFunctionEntry(ulong pc, out ulong imageBase, IntPtr history);
         [DllImport("kernel32.dll")] private static extern IntPtr RtlVirtualUnwind(uint flags, ulong imageBase, ulong pc,
@@ -86,10 +110,10 @@ namespace StutterFix
         {
             if (run) return "이미 도는 중";
             var args = (arg ?? "").Trim().Split(new[] {' '}, StringSplitOptions.RemoveEmptyEntries);
-            if (args.Length > 3 || args.Skip(1).Any(a => a != "native" && !a.StartsWith("thread=")))
+            if (args.Length > 4 || args.Skip(1).Any(a => a != "native" && a != "ring" && !a.StartsWith("thread=")))
                 throw new ArgumentException("profsamp begin [hz] [native] [thread=이름 일부]");
             int hz = 1000; if (args.Length > 0) int.TryParse(args[0], out hz); if (hz < 50 || hz > 4000) hz = 1000; hzUsed = hz;
-            nativeUnwind = args.Contains("native");
+            nativeUnwind = args.Contains("native"); ringMode = args.Contains("ring"); hitchCaps.Clear(); ringHead = 0;
             string threadName = args.Where(a => a.StartsWith("thread=")).Select(a => a.Substring(7).Replace('_', ' ')).FirstOrDefault();
             nativeFrames = 0; failure = null;
             // Resolve modules while the target is running. Never enter Mono/JIT
@@ -101,7 +125,7 @@ namespace StutterFix
                         ranges.Add(new ImageRange { Start = (ulong)module.BaseAddress.ToInt64(),
                             End = (ulong)module.BaseAddress.ToInt64() + (ulong)module.ModuleMemorySize });
             images = ranges.ToArray();
-            ips = new ulong[MaxSamples * Depth]; count = 0;
+            ips = new ulong[(ringMode ? RingN : MaxSamples) * Depth]; count = 0; if (ringMode) rts = new long[RingN];
             uint tid = GetCurrentThreadId();
             if (threadName != null) tid = FindThread(threadName);
             mainHandle = OpenThread(0x0002 | 0x0008 | 0x0040, false, tid);   // SUSPEND_RESUME | GET_CONTEXT | QUERY_INFORMATION
@@ -167,7 +191,7 @@ namespace StutterFix
                     RtlCaptureContext(ctx); CaptureNative(ctx, 0);
                     Array.Clear(ips, 0, Depth); nativeFrames = 0;
                 }
-                while (run && count < MaxSamples)
+                while (run && (ringMode || count < MaxSamples))
                 {
                     next += period;
                     while (Stopwatch.GetTimestamp() < next) { Thread.SpinWait(50); if (!run) break; }
@@ -178,6 +202,13 @@ namespace StutterFix
                         Marshal.WriteInt32(ctx, 0x30, 0x1000B);   // CONTEXT_FULL (x64)
                         if (GetThreadContext(mainHandle, ctx))
                         {
+                            if (ringMode)
+                            {
+                                long h = Interlocked.Read(ref ringHead); int slot = (int)(h % RingN);
+                                Array.Clear(ips, slot * Depth, Depth);
+                                CaptureNative(ctx, slot * Depth); rts[slot] = Stopwatch.GetTimestamp();
+                                Interlocked.Increment(ref ringHead); count++; continue;
+                            }
                             if (nativeUnwind) { CaptureNative(ctx, count * Depth); count++; continue; }
                             int b = count * Depth; ulong rip = (ulong)Marshal.ReadInt64(ctx, 0xF8), rsp = (ulong)Marshal.ReadInt64(ctx, 0x98), rbp = (ulong)Marshal.ReadInt64(ctx, 0xA0);
                             ips[b] = rip; int d = 1;
@@ -233,6 +264,33 @@ namespace StutterFix
             run = false; if (thread != null) thread.Join(2000); t1 = Stopwatch.GetTimestamp();
             try { CloseHandle(mainHandle); } catch { }
             double secs = (t1 - t0) / (double)Stopwatch.Frequency;
+            if (ringMode)
+            {
+                ringMode = false;
+                IntPtr dom = IntPtr.Zero; try { dom = mono_get_root_domain(); } catch (Exception ex) { return "mono_get_root_domain 실패: " + ex.Message; }
+                var fb2 = new StringBuilder();
+                foreach (var cap in hitchCaps)
+                {
+                    fb2.Append("### ").Append(cap.Ms.ToString("F0")).Append("ms song=").Append(cap.SongT.ToString("F1")).Append(" wall=").Append(cap.Wall).Append(" samples=").Append(cap.Stacks.Count).Append('\n');
+                    for (int i = 0; i < cap.Stacks.Count; i++)
+                    {
+                        fb2.Append('@').Append(cap.AgeMs[i].ToString("F1")).Append(' ');
+                        var st = cap.Stacks[i];
+                        for (int d = 0; d < Depth; d++)
+                        {
+                            ulong ip = st[d]; if (ip == 0) break;
+                            bool g; string n = Resolve(ip, dom, out g);
+                            if (d > 0) fb2.Append(';');
+                            if (g) fb2.Append("M:").Append(n);
+                            else if (n.StartsWith("[UnityPlayer.dll+0x")) fb2.Append("U:").Append(n.Substring(19, n.Length - 20));
+                            else fb2.Append("X:").Append(n);
+                        }
+                        fb2.Append('\n');
+                    }
+                }
+                if (framesDir != null) try { System.IO.File.WriteAllText(System.IO.Path.Combine(framesDir, "profsamp-hitches.txt"), fb2.ToString()); } catch { }
+                return "링 모드: 끊김 " + hitchCaps.Count + "개 보관, 표본 " + count + "개 / " + secs.ToString("F1") + "초";
+            }
             IntPtr domain = IntPtr.Zero; try { domain = mono_get_root_domain(); } catch (Exception ex) { return "mono_get_root_domain 실패: " + ex.Message; }
             var leaf = new Dictionary<string, int>(); var incl = new Dictionary<string, int>(); var mod = new Dictionary<string, int>();
             var callers = new Dictionary<string, Dictionary<string, int>>();   // 관리 리프 → 가장 가까운 관리 호출자 (리프가 관리 함수이거나 네이티브면 그 위의 첫 관리 함수)

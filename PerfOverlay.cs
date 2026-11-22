@@ -431,6 +431,9 @@ namespace StutterFix
                 ModWhat = modNow ? ModCost.Top : ModCost.LastTop,
                 Shown = InvisibleSkip.ShownRecent, SongT = playing ? Time.unscaledTime - songStartT : -1f,
             });
+#if DEV || AUTOTEST
+            ProfSamp.OnHitch(ms, playing ? Time.unscaledTime - songStartT : -1f);
+#endif
         }
 
         // ── 원인은 몇 프레임 뒤에 정한다 ─────────────────────────────────
