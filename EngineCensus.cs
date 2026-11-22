@@ -20,6 +20,18 @@ namespace StutterFix
         static string Top(Dictionary<string, int> d, int n) => string.Join(", ", d.OrderByDescending(kv => kv.Value).Take(n).Select(kv => kv.Key + "=" + kv.Value));
         static void Add(Dictionary<string, int> d, string k) { d.TryGetValue(k, out int v); d[k] = v + 1; }
 
+        private static readonly List<AudioSource> disabled = new List<AudioSource>();
+        // 진단: 이름에 key 가 들어간 루트 아래의 켜져 있지만 재생 중이 아닌 AudioSource 를 끈다(on 으로 되돌림). 측정 전용.
+        internal static string AudioOff(string arg)
+        {
+            var a = (arg ?? "").Trim();
+            if (a == "on") { int n0 = 0; foreach (var s in disabled) if (s) { s.enabled = true; n0++; } disabled.Clear(); return "restored " + n0; }
+            int n = 0;
+            foreach (var s in Object.FindObjectsByType<AudioSource>(FindObjectsInactive.Exclude, FindObjectsSortMode.None))
+                if (s.enabled && !s.isPlaying && s.transform.root.name.Contains(a)) { s.enabled = false; disabled.Add(s); n++; }
+            return "disabled " + n + " idle sources under '" + a + "'";
+        }
+
         internal static string Run()
         {
             var sb = new StringBuilder();
