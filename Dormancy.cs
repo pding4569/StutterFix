@@ -286,6 +286,8 @@ namespace StutterFix
         internal static void HitboxNewFrame() { hbPrepared = false; }
         private static int hbPreparedFrame = -1;
         // HitboxQuery: 이번 프레임에 (장식 관리자 Update 에서) 다시 확인한 히트박스 장식 목록이 비어 있는가
+        // 이번 프레임에 준비된 히트박스 장식 목록(장식 관리자 Update 뒤). 확실하지 않으면 null.
+        internal static List<scrDecoration> PreparedHitboxes() { return Enabled && !broken && !hbDirty && hbPreparedFrame == Time.frameCount && ReferenceEquals(hbSource, hbSourceNow()) ? hitboxList : null; }
         internal static bool NoHitboxThisFrame() { return Enabled && !broken && !hbDirty && hbPreparedFrame == Time.frameCount && hitboxList.Count == 0 && ReferenceEquals(hbSource, hbSourceNow()); }
         private static List<scrDecoration> hbSourceNow() { var m = scrDecorationManager.instance; return (object)m != null ? allRef(m) : null; }
 

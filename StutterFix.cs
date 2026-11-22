@@ -124,6 +124,9 @@ namespace StutterFix
             // 6세대(2.8.2 에서 가져옴): 화면 밖 파티클 멈추기 기본 꺼짐(eLadia 에서 화면 안 파티클을 멈춰 검은 효과가 사라짐) + 타이머 정밀도 0.5ms 요청 기본 켬.
             if (Config.DefaultsGen < 6) { Config.LowPauseParticles = false; Config.TimerHalfMs = true; Config.DefaultsGen = 6; try { Config.Save(modEntry); } catch { } }
 
+            // 7세대(2026-11-22): 히트박스 질의 건너뛰기 기본 켬. 결과가 같은 무손실 수정(히트박스 장식이 없는 프레임의 빈 질의만 건너뜀). ABBA 40초: HELLO +3.0%, Exit +1.3%, DD +3.2%, Windflower +0.4%.
+            if (Config.DefaultsGen < 7) { Config.HitboxQuerySkip = true; Config.DefaultsGen = 7; try { Config.Save(modEntry); } catch { } }
+
             Resilience.Init();   // 비정상 종료 감지 (안전 모드면 이번 실행 동안 일부 기능을 끔)
 
 
@@ -2484,7 +2487,7 @@ BlendProbe.Tick();
 
         public bool HoldSkip = true;        // 입력이 같으면 홀드 갱신 건너뛰기: Exit +4.7%, 값 대조 235만 번 다름 0
 
-        public bool HitboxQuerySkip = false; // 히트박스 장식이 없을 때 공의 히트박스 물리 질의 건너뛰기(결과 같음)
+        public bool HitboxQuerySkip = true;  // 7세대부터 기본 켬. 히트박스 장식이 없을 때 공의 히트박스 물리 질의 건너뛰기(결과 같음)
         public bool PlayTurbo = false;        // 곡 중에만: 일시정지 공 카메라 끄기, 입력 없을 때 UI 이벤트·마우스 처리 건너뛰기, 장식 LateUpdate 같은 값 건너뛰기 등(turbo lite)
         public bool MouseEventsSkip = true;   // 곡 중 SendMouseEvents 단계를 뺀다(프레임당 0.04~0.13ms). MouseSkip.cs
         public bool SkipClearFlash = true;    // 번쩍임 사각형(전체 화면 두 장)을 재질 알파 0 이하인 프레임에는 안 그린다. FlashSkip.cs
@@ -2548,7 +2551,7 @@ BlendProbe.Tick();
 
         public bool HitSoundBatch = true;   // 2026-10-20: 기본 켬 (Arche 전곡 +6.6%, 막히면 자동으로 원래 방식). 저사양 페이지에 있다
 
-        public int DefaultsGen = 0;         // 기본값을 바꿔 한 번 덮어쓴 세대 (1 = 히트음 묶기·화면 밖 파티클 멈추기 켬, 2 = 앞서 준비 프레임 4·화면 대기 건너뛰기 켬, 3 = 확대 장식 묶어 그리기 켬, 4 = 그것을 저사양 기능으로 되돌려 끔, 5 = GPU 장식 처리 켬, 6 = 화면 밖 파티클 멈추기 끔·타이머 0.5ms 켬)
+        public int DefaultsGen = 0;         // 기본값을 바꿔 한 번 덮어쓴 세대 (1 = 히트음 묶기·화면 밖 파티클 멈추기 켬, 2 = 앞서 준비 프레임 4·화면 대기 건너뛰기 켬, 3 = 확대 장식 묶어 그리기 켬, 4 = 그것을 저사양 기능으로 되돌려 끔, 5 = GPU 장식 처리 켬, 6 = 화면 밖 파티클 멈추기 끔·타이머 0.5ms 켬, 7 = 히트박스 질의 건너뛰기 켬)
 
         public bool JitWarm = true;         // 모드·게임 효과 함수를 켤 때 미리 컴파일 (곡 초반 첫 효과의 JIT)       // 곡 중에 처음 쓰는 효과음(박자 소리 등)을 재생 준비 때 미리 불러오기
 
