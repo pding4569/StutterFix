@@ -23,6 +23,7 @@ namespace StutterFix
         }
         static FillCensus active;static bool waiting,success;
         readonly Dictionary<int,Row> rows=new Dictionary<int,Row>();
+        readonly MaterialPropertyBlock sharedMpb=new MaterialPropertyBlock();
         readonly Dictionary<Texture2D,float> alphas=new Dictionary<Texture2D,float>();
         readonly Dictionary<string,int> states=new Dictionary<string,int>();
         readonly Dictionary<string,double> shaderAreas=new Dictionary<string,double>(),blendAreas=new Dictionary<string,double>();
@@ -185,15 +186,17 @@ namespace StutterFix
                     }
                     row.Seen++;var sr=r as SpriteRenderer;var m=r.sharedMaterial;
                     Color color=sr?sr.color:Color.white;if(m&&m.HasProperty("_Color"))color*=m.GetColor("_Color");
-                    string materialState=m?m.GetInstanceID()+":"+string.Join(";",GpuDecoScene.Properties(m).Select(p=>p.Key+"="+p.Value)):"none";
-                    materialState+=";sort="+r.sortingLayerID+"/"+r.sortingOrder;
-                    var mpb=new MaterialPropertyBlock();r.GetPropertyBlock(mpb);
+                    var mpb=sharedMpb;mpb.Clear();r.GetPropertyBlock(mpb);
                     Flag("disabled",!r.enabled);Flag("inactive",!r.gameObject.activeInHierarchy);
                     Flag("forceRenderingOff",r.forceRenderingOff);Flag("isVisibleFalse",!r.isVisible);Flag("baseColorAlphaZero",color.a<=0);
                     string state=!r.gameObject.activeInHierarchy?"inactive":!r.enabled?"disabled":r.forceRenderingOff?"forceRenderingOff":
                         (c.cullingMask&(1<<r.gameObject.layer))==0?"cameraMask":r.shadowCastingMode==ShadowCastingMode.ShadowsOnly?"shadowsOnly":
                         sr&&!sr.sprite?"noSprite":!m?"noMaterial":!r.isVisible?"isVisibleFalse":color.a<=0&&mpb.isEmpty?"colorAlphaZero":"candidate";
                     states.TryGetValue(state,out int ns);states[state]=ns+1;
+                    // 안 보이는 렌더러(대부분)는 문자열·기하 계산을 건너뛴다. GC 가 멈춘 곡 중 큰 장면에서 메모리가 폭증했다(2026-11-22).
+                    if(state!="candidate"){row.State=state;row.LastFrame=count;row.Last=null;row.HasWorld=false;continue;}
+                    string materialState=m?m.GetInstanceID()+":"+string.Join(";",GpuDecoScene.Properties(m).Select(p=>p.Key+"="+p.Value)):"none";
+                    materialState+=";sort="+r.sortingLayerID+"/"+r.sortingOrder;
                     var texture=sr&&sr.sprite?sr.sprite.texture:(m?m.mainTexture as Texture2D:null);
                     float alpha=sr&&sr.sprite&&sr.sprite.associatedAlphaSplitTexture?-1:Alpha(state=="candidate"?texture:null);
                     double area=Geometry(r,c,out Vector4[] projected,out string approx);
@@ -225,7 +228,7 @@ namespace StutterFix
                     blendAreas.TryGetValue(row.Blend,out double ba);blendAreas[row.Blend]=ba+area;
                     row.Texture=texture?Clean(texture.name)+" "+texture.width+"x"+texture.height+" alphaPositive="+F(alpha):"unknown";
                     row.Sort=SortingLayer.IDToName(r.sortingLayerID)+"/"+r.sortingLayerID+"/"+r.sortingOrder+" queue="+(m?m.renderQueue:0);
-                    row.Parent=Parents(r);row.Name=Clean(r.name)+" tag="+Clean(r.tag);
+                    if(row.Name.IndexOf(" tag=",StringComparison.Ordinal)<0)row.Name=Clean(r.name)+" tag="+Clean(r.tag);
                     row.Grab=catalogued?int.Parse(meta[1],CultureInfo.InvariantCulture)>0:row.Shader.IndexOf("grab",StringComparison.OrdinalIgnoreCase)>=0;
                     if(area>0 && row.Grab){grabRendererFrames++;grabArea+=area;grabCopyUpper+=screen*(catalogued?int.Parse(meta[1],CultureInfo.InvariantCulture):1);}
                     if(area>0 && !catalogued)unknownGrabRendererFrames++;
