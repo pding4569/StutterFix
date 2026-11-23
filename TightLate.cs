@@ -516,6 +516,6 @@ namespace StutterFix
             + " writes=" + writes + " skipped(pos/rot/scale)=" + skipPos + "/" + skipRot + "/" + skipScale + " skipSame=" + SkipSame + " eulerMemo=" + EulerMemo + " euler(hit/calls)=" + eulerHits + "/" + eulerCalls
             + " verify=" + Verify + " checked=" + checks + " mismatch=" + mismatches + " first=" + first
             + " compatibility=" + compatibility
-            + " excluded(type/hitbox-mask-mesh/hidden/follow-stick-lock/parallax/parent/rejected)=" + string.Join("/", reasons);
+            + " excluded(-/type/hitbox-mask-mesh/hidden/follow-stick-lock/parallax/parent/rejected)=" + string.Join("/", reasons);
     }
 }

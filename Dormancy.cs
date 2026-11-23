@@ -122,6 +122,12 @@ namespace StutterFix
                 }
                 catch (Exception ex) { Lg.I("[잠든 장식] SetDepth 후크 실패: " + ex.Message); }
 #endif
+                foreach (var name in new[] { "ApplyColor", "SetVisible" })
+                {
+                    var m = AccessTools.DeclaredMethod(typeof(scrObjectDecoration), name);
+                    if (m == null) { ObjectSleep = false; Lg.I("[잠든 장식] 오브젝트 " + name + " 없음 - 오브젝트 재우기 끔"); continue; }
+                    h.Patch(m, postfix: new HarmonyMethod(typeof(Dormancy), nameof(WakeObject)));
+                }
                 foreach (var name in new[] { "Setup", "Awake" })
                 {
                     var m = AccessTools.Method(typeof(scrDecoration), name);
@@ -141,6 +147,7 @@ namespace StutterFix
             if (GpuDecoPlayer.Available) DecoBake.CollapseMarkDirty(__instance);
 #endif
         }
+        public static void WakeObject(scrObjectDecoration __instance) { Wake(__instance); }
         public static void WakeBase(scrDecoration __instance) { hbDirty = true; Wake(__instance);
 #if DEV || AUTOTEST || GPUDECO
             if (GpuDecoPlayer.Available) DecoBake.CollapseMarkNew(__instance);
@@ -354,9 +361,17 @@ namespace StutterFix
         // 맵 파일의 disableV15Features 값과 상관없이 장식 순회는 늘 이 조건(disableShader == true)으로 돈다.
         internal static bool IsDormant(scrDecoration d, bool disableShader)
         {
-            return disableShader && d.hitbox == 0 && d.GetType() == typeof(scrVisualDecoration)
-                && !meshOnRef((scrVisualDecoration)d) && !d.GetVisible();
+            if (d.hitbox != 0) return false;
+            var t = d.GetType();
+            if (t == typeof(scrVisualDecoration))
+                return disableShader && !meshOnRef((scrVisualDecoration)d) && !d.GetVisible();
+            // 오브젝트 장식(타일·행성 모양, 2026-11-23): 숨었을 때 원래 LogicUpdate 는 GetVisible 만 보고 끝난다
+            // (UpdateShader 는 scrDecoration 의 빈 함수, 히트박스 없음). 보임을 바꾸는 곳은 SetVisible(rendererEnabled)과
+            // ApplyColor(타일 불투명도 -> floor.SetOpacity)뿐이라 그 둘에서 깨운다. Lost 는 프레임당 1,600여 개를 이 경로로 훑었다.
+            if (ObjectSleep && t == typeof(scrObjectDecoration)) return !d.GetVisible();
+            return false;
         }
+        internal static bool ObjectSleep = true;
 
         // 새 맵 파일을 열 때: 지난 맵 장식 목록·히트박스 목록을 놓는다 (지난 맵 장식 2만 8천 개를 붙잡았다)
         internal static void ForgetLevel()
@@ -383,6 +398,12 @@ namespace StutterFix
             awake.Clear(); dormant.Clear(); woken.Clear(); inAwake.Clear();
         }
 
+        internal static string CheckStat()
+        {
+            int vis = 0, obj = 0, other = 0;
+            foreach (var d in dormant) { if ((object)d == null) continue; var t = d.GetType(); if (t == typeof(scrVisualDecoration)) vis++; else if (t == typeof(scrObjectDecoration)) obj++; else other++; }
+            return "object_sleep=" + ObjectSleep + " dormant(visual/object/other)=" + vis + "/" + obj + "/" + other + " awake=" + awake.Count + " slept=" + Slept + " wakes=" + Wakes + " audits=" + Audits + " missed=" + Missed;
+        }
         internal static string Stat()
         {
             int hid = 0, vis = 0;
