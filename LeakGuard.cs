@@ -29,7 +29,7 @@ namespace StutterFix
         private static readonly AccessTools.FieldRef<scrCamera, RenderTexture> camRTRef = AccessTools.FieldRefAccess<scrCamera, RenderTexture>("camRT");
         private static readonly AccessTools.FieldRef<scrCamera, MeshRenderer> quadMeshRef = AccessTools.FieldRefAccess<scrCamera, MeshRenderer>("camQuadMesh");
         private static readonly AccessTools.FieldRef<scrCamera, bool> customRef = AccessTools.FieldRefAccess<scrCamera, bool>("enableCustomFPS");
-        private static FieldInfo frameRateField;
+        private static FieldInfo frameRateField, pendingField;
 
         internal static void Install(Harmony h)
         {
@@ -37,6 +37,9 @@ namespace StutterFix
             {
                 var m = AccessTools.Method(typeof(scrCamera), "SetCustomFrameRate");
                 frameRateField = AccessTools.Field(typeof(scrCamera), "frameRate");
+                // 2026-11-24 게임 업데이트(빌드 26835838): 켤 때 버퍼를 만들지 않고 snapshotPending 만 세우며, 버퍼는
+                // UpdateCustomFrameRateScreen 이 없을 때만 만들고 재사용한다(게임이 직접 누수를 고침). 이 필드가 있으면 켤 때 개입하지 않는다.
+                pendingField = AccessTools.Field(typeof(scrCamera), "customFrameRateSnapshotPending");
                 if (m == null || frameRateField == null || m.GetParameters().Length != 2) { Lg.I("[누수] SetCustomFrameRate 모양이 달라 끔"); return; }
                 h.Patch(m, prefix: new HarmonyMethod(typeof(LeakGuard), nameof(CfrPrefix)) { priority = Priority.First });
                 var st = AccessTools.Method(typeof(scnEditor), "Start");
@@ -97,6 +100,7 @@ namespace StutterFix
                 var mat = qm.material;
                 var old = mat.mainTexture as RenderTexture;
                 bool ownBuffer = old != null && !ReferenceEquals(old, camRT) && !Fsr.IsOwn(old) && !ScreenEffects.IsOwn(old);   // 후처리 출력 버퍼는 소유자가 관리
+                if (enable && pendingField != null) return true;   // 새 게임: 원래 코드가 버퍼를 재사용한다
                 if (enable)
                 {
                     // 이전에 만든 버퍼가 끼워져 있으면 풀고 없앤 뒤 원래 코드가 새로 만들게 둔다
@@ -106,6 +110,7 @@ namespace StutterFix
                 // 끄기: 원래 코드와 같은 값을 넣되, camRT 는 Release 하지 않고 따로 만든 버퍼는 없앤다
                 customRef(__instance) = false;
                 frameRateField.SetValue(__instance, __args[1]);
+                if (pendingField != null) pendingField.SetValue(__instance, false);   // 새 게임 원래 코드와 같게
                 if (ownBuffer) { old.Release(); UnityEngine.Object.Destroy(old); FpsBuffersFreed++; }
                 else if (old != null) CamRTReleaseSkipped++;
                 mat.mainTexture = camRT;
