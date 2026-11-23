@@ -196,6 +196,8 @@ namespace StutterFix
             for (int i = 0; i < targets.Count; i++)
                 if (targets[i] == null) { Lg.I("[효과 재사용] 대상 함수 " + i + "번 없음 - 끔"); h.Unpatch(aetf, HarmonyPatchType.All, h.Id); return; }
             foreach (var m in targets) { h.Patch(m, transpiler: tr); n++; }
+            var pht = AccessTools.Method(typeof(scrConductor), "PlayHitTimes");
+            h.Patch(pht, prefix: new HarmonyMethod(typeof(FfxReuse), nameof(HitTimesPrefix)) { priority = Priority.First }, finalizer: new HarmonyMethod(typeof(FfxReuse), nameof(HitTimesFinalizer)));
             installed = true;
             if (Edition.Dev) Lg.I("[효과 재사용] 함수 " + n + "개, 바꾼 호출 " + replaced + "개");
         }
@@ -333,8 +335,32 @@ namespace StutterFix
             var a = GoGets<T>(go);
             return a.Length > 0 ? a[0] : null;
         }
+        // 곡 시작 PlayHitTimes 는 타일마다 GetComponent<ffxSetHoldsound>() 를 부른다(Lost 1만 5천 개, 카운트다운 프레임 약 12ms, 2026-11-24 dropscan).
+        // 장면에 ffxSetHoldsound 가 하나도 없으면(꺼진 것·남겨 둔 것 포함) 모두 null 이다. 그 함수가 도는 동안에만(그 안에서 효과를 붙이지 않음) 바로 null.
+        private static bool hitTimesNoHold;
+        internal static long HitTimesNoHoldRuns, HitTimesChecked, HitTimesWrong;
+        internal static bool HitTimesVerify;
+        public static void HitTimesPrefix()
+        {
+            hitTimesNoHold = false;
+            try { hitTimesNoHold = installed && UnityEngine.Object.FindObjectsByType<ffxSetHoldsound>(FindObjectsInactive.Include, FindObjectsSortMode.None).Length == 0; } catch { }
+            if (!hitTimesNoHold) return;
+            HitTimesNoHoldRuns++;
+#if AUTOTEST
+            // 시험 빌드: 정말 모든 타일에서 null 인지 대조(sfield FfxReuse.HitTimesVerify true; 그 자체가 시간을 쓰므로 시간 잴 때는 끔)
+            if (HitTimesVerify) try
+            {
+                var fl = ADOBase.lm != null ? ADOBase.lm.listFloors : null;
+                if (fl != null) foreach (var f in fl) { if (f == null) continue; HitTimesChecked++; if (f.GetComponent<ffxSetHoldsound>() != null) HitTimesWrong++; }
+                if (HitTimesWrong > 0) { hitTimesNoHold = false; Lg.I("[효과 재사용] (시험) 누르는 소리 효과 없음 판정이 틀림 " + HitTimesWrong); }
+            }
+            catch { }
+#endif
+        }
+        public static Exception HitTimesFinalizer(Exception __exception) { hitTimesNoHold = false; return __exception; }
         public static T CGet<T>(Component x) where T : Component
         {
+            if (hitTimesNoHold && typeof(T) == typeof(ffxSetHoldsound)) return null;
             if (Plain) return x.GetComponent<T>();
             if (!touched.Contains(x.gameObject)) { var q = x.GetComponent<T>(); if (Edition.Dev) CheckQuick(q, x.gameObject); return q; }
             var a = GoGets<T>(x.gameObject);
