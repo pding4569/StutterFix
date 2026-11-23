@@ -54,6 +54,51 @@ namespace StutterFix
             }
             return "roots=" + n + sb;
         }
+        // 진단: canvasmove begin|end. 프레임마다 위치가 바뀐(hasChanged) 캔버스와 그 아래 그림 transform 수를 센다.
+        // GPU 장식 켬에서 TransformChangeDispatch → Canvas::UpdateCanvasInvMatrixIfRequired 가 늘어난 원인 찾기(2026-11-24 DD).
+        private static readonly List<Canvas> mvCanvas = new List<Canvas>();
+        private static readonly List<Transform[]> mvKids = new List<Transform[]>();
+        private static int[] mvRoot = new int[0], mvKid = new int[0];
+        private static int mvFrames, mvLast = -1;
+        internal static string CanvasMove(string arg)
+        {
+            if ((arg ?? "").Trim() == "begin")
+            {
+                Camera.onPostRender -= MvTick; mvCanvas.Clear(); mvKids.Clear();
+                foreach (var c in Object.FindObjectsByType<Canvas>(FindObjectsInactive.Exclude, FindObjectsSortMode.None))
+                {
+                    if (!c.enabled) continue; mvCanvas.Add(c);
+                    var ks = c.GetComponentsInChildren<CanvasRenderer>(false).Select(r => r.transform).ToArray(); mvKids.Add(ks);
+                    c.transform.hasChanged = false; foreach (var k in ks) k.hasChanged = false;
+                }
+                mvRoot = new int[mvCanvas.Count]; mvKid = new int[mvCanvas.Count]; mvFrames = 0; mvLast = -1;
+                Camera.onPostRender += MvTick;
+                return "begin canvases=" + mvCanvas.Count;
+            }
+            Camera.onPostRender -= MvTick;
+            var sb = new StringBuilder("frames=" + mvFrames);
+            var order = Enumerable.Range(0, mvCanvas.Count).OrderByDescending(i => mvRoot[i] * 1000 + mvKid[i] / Mathf.Max(1, mvFrames)).Take(15);
+            foreach (int i in order)
+            {
+                var c = mvCanvas[i]; if (!c) continue;
+                if (mvRoot[i] == 0 && mvKid[i] == 0) continue;
+                string path = c.name; var p = c.transform.parent; int depth = 0;
+                while (p != null && depth++ < 4) { path = p.name + "/" + path; p = p.parent; }
+                sb.Append(" | ").Append(path).Append(" root=").Append(c.isRootCanvas).Append(" mode=").Append(c.renderMode)
+                  .Append(" moved=").Append(mvRoot[i]).Append(" kidsChanged/frame=").Append(((double)mvKid[i] / Mathf.Max(1, mvFrames)).ToString("F1")).Append("/").Append(mvKids[i].Length);
+            }
+            return sb.ToString();
+        }
+        private static void MvTick(Camera cam)
+        {
+            int f = Time.frameCount; if (f == mvLast) return; mvLast = f; mvFrames++;
+            for (int i = 0; i < mvCanvas.Count; i++)
+            {
+                var c = mvCanvas[i]; if (!c) continue;
+                var t = c.transform; if (t.hasChanged) { mvRoot[i]++; t.hasChanged = false; }
+                foreach (var k in mvKids[i]) if (k && k.hasChanged) { mvKid[i]++; k.hasChanged = false; }
+            }
+        }
         private static readonly List<Canvas> offCanvases = new List<Canvas>();
         internal static string CanvasOff(string arg)
         {

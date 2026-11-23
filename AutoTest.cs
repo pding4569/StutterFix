@@ -1427,6 +1427,7 @@ namespace StutterFix
                 case "behcensus": Log("[behcensus] " + EngineCensus.BehaviourCensus()); return true;
                 case "canvaslist": Log("[canvaslist] " + EngineCensus.CanvasList()); return true;
                 case "canvasoff": Log("[canvasoff] " + EngineCensus.CanvasOff(arg)); return true;
+                case "canvasmove": Log("[canvasmove] " + EngineCensus.CanvasMove(arg)); return true;
                 case "scriptcensus": Log("[scriptcensus] " + ScriptCensus.Command(arg)); return true;
                 case "updatecost": Log("[updatecost] " + UpdateCostProbe.Command(arg)); return true;
                 case "decojob": Log("[decojob] " + DecoJobShadow.Command(arg)); return true;
