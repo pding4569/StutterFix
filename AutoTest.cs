@@ -942,6 +942,12 @@ namespace StutterFix
                 case "decosim": DecoSim.Command(arg); return true;
                 case "decobake": return DecoBake.Step(arg);
                 case "gpudeco": return DecoBake.GpuStep(arg);
+#if AUTOTEST
+                case "slotcheck":
+                    if (arg.Trim() == "on") DecoBake.dupCheck = true; else if (arg.Trim() == "off") DecoBake.dupCheck = false;
+                    Log("[slotcheck] on=" + DecoBake.dupCheck + " dup_mismatch=" + DecoBake.DupMismatch + " shadow_mismatch=" + DecoBake.ShadowMismatch + " shadow_checks=" + DecoBake.ShadowChecks + " | " + DecoBake.SrcCheck());
+                    return true;
+#endif
                 case "beatprobe": Log("[beatprobe] " + BeatProbe.Run()); return true;
                 case "beatskip": BeatFix.DiagSkipFloors = arg == "on"; Log("[beatskip] " + BeatFix.DiagSkipFloors); return true;
                 case "beatsettled":
@@ -1123,6 +1129,25 @@ namespace StutterFix
                 case "dormfilter": Dormancy.FilterEveryFrame = arg == "every"; return true;
                 case "gpusplit": GpuSplit.Command(arg); return true;
                 case "floorcolor": FloorColorProbe.Command(arg); return true;
+                case "approxcheck":
+                    {
+                        // FloorAnim.Approx 와 Mathf.Approximately 가 같은 참/거짓인지: 경계값 + 임의 비트 + 가까운 쌍
+                        var rnd = new System.Random(12345); long n = 0, diff = 0; string first = "";
+                        float[] edge = { 0f, -0f, float.Epsilon, -float.Epsilon, 1e-6f, -1e-6f, 1f, -1f, 1.0000001f, 0.9999999f, 1e30f, -1e30f, float.MaxValue, float.MinValue, float.PositiveInfinity, float.NegativeInfinity, float.NaN, 45f, 360f, 0.5f, 1e-38f, 1e-45f };
+                        void Cmp(float a, float b) { n++; if (FloorAnim.Approx(a, b) != Mathf.Approximately(a, b)) { diff++; if (first == "") first = a.ToString("R") + "," + b.ToString("R"); } }
+                        foreach (var a in edge) foreach (var b in edge) Cmp(a, b);
+                        var buf = new byte[4];
+                        for (int k = 0; k < 2000000; k++)
+                        {
+                            rnd.NextBytes(buf); float a = BitConverter.ToSingle(buf, 0);
+                            float b = (k & 3) == 0 ? BitConverter.ToSingle(BitConverter.GetBytes(BitConverter.ToInt32(buf, 0) + rnd.Next(-40, 40)), 0)
+                                : (k & 3) == 1 ? a * (1f + (float)(rnd.NextDouble() - 0.5) * 4e-6f) : (k & 3) == 2 ? (float)(rnd.NextDouble() * 20 - 10) : -a;
+                            if ((k & 7) == 5) a = (float)(rnd.NextDouble() * 20 - 10);
+                            Cmp(a, b);
+                        }
+                        Log("[approxcheck] pairs=" + n + " diff=" + diff + (diff > 0 ? " first=" + first : ""));
+                        return true;
+                    }
 #if DEV || AUTOTEST
                 case "matshare": MatShare.Command(arg); return true;
                 case "livedeco": return LiveDeco.Step(arg);

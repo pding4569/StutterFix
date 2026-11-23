@@ -517,7 +517,14 @@ namespace StutterFix
             }
             PinGo(__instance.gameObject);
         }
-        public static void PinArg(scrFloor target) { if (active && target != null) PinGo(target.gameObject); }
+        // 타일 자신은 floorIndex 로 바로 찾는다(gameObject 엔진 호출을 줄인다. Build 가 byGo[f.gameObject] 와 같은 번호를 넣는다).
+        public static void PinArg(scrFloor target)
+        {
+            if (!active || target == null) return;
+            int i;
+            if (floorIndex.TryGetValue(target, out i)) { Pin(i); return; }
+            PinGo(target.gameObject);
+        }
         public static void PinFx(ffxPlusBase __instance)
         {
             if (!active) return;

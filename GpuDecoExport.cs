@@ -77,25 +77,79 @@ namespace StutterFix
         }
         // List<int> 와 같은 쓰임새(Add/Remove/Insert/AddRange/RemoveRange/IndexOf/Clear/Count)를 가진 목록. 바뀔 때마다 슬롯별 개수 배열을 맞춰
         // 진행 루프가 "아무도 안 쓰는 소스인가"를 객체 없이 배열로 물을 수 있게 한다.
+        // 원본 하나가 맡은 장식 칸 목록. 순서·위치 의미는 List<int> 와 같다(묶음 되돌리기가 IndexOf/Insert 로 제자리 복원).
+        // Remove 는 목록 길이에 비례했다: 장식 이동 효과 하나가 수천 칸을 다른 원본으로 옮기면 앞쪽부터 하나씩 빼며 뒤를 당겨
+        // O(n^2) 복사가 됐다(Arche 219.6·274.8초 27~29ms, 2026-11-23). 이제 Remove 는 그 자리만 빈 칸(-1)으로 표시하고(O(1)),
+        // 위치를 쓰는 연산(인덱스·IndexOf·Insert·RemoveAt·RemoveRange·순회) 직전에만 빈 칸을 순서대로 정리한다.
+        // Count 는 살아 있는 칸 수 그대로다(원본 재활용·gpuSrcMasters 판단이 같다).
+        static int[] gpuMasterSlotListPos = Array.Empty<int>();
         sealed class MasterSlotList
         {
             readonly List<int> list = new List<int>(64); readonly int slot;
+            int live, holes;
+            List<int> shadow;   // (검증) 원래 List<int> 연산을 그대로 따라 하는 사본
+            void Check()
+            {
+                if (!dupCheck) { shadow = null; return; }
+                if (shadow == null) { shadow = new List<int>(); foreach (var x in list) if (x >= 0) shadow.Add(x); return; }
+                int k = 0; bool bad = live != shadow.Count;
+                for (int r = 0; r < list.Count && !bad; r++) { int x = list[r]; if (x < 0) continue; if (k >= shadow.Count || shadow[k] != x) bad = true; k++; }
+                if (bad || k != shadow.Count) { ShadowMismatch++; shadow = null; }
+                ShadowChecks++;
+            }
             internal MasterSlotList(int slot) { this.slot = slot; }
-            void Sync() { gpuSrcMasters[slot] = list.Count; }
-            internal int Count { get { return list.Count; } }
-            internal int Capacity { get { return list.Capacity; } set { list.Capacity = value; } }
-            internal int this[int i] { get { return list[i]; } set { list[i] = value; } }
-            internal void Add(int v) { list.Add(v); Sync(); }
-            internal void AddRange(IEnumerable<int> v) { list.AddRange(v); Sync(); }
-            internal void Insert(int i, int v) { list.Insert(i, v); Sync(); }
-            internal bool Remove(int v) { bool r = list.Remove(v); Sync(); return r; }
-            internal void RemoveAt(int i) { list.RemoveAt(i); Sync(); }
-            internal void RemoveRange(int i, int n) { list.RemoveRange(i, n); Sync(); }
-            internal void Clear() { list.Clear(); Sync(); }
-            internal int IndexOf(int v) { return list.IndexOf(v); }
-            internal bool Contains(int v) { return list.Contains(v); }
-            internal List<int>.Enumerator GetEnumerator() { return list.GetEnumerator(); }
+            void Sync() { gpuSrcMasters[slot] = live; }
+            static void Pos(int v, int i)
+            {
+                if (v < 0) return;
+                if (v >= gpuMasterSlotListPos.Length) Array.Resize(ref gpuMasterSlotListPos, Math.Max(v + 1, gpuMasterSlotListPos.Length * 2 + 64));
+                gpuMasterSlotListPos[v] = i;
+            }
+            void Reindex(int from) { for (int i = from; i < list.Count; i++) Pos(list[i], i); }
+            void Compact()
+            {
+                if (holes == 0) return;
+                int w = 0;
+                for (int r = 0; r < list.Count; r++) { int v = list[r]; if (v < 0) continue; list[w] = v; Pos(v, w); w++; }
+                list.RemoveRange(w, list.Count - w); holes = 0;
+            }
+            internal int Count { get { return live; } }
+            internal int Capacity { get { return list.Capacity; } set { Compact(); list.Capacity = value; } }
+            internal int this[int i] { get { Compact(); return list[i]; } set { if (shadow != null) shadow[i] = value; Compact(); list[i] = value; Pos(value, i); Check(); } }
+            internal void Add(int v) { shadow?.Add(v); list.Add(v); Pos(v, list.Count - 1); live++; Sync(); Check(); }
+            internal void AddRange(IEnumerable<int> v) { int from = list.Count; list.AddRange(v); shadow?.AddRange(list.GetRange(from, list.Count - from)); live += list.Count - from; Reindex(from); Sync(); Check(); }
+            internal void Insert(int i, int v) { shadow?.Insert(i, v); Compact(); list.Insert(i, v); live++; Reindex(i); Sync(); Check(); }
+            internal bool Remove(int v)
+            {
+                bool sr = shadow != null && shadow.Remove(v); bool rr = RemoveCore(v); if (shadow != null && sr != rr) ShadowMismatch++; Check(); return rr;
+            }
+            bool RemoveCore(int v)
+            {
+                if (v >= 0 && v < gpuMasterSlotListPos.Length)
+                {
+                    int i = gpuMasterSlotListPos[v];
+                    // 칸 값은 목록마다 살아 있는 것이 하나뿐이다(옮길 때 먼저 빼고 넣음). 그래서 이 자리가 List.Remove 가 뺄 첫 번째 것이다.
+                    if (i >= 0 && i < list.Count && list[i] == v && (!dupCheck || DupOk(v, i)))
+                    {
+                        list[i] = -1; holes++; live--; Sync();
+                        if (holes > 64 && holes * 2 > list.Count) Compact();
+                        return true;
+                    }
+                }
+                Compact(); int k = list.IndexOf(v);
+                if (k < 0) { Sync(); return false; }
+                list.RemoveAt(k); live--; Reindex(k); Sync(); return true;
+            }
+            bool DupOk(int v, int i) { int f = list.IndexOf(v); if (f == i) return true; DupMismatch++; return false; }
+            internal void RemoveAt(int i) { shadow?.RemoveAt(i); Compact(); list.RemoveAt(i); live--; Reindex(i); Sync(); Check(); }
+            internal void RemoveRange(int i, int n) { shadow?.RemoveRange(i, n); Compact(); list.RemoveRange(i, n); live -= n; Reindex(i); Sync(); Check(); }
+            internal void Clear() { shadow?.Clear(); list.Clear(); live = 0; holes = 0; Sync(); Check(); }
+            internal int IndexOf(int v) { Compact(); return list.IndexOf(v); }
+            internal bool Contains(int v) { return v >= 0 && list.Contains(v); }
+            internal List<int>.Enumerator GetEnumerator() { Compact(); return list.GetEnumerator(); }
         }
+        // (자동 시험 검증) Remove 마다 앞쪽 중복을 실제로 찾는다. 기본은 끔(칸마다 원본 하나라는 불변식). 어긋나면 원래 방식으로 빼고 센다.
+        internal static bool dupCheck; internal static long DupMismatch, ShadowMismatch, ShadowChecks;
         sealed class GpuLiveSlice
         {
             bool active;
@@ -605,7 +659,7 @@ namespace StutterFix
             return (float)((double)ch.start + (double)ch.change * (double)gpuSourceE[s]);
         }
 
-        static void PropagateMasterSlotToSlices(int masterIdx, int c, LiveChannel lc, Anchor anc)
+        static void PropagateMasterSlotToSlices(int masterIdx, int c, in LiveChannel lc, in Anchor anc)
         {
             var map = gpuLiveMasterToSliceItem[masterIdx];
             for (int s = 0; s < gpuLiveSlices.Count; s++)
@@ -644,20 +698,27 @@ namespace StutterFix
             src.MasterSlots.Remove(masterSlot);
         }
 
+        // 칸 하나의 채널·앵커를 배열 칸에 바로 쓴다(2026-11-23). 예전엔 48바이트 Anchor 를 임시로 만들어 대입하고 값으로 넘겨
+        // Mono 가 칸마다 여러 번 Buffer.Memcpy 엔진 호출로 복사했다(Arche 219.6초 장식 이동 효과 프레임의 약 18%).
+        // 값은 예전 객체 초기화식과 같다(적지 않은 hi, lo, over, period 는 0).
+        static void WriteMasterSlot(int masterSlot, float start, float change, float end, int sourceIndex, uint clock,
+            float duration, float segStart, float segEnd, float segTarget, float over, float period, uint ease, uint scale)
+        {
+            ref var lc = ref gpuMasterChannels[masterSlot];
+            lc.start = start; lc.change = change; lc.end = end; lc.sourceIndex = sourceIndex;
+            ref var a = ref gpuMasterAnchors[masterSlot];
+            a.valid = 1u; a.clock = clock;
+            ref var g = ref a.segment;
+            g.hi = 0f; g.lo = 0f; g.duration = duration; g.start = segStart; g.end = segEnd; g.target = segTarget;
+            g.over = over; g.period = period; g.ease = ease; g.scale = scale;
+        }
+
         static void SetMasterSlotStatic(int masterIdx, int c, float value)
         {
             int masterSlot = masterIdx * 16 + c;
             DetachMasterSlotFromSource(masterSlot);
-            var lc = new LiveChannel { start = value, change = 0f, end = value, sourceIndex = -1 };
-            var anc = new Anchor
-            {
-                valid = 1u,
-                clock = 0u,
-                segment = new GpuSegment { duration = 0f, start = value, end = value, target = value, ease = 1u, scale = (c == 5 || c == 6 || c == 12 || c == 13) ? 1u : 0u }
-            };
-            gpuMasterChannels[masterSlot] = lc;
-            gpuMasterAnchors[masterSlot] = anc;
-            PropagateMasterSlotToSlices(masterIdx, c, lc, anc);
+            WriteMasterSlot(masterSlot, value, 0f, value, -1, 0u, 0f, value, value, value, 0f, 0f, 1u, (c == 5 || c == 6 || c == 12 || c == 13) ? 1u : 0u);
+            PropagateMasterSlotToSlices(masterIdx, c, in gpuMasterChannels[masterSlot], in gpuMasterAnchors[masterSlot]);
         }
 
         static void SetMasterSlotAnimated(int masterIdx, int c, float start, float target, float end, GpuLiveSource src, bool isScale)
@@ -667,20 +728,8 @@ namespace StutterFix
             float change = target - start;
             gpuMasterSlotSource[masterSlot] = src.Slot;
             src.MasterSlots.Add(masterSlot);
-            var lc = new LiveChannel { start = start, change = change, end = end, sourceIndex = src.Slot };
-            var anc = new Anchor
-            {
-                valid = 1u,
-                clock = (uint)src.Slot,
-                segment = new GpuSegment
-                {
-                    duration = src.Dur, start = start, end = end, target = target,
-                    over = src.Over, period = src.Period, ease = (uint)src.Ease, scale = isScale ? 1u : 0u
-                }
-            };
-            gpuMasterChannels[masterSlot] = lc;
-            gpuMasterAnchors[masterSlot] = anc;
-            PropagateMasterSlotToSlices(masterIdx, c, lc, anc);
+            WriteMasterSlot(masterSlot, start, change, end, src.Slot, (uint)src.Slot, src.Dur, start, end, target, src.Over, src.Period, (uint)src.Ease, isScale ? 1u : 0u);
+            PropagateMasterSlotToSlices(masterIdx, c, in gpuMasterChannels[masterSlot], in gpuMasterAnchors[masterSlot]);
         }
 
         static void CompleteGpuLiveSource(GpuLiveSource src)
@@ -708,15 +757,8 @@ namespace StutterFix
                 gpuMasterSlotSource[masterSlot] = -1;
                 float endVal = gpuMasterChannels[masterSlot].end;
                 int masterIdx = masterSlot / 16, c = masterSlot % 16;
-                var lc = new LiveChannel { start = endVal, change = 0f, end = endVal, sourceIndex = -1 };
-                var anc = new Anchor
-                {
-                    valid = 1u, clock = 0u,
-                    segment = new GpuSegment { duration = 0f, start = endVal, end = endVal, target = endVal, ease = 1u, scale = (c == 5 || c == 6 || c == 12 || c == 13) ? 1u : 0u }
-                };
-                gpuMasterChannels[masterSlot] = lc;
-                gpuMasterAnchors[masterSlot] = anc;
-                PropagateMasterSlotToSlices(masterIdx, c, lc, anc);
+                WriteMasterSlot(masterSlot, endVal, 0f, endVal, -1, 0u, 0f, endVal, endVal, endVal, 0f, 0f, 1u, (c == 5 || c == 6 || c == 12 || c == 13) ? 1u : 0u);
+                PropagateMasterSlotToSlices(masterIdx, c, in gpuMasterChannels[masterSlot], in gpuMasterAnchors[masterSlot]);
             }
             src.MasterSlots.Clear();
             gpuFreeSourceSlots.Push(src.Slot);

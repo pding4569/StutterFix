@@ -237,7 +237,7 @@ namespace StutterFix
             _ = target.floorRenderer.material;   // 원래도 읽는다 (재질 복사본을 만들고, floorRenderer 가 없으면 같은 자리에서 예외)
             var mt = target.moveTweens;
             Tween old = mt.Count != 0 ? Prev(mt, global::TweenType.Opacity, false) : null;
-            if (!Mathf.Approximately(target.opacity, c.Opacity))
+            if (!Approx(target.opacity, c.Opacity))
             {
                 if (c.Zero) target.opacity = c.Opacity;
                 else New(target, null, mt, OPA, global::TweenType.Opacity, old, ref c).FEnd = c.Opacity;
@@ -246,6 +246,17 @@ namespace StutterFix
             MaybeShadow();
         }
 
+        // Mathf.Approximately 와 같은 참/거짓: Abs(b - a) < Max(1E-06f * Max(Abs(a), Abs(b)), Epsilon * 8f).
+        // Mono 에서 Mathf.Abs 는 Math.Abs 엔진 호출(icall)이라 타일 수천 개 효과에서 비쌌다(Lost 528초 효과의 약 21%).
+        // -0/NaN 도 비교 결과가 같다(Abs 의 부호는 이 식의 비교들에 영향이 없다). 확인: 자동 시험 approxcheck.
+        internal static bool Approx(float a, float b)
+        {
+            float d = b - a; if (d < 0f) d = -d;
+            float x = a < 0f ? -a : a, y = b < 0f ? -b : b;
+            float m = 1E-06f * (x > y ? x : y), e = Mathf.Epsilon * 8f;
+            return d < (m > e ? m : e);
+        }
+        private static bool ApproxXY(Vector3 v, Vector3 v2) { return Approx(v.x, v2.x) && Approx(v.y, v2.y); }
         private static void TweenFloor(scrFloor target, ref Ctx c)
         {
             if (c.OpaOnly) { OpaOnly(target, ref c); return; }
@@ -254,8 +265,11 @@ namespace StutterFix
             // 화면 밖 타일 끄기(TileCull)는 게임의 TweenFloor 를 후크해 "움직이는 타일"을 관리에서 뺀다. 여기는 그 함수를 거치지 않으므로
             // 직접 알린다. 안 알리면 등록 때 크기로 화면 밖이라 꺼 둔 타일이 커지거나 옮겨져 화면에 들어와도 꺼진 채 남는다
             // (2026-11-15 제보: Silentroom - 1KXYZO, 타일 8,053개, 크기 바꾸는 MoveTrack 4,130개에서 큰 타일이 투명해짐).
-            if (PinTileCull) TileCull.PinArg(target);
-            Transform tt = target.transform;
+            // 2026-11-23: 실제로 위치·회전·크기를 바꾸거나 이전 애니메이션을 끝내는 타일만 알린다. 불투명도는 경계 상자를 바꾸지 않는다.
+            // Lost Requiem 528.4초(타일 8,171개를 시작 자리로 되돌리는 효과)에서 이미 그 자리인 꺼 둔 타일까지 한 프레임에 다시 켜 48ms 끊겼다.
+            bool pinned = !PinTileCull;
+            // scrFloor.Awake 가 넣어 두는 base.transform 과 같은 객체(엔진 호출을 줄인다). 비어 있으면 원래대로.
+            Transform tt = (object)target.thisTransform != null ? target.thisTransform : target.transform;
             _ = target.floorRenderer.material;   // 원래 코드도 읽는다 (floorRenderer 가 없으면 같은 자리에서 예외)
             var mt = target.moveTweens;
             Vector3 vector = target.startPos + c.Pos;
@@ -267,8 +281,10 @@ namespace StutterFix
                 if (!float.IsNaN(vector.x))
                 {
                     old = Prev(mt, global::TweenType.PositionX, false);
-                    if (!Mathf.Approximately(tt.position.x, vector.x))
+                    if ((object)old != null && !pinned) { TileCull.PinArg(target); pinned = true; }
+                    if (!Approx(tt.position.x, vector.x))
                     {
+                        if (!pinned) { TileCull.PinArg(target); pinned = true; } 
                         if (c.Zero) ZeroPos(tt, mt, true, vector.x, ref c);
                         else if (RealOverlap(mt, global::TweenType.Position)) mt[global::TweenType.PositionX] = RealPosX(tt, vector.x, c.Dur, c.Ease);
                         else New(target, tt, mt, PX, global::TweenType.PositionX, old, ref c).FEnd = vector.x;
@@ -277,8 +293,10 @@ namespace StutterFix
                 if (!float.IsNaN(vector.y))
                 {
                     old = Prev(mt, global::TweenType.PositionY, false);
-                    if (!Mathf.Approximately(tt.position.y, vector.y))
+                    if ((object)old != null && !pinned) { TileCull.PinArg(target); pinned = true; }
+                    if (!Approx(tt.position.y, vector.y))
                     {
+                        if (!pinned) { TileCull.PinArg(target); pinned = true; } 
                         if (c.Zero) ZeroPos(tt, mt, false, vector.y, ref c);
                         else if (RealOverlap(mt, global::TweenType.Position)) mt[global::TweenType.PositionY] = RealPosY(tt, vector.y, c.Dur, c.Ease);
                         else New(target, tt, mt, PY, global::TweenType.PositionY, old, ref c).FEnd = vector.y;
@@ -289,8 +307,10 @@ namespace StutterFix
             if (c.RotUsed)
             {
                 old = Prev(mt, global::TweenType.Rotation, false);
-                if (!Mathf.Approximately(tt.eulerAngles.z, z))
+                if ((object)old != null && !pinned) { TileCull.PinArg(target); pinned = true; }
+                if (!Approx(tt.eulerAngles.z, z))
                 {
+                    if (!pinned) { TileCull.PinArg(target); pinned = true; } 
                     if (c.Zero) ZeroRot(target, tt, mt, (target.startRot + c.Rot).z, ref c);
                     else New(target, tt, mt, ROT, global::TweenType.Rotation, old, ref c).FEnd = (target.startRot + c.Rot).z;
                 }
@@ -302,9 +322,11 @@ namespace StutterFix
                 if (!float.IsNaN(c.Scale.x))
                 {
                     old = Prev(mt, global::TweenType.ScaleX, true);   // 원래: GetValueOrDefault(..)?.Kill(true) (null 이면 안 부름)
+                    if ((object)old != null && !pinned) { TileCull.PinArg(target); pinned = true; }
                     Vector3 v2 = localScale.WithX(c.Scale.x);
-                    if (!tt.localScale.ApproximatelyXY(v2))
+                    if (!ApproxXY(tt.localScale, v2))
                     {
+                        if (!pinned) { TileCull.PinArg(target); pinned = true; } 
                         if (c.Zero) ZeroScale(tt, mt, true, v2, ref c);
                         else if (RealOverlap(mt, global::TweenType.Scale)) mt[global::TweenType.ScaleX] = RealScale(tt, v2, c.Dur, c.Ease, AxisConstraint.X);
                         else New(target, tt, mt, SX, global::TweenType.ScaleX, old, ref c).VEnd = v2;
@@ -313,9 +335,11 @@ namespace StutterFix
                 if (!float.IsNaN(c.Scale.y))
                 {
                     old = Prev(mt, global::TweenType.ScaleY, true);
+                    if ((object)old != null && !pinned) { TileCull.PinArg(target); pinned = true; }
                     Vector3 v3 = localScale.WithY(c.Scale.y);
-                    if (!tt.localScale.ApproximatelyXY(v3))
+                    if (!ApproxXY(tt.localScale, v3))
                     {
+                        if (!pinned) { TileCull.PinArg(target); pinned = true; } 
                         if (c.Zero) ZeroScale(tt, mt, false, v3, ref c);
                         else if (RealOverlap(mt, global::TweenType.Scale)) mt[global::TweenType.ScaleY] = RealScale(tt, v3, c.Dur, c.Ease, AxisConstraint.Y);
                         else New(target, tt, mt, SY, global::TweenType.ScaleY, old, ref c).VEnd = v3;
@@ -326,7 +350,7 @@ namespace StutterFix
             if (c.OpaUsed)
             {
                 old = Prev(mt, global::TweenType.Opacity, false);
-                if (!Mathf.Approximately(target.opacity, c.Opacity))
+                if (!Approx(target.opacity, c.Opacity))
                 {
                     // TweenOpacity: 길이 > 0 이면 애니메이션을 만들고, 0 이면 opacity 에 바로 쓰고 애니메이션은 없다(사전에 안 넣음). 둘 다 dontChangeMySprite = true
                     if (c.Zero) target.opacity = c.Opacity;
