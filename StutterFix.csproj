@@ -197,6 +197,7 @@
     <Compile Include="GpuDecoSnapshot.cs" Condition="'$(AutoTestBuild)' == '1'" />
     <Compile Include="GpuDecoOrderProbe.cs" Condition="'$(AutoTestBuild)' == '1'" />
     <Compile Include="GpuDecoExport.cs" />
+    <Compile Include="GpuDecoEffectCost.cs" />
     <Compile Include="GpuDecoRenderMerge.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="GpuDecoRenderMergeGate.cs" Condition="'$(AutoTestBuild)' == '1'" />
     <Compile Include="RenderMergeGatePolicy.cs" Condition="'$(AutoTestBuild)' == '1'" />

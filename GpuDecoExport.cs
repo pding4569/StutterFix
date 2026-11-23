@@ -232,6 +232,76 @@ namespace StutterFix
                 if (b < DirtyBlockMin) DirtyBlockMin = b;
                 if (b > DirtyBlockMax) DirtyBlockMax = b;
             }
+            // One item always fits in one 256-channel block. Preserve the exact
+            // sparse-write interval and alpha queue order, without widening it.
+            internal void MarkEffectDirty(int item, int mask)
+            {
+                int first=0,last=15;
+                while((mask&(1<<first))==0)first++;
+                while((mask&(1<<last))==0)last--;
+                int start=item*16+first,end=item*16+last+1,b=start>>8;
+                if((gpuZeroAlpha || gpuRenderMergePrepared || gpuCollapsePrepare) && (mask&0xC00)!=0
+                    && !alphaDirty[item]){alphaDirty[item]=true;pendingAlpha.Add(item);}
+                if((uint)b>=(uint)DirtyBlocks.Length)return;
+                if(!DirtyBlocks[b]){dirtyFirst[b]=start;dirtyEnd[b]=end;}
+                else {dirtyFirst[b]=Math.Min(dirtyFirst[b],start);dirtyEnd[b]=Math.Max(dirtyEnd[b],end);}
+                DirtyBlocks[b]=true;
+                if(b<DirtyBlockMin)DirtyBlockMin=b;
+                if(b>DirtyBlockMax)DirtyBlockMax=b;
+            }
+#if AUTOTEST
+            internal sealed class EffectCopy
+            {
+                internal LiveChannel[] Channels=new LiveChannel[16];
+                internal Anchor[] Anchors=new Anchor[16];
+                internal int Item,First,End,Min,Max,Pending;
+                internal bool Dirty,Alpha,Append;
+                // Original MarkDirty, restricted to the one affected block/item.
+                internal void MarkDirty(int c)
+                {
+                    int slot=Item*16+c,b=slot>>8;
+                    if((gpuZeroAlpha||gpuRenderMergePrepared||gpuCollapsePrepare)&&(c==10||c==11)&&!Alpha)
+                    {Alpha=true;Append=true;}
+                    if(!Dirty){First=slot;End=slot+1;}
+                    else {First=Math.Min(First,slot);End=Math.Max(End,slot+1);}
+                    Dirty=true;if(b<Min)Min=b;if(b>Max)Max=b;
+                }
+            }
+            internal EffectCopy EffectClone(int item)
+            {
+                int b=item>>4;var s=new EffectCopy{Item=item,First=dirtyFirst[b],End=dirtyEnd[b],Dirty=DirtyBlocks[b],
+                    Alpha=alphaDirty[item],Min=DirtyBlockMin,Max=DirtyBlockMax,Pending=pendingAlpha.Count};
+                Array.Copy(Channels,item*16,s.Channels,0,16);Array.Copy(FallbackAnchors,item*16,s.Anchors,0,16);
+                return s;
+            }
+            internal bool EffectEquals(EffectCopy s)
+            {
+                int b=s.Item>>4;
+                return EffectBits(Channels.AsSpan(s.Item*16,16),s.Channels.AsSpan())
+                    && EffectBits(FallbackAnchors.AsSpan(s.Item*16,16),s.Anchors.AsSpan())
+                    && DirtyBlocks[b]==s.Dirty && dirtyFirst[b]==s.First && dirtyEnd[b]==s.End
+                    && alphaDirty[s.Item]==s.Alpha && DirtyBlockMin==s.Min && DirtyBlockMax==s.Max
+                    && pendingAlpha.Count==s.Pending+(s.Append?1:0) && (!s.Append||pendingAlpha[pendingAlpha.Count-1]==s.Item);
+            }
+            internal GpuLiveSlice EffectWholeClone()
+            {
+                var s=new GpuLiveSlice{Channels=(LiveChannel[])Channels.Clone(),FallbackAnchors=(Anchor[])FallbackAnchors.Clone(),
+                    DirtyBlocks=(bool[])DirtyBlocks.Clone(),dirtyFirst=(int[])dirtyFirst.Clone(),dirtyEnd=(int[])dirtyEnd.Clone(),
+                    alphaDirty=(bool[])alphaDirty.Clone(),DirtyBlockMin=DirtyBlockMin,DirtyBlockMax=DirtyBlockMax};
+                s.pendingAlpha.AddRange(pendingAlpha);return s;
+            }
+            internal void EffectOverlay(EffectCopy s)
+            {
+                int b=s.Item>>4;
+                Array.Copy(s.Channels,0,Channels,s.Item*16,16);Array.Copy(s.Anchors,0,FallbackAnchors,s.Item*16,16);
+                DirtyBlocks[b]=s.Dirty;dirtyFirst[b]=s.First;dirtyEnd[b]=s.End;alphaDirty[s.Item]=s.Alpha;
+                DirtyBlockMin=s.Min;DirtyBlockMax=s.Max;if(s.Append)pendingAlpha.Add(s.Item);
+            }
+            internal bool EffectWholeEquals(GpuLiveSlice s)=>EffectBits(Channels,s.Channels)&&EffectBits(FallbackAnchors,s.FallbackAnchors)
+                && EffectBits(DirtyBlocks,s.DirtyBlocks)&&EffectBits(dirtyFirst,s.dirtyFirst)&&EffectBits(dirtyEnd,s.dirtyEnd)
+                && EffectBits(alphaDirty,s.alphaDirty)&&pendingAlpha.SequenceEqual(s.pendingAlpha)
+                && DirtyBlockMin==s.DirtyBlockMin&&DirtyBlockMax==s.DirtyBlockMax;
+#endif
             // Native packet writers expose dirty blocks rather than individual channels.
             internal void MarkFullDirtyBlocks(int first,int last)
             {
@@ -444,7 +514,13 @@ namespace StutterFix
                 PrepareGpuEffect(fx);
                 // 되돌리기용 장식별 16채널 복사는 오류 주입 시험일 때만 필요하다(사전 검증은 위에서 끝났고 Apply 는 배열 대입뿐).
                 if(GpuRecoveryTesting){SaveGpuTarget(masterIdx,d);captured=true;}
+#if AUTOTEST
+                var effectShadow=gpuEffectCheck?CaptureEffectShadow(masterIdx,d):null;
+#endif
                 ApplyGpuLiveEffectToTarget(fx, masterIdx, d);
+#if AUTOTEST
+                if(effectShadow!=null)CheckEffectShadow(masterIdx,d,effectShadow);
+#endif
                 ApplyG1Visible(fx,masterIdx,d);
                 ApplyG1Depth(fx,masterIdx,d);
 #if AUTOTEST
@@ -522,6 +598,9 @@ namespace StutterFix
         }
         internal static void BeginGpuSource(ffxMoveDecorationsPlus fx)
         {
+#if AUTOTEST
+            gpuEffectWhole=null;
+#endif
             gpuSource = (enabled || gpuCapture || gpuLivePrepared || gpuLiveActive) ? fx : null;
             gpuCurrentFx = fx;
             gpuCurrentFxParsed = false;
@@ -530,6 +609,9 @@ namespace StutterFix
         }
         internal static void EndGpuSource()
         {
+#if AUTOTEST
+            FinishEffectWhole();
+#endif
 #if DEV || AUTOTEST
             gpuPacketCurrent=null;
             gpuPacketTargetExpected=null;
@@ -713,15 +795,15 @@ namespace StutterFix
             g.over = over; g.period = period; g.ease = ease; g.scale = scale;
         }
 
-        static void SetMasterSlotStatic(int masterIdx, int c, float value)
+        static void SetMasterSlotStatic(int masterIdx, int c, float value, bool propagate=true)
         {
             int masterSlot = masterIdx * 16 + c;
             DetachMasterSlotFromSource(masterSlot);
             WriteMasterSlot(masterSlot, value, 0f, value, -1, 0u, 0f, value, value, value, 0f, 0f, 1u, (c == 5 || c == 6 || c == 12 || c == 13) ? 1u : 0u);
-            PropagateMasterSlotToSlices(masterIdx, c, in gpuMasterChannels[masterSlot], in gpuMasterAnchors[masterSlot]);
+            if(propagate)PropagateMasterSlotToSlices(masterIdx, c, in gpuMasterChannels[masterSlot], in gpuMasterAnchors[masterSlot]);
         }
 
-        static void SetMasterSlotAnimated(int masterIdx, int c, float start, float target, float end, GpuLiveSource src, bool isScale)
+        static void SetMasterSlotAnimated(int masterIdx, int c, float start, float target, float end, GpuLiveSource src, bool isScale, bool propagate=true)
         {
             int masterSlot = masterIdx * 16 + c;
             DetachMasterSlotFromSource(masterSlot);
@@ -729,7 +811,7 @@ namespace StutterFix
             gpuMasterSlotSource[masterSlot] = src.Slot;
             src.MasterSlots.Add(masterSlot);
             WriteMasterSlot(masterSlot, start, change, end, src.Slot, (uint)src.Slot, src.Dur, start, end, target, src.Over, src.Period, (uint)src.Ease, isScale ? 1u : 0u);
-            PropagateMasterSlotToSlices(masterIdx, c, in gpuMasterChannels[masterSlot], in gpuMasterAnchors[masterSlot]);
+            if(propagate)PropagateMasterSlotToSlices(masterIdx, c, in gpuMasterChannels[masterSlot], in gpuMasterAnchors[masterSlot]);
         }
 
         static void CompleteGpuLiveSource(GpuLiveSource src)
@@ -885,6 +967,8 @@ namespace StutterFix
         // Sole caller GpuLiveSkip completes preflight/PrepareGpuEffect before target undo capture.
         static void ApplyGpuLiveEffectToTarget(ffxMoveDecorationsPlus fx, int masterIdx, scrDecoration d)
         {
+            bool batch=gpuEffectBatch && !GpuRecoveryTesting;
+            int written=0;
             var e = gpuCurrentEvent;
             int baseIdx = gpuLiveOwnedIndices[masterIdx];
             var decRow = table.Decorations[baseIdx];
@@ -920,16 +1004,18 @@ namespace StutterFix
                 if (!anim)
                 {
                     float finalVal = isScaleOrPar ? afterKill + (target - afterKill) * easeEnd : target;
-                    SetMasterSlotStatic(masterIdx, c, finalVal);
+                    SetMasterSlotStatic(masterIdx, c, finalVal,!batch);
                 }
                 else
                 {
                     float startVal = afterKill;
                     float endVal = isScaleOrPar ? startVal + (target - startVal) * easeDurEnd : target;
-                    SetMasterSlotAnimated(masterIdx, c, startVal, target, endVal, gpuCurrentAnimSource, isScaleOrPar);
+                    SetMasterSlotAnimated(masterIdx, c, startVal, target, endVal, gpuCurrentAnimSource, isScaleOrPar,!batch);
                 }
+                written|=1<<c;
                 GpuRecoveryFault("target_after_channel");
             }
+            if(batch && written!=0)PropagateEffectToSlices(masterIdx,written);
             // Original FastMove constructor order, including parallax offsets
             // before pivot/rotation. Render-item order is never used here.
             if(anim)foreach(int c in gpuRecFirstChannels)
@@ -2615,6 +2701,7 @@ namespace StutterFix
             if(command.StartsWith("rendermerge ",StringComparison.Ordinal))return GpuRenderMergeCommand(command);
 #if AUTOTEST
             if(GpuAblationCommand(command))return true;
+            if(GpuEffectCostCommand(command))return true;
             if(GpuStorageCommand(command))return true;
             if(GpuImagePlanCommand(command))return true;
             if(command=="resources mark"){MarkGpuResources();return true;}

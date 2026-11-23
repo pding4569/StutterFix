@@ -25,7 +25,7 @@ namespace StutterFix
         static Vector2 gpuTargetUndoStart;
         // Research candidate: immutable CopyEvent values, in original channel order.
         // No per-target allocations; disabled until the short comparison passes.
-        static bool gpuEffectCache=false;
+        static bool gpuEffectCache=true;   // 2026-11-23 기본 켬: Arche 효과 대조 1,875+1,095번 불일치 0, 219.6초 끊김 26.0·34.3 -> 22.0·23.0ms(일괄과 함께)
         static readonly int[] gpuEffectChannels=new int[16];
         static int gpuEffectChannelCount;
         static float gpuEffectEaseEnd=1f,gpuEffectEaseDurEnd=1f;
