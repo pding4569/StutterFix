@@ -32,7 +32,9 @@ namespace StutterFix
             var go = new GameObject("StutterFix.PerfOverlay");
             DontDestroyOnLoad(go);
             Instance = go.AddComponent<PerfOverlay>();
-            Instance.useGUILayout = false;   // OnGUI 는 마우스 입력만 받고 GUILayout 을 안 쓴다: 유니티가 프레임마다 GUILayout 준비를 하지 않게 (곡 중 쓰레기)
+            Instance.useGUILayout = false;
+            // OnGUI 는 마우스 입력만 받고 GUILayout 을 안 쓴다. 따로 둔 컴포넌트에서 받아, 마우스를 쓸 수 없을 때(곡 중·커서 숨김)는 그 컴포넌트를 꺼 둔다.
+            Instance.gui = go.AddComponent<GuiProxy>(); Instance.gui.Body = Instance.GuiBody; Instance.gui.useGUILayout = false; Instance.gui.enabled = false;
         }
 
         // UMM 창(Ctrl+F10)을 열고 닫을 때: 열 때는 UMM 과 각 모드가 설정 화면을 처음 만들고, 닫을 때는 모드들이
@@ -1107,6 +1109,7 @@ namespace StutterFix
         private float slide;   // 나타날 때 옆에서 미끄러져 들어오는 거리(모니터 단위)
         private void LateUpdate()
         {
+            SyncGui();
             if (show <= 0f || C == null) { if (ui.Ready) ui.Hide(); return; }
             if (!built) Build();
             long drawStart = Stopwatch.GetTimestamp();
@@ -1174,7 +1177,17 @@ namespace StutterFix
         }
 
         // 입력만(누르면 펼치기, 끌면 옮기기). 그리지는 않는다. 좌표는 예전처럼 모니터 단위로 받는다.
-        private void OnGUI()
+        private GuiProxy gui;
+        // LateUpdate 앞머리에서 프레임마다: 마우스 입력이 필요할 때만 OnGUI 컴포넌트를 켠다. 끌 때는 원래 OnGUI 가 하던 입력 막기 해제를 한 번 한다.
+        private void SyncGui()
+        {
+            if ((object)gui == null) return;
+            bool need = show > 0f && C != null && Mode != 0 && built && ((Cursor.visible && !Hitch.Playing) || dragging);
+            if (need == gui.enabled) return;
+            if (!need) UiInputBlock.Clear(this);
+            gui.enabled = need;
+        }
+        internal void GuiBody()
         {
             if (show <= 0f || C == null || Mode == 0 || !built) return;
             if ((!Cursor.visible || Hitch.Playing) && !dragging) { UiInputBlock.Clear(this); return; }

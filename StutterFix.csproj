@@ -60,6 +60,7 @@
     <Compile Include="DecoDetach.cs" />
     <Compile Include="FlashSkip.cs" />
     <Compile Include="QuartzTitleFix.cs" />
+    <Compile Include="GuiProxy.cs" />
     <Compile Include="MouseSkip.cs" />
     <Compile Include="ScriptCensus.cs" />
     <Compile Include="GpuPriority.cs" />
