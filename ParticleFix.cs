@@ -28,6 +28,7 @@ namespace StutterFix
             public ParticleSystem Ps;
             public bool HasScale, HasSpeed, CullSet;
             public Vector3 Scale; public float Speed;
+            public bool HasLocal; public Vector3 Local;   // SetScale 이 마지막으로 쓴 particleTransform.localScale
             public ParticleSystemCullingMode CullBefore, CullApplied;
         }
         private static readonly ConditionalWeakTable<scrParticleDecoration, State> states = new ConditionalWeakTable<scrParticleDecoration, State>();
@@ -49,6 +50,8 @@ namespace StutterFix
                     var m = AccessTools.Method(t, name);
                     if (m != null) h.Patch(m, postfix: new HarmonyMethod(typeof(ParticleFix), nameof(Forget)));
                 }
+                var ss = AccessTools.DeclaredMethod(t, "SetScale", new[] { typeof(Vector2) });
+                if (ss != null && SkipScale) h.Patch(ss, prefix: new HarmonyMethod(typeof(ParticleFix), nameof(SetScalePrefix)));
                 Lg.I("[파티클] 설치 (바꾼 호출 " + replaced + "곳)");
             }
             catch (Exception ex) { Lg.I("[파티클] 설치 실패: " + ex.Message); }
@@ -101,8 +104,37 @@ namespace StutterFix
 
         public static void Forget(scrParticleDecoration __instance)
         {
+            if (scaleHandled) { scaleHandled = false; return; }   // 바로 앞 SetScalePrefix 가 쓴 값을 기억에 맞춰 두었다
             State s;
-            if (states.TryGetValue(__instance, out s)) { s.HasScale = s.HasSpeed = false; }
+            if (states.TryGetValue(__instance, out s)) { s.HasScale = s.HasSpeed = false; s.HasLocal = false; }
+        }
+
+        // SetScale(2026-11-23): 장식 위치 갱신(UpdatePosition)이 보이는 파티클 장식마다 매 프레임 부른다(Lost 논리 갱신의 약 15%).
+        // 원래: scaleVec = scale; shape.scale = scale; this.scale = scale; particleTransform.localScale = one * camScaleMultiplier; (에디터면 충돌체·기즈모)
+        // 같은 순서로 하되, 엔진에 넣을 두 값이 이 장식에 마지막으로 넣은 값과 비트까지 같으면 그 엔진 호출만 건너뛴다.
+        // 두 값을 쓰는 곳은 게임 전체에서 SetScale·Update(shape.scale, ParticleFix 가 같은 기억으로 추적)·ResetParticle·SetSprite(기억을 지움)뿐이다.
+        internal static bool SkipScale = true;
+        internal static long ScaleSkips, ScaleWrites;
+        [ThreadStatic] private static bool scaleHandled;
+        private static readonly AccessTools.FieldRef<scrParticleDecoration, Transform> ptRef = AccessTools.FieldRefAccess<scrParticleDecoration, Transform>("particleTransform");
+        private static bool B(float a, float b) => BitConverter.SingleToInt32Bits(a) == BitConverter.SingleToInt32Bits(b);
+        public static bool SetScalePrefix(scrParticleDecoration __instance, Vector2 scale)
+        {
+            if (!SkipScale || !Active || ADOBase.isLevelEditor) return true;
+            var ps = psRef(__instance); var pt = ptRef(__instance);
+            if ((object)ps == null || (object)pt == null || !ps || !pt) return true;
+            var s = states.GetOrCreateValue(__instance);
+            if (!ReferenceEquals(s.Ps, ps)) { s.Ps = ps; s.HasScale = s.HasSpeed = false; s.HasLocal = false; s.CullSet = false; }
+            __instance.scaleVec = scale;
+            Vector3 v = scale;
+            if (s.HasScale && B(s.Scale.x, v.x) && B(s.Scale.y, v.y) && B(s.Scale.z, v.z)) ScaleSkips++;
+            else { var sh = ps.shape; sh.scale = v; s.Scale = v; s.HasScale = true; ScaleWrites++; }
+            __instance.scale = scale;
+            Vector3 l = Vector3.one * __instance.camScaleMultiplier;
+            if (s.HasLocal && B(s.Local.x, l.x) && B(s.Local.y, l.y) && B(s.Local.z, l.z)) ScaleSkips++;
+            else { pt.localScale = l; s.Local = l; s.HasLocal = true; ScaleWrites++; }
+            scaleHandled = true;
+            return false;
         }
 
         public static void ShapeScale(ref ParticleSystem.ShapeModule m, Vector3 v)
