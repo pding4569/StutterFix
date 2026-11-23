@@ -268,7 +268,7 @@ namespace StutterFix
                     text.AppendLine(g.Count() + "\t" + F(g.Sum(x => x.Area)) + "\t" + g.Count(x => x.AlphaZero) + "\t" + F(g.Where(x => x.AlphaZero).Sum(x => x.Area)) + "\t" + g.Count(x => x.PropertyBlock) + "\t" + Clean(mat.name) + "#" + mat.GetInstanceID() + "\t" + Clean(mat.shader ? mat.shader.name : "null") + "\t" + Clean(string.Join(",", mat.shaderKeywords)) + "\t" + mat.renderQueue + "\t" + Clean(d.Renderer.sortingLayerName) + "#" + d.Renderer.sortingLayerID + "\t" + d.Renderer.sortingOrder + "\t" + TextureInfo(d.Texture) + "\t" + d.Textures);
                 }
             }
-            string dir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "StutterFix"); Directory.CreateDirectory(dir);
+            string dir = Path.Combine(Main.Entry.Path, "gpucensus"); Directory.CreateDirectory(dir);
             string path = Path.Combine(dir, "gpu-census-" + DateTime.Now.ToString("yyyyMMdd-HHmmss-fff") + ".tsv");
             File.WriteAllText(path, text.ToString(), new UTF8Encoding(false));
             Lg.I("[gpucensus] " + path + " elapsed_ms=" + sw.ElapsedMilliseconds + "; exclude census and following recovery frames from timing. AABB overdraw and material transitions are estimates; alpha0 is not proof of invisibility.");

@@ -6,6 +6,8 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
+using System.Globalization;
+using System.IO;
 
 namespace StutterFix
 {
@@ -17,8 +19,17 @@ namespace StutterFix
     //   리프(바로 그 순간 실행 중인 함수)와 포함(스택에 한 번이라도 있는 함수) 두 가지.
     internal static class ProfSamp
     {
-        private const int MaxSamples = 40000, Depth = 32;
-        private static ulong[] ips;       // MaxSamples * Depth, 0 이면 끝
+        private const int MaxSamples = 40000, Depth = 32, FullSamples = 150000;
+        private static int capacity;
+        private static bool fullMode;
+        private static volatile float publishedSong = float.NaN;
+        private static volatile int publishedFrame = -1;
+        private static float[] sampleSongs;
+        private static int[] sampleFrames;
+        private static long[] sampleStamps, suspendTicks;
+        private static long suspendTotal, suspendMax, attempts, contextFailures, suspendFailures;
+        internal static void PublishFrame(float song, int frame) { publishedSong = song; publishedFrame = frame; }
+        private static ulong[] ips;       // capacity * Depth (ring은 RingN), 0 이면 끝
         private static int count;
         private static volatile bool run;
         private static Thread thread;
@@ -31,7 +42,7 @@ namespace StutterFix
         private static long nativeFrames;
         private static string failure;
         // 링 모드(profsamp begin 500 native ring): 곡 내내 표본을 링 버퍼에 돌려 쓰고, 모니터가 끊김을 잡으면 그 프레임 구간의 표본만 따로 보관한다(2026-11-22, "게임 바깥" 끊김 중 메인 스레드가 어디서 기다렸는지 보려고).
-        private static bool ringMode; private const int RingN = 8192, MaxHitches = 80;
+        private static bool ringMode; private const int RingN = 8192, MaxHitches = 500;
         private static long[] rts; private static long ringHead;
         private sealed class HitchCap { internal float Ms, SongT; internal string Wall; internal List<ulong[]> Stacks = new List<ulong[]>(); internal List<double> AgeMs = new List<double>(); }
         private static readonly List<HitchCap> hitchCaps = new List<HitchCap>();
@@ -108,14 +119,20 @@ namespace StutterFix
 
         internal static string Begin(string arg)
         {
-            if (run) return "이미 도는 중";
+            if (run || (thread != null && thread.IsAlive)) return "이미 도는 중";
             var args = (arg ?? "").Trim().Split(new[] {' '}, StringSplitOptions.RemoveEmptyEntries);
-            if (args.Length > 4 || args.Skip(1).Any(a => a != "native" && a != "ring" && !a.StartsWith("thread=")))
-                throw new ArgumentException("profsamp begin [hz] [native] [thread=이름 일부]");
+            if (args.Skip(1).Any(a => a != "native" && a != "ring" && a != "full" && !a.StartsWith("max=") && !a.StartsWith("thread=")))
+                throw new ArgumentException("profsamp begin [hz] [native] [ring|full] [max=150000] [thread=이름 일부]");
             int hz = 1000; if (args.Length > 0) int.TryParse(args[0], out hz); if (hz < 50 || hz > 4000) hz = 1000; hzUsed = hz;
             nativeUnwind = args.Contains("native"); ringMode = args.Contains("ring"); hitchCaps.Clear(); ringHead = 0;
+            fullMode = args.Contains("full"); capacity = fullMode ? FullSamples : MaxSamples;
+            if (ringMode && fullMode) throw new ArgumentException("ring과 full은 함께 사용 불가");
+            var limit = args.Where(a => a.StartsWith("max=")).ToArray();
+            if (limit.Length > 1 || (limit.Length == 1 && (!fullMode || !int.TryParse(limit[0].Substring(4), out capacity) || capacity < 1 || capacity > 1000000)))
+                throw new ArgumentException("max는 full에서만 1..1000000 (표본당 약 280바이트)");
             string threadName = args.Where(a => a.StartsWith("thread=")).Select(a => a.Substring(7).Replace('_', ' ')).FirstOrDefault();
             nativeFrames = 0; failure = null;
+            suspendTotal = suspendMax = attempts = contextFailures = suspendFailures = 0;
             // Resolve modules while the target is running. Never enter Mono/JIT
             // function-table callbacks or enumerate modules with it suspended.
             var ranges = new List<ImageRange>();
@@ -125,7 +142,9 @@ namespace StutterFix
                         ranges.Add(new ImageRange { Start = (ulong)module.BaseAddress.ToInt64(),
                             End = (ulong)module.BaseAddress.ToInt64() + (ulong)module.ModuleMemorySize });
             images = ranges.ToArray();
-            ips = new ulong[(ringMode ? RingN : MaxSamples) * Depth]; count = 0; if (ringMode) rts = new long[RingN];
+            ips = new ulong[(ringMode ? RingN : capacity) * Depth]; count = 0; if (ringMode) rts = new long[RingN];
+            sampleSongs = fullMode ? new float[capacity] : null; sampleFrames = fullMode ? new int[capacity] : null;
+            sampleStamps = fullMode ? new long[capacity] : null; suspendTicks = fullMode ? new long[capacity] : null;
             uint tid = GetCurrentThreadId();
             if (threadName != null) tid = FindThread(threadName);
             mainHandle = OpenThread(0x0002 | 0x0008 | 0x0040, false, tid);   // SUSPEND_RESUME | GET_CONTEXT | QUERY_INFORMATION
@@ -133,7 +152,7 @@ namespace StutterFix
             run = true; t0 = Stopwatch.GetTimestamp();
             thread = new Thread(Loop) { IsBackground = true, Priority = ThreadPriority.AboveNormal, Name = "StutterFix.ProfSamp" };
             thread.Start();
-            return "시작 (" + hz + "Hz, 메인 스레드 " + tid + ", native_unwind=" + nativeUnwind + ")";
+            return "시작 (" + hz + "Hz, 스레드 " + tid + ", native_unwind=" + nativeUnwind + ", full=" + fullMode + ", capacity=" + (ringMode ? RingN : capacity) + ")";
         }
 
         private static bool NativeImage(ulong pc)
@@ -191,37 +210,56 @@ namespace StutterFix
                     RtlCaptureContext(ctx); CaptureNative(ctx, 0);
                     Array.Clear(ips, 0, Depth); nativeFrames = 0;
                 }
-                while (run && (ringMode || count < MaxSamples))
+                while (run && (ringMode || count < capacity))
                 {
                     next += period;
                     while (Stopwatch.GetTimestamp() < next) { Thread.SpinWait(50); if (!run) break; }
                     if (!run) break;
-                    if (SuspendThread(mainHandle) == 0xFFFFFFFF) continue;
+                    long suspendStart = Stopwatch.GetTimestamp(); int sampleIndex = count;
+                    attempts++;
+                    if (SuspendThread(mainHandle) == 0xFFFFFFFF) { suspendFailures++; continue; }
                     try
                     {
                         Marshal.WriteInt32(ctx, 0x30, 0x1000B);   // CONTEXT_FULL (x64)
                         if (GetThreadContext(mainHandle, ctx))
                         {
+                            if (fullMode)
+                            {
+                                sampleSongs[count] = publishedSong; sampleFrames[count] = publishedFrame;
+                                sampleStamps[count] = Stopwatch.GetTimestamp();
+                            }
                             if (ringMode)
                             {
                                 long h = Interlocked.Read(ref ringHead); int slot = (int)(h % RingN);
                                 Array.Clear(ips, slot * Depth, Depth);
                                 CaptureNative(ctx, slot * Depth); rts[slot] = Stopwatch.GetTimestamp();
-                                Interlocked.Increment(ref ringHead); count++; continue;
+                                Interlocked.Increment(ref ringHead); count++;
                             }
-                            if (nativeUnwind) { CaptureNative(ctx, count * Depth); count++; continue; }
-                            int b = count * Depth; ulong rip = (ulong)Marshal.ReadInt64(ctx, 0xF8), rsp = (ulong)Marshal.ReadInt64(ctx, 0x98), rbp = (ulong)Marshal.ReadInt64(ctx, 0xA0);
-                            ips[b] = rip; int d = 1;
-                            while (d < Depth && rbp > rsp && rbp - rsp < (1UL << 20) && (rbp & 7) == 0)
+                            else if (nativeUnwind) { CaptureNative(ctx, count * Depth); count++; }
+                            else
                             {
-                                ulong ret = (ulong)Marshal.ReadInt64((IntPtr)(long)(rbp + 8)); ulong nbp = (ulong)Marshal.ReadInt64((IntPtr)(long)rbp);
-                                if (ret < 0x10000) break; ips[b + d++] = ret;
-                                if (nbp <= rbp) break; rbp = nbp;
+                                int b = count * Depth; ulong rip = (ulong)Marshal.ReadInt64(ctx, 0xF8), rsp = (ulong)Marshal.ReadInt64(ctx, 0x98), rbp = (ulong)Marshal.ReadInt64(ctx, 0xA0);
+                                ips[b] = rip; int d = 1;
+                                while (d < Depth && rbp > rsp && rbp - rsp < (1UL << 20) && (rbp & 7) == 0)
+                                {
+                                    ulong ret = (ulong)Marshal.ReadInt64((IntPtr)(long)(rbp + 8)); ulong nbp = (ulong)Marshal.ReadInt64((IntPtr)(long)rbp);
+                                    if (ret < 0x10000) break; ips[b + d++] = ret;
+                                    if (nbp <= rbp) break; rbp = nbp;
+                                }
+                                count++;
                             }
-                            count++;
                         }
+                        else contextFailures++;
                     }
-                    finally { ResumeThread(mainHandle); }
+                    finally
+                    {
+                        ResumeThread(mainHandle);
+                        long cost = Stopwatch.GetTimestamp() - suspendStart;
+                        suspendTotal += cost; if (cost > suspendMax) suspendMax = cost;
+                        if (fullMode && count > sampleIndex) suspendTicks[sampleIndex] = cost;
+                    }
+                    // 지연 뒤 몰아서 연속 정지하지 않는다. 실제 표본률/누락은 meta로 보고한다.
+                    long after = Stopwatch.GetTimestamp(); if (next < after - period) next = after;
                 }
             }
             catch (Exception ex) { failure = ex.GetType().Name + ": " + ex.Message; run = false; }
@@ -260,13 +298,24 @@ namespace StutterFix
         internal static string End() { return End(null); }
         internal static string End(string framesDir)
         {
-            if (!run && count == 0) return "시작 안 함";
-            run = false; if (thread != null) thread.Join(2000); t1 = Stopwatch.GetTimestamp();
-            try { CloseHandle(mainHandle); } catch { }
+            if (!run && count == 0 && mainHandle == IntPtr.Zero) return "시작 안 함";
+            run = false;
+            if (thread != null && !thread.Join(2000)) return "표본 스레드 종료 대기 초과: 핸들/배열 보존, end 재시도 필요";
+            t1 = Stopwatch.GetTimestamp();
+            try { if (mainHandle != IntPtr.Zero) CloseHandle(mainHandle); } catch { }
+            mainHandle = IntPtr.Zero;
             double secs = (t1 - t0) / (double)Stopwatch.Frequency;
+            if (framesDir != null)
+            {
+                // 정지 시작 직전~ResumeThread 복귀의 벽시계 상한 추정. OS 선점 시간도 포함한다.
+                string meta = string.Format(CultureInfo.InvariantCulture,
+                    "{{\"full\":{0},\"samples\":{1},\"capacity\":{2},\"capacity_reached\":{3},\"requested_hz\":{4},\"elapsed_s\":{5:R},\"attempts\":{6},\"failed_contexts\":{7},\"failed_suspends\":{11},\"suspend_total_ms\":{8:R},\"suspend_max_ms\":{9:R},\"sampling_error\":{10}}}",
+                    fullMode ? "true" : "false", count, ringMode ? RingN : capacity, !ringMode && count >= capacity ? "true" : "false", hzUsed, secs, attempts, contextFailures,
+                    suspendTotal * 1000.0 / Stopwatch.Frequency, suspendMax * 1000.0 / Stopwatch.Frequency, failure == null ? "false" : "true", suspendFailures);
+                File.WriteAllText(Path.Combine(framesDir, "profsamp-meta.json"), meta);
+            }
             if (ringMode)
             {
-                ringMode = false;
                 IntPtr dom = IntPtr.Zero; try { dom = mono_get_root_domain(); } catch (Exception ex) { return "mono_get_root_domain 실패: " + ex.Message; }
                 var fb2 = new StringBuilder();
                 foreach (var cap in hitchCaps)
@@ -288,8 +337,10 @@ namespace StutterFix
                         fb2.Append('\n');
                     }
                 }
-                if (framesDir != null) try { System.IO.File.WriteAllText(System.IO.Path.Combine(framesDir, "profsamp-hitches.txt"), fb2.ToString()); } catch { }
-                return "링 모드: 끊김 " + hitchCaps.Count + "개 보관, 표본 " + count + "개 / " + secs.ToString("F1") + "초";
+                if (framesDir != null) File.WriteAllText(Path.Combine(framesDir, "profsamp-hitches.txt"), fb2.ToString());
+                string ringResult = "링 모드: 끊김 " + hitchCaps.Count + "개 보관(상한 500), 표본 " + count + "개 / " + secs.ToString("F1") + "초";
+                ringMode = false; ips = null; rts = null; images = null; count = 0; hitchCaps.Clear(); cache.Clear();
+                return ringResult;
             }
             IntPtr domain = IntPtr.Zero; try { domain = mono_get_root_domain(); } catch (Exception ex) { return "mono_get_root_domain 실패: " + ex.Message; }
             var leaf = new Dictionary<string, int>(); var incl = new Dictionary<string, int>(); var mod = new Dictionary<string, int>();
@@ -332,24 +383,12 @@ namespace StutterFix
             if (framesDir != null)
             {
                 // 표본마다 프레임을 한 줄로 (UnityPlayer 는 RVA 만): tools/symrva 가 PDB 로 함수 이름을 푼다
-                var fb = new StringBuilder();
-                for (int i = 0; i < count; i++)
-                {
-                    for (int d = 0; d < Depth; d++)
-                    {
-                        ulong ip = ips[i * Depth + d]; if (ip == 0) break;
-                        bool g; string n = Resolve(ip, domain, out g);
-                        if (d > 0) fb.Append(';');
-                        if (g) fb.Append("M:").Append(n);
-                        else if (n.StartsWith("[UnityPlayer.dll+0x")) fb.Append("U:").Append(n.Substring(19, n.Length - 20));
-                        else fb.Append("X:").Append(n);
-                    }
-                    fb.Append((char)10);
-                }
-                try { System.IO.File.WriteAllText(System.IO.Path.Combine(framesDir, "profsamp-frames.txt"), fb.ToString()); } catch { }
+                WriteFrames(framesDir, domain);
             }
             var sbo = new StringBuilder();
             sbo.Append("native_unwind=").Append(nativeUnwind).Append(" native_frames=").Append(nativeFrames).Append(" max_depth=").Append(Depth).Append('\n');
+            sbo.AppendFormat(CultureInfo.InvariantCulture, "full={0} capacity_reached={1} suspend_total_ms={2:F3} suspend_max_ms={3:F3} attempts={4} failed_contexts={5} failed_suspends={6}\n",
+                fullMode, count >= capacity, suspendTotal * 1000.0 / Stopwatch.Frequency, suspendMax * 1000.0 / Stopwatch.Frequency, attempts, contextFailures, suspendFailures);
             if (failure != null) sbo.Append("sampling_error=").Append(failure).Append('\n');
             sbo.Append("표본 ").Append(count).Append("개 / ").Append(secs.ToString("F1")).Append("초 (").Append(hzUsed).Append("Hz 요청), 관리 코드 리프 ").Append((100.0 * managedLeaf / Math.Max(1, count)).ToString("F1")).Append("%\n");
             sbo.Append("[네이티브 모듈별 리프] ");
@@ -366,8 +405,28 @@ namespace StutterFix
                 foreach (var c in Top(callers[kv.Key], 3)) sbo.Append(c.Key).Append(' ').Append((100.0 * c.Value / count).ToString("F1")).Append("%; ");
                 sbo.Append("\n  ");
             }
-            ips = null; images = null; count = 0; cache.Clear();
+            ips = null; images = null; sampleSongs = null; sampleFrames = null; sampleStamps = null; suspendTicks = null; count = 0; cache.Clear();
             return sbo.ToString();
+        }
+
+        private static void WriteFrames(string directory, IntPtr domain)
+        {
+            using (var w = new StreamWriter(Path.Combine(directory, "profsamp-frames.txt"), false, new UTF8Encoding(false)))
+                for (int i = 0; i < count; i++)
+                {
+                    if (fullMode) w.Write(string.Format(CultureInfo.InvariantCulture, "T:{0:R};F:{1};W:{2:R};S:{3:R};",
+                        sampleSongs[i], sampleFrames[i], sampleStamps[i] / (double)Stopwatch.Frequency, suspendTicks[i] * 1000000.0 / Stopwatch.Frequency));
+                    for (int d = 0; d < Depth; d++)
+                    {
+                        ulong ip = ips[i * Depth + d]; if (ip == 0) break;
+                        bool managed; string name = Resolve(ip, domain, out managed);
+                        if (d > 0) w.Write(';');
+                        if (managed) w.Write("M:" + name);
+                        else if (name.StartsWith("[UnityPlayer.dll+0x")) w.Write("U:" + name.Substring(19, name.Length - 20));
+                        else w.Write("X:" + name);
+                    }
+                    w.WriteLine();
+                }
         }
         private static List<KeyValuePair<string, int>> Top(Dictionary<string, int> d, int n)
         {

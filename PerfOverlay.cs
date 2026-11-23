@@ -210,6 +210,25 @@ namespace StutterFix
 
         private void Update()
         {
+#if DEV || AUTOTEST
+            if (ProfSamp.Running
+#if AUTOTEST
+                || DropScan.Active
+#endif
+                )
+            {
+                long scanStamp = Stopwatch.GetTimestamp();
+                var scanConductor = scrConductor.instance;
+                float scanSong = scanConductor != null ? (float)scanConductor.songposition_minusi : float.NaN;
+                ProfSamp.PublishFrame(scanSong, Time.frameCount);
+#if AUTOTEST
+                // 기존 FrameTiming 값만 재사용한다. Unity 지연 값이며 OS 스레드 CPU 사용 시간이 아니다.
+                DropScan.Tick(scanStamp, Time.frameCount, scanSong, Hitch.Playing,
+                    timingSamples > 0 && !FrameStatsOff && (Mode > 0 || VramGuard.Watching) ? lastCpu : float.NaN,
+                    timingSamples > 0 && !FrameStatsOff && (Mode > 0 || VramGuard.Watching) ? lastGpu : float.NaN);
+#endif
+            }
+#endif
             if (C == null) return;
             if (Hotkey.Down(C.OverlayKey, C.OverlayMods)) { C.OverlayMode = (C.OverlayMode + 1) % 4; iconOpen = false; SaveConfig(); }
 

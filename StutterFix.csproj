@@ -49,6 +49,7 @@
     <EmbeddedResource Include="tools/hitmeter-alpha/hitmeteralpha.bundle" LogicalName="StutterFix.hitmeteralpha" Condition="Exists('tools/hitmeter-alpha/hitmeteralpha.bundle')" />
     <Compile Include="FillGeometry.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="FillCensus.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
+    <Compile Include="FloorColorProbe.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <EmbeddedResource Include="tools/fillcensus/shader-metadata.tsv" LogicalName="StutterFix.fillshaders" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="ScriptPath.cs" Condition="'$(AutoTestBuild)' == '1'" />
     <Compile Include="GpuExactCensus.cs" Condition="'$(AutoTestBuild)' == '1'" />
@@ -291,6 +292,7 @@
     <Compile Include="FloatSem.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="EngineCensus.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="ProfSamp.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
+    <Compile Include="DropScan.cs" Condition="'$(AutoTestBuild)' == '1'" />
     <Compile Include="AudioTap.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="HalfRender.cs" />
     <Compile Include="FrameGen.cs" />

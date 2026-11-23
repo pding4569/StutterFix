@@ -329,18 +329,20 @@ namespace StutterFix
                 bool want = !shut && !blocked && pauseDepth == 0 && Enabled && !ForceOff && Ready && !loopLost && (Hitch.Playing || active) && ADOBase.customLevel != null && ADOBase.lm != null && ADOBase.lm.listFloors != null
                     && ADOBase.lm.listFloors.Count >= MinFloors && ADOBase.controller != null && ADOBase.controller.camy != null
                     && (!active || Hitch.Playing || (ReferenceEquals(ADOBase.lm.listFloors, builtList) && builtList.Count == fl.Length));   // 곡 뒤에 계속 돌 때: 같은 타일 목록일 때만 (장면이 바뀌면 멈춤)
-                if (!want) { if (active) StopAll(); return; }
+                if (!want) { if (active) { StopReason("조건", Hitch.Playing + "/" + (ADOBase.lm != null && ADOBase.lm.listFloors != null ? ADOBase.lm.listFloors.Count : -1) + "/" + ReferenceEquals(ADOBase.lm?.listFloors, builtList) + "/" + pauseDepth + "/" + blocked); StopAll(); } return; }
                 if (!active) Build();
                 var cam = ADOBase.controller.camy.camobj;
-                if (cam == null) { StopAll(); return; }
+                if (cam == null) { StopReason("카메라 없음", ""); StopAll(); return; }
                 Vector2 c = cam.transform.position;
-                float h = cam.orthographic ? cam.orthographicSize : 50f;
+                // 맵이 줌을 음수로 두면(화면 뒤집기) orthographicSize 가 음수다. 보이는 범위는 절댓값과 같다.
+                // 음수 그대로 쓰면 칸이 0개가 되어 곡 중에 전부 켜고 멈췄다가 다시 만들었다(7777 100.5초 29ms, 2026-11-23).
+                float h = cam.orthographic ? Mathf.Abs(cam.orthographicSize) : 50f;
                 float r = h * Mathf.Sqrt(1f + cam.aspect * cam.aspect);
                 r = r * 1.25f + 3f;   // 여유: 흔들림·그리기 직전 작은 움직임
                 int x0 = Mathf.FloorToInt((c.x - r) / Cell), x1 = Mathf.FloorToInt((c.x + r) / Cell);
                 int y0 = Mathf.FloorToInt((c.y - r) / Cell), y1 = Mathf.FloorToInt((c.y + r) / Cell);
                 long cellWidth=(long)x1-x0+1,cellHeight=(long)y1-y0+1;
-                if (cellWidth<=0 || cellHeight<=0 || cellWidth>200000 || cellHeight>200000 || cellWidth*cellHeight>200000) { StopAll(); return; }   // 너무 멀리 줌아웃: 하지 않음
+                if (cellWidth<=0 || cellHeight<=0 || cellWidth>200000 || cellHeight>200000 || cellWidth*cellHeight>200000) { StopReason("너무 멀리 줌아웃", cellWidth + "x" + cellHeight + " size=" + h.ToString("F1")); StopAll(); return; }   // 너무 멀리 줌아웃: 하지 않음
                 Move(x0, y0, x1, y1);
                 RecolorDefer.AfterStep();
                 if (++frames % 30 == 0) Requalify();
@@ -348,6 +350,11 @@ namespace StutterFix
             catch (Exception ex) { StopAll(); Lg.I("[화면 밖 타일] 오류로 멈춤: " + ex.Message); loopLost = true; }
         }
 
+        private static int stopLogs;
+        private static void StopReason(string why, string detail)
+        {
+            if (stopLogs++ < 12) Lg.I("[화면 밖 타일] 곡 중 멈춤: " + why + " " + detail + " | 곡 " + (scrConductor.instance != null ? scrConductor.instance.songposition_minusi.ToString("F2") : "?") + "초");
+        }
         private static long Key(int x, int y) { return ((long)x << 32) ^ (uint)y; }
 
         private static List<scrFloor> builtList;
@@ -538,7 +545,7 @@ namespace StutterFix
         // 타일 다시 만들기·장면 초기화·편집으로 나가기 앞: 전부 켜고, 이 곡에서는 다시 시작하지 않는다
         internal static void SongBegin() { blocked = false; }
         private static int pauseDepth;
-        public static void PauseHook() { pauseDepth++; StopAll(); }
+        public static void PauseHook(System.Reflection.MethodBase __originalMethod) { if (active && Hitch.Playing) StopReason("다시 만들기 " + __originalMethod?.Name, ""); pauseDepth++; StopAll(); }
         public static void ResumeHook() { if (pauseDepth > 0) pauseDepth--; }
         public static void StopHook() { if (Hitch.Playing) blocked = true; StopAll(); }
 

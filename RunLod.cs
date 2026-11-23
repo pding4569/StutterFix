@@ -680,7 +680,7 @@ namespace StutterFix
             int camMask = cam.cullingMask;
             // 후보: 지난 프레임에 옮겼더라도 원래 층 기준으로 본다
             // 화면 1 월드 단위의 픽셀 수(직교 카메라)
-            float ppw = h / (2f * cam.orthographicSize);
+            float ppw = h / (2f * Mathf.Abs(cam.orthographicSize));   // 음수 줌(화면 뒤집기)도 같은 크기
             vp = cam.projectionMatrix * cam.worldToCameraMatrix;
             long s0 = System.Diagnostics.Stopwatch.GetTimestamp();
             // 보이는 후보(보임 알림으로 유지)와 옮겨 둔 묶음 장식만 본다

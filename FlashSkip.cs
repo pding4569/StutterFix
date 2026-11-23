@@ -46,6 +46,10 @@ namespace StutterFix
             {
                 if (cam.flashPlusRendererBg) list.Add(cam.flashPlusRendererBg);
                 if (cam.flashPlusRendererFg) list.Add(cam.flashPlusRendererFg);
+                // 곡 끝 번쩍임(CamParent/Camera/FlashEndscreen): 곡 내내 재질 알파 0 인 전체 화면 사각형(2026-11-23 gpucensus, 7개 맵 모두).
+                // 재질 색만 바뀐다(scnGame: Color.clear, scrUIController: DOFade). Sprites/Default 일 때만 넣는다.
+                var fe = cam.flashEndscreen;
+                if (fe && !list.Contains(fe) && fe.sharedMaterial && fe.sharedMaterial.shader && fe.sharedMaterial.shader.name == "Sprites/Default") list.Add(fe);
             }
             foreach (var f in Object.FindObjectsByType<scrFlash>(FindObjectsInactive.Include, FindObjectsSortMode.None))
             {

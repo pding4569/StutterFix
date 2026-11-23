@@ -1122,6 +1122,7 @@ namespace StutterFix
                 case "rdcapture": RuntimeCensus.Capture(); return true;
                 case "dormfilter": Dormancy.FilterEveryFrame = arg == "every"; return true;
                 case "gpusplit": GpuSplit.Command(arg); return true;
+                case "floorcolor": FloorColorProbe.Command(arg); return true;
 #if DEV || AUTOTEST
                 case "matshare": MatShare.Command(arg); return true;
                 case "livedeco": return LiveDeco.Step(arg);
@@ -1360,6 +1361,9 @@ namespace StutterFix
                 case "phasewindow": Log(PhaseWatch.ResearchWindow(arg)); return true;
                 case "decosamp": if (arg == "begin") { DecoAnim.SampReset(); DecoAnim.SampOn = true; Log("[decosamp] 시작"); } else { DecoAnim.SampOn = false; Log("[decosamp] " + DecoAnim.SampReport()); } return true;
                 case "profsamp": Log("[profsamp] " + (arg.StartsWith("begin") ? ProfSamp.Begin(arg.Substring(5)) : ProfSamp.End(arg.Contains("frames") ? modDir : null))); return true;
+                case "dropscan":
+                    if (arg != "begin" && arg != "end") throw new ArgumentException("dropscan begin|end");
+                    Log("[dropscan] " + (arg == "begin" ? DropScan.Begin() : DropScan.End(modDir))); return true;
                 case "floatsem": Log("[floatsem] " + FloatSem.Run()); return true;
                 case "hitsound": Log("[히트음 예약 묶기] " + HitSoundBatch.Command(arg)); return true;
                 case "audiotap": Log("[audiotap] " + AudioTap.Command(arg)); return true;
