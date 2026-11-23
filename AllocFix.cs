@@ -37,7 +37,7 @@ namespace StutterFix
         // 볼륨 모드가 될 수 있으면 true (원래대로 새로 만든다)
         public static bool NeedNew(scrFloor f)
         {
-            if (!Enabled || f == null) return true;
+            if (!Enabled || (object)f == null) return true;   // f 는 Update 중인 this: 엔진 생존 확인(== null) 불필요(PLUM 드랍 프레임 scrFloor.Update 의 11~16%)
             if (!didRunStart(f) || f.specialColorType == TrackColorType.Volume) return true;
             FloorReused++;
             return false;
