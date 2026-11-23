@@ -124,8 +124,32 @@ namespace StutterFix
             finally { flushing = false; }
         }
 
+        // 곡 끝: 미룬 이미지를 한 프레임에 다 넣으면 Arche 에서 약 30ms(GPU 장식 이미지 갱신 포함) 멈췄다(2026-11-24 dropscan).
+        // 결과 화면 동안 프레임마다 조금씩 넣는다. 읽기·보이기 직전 적용 훅은 그대로라 그 사이 보이는 그림은 같다.
+        // 다시 하기(ResetScene)·편집 복귀·나가기·장면 바뀜·곡 시작·모드 끄기에서는 남은 것을 모두 넣는다(FlushAll).
+        private static bool draining;
+        internal static long DrainSteps;
+        internal static void BeginDrain() { if (pending.Count > 0) draining = true; }
+        private static readonly List<scrVisualDecoration> drainBatch = new List<scrVisualDecoration>();
+        internal static void DrainStep()
+        {
+            if (!draining) return;
+            if (pending.Count == 0 || flushing) { draining = pending.Count > 0; return; }
+            long t0 = System.Diagnostics.Stopwatch.GetTimestamp(), limit = System.Diagnostics.Stopwatch.Frequency / 1000;   // 프레임당 약 1ms
+            DrainSteps++;
+            while (pending.Count > 0)
+            {
+                drainBatch.Clear();
+                foreach (var k in pending.Keys) { drainBatch.Add(k); if (drainBatch.Count >= 32) break; }
+                foreach (var v in drainBatch) Flush(v);
+                if (System.Diagnostics.Stopwatch.GetTimestamp() - t0 > limit) break;
+            }
+            drainBatch.Clear();
+            if (pending.Count == 0) draining = false;
+        }
         internal static void FlushAll()
         {
+            draining = false;
             if (pending.Count == 0) return;
             var list = new List<KeyValuePair<scrVisualDecoration, TextureManager.CustomSprite>>(pending);
             pending.Clear();

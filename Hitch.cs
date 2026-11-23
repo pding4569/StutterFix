@@ -253,7 +253,7 @@ UiProf.ResetSong();
 BlendProbe.Report();
 #endif
 }
-            LowEnd.SongStarted(); PhysicsPause.SongStarted(); LowEnd.LogRenderOnce(); Compat.Refresh(); Resilience.Phase("플레이 중");
+            LazySprite.FlushAll(); LowEnd.SongStarted(); PhysicsPause.SongStarted(); LowEnd.LogRenderOnce(); Compat.Refresh(); Resilience.Phase("플레이 중");
             RunLod.SongStarted();
             if (Main.Config != null && Main.Config.PlayTurbo) { try { EnginePatch.TurboCommand("lite"); } catch (System.Exception e) { Lg.I("[turbo] 실패: " + e.Message); } }
         }
@@ -276,7 +276,7 @@ BlendProbe.Report();
                 if (Main.Config != null && Main.Config.PlayTurbo) EnginePatch.DisableTurbo();
                 RunLod.SongEnded();
                 PerfOverlay.AbortStartPhase();
-                InvisibleSkip.ApplyAllLazy();   // 곡이 끝나면 미뤄 둔 투명 장식 위치를 모두 반영한다 (편집기로 돌아갈 때 대비)
+                InvisibleSkip.ApplyAllLazy(true);   // 곡이 끝나면 미뤄 둔 투명 장식 위치를 모두 반영한다 (편집기로 돌아갈 때 대비)
                 // 곡이 끝난 뒤(결과 화면 등) 재생 상태가 프레임마다 켜졌다 꺼졌다 해서 이 줄이 수백 번 찍혔다.
                 // 한 일이 없으면 남기지 않는다.
                 // 곡이 끝난 뒤에도 결과 화면에서 장식이 조금씩 움직여 이 요약이 수십 번 찍혔다. 곡마다 한 번만 남긴다.

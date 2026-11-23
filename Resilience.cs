@@ -74,6 +74,7 @@ namespace StutterFix
                         "The game ended abnormally last time (during: " + LastCrashPhase + "). If it happens again, safe mode turns on automatically."));
                 try { Main.Config.Save(Main.Entry); } catch { }
                 Phase("시작");
+                System.Threading.ThreadPool.QueueUserWorkItem(_ => { });   // 스레드 풀을 미리 띄움: 곡 끝 첫 단계 쓰기가 풀 시작 비용을 내지 않게
                 Application.quitting += OnQuit;
                 Application.logMessageReceivedThreaded += OnLog;
             }
@@ -87,17 +88,32 @@ namespace StutterFix
             Stop();   // 모드를 끄거나 다시 불러오는 것도 정상
         }
 
-        private static void OnQuit() { try { if (lockPath != null && File.Exists(lockPath)) File.Delete(lockPath); } catch { } }
+        private static void OnQuit() { lock (fileLock) { System.Threading.Interlocked.Increment(ref writeSeq); try { if (lockPath != null && File.Exists(lockPath)) File.Delete(lockPath); } catch { } } }
         // 모드를 끄면 단계 기록도 멈춘다 (다시 켜면 Init)
         private static void Stop() { OnQuit(); lockPath = null; phase = ""; }
 
         // 지금 무엇을 하는 중인지 (비정상 종료 때 어디서 끝났는지 알려고). 단계가 바뀔 때만 부른다.
         private static string phase = "";
+        private static readonly object fileLock = new object();
+        private static int writeSeq;
         internal static void Phase(string p)
         {
             if (p == phase || lockPath == null) return;
+            bool first = phase.Length == 0;
             phase = p;
-            try { File.WriteAllText(lockPath, p + " (" + DateTime.Now.ToString("HH:mm:ss") + ")"); } catch { }
+            string path = lockPath, text = p + " (" + DateTime.Now.ToString("HH:mm:ss") + ")";
+            int seq = System.Threading.Interlocked.Increment(ref writeSeq);
+            // 곡 끝 프레임에 메인 스레드 파일 쓰기가 끊김 프레임 표본에 보였다(2026-11-24 dropscan, 12맵 모두). 처음 한 번만 바로 쓰고 나머지는 뒤에서.
+            // 지우기(OnQuit)와 같은 잠금 + 순번이라, 지운 뒤에 늦은 쓰기가 잠금 파일을 되살리지 않는다(되살리면 다음 실행이 비정상 종료로 센다).
+            if (first) { lock (fileLock) { try { File.WriteAllText(path, text); } catch { } } return; }
+            System.Threading.ThreadPool.QueueUserWorkItem(_ =>
+            {
+                lock (fileLock)
+                {
+                    if (seq != System.Threading.Volatile.Read(ref writeSeq)) return;   // 더 새 단계가 있거나 이미 지움
+                    try { File.WriteAllText(path, text); } catch { }
+                }
+            });
         }
 
         private static void EnterSafeMode(string why)

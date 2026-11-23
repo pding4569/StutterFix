@@ -1384,6 +1384,7 @@ Try(RenderCallbackScan.Shutdown);
 
         {
             DecoDetach.Pump();
+            LazySprite.DrainStep();
 
 
             // Ctrl+F5: 게임을 켠 채로 새 DLL을 불러온다. 옛 코드는 여기서 바로 빠져나가야 한다.

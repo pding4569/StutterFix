@@ -359,9 +359,11 @@ namespace StutterFix
         private static bool applyingAll;
 
         internal static int RestartLazyN, LastAllN; internal static double RestartLazyMs, LastAllMs;   // 재시작 시간 나누기용 (GcControl.RestartParts), 곡 끝 기록용
-        internal static void ApplyAllLazy()
+        internal static void ApplyAllLazy() { ApplyAllLazy(false); }
+        // spritesLater: 곡 끝(결과 화면). 미룬 이미지는 프레임마다 나눠 넣는다(LazySprite.DrainStep)
+        internal static void ApplyAllLazy(bool spritesLater)
         {
-            LazySprite.FlushAll();
+            if (spritesLater) LazySprite.BeginDrain(); else LazySprite.FlushAll();
             if (lazy.Count == 0) return;
             long t0 = System.Diagnostics.Stopwatch.GetTimestamp();
             var list = new List<scrDecoration>(lazy);
