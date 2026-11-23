@@ -299,6 +299,7 @@ namespace StutterFix
         // ── 붙이기: 남겨 둔 것 중 같은 종류가 있으면 되돌려서 쓴다 ──
         public static T Add<T>(GameObject go) where T : Component
         {
+            if (typeof(T) == typeof(ffxSetHoldsound)) holdAdded = true;
             if (!inPass) return go.AddComponent<T>();
             var s = SlotOf(go);
             T r;
@@ -338,12 +339,15 @@ namespace StutterFix
         // 곡 시작 PlayHitTimes 는 타일마다 GetComponent<ffxSetHoldsound>() 를 부른다(Lost 1만 5천 개, 카운트다운 프레임 약 12ms, 2026-11-24 dropscan).
         // 장면에 ffxSetHoldsound 가 하나도 없으면(꺼진 것·남겨 둔 것 포함) 모두 null 이다. 그 함수가 도는 동안에만(그 안에서 효과를 붙이지 않음) 바로 null.
         private static bool hitTimesNoHold;
+        // 게임에서 ffxSetHoldsound 를 붙이는 곳은 scnGame.ApplyEvent(SetHoldSound) 하나이고 그 AddComponent 는 Add 로 바뀌어 있다.
+        // 처음엔 모른다(true). 장면 전체 찾기(FindObjectsByType)는 Arche 에서 108ms 라 쓰지 않는다(2026-11-24 dropscan4).
+        private static bool holdAdded = true;
         internal static long HitTimesNoHoldRuns, HitTimesChecked, HitTimesWrong;
         internal static bool HitTimesVerify;
         public static void HitTimesPrefix()
         {
             hitTimesNoHold = false;
-            try { hitTimesNoHold = installed && UnityEngine.Object.FindObjectsByType<ffxSetHoldsound>(FindObjectsInactive.Include, FindObjectsSortMode.None).Length == 0; } catch { }
+            hitTimesNoHold = installed && !holdAdded;
             if (!hitTimesNoHold) return;
             HitTimesNoHoldRuns++;
 #if AUTOTEST
@@ -429,6 +433,8 @@ namespace StutterFix
         public static void PassPrefix(List<scrFloor> floors)
         {
             if (verifying) return;
+            // 전체 타일을 다시 만드는 처리: 지금까지 붙은 누르는 소리 효과는 이 처리에서 없어지고, 필요한 것은 다시 Add 로 붙는다
+            try { var allFloors = ADOBase.lm != null ? ADOBase.lm.listFloors : null; if (allFloors != null && floors != null && (ReferenceEquals(floors, allFloors) || floors.Count == allFloors.Count)) holdAdded = false; } catch { }
             inPass = Enabled && !ForceOff;
             slots.Clear();
             Reused = Fresh = Dropped = 0;
