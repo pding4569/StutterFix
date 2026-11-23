@@ -17,7 +17,7 @@ namespace StutterFix
     internal static class HitSoundBatch
     {
         internal const string Owner = "StutterFix.hitsoundbatch";
-        private const int PoolSize = 16, MaxGroups = 2, MaxUploads = 2, MaxVoices = 200000;
+        private const int MaxPool = 16, MaxGroups = 2, MaxUploads = 2, MaxVoices = 200000;
         private const long MaxUploadBytes = 768000; // Two 0.5s stereo buffers at 96kHz.
         private const long PcmLimit = 64L * 1024 * 1024;
         private static Harmony harmony;
@@ -78,6 +78,7 @@ namespace StutterFix
         private sealed class Session
         {
             internal scrConductor Conductor;
+            internal int Pool;   // 형식당 소스 수: 예약 거리/구간 길이 + 2 (재생 중 1 + 꼬리 겹침 1). 켜 둔 소스도 엔진 오디오 갱신 비용이 든다
             internal IList Original;
             internal readonly List<FormatGroup> Formats = new List<FormatGroup>();
             internal AudioClip[] Inputs;
@@ -328,9 +329,10 @@ namespace StutterFix
             s.Segments = checked((int)((total + s.Frames - 1) / s.Frames));
             s.OutputRate = AudioSettings.outputSampleRate;
             int clipFrames = s.Frames + HitSoundMix.PadFrames;
+            s.Pool = Math.Min(MaxPool, (int)Math.Ceiling(Lookahead * s.Rate / s.Frames) + 2);
             // Count managed reusable buffers AND native AudioClip PCM conservatively.
             long poolBytes = 0;
-            foreach (var g in s.Formats) poolBytes += (long)PoolSize * clipFrames * g.Channels * 4 * 2;
+            foreach (var g in s.Formats) poolBytes += (long)s.Pool * clipFrames * g.Channels * 4 * 2;
             if (s.PcmBytes + poolBytes > PcmLimit) throw new NotSupportedException("PCM plus pool limit");
             s.PcmBytes += poolBytes;
             s.Root = new GameObject("StutterFix hit sound batch");
@@ -340,8 +342,8 @@ namespace StutterFix
 #if DEV || AUTOTEST
                 g.ObservedHashes = new long[s.Segments]; g.ExpectedHashes = new long[s.Segments];
 #endif
-                g.Sources = new AudioSource[PoolSize]; g.Clips = new AudioClip[PoolSize]; g.Until = new double[PoolSize];
-                for (int i = 0; i < PoolSize; i++)
+                g.Sources = new AudioSource[s.Pool]; g.Clips = new AudioClip[s.Pool]; g.Until = new double[s.Pool];
+                for (int i = 0; i < s.Pool; i++)
                 {
                     g.Sources[i] = Object.Instantiate(prefab, s.Root.transform);
                     g.Sources[i].Stop(); g.Sources[i].playOnAwake = false;
@@ -436,7 +438,7 @@ namespace StutterFix
                 if (start < now + 0.02) throw new InvalidOperationException("segment deadline missed");
                 long bytes = (long)(s.Frames + HitSoundMix.PadFrames) * g.Channels * 4;
                 if (uploadBytesThisFrame + bytes > MaxUploadBytes) break;
-                int slot = g.Next % PoolSize;
+                int slot = g.Next % s.Pool;
                 if (g.Until[slot] > now - 0.05) break;
                 if (!g.Ready.TryDequeue(out var result)) break;
                 if (result.Index != g.Next) throw new InvalidOperationException("segment order");
