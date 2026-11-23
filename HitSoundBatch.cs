@@ -411,13 +411,16 @@ namespace StutterFix
             }
             catch (Exception ex) { fallbacks++; Release("pump fallback: " + ex.Message, true); }
         }
+        // 몇 초 앞까지 예약할지. 예약된 소스도 엔진 오디오 갱신(AudioManager::Update)에서 하나씩 비용이 든다(소스 하나 약 0.13%).
+        private static double Lookahead => Main.Config == null ? 2 : Mathf.Clamp(Main.Config.HitSoundLookaheadSec, 1f, 6f);
         private static void Pump(Session s)
         {
             if (uploadFrame != Time.frameCount) { uploadFrame = Time.frameCount; uploadsThisFrame = 0; uploadBytesThisFrame = 0; }
             lastUploads = uploadsThisFrame;
             lastUploadBytes = uploadBytesThisFrame;
             double now = AudioSettings.dspTime;
-            int request = Math.Min(s.Segments - 1, Math.Max(3, (int)Math.Floor((now + 6 - s.Origin) * s.Rate / s.Frames)));
+            double ahead = Math.Max(now, s.Origin) + Lookahead;   // 곡 시작 전(카운트다운)에도 첫 구간부터 예약되게 곡 시작 기준
+            int request = Math.Min(s.Segments - 1, Math.Max(3, (int)Math.Floor((ahead - s.Origin) * s.Rate / s.Frames)));
             if (request > s.Requested) { Volatile.Write(ref s.Requested, request); s.Wake.Set(); }
             while (uploadsThisFrame < MaxUploads)
             {
@@ -428,7 +431,7 @@ namespace StutterFix
                     if (candidate.Next < s.Segments && (g == null || candidate.Next < g.Next)) g = candidate;
                 if (g == null) break;
                 double start = s.Origin + (double)g.Next * s.Frames / s.Rate;
-                if (start > now + 6) break;
+                if (start > ahead) break;
                 // Fail before the deadline instead of silently omitting a late segment.
                 if (start < now + 0.02) throw new InvalidOperationException("segment deadline missed");
                 long bytes = (long)(s.Frames + HitSoundMix.PadFrames) * g.Channels * 4;

@@ -2741,6 +2741,8 @@ BlendProbe.Tick();
 
         public int OverlayMode = 1;
 
+        public float HitSoundLookaheadSec = 2f;   // 히트음 묶기가 몇 초 앞까지 예약할지 (1~6). 6→2: 예약된 소스 28→12개, HELLO +2.1%, WF +1.7%
+
         public bool OverlayRedrawCap = true;   // 실시간 모니터를 모니터 주사율보다 자주 다시 그리지 않기 (HELLO/WF +2% 상한)
 
         public int OverlayFpsSource = -1;   // -1 자동(생성 켬: 출력, 끔: 원본), 0 원본, 1 출력, 2 둘 다. 통계·끊김은 항상 원본.
