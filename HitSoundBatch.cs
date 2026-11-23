@@ -230,6 +230,9 @@ namespace StutterFix
                 var list = Data(c);
                 if (!Compat.HitSoundGuardReady || Volatile.Read(ref retiring) != null || !GCS.d_hitsounds || !c.isGameWorld || ADOBase.lm == null || c.song == null ||
                     ADOBase.audioManager == null || list == null || list.Count == 0 || list.Count > MaxVoices || Cursor(c) != 0) return false;
+                // 첫 히트음이 곧이면(편집기 중간 시작 등) 미루지 않는다: 미룬 동안 지나간 항목이 생기면 준비가 실패하고 게임이 늦게 예약한다
+                double first = FastTime != null ? FastTime(list[0]) : (double)VoiceTime.GetValue(list[0]);
+                if (!(first > AudioSettings.dspTime + 0.25)) return false;
                 pendingC = c; pendingList = list; pendingFrame = Time.frameCount;
                 Cursor(c) = list.Count;
                 Deferred++; reason = "capture deferred to next frame";
