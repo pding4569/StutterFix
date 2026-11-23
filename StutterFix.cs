@@ -1113,7 +1113,7 @@ ParticleTextWatch.Install(harmony);
 
             Try(FrameGen.Shutdown);
 
-            Try(HitSoundBatch.Shutdown);
+            Try(HitSoundBatch.Shutdown); Try(HitSoundBatch.ClearWarm);
 
             Try(HitMeterFade.Shutdown);
 

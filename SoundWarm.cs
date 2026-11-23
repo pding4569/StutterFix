@@ -121,6 +121,13 @@ namespace StutterFix
                 if (am.audioLib.ContainsKey(n)) continue;
                 if (am.FindOrLoadAudioClip(n) != null) loaded++;
             }
+            // 히트음 예약 묶기가 곡 시작 때 쓸 PCM 도 지금 풀어 둔다(박자 소리 종류만; 누르는 소리는 묶기 대상이 아님)
+            if (HitSoundBatch.Enabled && GCS.d_hitsounds)
+                foreach (var hs in want)
+                {
+                    AudioClip c;
+                    if (am.audioLib.TryGetValue("snd" + hs, out c)) HitSoundBatch.WarmPcm(c);
+                }
             if (loaded > 0 || Edition.Dev)
                 Lg.I(string.Format("[소리 미리 불러오기] 쓸 수 있는 소리 {0}가지 중 새로 불러온 것 {1}개 {2:F0}ms",
                     names.Count, loaded, (Stopwatch.GetTimestamp() - t0) * 1000.0 / Stopwatch.Frequency));

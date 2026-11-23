@@ -45,6 +45,38 @@ namespace StutterFix
         private static readonly Func<object, double> FastTime = MakeGetter<double>(VoiceTime);
         private static readonly Func<object, float> FastVolume = MakeGetter<float>(VoiceVolume);
         private static readonly Func<object, int> FastType = MakeGetter<int>(VoiceType);
+        // 목록 전체를 한 번에 배열로: IList 인덱서가 항목마다 구조체를 상자에 담고(할당) 대리자 3번을 불러 Lost 13,189개에 약 8ms 걸렸다(2026-11-24).
+        private static readonly Type VoiceListType = VoiceTime == null ? null : typeof(List<>).MakeGenericType(VoiceTime.DeclaringType);
+        private static readonly Action<object, double[], float[], int[]> FastExtract = MakeExtract();
+        private static Action<object, double[], float[], int[]> MakeExtract()
+        {
+            try
+            {
+                if (VoiceTime == null || VoiceVolume == null || VoiceType == null || VoiceListType == null) return null;
+                if (VoiceTime.FieldType != typeof(double) || VoiceVolume.FieldType != typeof(float)) return null;
+                var vt = VoiceType.FieldType.IsEnum ? Enum.GetUnderlyingType(VoiceType.FieldType) : VoiceType.FieldType;
+                if (vt != typeof(int)) return null;
+                var dm = new System.Reflection.Emit.DynamicMethod("sfhit_extract", null, new[] { typeof(object), typeof(double[]), typeof(float[]), typeof(int[]) }, typeof(HitSoundBatch).Module, true);
+                var il = dm.GetILGenerator();
+                var lst = il.DeclareLocal(VoiceListType); var i = il.DeclareLocal(typeof(int)); var n = il.DeclareLocal(typeof(int)); var tmp = il.DeclareLocal(VoiceTime.DeclaringType);
+                var loop = il.DefineLabel(); var cond = il.DefineLabel();
+                il.Emit(System.Reflection.Emit.OpCodes.Ldarg_0); il.Emit(System.Reflection.Emit.OpCodes.Castclass, VoiceListType); il.Emit(System.Reflection.Emit.OpCodes.Stloc, lst);
+                il.Emit(System.Reflection.Emit.OpCodes.Ldloc, lst); il.Emit(System.Reflection.Emit.OpCodes.Callvirt, VoiceListType.GetProperty("Count").GetGetMethod()); il.Emit(System.Reflection.Emit.OpCodes.Stloc, n);
+                il.Emit(System.Reflection.Emit.OpCodes.Ldc_I4_0); il.Emit(System.Reflection.Emit.OpCodes.Stloc, i);
+                il.Emit(System.Reflection.Emit.OpCodes.Br, cond);
+                il.MarkLabel(loop);
+                il.Emit(System.Reflection.Emit.OpCodes.Ldloc, lst); il.Emit(System.Reflection.Emit.OpCodes.Ldloc, i); il.Emit(System.Reflection.Emit.OpCodes.Callvirt, VoiceListType.GetMethod("get_Item")); il.Emit(System.Reflection.Emit.OpCodes.Stloc, tmp);
+                il.Emit(System.Reflection.Emit.OpCodes.Ldarg_1); il.Emit(System.Reflection.Emit.OpCodes.Ldloc, i); il.Emit(System.Reflection.Emit.OpCodes.Ldloca, tmp); il.Emit(System.Reflection.Emit.OpCodes.Ldfld, VoiceTime); il.Emit(System.Reflection.Emit.OpCodes.Stelem_R8);
+                il.Emit(System.Reflection.Emit.OpCodes.Ldarg_2); il.Emit(System.Reflection.Emit.OpCodes.Ldloc, i); il.Emit(System.Reflection.Emit.OpCodes.Ldloca, tmp); il.Emit(System.Reflection.Emit.OpCodes.Ldfld, VoiceVolume); il.Emit(System.Reflection.Emit.OpCodes.Stelem_R4);
+                il.Emit(System.Reflection.Emit.OpCodes.Ldarg_3); il.Emit(System.Reflection.Emit.OpCodes.Ldloc, i); il.Emit(System.Reflection.Emit.OpCodes.Ldloca, tmp); il.Emit(System.Reflection.Emit.OpCodes.Ldfld, VoiceType); il.Emit(System.Reflection.Emit.OpCodes.Stelem_I4);
+                il.Emit(System.Reflection.Emit.OpCodes.Ldloc, i); il.Emit(System.Reflection.Emit.OpCodes.Ldc_I4_1); il.Emit(System.Reflection.Emit.OpCodes.Add); il.Emit(System.Reflection.Emit.OpCodes.Stloc, i);
+                il.MarkLabel(cond);
+                il.Emit(System.Reflection.Emit.OpCodes.Ldloc, i); il.Emit(System.Reflection.Emit.OpCodes.Ldloc, n); il.Emit(System.Reflection.Emit.OpCodes.Blt, loop);
+                il.Emit(System.Reflection.Emit.OpCodes.Ret);
+                return (Action<object, double[], float[], int[]>)dm.CreateDelegate(typeof(Action<object, double[], float[], int[]>));
+            }
+            catch { return null; }
+        }
         private static Func<object, T> MakeGetter<T>(FieldInfo f)
         {
             try
@@ -165,8 +197,11 @@ namespace StutterFix
         public static void PortalPrefix() { Release("level end", true, false); }
         private static void SceneChanged(Scene a, Scene b) { Release("scene changed", true, false); }
         private static void AudioChanged(bool changed) { Release("audio configuration changed", true, false); }
+        // 곡 시작 준비 시간(시험용 기록): 게임 PlayHitTimes 전체, 그중 우리 Capture·첫 PCM 기다림·Pump
+        private static long prepStart; internal static double PrepGameMs, PrepCaptureMs, PrepWaitMs, PrepPumpMs;
         public static void BeforePrepare(out bool __state)
         {
+            prepStart = System.Diagnostics.Stopwatch.GetTimestamp();
             Release("preparing", true, false);
             __state = enabled && Compat.EnsureHitSoundGuard();
         }
@@ -182,7 +217,9 @@ namespace StutterFix
             {
                 if (!Compat.HitSoundGuardReady) throw new NotSupportedException("Quartz guard unavailable");
                 if (Volatile.Read(ref retiring) != null) throw new NotSupportedException("previous worker cleanup pending");
+                long c0 = System.Diagnostics.Stopwatch.GetTimestamp(); PrepGameMs = (c0 - prepStart) * 1000.0 / System.Diagnostics.Stopwatch.Frequency;
                 s = Capture(__instance);
+                long c1 = System.Diagnostics.Stopwatch.GetTimestamp(); PrepCaptureMs = (c1 - c0) * 1000.0 / System.Diagnostics.Stopwatch.Frequency;
                 current = s;
                 s.Worker = new Thread(() => Work(s)) { IsBackground = true, Priority = System.Threading.ThreadPriority.BelowNormal, Name = "StutterFix hit PCM" };
                 s.Requested = Math.Min(s.Segments - 1, 3);
@@ -194,8 +231,10 @@ namespace StutterFix
                     Thread.Sleep(1);
                 if (s.Error != null || !InitialReady(s))
                     throw new NotSupportedException(s.Error ?? "initial PCM timeout");
+                long c2 = System.Diagnostics.Stopwatch.GetTimestamp(); PrepWaitMs = (c2 - c1) * 1000.0 / System.Diagnostics.Stopwatch.Frequency;
                 if (s.Origin < AudioSettings.dspTime + 0.05) throw new NotSupportedException("insufficient initial DSP lead");
                 Pump(s);
+                PrepPumpMs = (System.Diagnostics.Stopwatch.GetTimestamp() - c2) * 1000.0 / System.Diagnostics.Stopwatch.Frequency;
                 foreach (var g in s.Formats)
                     if (g.Next == 0) throw new NotSupportedException("initial group schedule unavailable");
                 Cursor(__instance) = s.Original.Count;
@@ -212,8 +251,44 @@ namespace StutterFix
         }
 
         private static bool Finite(double v) => !double.IsNaN(v) && !double.IsInfinity(v);
+        // 클립 PCM 을 맵 준비(SoundWarm) 때 미리 풀어 두고 다시 하기에도 쓴다. 곡 시작 카운트다운 중 처음 쓰는 클립마다 약 0.7ms(Lost 8개 5.7ms) 걸렸다(2026-11-24).
+        // PCM 배열은 읽기만 한다(HitSoundMix). 같은 클립의 GetData 결과는 같다.
+        private sealed class ClipRef : IEqualityComparer<AudioClip>
+        {
+            public bool Equals(AudioClip a, AudioClip b) => ReferenceEquals(a, b);
+            public int GetHashCode(AudioClip o) => System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(o);
+        }
+        private static readonly Dictionary<AudioClip, float[]> pcmWarm = new Dictionary<AudioClip, float[]>(new ClipRef());
+        internal static long WarmHits, WarmMade;
+        internal static void WarmPcm(AudioClip clip)
+        {
+            try
+            {
+                if (!enabled || clip == null || pcmWarm.ContainsKey(clip) || clip.loadType == AudioClipLoadType.Streaming) return;
+                if (clip.loadState == AudioDataLoadState.Unloaded) clip.LoadAudioData();
+                if (clip.loadState == AudioDataLoadState.Loading)
+                {
+                    int deadline = Environment.TickCount + 200;
+                    while (clip.loadState == AudioDataLoadState.Loading && unchecked(Environment.TickCount - deadline) < 0) Thread.Sleep(1);
+                }
+                if (clip.loadState != AudioDataLoadState.Loaded || clip.samples <= 0 || clip.channels < 1 || clip.channels > 2 || (double)clip.samples / Math.Max(1, clip.frequency) > 8) return;
+                long count = (long)clip.samples * clip.channels;
+                if (count * 4 > PcmLimit) return;
+                var pcm = new float[(int)count];
+                if (!clip.GetData(pcm, 0)) return;
+                foreach (float x in pcm) if (!Finite(x)) return;
+                if (pcmWarm.Count >= 128) pcmWarm.Clear();
+                pcmWarm[clip] = pcm; WarmMade++;
+            }
+            catch { }
+        }
+        internal static void ClearWarm() { pcmWarm.Clear(); }
+        internal static bool CaptureFastSame = true;
+        internal static long PrepSwitches, PrepSwitchTicks, PrepNewClips, PrepNewTicks;   // 시험용 끄기(sfield): 원래 조회 방식과 결과 대조
+        private static long capStart; internal static double PrepHeadMs, PrepLoopMs, PrepVoiceMs;
         private static Session Capture(scrConductor c)
         {
+            capStart = System.Diagnostics.Stopwatch.GetTimestamp();
             var am = ADOBase.audioManager;
             var list = Data(c);
             lastCount = list?.Count ?? 0;
@@ -249,14 +324,36 @@ namespace StutterFix
             var clipByType = new Dictionary<int, AudioClip>();
             var knownClip = new Dictionary<AudioClip, KeyValuePair<int, double>>(); // 이미 검사한 클립: (형식 묶음 번호, 길이 초)
             double dspNow = AudioSettings.dspTime;
+            // 연속된 히트음은 대부분 같은 종류다: 직전 종류의 (클립, 묶음, 길이, PCM)을 기억해 사전 조회와 유니티 객체 비교를 건너뛴다.
+            // 기억은 검사를 통과한(null 아닌) 클립만이고 종류→클립, 클립→묶음은 한 번 정해지면 바뀌지 않아 결과가 같다.
+            // (Lost 13,189개: 목록 훑기 7.7ms, 2026-11-24)
+            int lastType = int.MinValue; AudioClip lastClip = null; KeyValuePair<int, double> lastKnown = default; float[] lastPcm = null;
+            var pcmOf = new float[list.Count][];
+            double[] xTime = null; float[] xVol = null; int[] xType = null;
+            if (CaptureFastSame && FastExtract != null && list.GetType() == VoiceListType)
+            {
+                xTime = new double[list.Count]; xVol = new float[list.Count]; xType = new int[list.Count];
+                FastExtract(list, xTime, xVol, xType);
+            }
+            long q0 = System.Diagnostics.Stopwatch.GetTimestamp(); PrepHeadMs = (q0 - capStart) * 1000.0 / System.Diagnostics.Stopwatch.Frequency;
             for (int i = 0; i < list.Count; i++)
             {
-                object item = list[i];
-                double time = FastTime != null ? FastTime(item) : (double)VoiceTime.GetValue(item);
-                float volume = FastVolume != null ? FastVolume(item) : (float)VoiceVolume.GetValue(item);
+                object item = xTime != null ? null : list[i];
+                double time = xTime != null ? xTime[i] : FastTime != null ? FastTime(item) : (double)VoiceTime.GetValue(item);
+                float volume = xTime != null ? xVol[i] : FastVolume != null ? FastVolume(item) : (float)VoiceVolume.GetValue(item);
                 if (!Finite(time) || !Finite(volume) || time < dspNow || (i > 0 && time < s.Times[i - 1]))
                     throw new NotSupportedException("invalid/past/unsorted event");
-                int typeId = FastType != null ? FastType(item) : (int)(HitSound)VoiceType.GetValue(item);
+                int typeId = xTime != null ? xType[i] : FastType != null ? FastType(item) : (int)(HitSound)VoiceType.GetValue(item);
+                if (CaptureFastSame && typeId == lastType)
+                {
+                    s.Formats[lastKnown.Key].Indices.Add(i);
+                    s.Inputs[i] = lastClip; pcmOf[i] = lastPcm; s.Times[i] = time; s.Volumes[i] = volume;
+                    if (time < s.Origin) s.Origin = time;
+                    double sameEnd = time + lastKnown.Value;
+                    if (sameEnd > end) end = sameEnd;
+                    continue;
+                }
+                long sl0 = System.Diagnostics.Stopwatch.GetTimestamp(); PrepSwitches++;
                 AudioClip clip;
                 if (!clipByType.TryGetValue(typeId, out clip))
                 {
@@ -271,6 +368,8 @@ namespace StutterFix
                     if (time < s.Origin) s.Origin = time;
                     double fastEnd = time + known.Value;
                     if (fastEnd > end) end = fastEnd;
+                    lastType = typeId; lastClip = clip; lastKnown = known; lastPcm = pcmOf[i] = cache[clip];
+                    PrepSwitchTicks += System.Diagnostics.Stopwatch.GetTimestamp() - sl0;
                     continue;
                 }
                 // 게임 히트음은 CompressedInMemory 이고 처음 쓰기 전에는 Unloaded 다(2026-10-20 실게임 확인). 스트리밍만 막고, 안 불러온 클립은 짧게 불러온다.
@@ -300,16 +399,25 @@ namespace StutterFix
                 {
                     long count = (long)clip.samples * clip.channels;
                     if (cache.Count >= 64 || s.PcmBytes + count * 4 > PcmLimit) throw new NotSupportedException("PCM cache limit");
-                    pcm = new float[(int)count];
-                    if (!clip.GetData(pcm, 0)) throw new NotSupportedException("GetData failed");
-                    foreach (float sample in pcm) if (!Finite(sample)) throw new NotSupportedException("nonfinite PCM");
+                    if (CaptureFastSame && pcmWarm.TryGetValue(clip, out pcm) && pcm.Length == count) WarmHits++;
+                    else
+                    {
+                        pcm = new float[(int)count];
+                        if (!clip.GetData(pcm, 0)) throw new NotSupportedException("GetData failed");
+                        foreach (float sample in pcm) if (!Finite(sample)) throw new NotSupportedException("nonfinite PCM");
+                        if (CaptureFastSame) { if (pcmWarm.Count >= 128) pcmWarm.Clear(); pcmWarm[clip] = pcm; }
+                    }
                     cache.Add(clip, pcm); s.PcmBytes += count * 4;
                 }
                 s.Inputs[i] = clip; s.Times[i] = time; s.Volumes[i] = volume;
                 s.Origin = Math.Min(s.Origin, time);
                 end = Math.Max(end, time + (double)clip.samples / clip.frequency);
                 knownClip[clip] = new KeyValuePair<int, double>(groupIndex, (double)clip.samples / clip.frequency);
+                pcmOf[i] = pcm;
+                lastType = typeId; lastClip = clip; lastKnown = knownClip[clip]; lastPcm = pcm;
+                PrepNewClips++; PrepNewTicks += System.Diagnostics.Stopwatch.GetTimestamp() - sl0;
             }
+            long q1 = System.Diagnostics.Stopwatch.GetTimestamp(); PrepLoopMs = (q1 - q0) * 1000.0 / System.Diagnostics.Stopwatch.Frequency;
             s.Frames = s.Rate / 2;
             s.Origin -= (double)HitSoundMix.LeadFrames / s.Rate;
             if (end - s.Origin > 7200) throw new NotSupportedException("duration limit (2 hours)");
@@ -321,7 +429,7 @@ namespace StutterFix
                 {
                     int i = g.Indices[j];
                     var v = new HitSoundMix.Voice { Start = HitSoundMix.Sample(s.Times[i] - s.Origin, s.Rate),
-                        Pcm = cache[s.Inputs[i]], Gain = Mathf.Clamp01(s.Volumes[i]) };
+                        Pcm = CaptureFastSame ? pcmOf[i] : cache[s.Inputs[i]], Gain = Mathf.Clamp01(s.Volumes[i]) };
                     g.Voices[j] = v;
                     total = Math.Max(total, v.Start + v.Pcm.Length / g.Channels);
                 }
@@ -335,6 +443,7 @@ namespace StutterFix
             foreach (var g in s.Formats) poolBytes += (long)s.Pool * clipFrames * g.Channels * 4 * 2;
             if (s.PcmBytes + poolBytes > PcmLimit) throw new NotSupportedException("PCM plus pool limit");
             s.PcmBytes += poolBytes;
+            long q2 = System.Diagnostics.Stopwatch.GetTimestamp(); PrepVoiceMs = (q2 - q1) * 1000.0 / System.Diagnostics.Stopwatch.Frequency;
             s.Root = new GameObject("StutterFix hit sound batch");
             s.Root.transform.SetParent(c.transform, false);
             foreach (var g in s.Formats)
@@ -537,6 +646,24 @@ namespace StutterFix
         {
             var s = current;
             if (arg == "compare") return "PCM comparison only: listener output mixes song/holds/UI/mixer; isolated two-pass recording is not implemented. Use verify; audible A/B remains required.";
+            if (arg == "voicehash")
+            {
+                if (s == null || !s.Taken) return "voicehash unavailable: " + reason;
+                var sb = new System.Text.StringBuilder("voicehash");
+                var pcmHash = new Dictionary<float[], long>();
+                foreach (var g in s.Formats)
+                {
+                    long h = 1469598103934665603L;
+                    foreach (var v in g.Voices)
+                    {
+                        long ph;
+                        if (!pcmHash.TryGetValue(v.Pcm, out ph)) { ph = 1469598103934665603L; foreach (float x in v.Pcm) ph = (ph ^ BitConverter.ToInt32(BitConverter.GetBytes(x), 0)) * 1099511628211L; pcmHash[v.Pcm] = ph; }
+                        h = (h ^ v.Start) * 1099511628211L; h = (h ^ BitConverter.ToInt32(BitConverter.GetBytes(v.Gain), 0)) * 1099511628211L; h = (h ^ ph) * 1099511628211L;
+                    }
+                    sb.Append(" ch").Append(g.Channels).Append(":n=").Append(g.Voices.Length).Append(":h=").Append(h.ToString("x16"));
+                }
+                return sb.Append(" segments=").Append(s.Segments).Append(" pcm_arrays=").Append(pcmHash.Count).ToString();
+            }
             if (arg == "verify")
             {
                 if (s == null || !s.Taken) return "verify unavailable: " + reason + "; last=" + lastVerification;
@@ -556,7 +683,8 @@ namespace StutterFix
                 pool += g.Sources?.Length ?? 0;
                 formats += (formats.Length == 0 ? "" : ",") + s.Rate + "Hz/" + g.Channels + "ch:next=" + g.Next;
             }
-            return "enabled=" + enabled + " reason=" + reason + " list=" + lastCount + " captures=" + captures +
+            return "prep_ms game=" + PrepGameMs.ToString("F1") + " capture=" + PrepCaptureMs.ToString("F1") + " wait=" + PrepWaitMs.ToString("F1") + " pump=" + PrepPumpMs.ToString("F1") + " (head=" + PrepHeadMs.ToString("F1") + " loop=" + PrepLoopMs.ToString("F1") + " voices=" + PrepVoiceMs.ToString("F1") + " switches=" + PrepSwitches + "/" + (PrepSwitchTicks * 1000.0 / System.Diagnostics.Stopwatch.Frequency).ToString("F1") + "ms warm=" + WarmHits + "/" + WarmMade + " new=" + PrepNewClips + "/" + (PrepNewTicks * 1000.0 / System.Diagnostics.Stopwatch.Frequency).ToString("F1") + "ms) " +
+                "enabled=" + enabled + " reason=" + reason + " list=" + lastCount + " captures=" + captures +
                 " groups=" + (s?.Formats.Count ?? 0) + " formats=" + formats +
                 " segments=" + (s?.Segments ?? 0) + " rendered=" + (s?.Rendered ?? 0) + " scheduled=" + (s?.Scheduled ?? 0) +
                 " pool=" + used + "/" + pool + " SetData_last=" + lastUploads + " SetData_peak=" + peakUploads +
