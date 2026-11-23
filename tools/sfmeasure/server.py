@@ -35,7 +35,9 @@ MOD_DIR = os.path.join(GAME_DIR, "Mods", "StutterFix")
 PLAYER_LOG = os.environ.get("SF_PLAYER_LOG", os.path.join(
     os.environ.get("USERPROFILE", os.path.expanduser("~")), "AppData", "LocalLow", "7th Beat Games", "A Dance of Fire and Ice", "Player.log"))
 PRESENTMON = os.environ.get("SF_PRESENTMON", "")
-RUNS_DIR = os.environ.get("SF_RUNS_DIR", os.path.join(os.environ.get("LOCALAPPDATA", os.path.expanduser("~")), "StutterFix", "runs"))
+# 2026-11-22: 측정 기록은 E: 로 옮겼다. C:\...\AppData\Local\StutterFix 는 E: 로 가는 연결인데, MS 스토어판 앱에서 띄운 프로세스는 AppData 가상화 때문에 그 연결의 하위 폴더를 못 연다(WinError 649). 그래서 E: 경로를 직접 쓴다.
+_E_RUNS = "E:/StutterFixWork/LocalAppData-StutterFix/runs"
+RUNS_DIR = os.environ.get("SF_RUNS_DIR", _E_RUNS if os.path.isdir(_E_RUNS) else os.path.join(os.environ.get("LOCALAPPDATA", os.path.expanduser("~")), "StutterFix", "runs"))
 IS_WIN = os.name == "nt"
 OUT_LOCK = threading.Lock()   # 도구 호출은 따로 도는 스레드에서 답한다
 RUN_LOCK = threading.Lock()   # 게임은 한 번에 하나만
@@ -52,9 +54,74 @@ def game_running():
 def kill_game():
     if IS_WIN:
         subprocess.run(["taskkill", "/IM", EXE, "/F"], capture_output=True)
+        for _ in range(50):
+            if not game_running():
+                break
+            time.sleep(0.2)
+        # 측정 도구가 끈 것은 튕김이 아니다: 남은 session.lock 을 지워 StutterFix 가 비정상 종료로 세지 않게 한다
+        # (연속 2번이면 안전 모드가 켜져 측정이 오염됨, 2026-11-15)
+        try:
+            os.remove(os.path.join(MOD_DIR, "session.lock"))
+        except OSError:
+            pass
+        steam_dll_restore()
+
+
+STEAM_DLL = os.path.join(GAME_DIR, "A Dance of Fire and Ice_Data", "Plugins", "x86_64", "steam_api64.dll")
+
+
+def steam_dll_off():
+    if os.path.exists(STEAM_DLL):
+        os.replace(STEAM_DLL, STEAM_DLL + ".sfoff")
+
+
+UMM_PARAMS = os.path.join(GAME_DIR, "A Dance of Fire and Ice_Data", "Managed", "UnityModManager", "Params.xml")
+
+
+def jalib_off():
+    # 모드 폴더에 nojalib.txt 가 있으면 측정 판에서만 JALib 을 끈다(JALib 이 시작 중 Harmony 를 자주 깨뜨림, 2026-11-15)
+    if not os.path.exists(os.path.join(MOD_DIR, "nojalib.txt")) or not os.path.exists(UMM_PARAMS):
+        return
+    bak = UMM_PARAMS + ".sfmeasure.bak"
+    if not os.path.exists(bak):
+        shutil.copy2(UMM_PARAMS, bak)
+    t = read_text(UMM_PARAMS)
+    t2 = t.replace('<Mod Id="JALib" Enabled="true">', '<Mod Id="JALib" Enabled="false">')
+    if t2 != t:
+        with open(UMM_PARAMS, "w", encoding="utf-8") as f:
+            f.write(t2)
+
+
+def jalib_restore():
+    bak = UMM_PARAMS + ".sfmeasure.bak"
+    if os.path.exists(bak):
+        os.replace(bak, UMM_PARAMS)
+
+
+def steam_dll_restore():
+    # 언제 불러도 안전: 꺼 둔 것이 있으면 되돌린다(원본이 이미 있으면 꺼 둔 사본만 지움)
+    jalib_restore()
+    off = STEAM_DLL + ".sfoff"
+    if os.path.exists(off):
+        if os.path.exists(STEAM_DLL):
+            os.remove(off)
+        else:
+            os.replace(off, STEAM_DLL)
 
 
 def launch_game():
+    # 모드 폴더에 nosteam.txt 가 있으면 Steam 을 거치지 않고 exe 를 바로 켠다(같은 계정으로 다른 컴퓨터에서 게임 중일 때).
+    # 자동 시험 빌드가 nosteam.txt 를 보고 SteamClient.Init 을 실패시켜 이 PC 가 Steam 에 '플레이 중'으로 잡히지 않는다.
+    # 이 게임의 Steam 실행 옵션은 비어 있어(localconfig.vdf 확인) 바로 켜도 같은 실행이다.
+    if os.path.exists(os.path.join(MOD_DIR, "nosteam.txt")):
+        # 모드 패치는 다른 모드(JALib)가 Harmony 를 깨뜨린 실행에서 안 걸린다. 그래서 켜는 동안만 steam_api64.dll 이름을 바꿔
+        # SteamClient.Init 이 DllNotFound 로 실패하게 한다(게임이 잡고 이어 감). 게임이 DLL 을 읽은 뒤 바로 되돌린다.
+        steam_dll_off()
+        jalib_off()
+        subprocess.Popen([os.path.join(GAME_DIR, EXE)], cwd=GAME_DIR, close_fds=True,
+                         creationflags=getattr(subprocess, "DETACHED_PROCESS", 0) | getattr(subprocess, "CREATE_NEW_PROCESS_GROUP", 0))
+        return
+    steam_dll_restore()
     os.startfile(STEAM_URL)  # Steam 실행 옵션도 사용자가 평소 켜는 것과 같게 적용된다
 
 
@@ -124,12 +191,17 @@ def metrics(text):
 
 # ── 설정 덮어쓰기 (UMM 의 Settings.xml, 필드 이름 = 요소 이름) ──
 def apply_settings(overrides):
+    overrides = dict(overrides or {}); overrides.setdefault("CrashStreak", 0)  # 측정 판은 안전 모드 없이
     path = os.path.join(MOD_DIR, "Settings.xml")
     if not overrides:
         return None, []
     if not os.path.exists(path):
         raise RuntimeError("Settings.xml 없음: 게임을 한 번 켜서 모드 설정을 저장해야 한다")
     backup = path + ".sfmeasure.bak"
+    # 지난 판이 되돌리기 전에 끊겼으면(강제 중단) 그 백업이 원래 설정이다. 덮어쓰지 말고 먼저 되돌린다.
+    # (2026-11-24: 끊긴 판의 GpuDeco=0 이 다음 판의 새 백업으로 굳어 사용자 설정이 바뀐 채 남았다)
+    if os.path.exists(backup):
+        restore_settings(backup)
     shutil.copy2(path, backup)
     xml = read_text(path)
     changed = []
@@ -239,15 +311,42 @@ def _run(steps, settings, timeout_min, tag, presentmon):
     os.makedirs(RUNS_DIR, exist_ok=True)
     stamp = time.strftime("%Y%m%d-%H%M%S") + ("-" + re.sub(r"[^\w.-]", "_", tag) if tag else "")
     pm_result = {}
+    relaunches = 0
     try:
         with open(os.path.join(MOD_DIR, "autotest.txt"), "w", encoding="utf-8", newline="\n") as f:
             f.write("\n".join(steps) + "\n")
         t0 = time.time()
-        launch_game()
-        while not game_running():
-            if time.time() - t0 > 90:
-                raise RuntimeError("90초 안에 게임이 켜지지 않음 (Steam 확인)")
-            time.sleep(1)
+        for attempt in range(4):
+            if attempt:
+                # 다른 모드(JALib)가 Harmony 를 깨뜨린 실행: 자동 시험이 준비되지 않아 시간 제한까지 멈춰 있었다. 끄고 새로 켠다.
+                kill_game()
+                time.sleep(3)
+                with open(os.path.join(MOD_DIR, "autotest.txt"), "w", encoding="utf-8", newline=chr(10)) as f:
+                    f.write(chr(10).join(steps) + chr(10))
+            ta = time.time()
+            launch_game()
+            while not game_running():
+                if time.time() - ta > 90:
+                    raise RuntimeError("90초 안에 게임이 켜지지 않음 (Steam 확인)")
+                time.sleep(1)
+            broken = True  # 120초 안에 자동 시험 시작 줄이 없으면 깨진 실행으로 본다(JALib 이 시작 전에 막는 경우)
+            while game_running() and time.time() - ta < 120:
+                try:
+                    if os.path.getmtime(PLAYER_LOG) >= ta:
+                        lt = read_text(PLAYER_LOG)
+                        bad = "자동 시험 준비 실패" in lt or "패치 설치가 중간에 실패" in lt or "[StutterFix] [Error] harmony patch failed" in lt
+                        if bad:
+                            broken = True
+                            break
+                        if "[자동 시험] 시작" in lt and time.time() - ta > 45:
+                            broken = False
+                            break
+                except OSError:
+                    pass
+                time.sleep(2)
+            if not broken:
+                break
+        relaunches = attempt
         if presentmon:
             def pm():
                 time.sleep(float(presentmon.get("start_after_s", 20)))
@@ -275,7 +374,7 @@ def _run(steps, settings, timeout_min, tag, presentmon):
     saved = os.path.join(RUNS_DIR, stamp + ".log")
     shutil.copy2(PLAYER_LOG, saved)
     text = read_text(saved)
-    head = ["걸린 시간 %.0f초%s, 로그 %s" % (time.time() - t0, " (시간 초과로 끔)" if timed_out else "", saved)]
+    head = ["걸린 시간 %.0f초%s, 로그 %s%s" % (time.time() - t0, " (시간 초과로 끔)" if timed_out else "", saved, (", Harmony 깨진 실행이라 %d번 다시 켬" % relaunches) if relaunches else "")]
     if changed:
         head.append("설정 덮어씀(끝나고 되돌림): " + ", ".join(changed))
     if "[자동 시험] 시작" not in text:
