@@ -556,6 +556,8 @@ UiProf.Install(harmony);
 
                 InvisibleSkip.Install(harmony);
 
+                QuartzTitleFix.Install(harmony);
+
                 TweenFix.Install(harmony);
 
                 SceneReset.Install(harmony);
