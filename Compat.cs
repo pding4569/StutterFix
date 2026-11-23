@@ -203,30 +203,41 @@ namespace StutterFix
             return head;
         }
         private static bool logged;
+        // 한 번에 다 하면 패치 정보 역직렬화로 42ms 멈췄다(scam 곡 끝 205.7초, 2026-11-24 dropscan). 프레임마다 조금씩 한다.
+        private static List<MethodBase> sharedTodo;
+        private static int sharedPos;
+        private static readonly List<string> sharedFound = new List<string>();
+        private static readonly SortedDictionary<string, int> sharedMods = new SortedDictionary<string, int>();
         internal static void LogSharedPatches()
         {
             if (logged) return;
-            logged = true;
             try
             {
-                var shared = new List<string>();
-                var mods = new SortedDictionary<string, int>();
-                foreach (var m in Harmony.GetAllPatchedMethods())
+                if (sharedTodo == null) { sharedTodo = new List<MethodBase>(Harmony.GetAllPatchedMethods()); sharedPos = 0; return; }
+                long t0 = System.Diagnostics.Stopwatch.GetTimestamp(), limit = System.Diagnostics.Stopwatch.Frequency / 2000;   // 프레임당 0.5ms
+                while (sharedPos < sharedTodo.Count)
                 {
+                    var m = sharedTodo[sharedPos++];
                     var info = Harmony.GetPatchInfo(m);
-                    if (info == null) continue;
-                    bool mine = false; var others = new HashSet<string>();
-                    foreach (var o in info.Owners) { if (o.StartsWith("StutterFix", StringComparison.OrdinalIgnoreCase)) mine = true; else others.Add(o); }
-                    if (!mine || others.Count == 0) continue;
-                    shared.Add((m.DeclaringType != null ? m.DeclaringType.Name + "." : "") + m.Name + " (" + string.Join(", ", new List<string>(others).ToArray()) + ")");
-                    foreach (var o in others) { string k = ModName(o); int c; mods.TryGetValue(k, out c); mods[k] = c + 1; }
+                    if (info != null)
+                    {
+                        bool mine = false; var others = new HashSet<string>();
+                        foreach (var o in info.Owners) { if (o.StartsWith("StutterFix", StringComparison.OrdinalIgnoreCase)) mine = true; else others.Add(o); }
+                        if (mine && others.Count > 0)
+                        {
+                            sharedFound.Add((m.DeclaringType != null ? m.DeclaringType.Name + "." : "") + m.Name + " (" + string.Join(", ", new List<string>(others).ToArray()) + ")");
+                            foreach (var o in others) { string k = ModName(o); int c; sharedMods.TryGetValue(k, out c); sharedMods[k] = c + 1; }
+                        }
+                    }
+                    if (System.Diagnostics.Stopwatch.GetTimestamp() - t0 > limit) return;
                 }
-                var parts = new List<string>(); foreach (var kv in mods) parts.Add(kv.Key + " " + kv.Value + "곳");
+                logged = true; sharedTodo = null;
+                var parts = new List<string>(); foreach (var kv in sharedMods) parts.Add(kv.Key + " " + kv.Value + "곳");
                 SharedSummary = string.Join(", ", parts.ToArray());
-                SharedDetail = shared;
-                Lg.I("[다른 모드] 같은 게임 함수를 고치는 곳 " + shared.Count + "개" + (shared.Count > 0 ? ": " + string.Join(" | ", shared.ToArray()) : ""));
+                SharedDetail = new List<string>(sharedFound);
+                Lg.I("[다른 모드] 같은 게임 함수를 고치는 곳 " + sharedFound.Count + "개" + (sharedFound.Count > 0 ? ": " + string.Join(" | ", sharedFound.ToArray()) : ""));
             }
-            catch (Exception ex) { Lg.I("[다른 모드] 겹침 확인 실패: " + ex.Message); }
+            catch (Exception ex) { logged = true; sharedTodo = null; Lg.I("[다른 모드] 겹침 확인 실패: " + ex.Message); }
         }
     }
 }
