@@ -569,6 +569,13 @@ namespace StutterFix
             }
 #endif
             RequireLive(table.Supported >= GpuDecoPlayerPolicy.MinimumOwned, "지원되는 장식이 적음 (64개 미만)");
+            // 지원 비율이 이미 기준 미만이면 맡는 비율도 기준 미만이다. 이미지 계획·GPU 준비 전에 건너뛴다(2026-11-23 DD: 준비 뒤 건너뛰어도 끔보다 4% 느렸다).
+            {
+                int pct = Main.Config == null ? 0 : Main.Config.GpuDecoMinOwnedPercent;
+                int n = table.Decorations.Length;
+                RequireLive(n <= 0 || (long)table.Supported * 100 >= (long)n * pct,
+                    "지원 장식 " + table.Supported + "/" + n + "개 = " + (n > 0 ? 100L * table.Supported / n : 0) + "% < 기준 " + pct + "%: 맡는 장식이 적어 원래 경로 사용");
+            }
             bool reuse = false;
             if (cacheCandidate)
             {

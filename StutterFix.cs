@@ -130,6 +130,7 @@ namespace StutterFix
             // 8세대(2026-11-23): 엔진 마스크 배열 확장 패치 기본 켬. 화면 그대로(배열 크기 늘리는 방식만 바꿈), 게임 버전이 다르면 바이트 확인에서 스스로 건너뜀. ABBA 40초: Exit +2.3%, HELLO +3.8%, Windflower +4.0%.
             if (Config.DefaultsGen < 8) { Config.EngineMaskGrow = true; Config.DefaultsGen = 8; try { Config.Save(modEntry); } catch { } }
             if (Config.DefaultsGen < 9) { Config.HitMeterShaderAlpha = true; Config.DefaultsGen = 9; try { Config.Save(modEntry); } catch { } }
+            if (Config.DefaultsGen < 10) { if (Config.GpuDecoMinDecorations == 15000) Config.GpuDecoMinDecorations = 0; Config.DefaultsGen = 10; try { Config.Save(modEntry); } catch { } }
 
             Resilience.Init();   // 비정상 종료 감지 (안전 모드면 이번 실행 동안 일부 기능을 끔)
 
@@ -2568,7 +2569,7 @@ BlendProbe.Tick();
 
         public bool HitSoundBatch = true;   // 2026-10-20: 기본 켬 (Arche 전곡 +6.6%, 막히면 자동으로 원래 방식). 저사양 페이지에 있다
 
-        public int DefaultsGen = 0;         // 기본값을 바꿔 한 번 덮어쓴 세대 (1 = 히트음 묶기·화면 밖 파티클 멈추기 켬, 2 = 앞서 준비 프레임 4·화면 대기 건너뛰기 켬, 3 = 확대 장식 묶어 그리기 켬, 4 = 그것을 저사양 기능으로 되돌려 끔, 5 = GPU 장식 처리 켬, 6 = 화면 밖 파티클 멈추기 끔·타이머 0.5ms 켬, 7 = 히트박스 질의 건너뛰기 켬, 8 = 엔진 마스크 패치 켬, 9 = 막대 셰이더 알파 켬)
+        public int DefaultsGen = 0;         // 기본값을 바꿔 한 번 덮어쓴 세대 (1 = 히트음 묶기·화면 밖 파티클 멈추기 켬, 2 = 앞서 준비 프레임 4·화면 대기 건너뛰기 켬, 3 = 확대 장식 묶어 그리기 켬, 4 = 그것을 저사양 기능으로 되돌려 끔, 5 = GPU 장식 처리 켬, 6 = 화면 밖 파티클 멈추기 끔·타이머 0.5ms 켬, 7 = 히트박스 질의 건너뛰기 켬, 8 = 엔진 마스크 패치 켬, 9 = 막대 셰이더 알파 켬, 10 = GPU 장식을 장식 수 대신 맡는 비율 50%로)
 
         public bool JitWarm = true;         // 모드·게임 효과 함수를 켤 때 미리 컴파일 (곡 초반 첫 효과의 JIT)       // 곡 중에 처음 쓰는 효과음(박자 소리 등)을 재생 준비 때 미리 불러오기
 
@@ -2692,7 +2693,8 @@ BlendProbe.Tick();
 
         public int GpuDeco = 1;             // GPU 장식 처리: 기본 켬(3.0.0, DefaultsGen 5). 장식이 아주 많은 맵에서만 실제로 켜진다
 
-        public int GpuDecoMinDecorations = 15000; // 이 수보다 장식이 적은 맵에서는 GPU 장식 처리를 켜지 않는다(2026-11-22 8맵 켬/끔 비교: 장식 6천 개 이하 맵은 -7%~+2%, Arche 2만 9천 개만 큰 이득)
+        public int GpuDecoMinDecorations = 0;     // (옛 기준) 장식 수. 2026-11-23 부터 맡는 비율(GpuDecoMinOwnedPercent)로 정한다
+        public int GpuDecoMinOwnedPercent = 50;   // GPU 장식이 맡는 장식이 전체의 이 % 미만이면 원래 경로(11맵 켬/끔 비교, GpuDecoPreparation.cs)
         public int GpuDecoImages = 1;       // GPU 장식 처리 사용 시 이미지 소유: 기본 켬
 
         public int ExpFullscreen = 0;       // (실험, 설정 창 그래픽) 1 = 전체 화면일 때 독점 전체 화면 (화면 지연 절반, FPS 약 -10%, 찢어짐)
