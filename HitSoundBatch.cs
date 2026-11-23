@@ -212,12 +212,67 @@ namespace StutterFix
             // A newly removed late-loaded Quartz postfix may still exist in THIS
             // invocation's old Harmony wrapper. Take over only on the next preparation.
             if (__state) { reason = "late Quartz detected: takeover deferred until next preparation"; return; }
+            PrepGameMs = (System.Diagnostics.Stopwatch.GetTimestamp() - prepStart) * 1000.0 / System.Diagnostics.Stopwatch.Frequency;
+            if (DeferCapture && TryDefer(__instance)) return;
+            TakeOver(__instance);
+        }
+
+        // 곡 시작 준비를 다음 프레임으로: 게임 PlayHitTimes(약 12ms)와 우리 준비(약 14ms)가 카운트다운 한 프레임에 겹쳐 Lost 29ms 였다(2026-11-24).
+        // 이번 프레임에는 게임 예약 커서만 맡아 두고(게임이 예약하지 않게), 다음 scrConductor.Update 앞에서 준비한다.
+        // 준비가 실패하면 커서를 0 으로 돌려 그 Update 에서 게임이 원래대로 예약한다(그 사이 지나간 히트음 없음: 첫 히트음은 카운트다운 뒤).
+        internal static bool DeferCapture = true;
+        internal static long Deferred, DeferredLate, DeferredCanceled;
+        private static scrConductor pendingC; private static IList pendingList; private static int pendingFrame;
+        private static bool TryDefer(scrConductor c)
+        {
+            try
+            {
+                var list = Data(c);
+                if (!Compat.HitSoundGuardReady || Volatile.Read(ref retiring) != null || !GCS.d_hitsounds || !c.isGameWorld || ADOBase.lm == null || c.song == null ||
+                    ADOBase.audioManager == null || list == null || list.Count == 0 || list.Count > MaxVoices || Cursor(c) != 0) return false;
+                pendingC = c; pendingList = list; pendingFrame = Time.frameCount;
+                Cursor(c) = list.Count;
+                Deferred++; reason = "capture deferred to next frame";
+                return true;
+            }
+            catch { pendingC = null; pendingList = null; return false; }
+        }
+        // 맡아 둔 것을 지금 준비한다(c 가 null 이면 어느 지휘자든: OnUpdate 안전망)
+        private static void ResolvePending(scrConductor c)
+        {
+            var pc = pendingC;
+            // 맡은 다음다음 프레임에: 게임은 StartMusicCo 끝과 DesyncFix(다음 프레임)에서 PlayHitTimes 를 두 번 부른다. 다음 프레임에 준비하면 두 번째 호출과 겹치고 버려진다.
+            if ((object)pc == null || ((object)c != null && !ReferenceEquals(c, pc)) || Time.frameCount <= pendingFrame + 1) return;
+            var list = pendingList; pendingC = null; pendingList = null;
+            if (pc == null || Data(pc) != list) return;   // 게임이 목록을 새로 만들었으면 게임 커서도 새것
+            Cursor(pc) = 0;                               // 준비는 새 목록(커서 0)을 요구한다. 실패하면 0 그대로 = 게임이 원래대로 예약
+            TakeOver(pc);
+        }
+        internal static void LateResolve() { if ((object)pendingC != null && Time.frameCount > pendingFrame + 2) { DeferredLate++; ResolvePending(null); } }
+        // 맡아 둔 채로 놓을 때(Release): 살아 있는 판이면 남은 히트음을 게임에 돌려주고, 죽음 등(giveBack=false)이면 돌려주지 않는다
+        private static void CancelPending(bool restore, bool giveBack)
+        {
+            var pc = pendingC; var list = pendingList; pendingC = null; pendingList = null;
+            if ((object)pc == null) return;
+            DeferredCanceled++;
+            try
+            {
+                if (!restore || pc == null || Data(pc) != list) return;
+                int first = list.Count;
+                if (giveBack) { double now = AudioSettings.dspTime; for (int i = 0; i < list.Count; i++) if ((double)VoiceTime.GetValue(list[i]) >= now) { first = i; break; } }
+                Cursor(pc) = first;
+            }
+            catch { }
+        }
+
+        private static void TakeOver(scrConductor __instance)
+        {
             Session s = null;
             try
             {
                 if (!Compat.HitSoundGuardReady) throw new NotSupportedException("Quartz guard unavailable");
                 if (Volatile.Read(ref retiring) != null) throw new NotSupportedException("previous worker cleanup pending");
-                long c0 = System.Diagnostics.Stopwatch.GetTimestamp(); PrepGameMs = (c0 - prepStart) * 1000.0 / System.Diagnostics.Stopwatch.Frequency;
+                long c0 = System.Diagnostics.Stopwatch.GetTimestamp();
                 s = Capture(__instance);
                 long c1 = System.Diagnostics.Stopwatch.GetTimestamp(); PrepCaptureMs = (c1 - c0) * 1000.0 / System.Diagnostics.Stopwatch.Frequency;
                 current = s;
@@ -504,6 +559,7 @@ namespace StutterFix
 
         public static void BeforeUpdate(scrConductor __instance)
         {
+            if ((object)pendingC != null) ResolvePending(__instance);
             var s = current;
             if (s == null || s.Conductor != __instance || !s.Taken) return;
             try
@@ -565,6 +621,7 @@ namespace StutterFix
 
         private static void Release(string why, bool restore, bool replayTails = true, bool giveBack = true)
         {
+            if ((object)pendingC != null) CancelPending(restore, giveBack);
             reason = why;
             var s = current; current = null;
             if (s == null) return;
@@ -683,7 +740,7 @@ namespace StutterFix
                 pool += g.Sources?.Length ?? 0;
                 formats += (formats.Length == 0 ? "" : ",") + s.Rate + "Hz/" + g.Channels + "ch:next=" + g.Next;
             }
-            return "hold_none=" + FfxReuse.HitTimesNoHoldRuns + " checked=" + FfxReuse.HitTimesChecked + " wrong=" + FfxReuse.HitTimesWrong + " prep_ms game=" + PrepGameMs.ToString("F1") + " capture=" + PrepCaptureMs.ToString("F1") + " wait=" + PrepWaitMs.ToString("F1") + " pump=" + PrepPumpMs.ToString("F1") + " (head=" + PrepHeadMs.ToString("F1") + " loop=" + PrepLoopMs.ToString("F1") + " voices=" + PrepVoiceMs.ToString("F1") + " switches=" + PrepSwitches + "/" + (PrepSwitchTicks * 1000.0 / System.Diagnostics.Stopwatch.Frequency).ToString("F1") + "ms warm=" + WarmHits + "/" + WarmMade + " new=" + PrepNewClips + "/" + (PrepNewTicks * 1000.0 / System.Diagnostics.Stopwatch.Frequency).ToString("F1") + "ms) " +
+            return "deferred=" + Deferred + "/late " + DeferredLate + "/canceled " + DeferredCanceled + " hold_none=" + FfxReuse.HitTimesNoHoldRuns + " checked=" + FfxReuse.HitTimesChecked + " wrong=" + FfxReuse.HitTimesWrong + " prep_ms game=" + PrepGameMs.ToString("F1") + " capture=" + PrepCaptureMs.ToString("F1") + " wait=" + PrepWaitMs.ToString("F1") + " pump=" + PrepPumpMs.ToString("F1") + " (head=" + PrepHeadMs.ToString("F1") + " loop=" + PrepLoopMs.ToString("F1") + " voices=" + PrepVoiceMs.ToString("F1") + " switches=" + PrepSwitches + "/" + (PrepSwitchTicks * 1000.0 / System.Diagnostics.Stopwatch.Frequency).ToString("F1") + "ms warm=" + WarmHits + "/" + WarmMade + " new=" + PrepNewClips + "/" + (PrepNewTicks * 1000.0 / System.Diagnostics.Stopwatch.Frequency).ToString("F1") + "ms) " +
                 "enabled=" + enabled + " reason=" + reason + " list=" + lastCount + " captures=" + captures +
                 " groups=" + (s?.Formats.Count ?? 0) + " formats=" + formats +
                 " segments=" + (s?.Segments ?? 0) + " rendered=" + (s?.Rendered ?? 0) + " scheduled=" + (s?.Scheduled ?? 0) +
