@@ -129,6 +129,7 @@ namespace StutterFix
 
             // 8세대(2026-11-23): 엔진 마스크 배열 확장 패치 기본 켬. 화면 그대로(배열 크기 늘리는 방식만 바꿈), 게임 버전이 다르면 바이트 확인에서 스스로 건너뜀. ABBA 40초: Exit +2.3%, HELLO +3.8%, Windflower +4.0%.
             if (Config.DefaultsGen < 8) { Config.EngineMaskGrow = true; Config.DefaultsGen = 8; try { Config.Save(modEntry); } catch { } }
+            if (Config.DefaultsGen < 9) { Config.HitMeterShaderAlpha = true; Config.DefaultsGen = 9; try { Config.Save(modEntry); } catch { } }
 
             Resilience.Init();   // 비정상 종료 감지 (안전 모드면 이번 실행 동안 일부 기능을 끔)
 
@@ -491,6 +492,9 @@ AllocProbe.Install(new HarmonyLib.Harmony("StutterFix.allocprobe"));
                 HitTextFade.Install(harmony);
 
                 HitMeterFade.Install(harmony);
+
+                HitMeterShaderAlpha.Enabled = Config.HitMeterShaderAlpha;
+
 
                 PlayTweaks.Install(harmony);
 
@@ -1110,6 +1114,9 @@ ParticleTextWatch.Install(harmony);
 
             Try(HitMeterFade.Shutdown);
 
+            Try(HitMeterShaderAlpha.Shutdown);
+
+
             Try(MemoryBudget.Reset);
 
             Try(NativeMotion.Reset);
@@ -1401,6 +1408,7 @@ if (Edition.AutoTest && AutoTest.ReloadNow) { AutoTest.ReloadNow = false; Reques
 
 
             if (!installed) return;   // 꺼져 있으면 아무 일도 하지 않는다
+
 
 
 
@@ -1920,6 +1928,9 @@ BlendProbe.Tick();
             HitTextFade.Enabled = E("HitTextFade", Config.HitTextFade);
 
             HitMeterFade.Enabled = E("HitMeterFade", Config.HitMeterFade);
+
+            HitMeterShaderAlpha.Enabled = E("HitMeterShaderAlpha", Config.HitMeterShaderAlpha);
+
 
             HitMeterFade.HitMeterDirectKill = E("HitMeterDirectKill", Config.HitMeterDirectKill);
 
@@ -2522,6 +2533,9 @@ BlendProbe.Tick();
 
         public bool HitMeterFade = true;   // 판정 오차 막대 눈금이 사라질 때 그림을 다시 만들지 않고 렌더러 투명도만 바꾸기
 
+        public bool HitMeterShaderAlpha = true;  // 판정 오차 막대 눈금 투명도를 셰이더 배열로 (켤 때 0.2초 탐침이 엔진과 바이트까지 같아야 적용; HELLO +1.9%)
+
+
         public bool HitMeterDirectKill = true;   // 판정 오차 막대 눈금·손의 트윈을 문자열 검색 대신 핸들로 종료 (원래 DOTween 과 비트 차이 0; 고BPM 맵 +11~13%)
 
         // 연출 끄기 (기본 꺼짐: 켜면 화면이 달라진다)
@@ -2554,7 +2568,7 @@ BlendProbe.Tick();
 
         public bool HitSoundBatch = true;   // 2026-10-20: 기본 켬 (Arche 전곡 +6.6%, 막히면 자동으로 원래 방식). 저사양 페이지에 있다
 
-        public int DefaultsGen = 0;         // 기본값을 바꿔 한 번 덮어쓴 세대 (1 = 히트음 묶기·화면 밖 파티클 멈추기 켬, 2 = 앞서 준비 프레임 4·화면 대기 건너뛰기 켬, 3 = 확대 장식 묶어 그리기 켬, 4 = 그것을 저사양 기능으로 되돌려 끔, 5 = GPU 장식 처리 켬, 6 = 화면 밖 파티클 멈추기 끔·타이머 0.5ms 켬, 7 = 히트박스 질의 건너뛰기 켬, 8 = 엔진 마스크 패치 켬)
+        public int DefaultsGen = 0;         // 기본값을 바꿔 한 번 덮어쓴 세대 (1 = 히트음 묶기·화면 밖 파티클 멈추기 켬, 2 = 앞서 준비 프레임 4·화면 대기 건너뛰기 켬, 3 = 확대 장식 묶어 그리기 켬, 4 = 그것을 저사양 기능으로 되돌려 끔, 5 = GPU 장식 처리 켬, 6 = 화면 밖 파티클 멈추기 끔·타이머 0.5ms 켬, 7 = 히트박스 질의 건너뛰기 켬, 8 = 엔진 마스크 패치 켬, 9 = 막대 셰이더 알파 켬)
 
         public bool JitWarm = true;         // 모드·게임 효과 함수를 켤 때 미리 컴파일 (곡 초반 첫 효과의 JIT)       // 곡 중에 처음 쓰는 효과음(박자 소리 등)을 재생 준비 때 미리 불러오기
 
@@ -2726,6 +2740,8 @@ BlendProbe.Tick();
         // 실시간 모니터: 0 끔, 1 아이콘(화면 끝의 작은 탭), 2 미니(한 줄), 3 상세(패널). Shift+키로 차례로 바꾼다.
 
         public int OverlayMode = 1;
+
+        public bool OverlayRedrawCap = true;   // 실시간 모니터를 모니터 주사율보다 자주 다시 그리지 않기 (HELLO/WF +2% 상한)
 
         public int OverlayFpsSource = -1;   // -1 자동(생성 켬: 출력, 끔: 원본), 0 원본, 1 출력, 2 둘 다. 통계·끊김은 항상 원본.
 

@@ -274,6 +274,7 @@ namespace StutterFix
         // DOTweenModuleUI.DOColor(Image, Color, float) 와 같은 모양
         public static TweenerCore<Color, Color, ColorOptions> Fade(Image target, Color endValue, float duration)
         {
+            HitMeterShaderAlpha.Detach(target);
             Color start = target.color;
             var cr = target.canvasRenderer;
             // 원래 길: 시작·끝 RGB 가 다르거나(다른 모드가 바꿈) 끄면
@@ -285,9 +286,12 @@ namespace StutterFix
             Fast++;
             float a0 = start.a;
             cr.SetAlpha(1f);   // 지난 눈금이 남긴 렌더러 투명도 (정점 색은 원래 코드가 방금 시작 색으로 넣었다)
+            var shaderSlot = HitMeterShaderAlpha.TryAttach(target);
             Color cur = start;
-            return DOTween.To(() => cur, x => { cur = x; cr.SetAlpha(x.a / a0); }, endValue, duration).SetTarget(target);
+            return DOTween.To(() => cur, x => { cur = x; if (!ProbeNoAlpha) HitMeterShaderAlpha.Write(shaderSlot, cr, x.a / a0); }, endValue, duration).SetTarget(target);
         }
+        // 측정 전용(화면이 달라진다): 눈금 투명도 쓰기를 막아 캔버스 다시 묶기 비용의 상한을 잰다.
+        internal static bool ProbeNoAlpha;
 
         internal static string Summary() { return string.Format("오차 막대 눈금 가볍게 {0}개 (원래대로 {1}개), Kill 직접 {2}/검색 {3}, 손 종료 {4}", Fast, Slow, KillFast, KillSlow, HandKilled); }
     }

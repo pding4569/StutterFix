@@ -44,6 +44,9 @@
     <Compile Include="DirectRenderer.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="DrProbe.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="StutterFix.cs" />
+    <Compile Include="HitMeterShaderAlpha.cs" />
+    <Compile Include="HitMeterAlphaProbe.cs" />
+    <EmbeddedResource Include="tools/hitmeter-alpha/hitmeteralpha.bundle" LogicalName="StutterFix.hitmeteralpha" Condition="Exists('tools/hitmeter-alpha/hitmeteralpha.bundle')" />
     <Compile Include="FillGeometry.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="FillCensus.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <EmbeddedResource Include="tools/fillcensus/shader-metadata.tsv" LogicalName="StutterFix.fillshaders" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
@@ -506,6 +509,7 @@
   </ItemGroup>
 
   <Target Name="CheckUiEncoding" AfterTargets="Build">
+    <Warning Condition="!Exists('tools/hitmeter-alpha/hitmeteralpha.bundle')" Text="HitMeterShaderAlpha bundle missing: feature will fall back. Run tools/hitmeter-alpha/build.ps1 with working Unity licensing IPC." />
     <Exec Command="py -3 &quot;$(MSBuildProjectDirectory)/tools/check-ui-encoding.py&quot;" WorkingDirectory="$(MSBuildProjectDirectory)" IgnoreExitCode="true" />
   </Target>
 </Project>

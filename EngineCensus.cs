@@ -33,6 +33,82 @@ namespace StutterFix
             return "disabled " + n + " idle sources under '" + a + "'";
         }
 
+        // 진단: 켜진 최상위 캔버스 목록(그림 수·보이는 그림 수). canvasoff <이름 일부>|on 으로 측정용 끄기.
+        internal static string CanvasList()
+        {
+            var sb = new StringBuilder(); int n = 0;
+            foreach (var c in Object.FindObjectsByType<Canvas>(FindObjectsInactive.Exclude, FindObjectsSortMode.None))
+            {
+                if (!c.enabled || !c.isRootCanvas) continue;
+                int g = 0, vis = 0, sub = 0;
+                foreach (var gr in c.GetComponentsInChildren<UnityEngine.UI.Graphic>(false))
+                {
+                    if (!gr.enabled) continue; g++;
+                    if (gr.color.a * gr.canvasRenderer.GetAlpha() > 0f) vis++;
+                }
+                foreach (var sc in c.GetComponentsInChildren<Canvas>(false)) if (sc != c && sc.enabled) sub++;
+                if (g == 0) continue;
+                n++;
+                sb.Append(" | ").Append(c.name).Append("<").Append(c.transform.root.name).Append("> mode=").Append(c.renderMode)
+                  .Append(" g=").Append(g).Append(" vis=").Append(vis).Append(" sub=").Append(sub);
+            }
+            return "roots=" + n + sb;
+        }
+        private static readonly List<Canvas> offCanvases = new List<Canvas>();
+        internal static string CanvasOff(string arg)
+        {
+            var a = (arg ?? "").Trim();
+            if (a == "on") { int r = 0; foreach (var c in offCanvases) if (c) { c.enabled = true; r++; } offCanvases.Clear(); return "restored " + r; }
+            bool except = a.StartsWith("except ");   // except <이름>: 그 이름이 아닌 최상위 캔버스를 모두 끈다
+            if (except) a = a.Substring(7).Trim();
+            int n = 0; var names = new List<string>();
+            foreach (var c in Object.FindObjectsByType<Canvas>(FindObjectsInactive.Exclude, FindObjectsSortMode.None))
+            {
+                if (!c.enabled || !c.isRootCanvas) continue;
+                bool match = c.name.Contains(a) || c.transform.root.name.Contains(a);
+                if (except ? match : !match) continue;
+                c.enabled = false; offCanvases.Add(c); n++; if (names.Count < 12) names.Add(c.name);
+            }
+            return "disabled " + n + " [" + string.Join(", ", names) + "]";
+        }
+
+        // 진단: 유니티가 매 프레임 하나씩 부르는 Update/LateUpdate 대상 수(켜진 MonoBehaviour, 종류별).
+        internal static string BehaviourCensus()
+        {
+            var upd = new Dictionary<string, int>(); var late = new Dictionary<string, int>();
+            var hasU = new Dictionary<System.Type, int>();
+            int total = 0, u = 0, l = 0;
+            const System.Reflection.BindingFlags F = System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic;
+            foreach (var b in Object.FindObjectsByType<MonoBehaviour>(FindObjectsInactive.Exclude, FindObjectsSortMode.None))
+            {
+                if (!b.isActiveAndEnabled) continue;
+                total++;
+                var t = b.GetType();
+                if (!hasU.TryGetValue(t, out int bits))
+                {
+                    bits = 0;
+                    for (var x = t; x != null && x != typeof(MonoBehaviour); x = x.BaseType)
+                    {
+                        if (x.GetMethod("Update", F | System.Reflection.BindingFlags.DeclaredOnly, null, System.Type.EmptyTypes, null) != null) bits |= 1;
+                        if (x.GetMethod("LateUpdate", F | System.Reflection.BindingFlags.DeclaredOnly, null, System.Type.EmptyTypes, null) != null) bits |= 2;
+                    }
+                    hasU[t] = bits;
+                }
+                if ((bits & 1) != 0) { u++; Add(upd, t.Name); }
+                if ((bits & 2) != 0) { l++; Add(late, t.Name); }
+            }
+            return "enabled=" + total + " update=" + u + " [" + Top(upd, 12) + "] late=" + l + " [" + Top(late, 10) + "]";
+        }
+
+        // 진단(픽셀 검증용): 일시정지(controller.paused)가 숨긴 판정 오차 막대를 다시 켠다. resume 때 게임이 다시 정한다.
+        internal static string MeterShow()
+        {
+            int n = 0;
+            foreach (var m in Object.FindObjectsByType<scrHitErrorMeter>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+                if (!m.gameObject.activeSelf) { m.gameObject.SetActive(true); n++; }
+            return "shown " + n;
+        }
+
         // 진단: 판정 오차 막대가 실제로 화면에 보이는지(캔버스·그룹 투명도·화면 위치·보이는 그림 수).
         internal static string MeterInfo()
         {

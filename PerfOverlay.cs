@@ -172,6 +172,8 @@ namespace StutterFix
         private const float ToastLife = 4f;
 
         // ── 화면 상태 ──────────────────────────────────────────────────
+        private long lastDrawAt, hzCheckedAt, redrawInterval;
+        internal static long RedrawSkipped;
         private float show;          // 전체가 나타난 정도
         private float open;          // 아이콘에서 상세 패널이 펼쳐진 정도
         private bool iconOpen;
@@ -1089,6 +1091,20 @@ namespace StutterFix
             if (show <= 0f || C == null) { if (ui.Ready) ui.Hide(); return; }
             if (!built) Build();
             long drawStart = Stopwatch.GetTimestamp();
+            // 다시 그리기는 모니터 주사율까지만: 그보다 자주 그린 그림은 화면에 거의 나오지 않고, 매번 캔버스를 다시 묶는다
+            // (HELLO/WF 표시판 끔 대 아이콘 +2.2%). 측정·통계(Update)는 매 프레임 그대로다. 끄는 중·끄는 애니메이션은 매 프레임.
+            if (C.OverlayRedrawCap && show >= 1f && !dragging)
+            {
+                if (drawStart - hzCheckedAt > Stopwatch.Frequency)
+                {
+                    hzCheckedAt = drawStart;
+                    double hz = 0; try { hz = Screen.currentResolution.refreshRateRatio.value; } catch { }
+                    redrawInterval = hz >= 30 && hz <= 1000 ? (long)(Stopwatch.Frequency / hz) : 0;
+                }
+                // 간격의 92%: 프레임 시각이 조금 흔들려도 주사율보다 드물게 그리지 않게
+                if (redrawInterval > 0 && drawStart - lastDrawAt < redrawInterval * 92 / 100) { RedrawSkipped++; return; }
+                lastDrawAt = drawStart;
+            }
 
             scale = Mathf.Clamp(Screen.height / 1080f, 0.8f, 2.2f) * Mathf.Clamp(C.OverlayScale, 0.7f, 1.6f);
             if (Mathf.Abs(scale - warmedScale) > 0.001f) { WarmUi(scale); warmedScale = scale; }   // 크기를 바꾸면 다시

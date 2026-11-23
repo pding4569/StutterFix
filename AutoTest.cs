@@ -1390,6 +1390,14 @@ namespace StutterFix
                 case "audiooff": Log("[audiooff] " + EngineCensus.AudioOff(arg)); return true;
                 case "enginecensus": Log("[enginecensus] " + EngineCensus.Run()); return true;
                 case "meterinfo": Log("[meterinfo] " + EngineCensus.MeterInfo()); return true;
+                case "meternoalpha": HitMeterFade.ProbeNoAlpha = arg.Trim() == "on"; Log("[meternoalpha] " + HitMeterFade.ProbeNoAlpha); return true;
+                case "meteralpha": Log("[meteralpha] " + HitMeterShaderAlpha.Command(arg)); return true;
+                case "alphaprobe": Log("[alphaprobe] " + HitMeterAlphaProbe.Run()); return true;
+                case "overlayskip": Log("[overlayskip] skipped=" + PerfOverlay.RedrawSkipped + " cap=" + Main.Config.OverlayRedrawCap); return true;
+                case "metershow": Log("[metershow] " + EngineCensus.MeterShow()); return true;
+                case "behcensus": Log("[behcensus] " + EngineCensus.BehaviourCensus()); return true;
+                case "canvaslist": Log("[canvaslist] " + EngineCensus.CanvasList()); return true;
+                case "canvasoff": Log("[canvasoff] " + EngineCensus.CanvasOff(arg)); return true;
                 case "scriptcensus": Log("[scriptcensus] " + ScriptCensus.Command(arg)); return true;
                 case "updatecost": Log("[updatecost] " + UpdateCostProbe.Command(arg)); return true;
                 case "decojob": Log("[decojob] " + DecoJobShadow.Command(arg)); return true;

@@ -18,6 +18,13 @@ namespace DG.Tweening
 }
 namespace StutterFix
 {
+    // This fixture verifies the unchanged DOTween/SetAlpha route with the new feature disabled.
+    internal static class HitMeterShaderAlpha
+    {
+        internal static void Detach(UnityEngine.UI.Image image) { }
+        internal static object TryAttach(UnityEngine.UI.Image image) => null;
+        internal static void Write(object slot, UnityEngine.CanvasRenderer renderer, float alpha) => renderer.SetAlpha(alpha);
+    }
     // Production logging was moved from Main.Entry.Logger to Lg.
     internal static class Lg { internal static void I(string s) => System.Console.WriteLine(s); }
     internal static class Main
