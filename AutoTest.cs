@@ -970,6 +970,28 @@ namespace StutterFix
                 case "filterhalf": FilterHalfProbe.Command(arg); return true;
                 case "waitsong": return now - stepStart > 5f && !Hitch.Playing;
                 case "filtergpu": FilterGpuProbe.Command(arg); return true;
+                case "filterchain": Log("[filterchain] " + FilterChainProbe.Command(arg)); return true;
+                case "filterskip": Log("[filterskip] proven=" + FilterIdentity.ProvenEnabled + " skips=" + FilterIdentity.ProvenSkips + " " + FilterIdentity.Dbg()); return true;
+                case "filterparams":   // filterparams <CameraFilterPack_ 뒤 이름>: 켜진 그 필터의 공개 필드·머티리얼 float/vector 값
+                    {
+                        var sb = new System.Text.StringBuilder(); int found = 0;
+                        foreach (var cam in Camera.allCameras)
+                            foreach (var mb in cam.GetComponents<MonoBehaviour>())
+                            {
+                                if (mb == null || !mb.enabled || mb.GetType().Name != "CameraFilterPack_" + arg.Trim()) continue;
+                                found++; sb.Append(" | ").Append(cam.name).Append(':');
+                                foreach (var f in mb.GetType().GetFields(System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic))
+                                {
+                                    var v = f.GetValue(mb);
+                                    if (v is float || v is int || v is bool || v is Vector2 || v is Vector4 || v is Color) sb.Append(' ').Append(f.Name).Append('=').Append(v);
+                                    if (v is Material mat && mat != null)
+                                        foreach (var pn in new[] { "_Radius", "_Factor", "_TimeX", "_Value", "_Value2", "_Value3", "_Distortion", "_Intensity", "_Size" })
+                                            if (mat.HasProperty(pn)) sb.Append(" mat").Append(pn).Append('=').Append(mat.GetFloat(pn).ToString("R"));
+                                    if (v is Material mat2 && mat2 != null && mat2.HasProperty("_ScreenResolution")) sb.Append(" mat_ScreenResolution=").Append(mat2.GetVector("_ScreenResolution"));
+                                }
+                            }
+                        Log("[filterparams] " + arg + " found=" + found + sb + " screen=" + Screen.width + "x" + Screen.height); return true;
+                    }
                 case "gpuprobe": GpuProbe.Command(arg); return true;
                 case "archegpu": ArcheGpuResearch.Command(arg); return true;
                 case "fxoff": ArcheGpuResearch.Select(arg); return true;

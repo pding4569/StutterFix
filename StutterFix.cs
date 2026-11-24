@@ -1067,6 +1067,9 @@ ParticleTextWatch.Install(harmony);
             Try(DecoRender.Stop);
 
             Try(FilterGpuProbe.Stop);
+#if AUTOTEST
+            Try(FilterChainProbe.Stop);
+#endif
 
             Try(GpuHide.Stop);
             Try(DecoDetach.FinishReattach);
