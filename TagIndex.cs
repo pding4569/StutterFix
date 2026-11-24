@@ -36,6 +36,8 @@ namespace StutterFix
                 var method=AccessTools.Method(typeof(scnGame),"FinishCustomLevelLoading",new[]{typeof(int),typeof(bool)});
                 if(method==null)return false;
                 harmony.Patch(method,postfix:new HarmonyMethod(typeof(TagIndex),nameof(Begin)){priority=Priority.Last});
+                // 버전 필드 접근자(동적 메서드 생성·검사)를 켤 때 미리 만든다: 첫 재생 시작 프레임(FinishCustomLevelLoading)에 약 5ms 였다(HELLO 2026-11-24)
+                InitVersions();
                 // New map loading already calls Forget through FastMove.ForgetLevel.
                 // Do not duplicate that existing lifecycle patch.
                 var quit=AccessTools.Method(typeof(scrController),"QuitToMainMenu");
