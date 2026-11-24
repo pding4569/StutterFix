@@ -1428,6 +1428,21 @@ namespace StutterFix
                 case "canvaslist": Log("[canvaslist] " + EngineCensus.CanvasList()); return true;
                 case "canvasoff": Log("[canvasoff] " + EngineCensus.CanvasOff(arg)); return true;
                 case "canvasmove": Log("[canvasmove] " + EngineCensus.CanvasMove(arg)); return true;
+                case "floorhash":   // 모든 타일의 위치·회전·크기·불투명도 비트 해시(효과가 끝난 정지 상태 비교용)
+                    {
+                        var fl = ADOBase.lm != null ? ADOBase.lm.listFloors : null;
+                        if (fl == null) { Log("[floorhash] no floors"); return true; }
+                        long h = 1469598103934665603L; int n = 0;
+                        void Mix(float v) { h = (h ^ BitConverter.ToInt32(BitConverter.GetBytes(v), 0)) * 1099511628211L; }
+                        foreach (var f in fl)
+                        {
+                            if (f == null) { h = (h ^ 7) * 1099511628211L; continue; }
+                            var t = f.transform; var p = t.localPosition; var r = t.localRotation; var sc = t.localScale;
+                            Mix(p.x); Mix(p.y); Mix(p.z); Mix(r.x); Mix(r.y); Mix(r.z); Mix(r.w); Mix(sc.x); Mix(sc.y); Mix(sc.z); Mix(f.opacity); n++;
+                        }
+                        Log("[floorhash] floors=" + n + " h=" + h.ToString("x16") + " flooranim_real=" + global::StutterFix.FloorAnim.Real + " fallbacks=" + global::StutterFix.FloorAnim.Fallbacks + " afterSong=" + Hitch.AfterSong);
+                        return true;
+                    }
                 case "scriptcensus": Log("[scriptcensus] " + ScriptCensus.Command(arg)); return true;
                 case "updatecost": Log("[updatecost] " + UpdateCostProbe.Command(arg)); return true;
                 case "decojob": Log("[decojob] " + DecoJobShadow.Command(arg)); return true;

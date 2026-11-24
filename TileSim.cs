@@ -104,7 +104,7 @@ namespace StutterFix
                 { Reject("usage: tilesim capture <초: 0초 초과~120초> | verify | bench | selftest"); return; }
                 if (Capturing) { Reject("already-capturing"); return; }
                 if (TileCost.Active) { Reject("tilecost-active"); return; }
-                if (!Hitch.Playing || !FloorAnim.Enabled || !FloorAnim.Installed || !ZeroTween.CanEase)
+                if (!(Hitch.Playing || Hitch.AfterSong) || !FloorAnim.Enabled || !FloorAnim.Installed || !ZeroTween.CanEase)
                 { Reject("not-playing-or-flooranim/ease-unavailable"); return; }
                 if (!FloorAnim.SimDefaultPath()) { Reject("split-pending"); return; }
                 var all = ADOBase.lm?.listFloors;
@@ -197,7 +197,7 @@ namespace StutterFix
         internal static void BeginFrame(List<FloorAnim.Rec> records, bool research)
         {
             if (research || !FloorAnim.SimDefaultPath()) { Stop("연구 경로 변경", false); return; }
-            if (!Hitch.Playing) { Stop("곡 재생 종료", tape.Frames.Count != 0); return; }
+            if (!(Hitch.Playing || Hitch.AfterSong)) { Stop("곡 재생 종료", tape.Frames.Count != 0); return; }
             // Events between updates belong to this next frame, in original order.
             frameEvent = tape.Frames.Count == 0 ? 0 : tape.Frames[tape.Frames.Count - 1].EventEnd;
             frameSample = tape.Samples.Count; stepCount = 0; inFrame = true;

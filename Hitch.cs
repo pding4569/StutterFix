@@ -253,7 +253,7 @@ UiProf.ResetSong();
 BlendProbe.Report();
 #endif
 }
-            LazySprite.FlushAll(); LowEnd.SongStarted(); PhysicsPause.SongStarted(); LowEnd.LogRenderOnce(); Compat.Refresh(); Resilience.Phase("플레이 중");
+            AfterSong = false; LazySprite.FlushAll(); LowEnd.SongStarted(); PhysicsPause.SongStarted(); LowEnd.LogRenderOnce(); Compat.Refresh(); Resilience.Phase("플레이 중");
             RunLod.SongStarted();
             if (Main.Config != null && Main.Config.PlayTurbo) { try { EnginePatch.TurboCommand("lite"); } catch (System.Exception e) { Lg.I("[turbo] 실패: " + e.Message); } }
         }
@@ -264,8 +264,11 @@ BlendProbe.Report();
         // 곡이 끝나면 장식 이동 최적화가 실제로 무엇을 얼마나 줄였는지 한 줄 남긴다(플레이어용 로그로도 확인할 수 있게).
         private static bool endLogged;
 
+        // 곡이 끝난 뒤 결과 화면(게임 화면, 편집기 아님): 다음 전환(다시 하기·편집·나가기·곡 시작) 전까지 true. FloorAnim 이 결과 화면 타일 이동 효과를 맡는다.
+        internal static bool AfterSong;
         private static void SongEnded()
         {
+            try { AfterSong = !ADOBase.isLevelEditor && ADOBase.controller != null; } catch { AfterSong = false; }
             DecoEngine.DropLevel();
             DecoAnim.BatchForget();
             TightLate.Forget();

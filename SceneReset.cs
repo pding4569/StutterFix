@@ -38,6 +38,7 @@ namespace StutterFix
             GpuExactCensus.Stop();
 #endif
             Count++;
+            Hitch.AfterSong = false;
             LazySprite.FlushAll();   // 곡 끝에 나눠 넣던 미룬 이미지를 장면 초기화 전에 모두
             HitMeterShaderAlpha.RestoreAll();
             RunLod.SongEnded(); // Restore layers/composites before game Setup and editor callbacks.

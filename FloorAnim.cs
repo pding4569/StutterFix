@@ -121,12 +121,14 @@ namespace StutterFix
         }
 
         internal static bool Active { get { return Enabled && Installed; } }
+        internal static bool AfterSongOk = true;   // 시험용 끄기(sfield)
 
         // ── 효과 시작 ──
         public static bool StartPrefix(ffxMoveFloorPlus __instance, bool __runOriginal)
         {
             if (!__runOriginal) return false;
-            if (!Active || !Hitch.Playing) return true;
+            // 결과 화면(곡 끝 뒤, 게임 화면)도 맡는다: PLUM 596.2초 결과 화면 타일 이동이 원래 DOTween 으로 45~56ms 였다(2026-11-24 dropscan).
+            if (!Active || !(Hitch.Playing || (AfterSongOk && Hitch.AfterSong))) return true;
             if (EffectBudget.InCatchUp) { whyNot[0]++; Fallbacks++; return true; }
             // 길이는 AdjustDurationForHardbake 가 음악 속도로 나누기만 하므로(공식 맵만) 부호는 그대로다.
             // 0 이면 즉시 이동(Done 이 그 자리에서 끝냄)을 같은 계산으로 바로 쓴다. 음수는 원래 코드.
