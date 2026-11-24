@@ -32,3 +32,6 @@ GPU 병목 구간(예: Lost 120초)에서 본 카메라 필터가 10~15개 동�
 - 대신: WF 에서 Blur_Movie 가 Radius=0(효과 없음)으로 켜진 호출이 32%. Radius==0·FastFilter==1·Factor>=0 이면 100샘플이 같은 텍셀 → Σ(c·w)/Σw = c(1±6e-6) → 8비트로 원래 바이트와 같음(증명), 같은 입력 대조 83표본 최대 0/255.
   FilterIdentity 에 "증명된 건너뛰기"(ProvenEnabled 기본 켬, 인증서 불필요, TimeX 부수효과 재현, ARGB32·같은 크기·대상 null 아님만).
   WF 전곡 ABBA(끔/끔/켬/켬/끔, 첫 판 데우기): 381/392/394/382 → +3.0%, 1% low 181→188, 건너뜀 곡당 약 1.9만 번.
+- Lost 전곡 ABBA(같은 방식): 342/343/351/352/344 → +2.3%, 1% low 163→168, 건너뜀 곡당 약 1.77만 번.
+- 다른 비싼 필터의 중립 여부(filterparams 표본): AAA_Super_Computer 는 텍스처 1번 + 무늬 계산(sincos 반복, ALU) — 무늬 세기 0 이면 원본이지만 알파를 1 로 강제하고, WF 값 _AlphaHexa 0.01·0.0075, 7777 0.15~1 로 0 이 아님 → 해당 없음.
+  Atmosphere_Rain_Pro 는 원본 + Intensity×(빗방울 − 원본), 7777 Intensity 0.5(Size 0 이어도 원본 아님) → 해당 없음. Blur_Radial 중립(Intensity 0)은 표본 위치 (uv−c)·1+c 가 부동소수점상 uv 와 같다는 보장이 없어 보류(WF 곡 GPU 0.17%).
