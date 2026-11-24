@@ -1428,6 +1428,21 @@ namespace StutterFix
                 case "canvaslist": Log("[canvaslist] " + EngineCensus.CanvasList()); return true;
                 case "canvasoff": Log("[canvasoff] " + EngineCensus.CanvasOff(arg)); return true;
                 case "canvasmove": Log("[canvasmove] " + EngineCensus.CanvasMove(arg)); return true;
+                case "camfx":   // 켜진 카메라마다 OnRenderImage 를 가진 켜진 컴포넌트(화면 필터) 목록
+                    {
+                        var sb = new System.Text.StringBuilder();
+                        foreach (var cam in Camera.allCameras)
+                        {
+                            sb.Append(" | ").Append(cam.name).Append(":");
+                            foreach (var mb in cam.GetComponents<MonoBehaviour>())
+                            {
+                                if (mb == null || !mb.enabled) continue;
+                                var mi = mb.GetType().GetMethod("OnRenderImage", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic);
+                                if (mi != null) sb.Append(' ').Append(mb.GetType().Name);
+                            }
+                        }
+                        Log("[camfx]" + sb); return true;
+                    }
                 case "floorhash":   // 모든 타일의 위치·회전·크기·불투명도 비트 해시(효과가 끝난 정지 상태 비교용)
                     {
                         var fl = ADOBase.lm != null ? ADOBase.lm.listFloors : null;
