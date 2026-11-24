@@ -262,7 +262,7 @@ namespace StutterFix
             {
                 if (!restore || pc == null || Data(pc) != list) return;
                 int first = list.Count;
-                if (giveBack) { double now = AudioSettings.dspTime; for (int i = 0; i < list.Count; i++) if ((double)VoiceTime.GetValue(list[i]) >= now) { first = i; break; } }
+                if (giveBack) { double now = AudioSettings.dspTime; for (int i = 0; i < list.Count; i++) if ((FastTime != null ? FastTime(list[i]) : (double)VoiceTime.GetValue(list[i])) >= now) { first = i; break; } }
                 Cursor(pc) = first;
             }
             catch { }
@@ -643,7 +643,9 @@ namespace StutterFix
                 int first = s.Original.Count;
                 if (giveBack)
                     for (int i = 0; i < s.Original.Count; i++)
-                        if ((double)VoiceTime.GetValue(s.Original[i]) >= now) { first = i; break; }
+                        // 곡 끝에는 모두 지나 전체를 훑는다: 리플렉션 GetValue 로 Lost 1만 3천 개 곡 끝 프레임 28ms(2026-11-24 dropscan6).
+                        // 준비 때 같은 순서로 복사한 시각(s.Times, 목록 길이 같음)을 쓴다. 목록 시각은 그 뒤 바뀌지 않는다(게임 예약 커서는 끝에 있음).
+                        if ((s.Times.Length == s.Original.Count ? s.Times[i] : FastTime != null ? FastTime(s.Original[i]) : (double)VoiceTime.GetValue(s.Original[i])) >= now) { first = i; break; }
                 Cursor(s.Conductor) = first;
                 // Rebuild only tails which started before handback. Future entries remain
                 // the original game's responsibility; no game sources are stopped here.
