@@ -124,6 +124,7 @@
     <Compile Include="GpuProbe.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="ArcheGpuResearch.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="GpuHide.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
+    <Compile Include="DxgiPriority.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="Occlude.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="ZCull.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="ZCullPolicy.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />

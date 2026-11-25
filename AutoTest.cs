@@ -218,6 +218,10 @@ namespace StutterFix
         }
 
         // UMM 창이 열려 있으면 그리는 비용 때문에 FPS 가 조금 낮게 나온다(사용자 관찰, 2026-09-27). 시작할 때와 재생마다 닫는다.
+        static readonly List<SpriteRenderer> mpbTexSet = new List<SpriteRenderer>();
+        static readonly List<UnityEngine.Object> vramHeld = new List<UnityEngine.Object>();
+        static readonly List<KeyValuePair<SpriteRenderer, Texture>> texSwapped = new List<KeyValuePair<SpriteRenderer, Texture>>();
+        static readonly Dictionary<Texture, Texture2D> texCopies = new Dictionary<Texture, Texture2D>();
         private static bool ummClosed;
         private static void CloseUmm()
         {
@@ -1450,6 +1454,180 @@ namespace StutterFix
                 case "canvaslist": Log("[canvaslist] " + EngineCensus.CanvasList()); return true;
                 case "canvasoff": Log("[canvasoff] " + EngineCensus.CanvasOff(arg)); return true;
                 case "canvasmove": Log("[canvasmove] " + EngineCensus.CanvasMove(arg)); return true;
+                case "vram": Log(string.Format("[vram] total={0:F0}MB gameDedicated={1:F0}MB gameShared={2:F0}MB", SystemMonitor.VramUsedMB, SystemMonitor.VramGameMB, SystemMonitor.SharedGameMB)); return true;
+                case "texwarm":   // 보이는 장식 텍스처를 작은 RT 로 Blit(진단: VRAM 밖 텍스처가 다시 올라오는지). arg: blit|copy
+                    {
+                        var seen = new HashSet<Texture>(); var sw = System.Diagnostics.Stopwatch.StartNew();
+                        var tiny = RenderTexture.GetTemporary(4, 4, 0, RenderTextureFormat.ARGB32);
+                        var prev = RenderTexture.active; int n = 0; long px = 0;
+                        foreach (var sr in UnityEngine.Object.FindObjectsByType<SpriteRenderer>(FindObjectsInactive.Exclude, FindObjectsSortMode.None))
+                        {
+                            if (!sr || !sr.isVisible || !sr.sprite || !sr.sprite.texture) continue;
+                            var t = sr.sprite.texture; if (!seen.Add(t)) continue;
+                            if (arg.Trim() == "copy") Graphics.CopyTexture(t, 0, 0, 0, 0, Math.Min(4, t.width), Math.Min(4, t.height), tiny, 0, 0, 0, 0);
+                            else Graphics.Blit(t, tiny);
+                            n++; px += (long)t.width * t.height;
+                        }
+                        RenderTexture.active = prev; RenderTexture.ReleaseTemporary(tiny);
+                        Log("[texwarm] " + arg.Trim() + " textures=" + n + " Mpx=" + (px / 1000000) + " ms=" + sw.Elapsed.TotalMilliseconds.ToString("F1"));
+                        return true;
+                    }
+                case "vrampoke":   // 진단: <MB> 만큼 2048x2048 RT 를 만들어 지우고(실제 할당) 바로 놓는다
+                    {
+                        int mb = int.Parse(arg.Trim()); var list = new List<RenderTexture>(); var sw = System.Diagnostics.Stopwatch.StartNew();
+                        var prev = RenderTexture.active;
+                        for (int done = 0; done < mb; done += 16)
+                        {
+                            var rt = new RenderTexture(2048, 2048, 0, RenderTextureFormat.ARGB32); rt.Create();
+                            RenderTexture.active = rt; GL.Clear(false, true, Color.clear); list.Add(rt);
+                        }
+                        RenderTexture.active = prev;
+                        foreach (var rt in list) { rt.Release(); UnityEngine.Object.Destroy(rt); }
+                        Log("[vrampoke] MB=" + mb + " rts=" + list.Count + " ms=" + sw.Elapsed.TotalMilliseconds.ToString("F1"));
+                        return true;
+                    }
+                case "mpbtex":   // 진단: 보이는 장식 스프라이트에 같은 텍스처를 MPB 로 지정(묶어 그리기 빠짐). on [all]|off
+                    {
+                        var q = arg.Trim().Split(' ');
+                        if (q[0] == "off")
+                        {
+                            int r0 = 0; foreach (var sr in mpbTexSet) if (sr) { sr.SetPropertyBlock(null); r0++; }
+                            mpbTexSet.Clear(); Log("[mpbtex] off restored=" + r0); return true;
+                        }
+                        bool all = q.Length > 1 && q[1] == "all"; int n = 0, skipped = 0; var mpb = new MaterialPropertyBlock();
+                        foreach (var sr in UnityEngine.Object.FindObjectsByType<SpriteRenderer>(FindObjectsInactive.Exclude, FindObjectsSortMode.None))
+                        {
+                            if (!sr || !sr.sprite || !sr.sprite.texture || (!all && !sr.isVisible) || !GpuCensus.IsDecoration(sr)) continue;
+                            if (sr.HasPropertyBlock())
+                            {
+                                if (q[0] != "add") { skipped++; continue; }
+                                sr.GetPropertyBlock(mpb);
+                                bool had = mpb.HasTexture("_MainTex"); var old = had ? mpb.GetTexture("_MainTex") : null;
+                                if (n < 40) Log("[mpbtex] item tex=" + sr.sprite.texture.name + " " + sr.sprite.texture.width + "x" + sr.sprite.texture.height
+                                    + " mpbHasMain=" + had + (had ? " mpbMain=" + (old ? old.name + " " + old.width + "x" + old.height + " same=" + (old == sr.sprite.texture) : "null") : "")
+                                    + " keys=" + (sr.sharedMaterial ? string.Join("+", sr.sharedMaterial.shaderKeywords) : "-"));
+                                mpb.SetTexture("_MainTex", sr.sprite.texture); sr.SetPropertyBlock(mpb); n++;
+                                continue;
+                            }
+                            mpb.Clear(); mpb.SetTexture("_MainTex", sr.sprite.texture); sr.SetPropertyBlock(mpb); mpbTexSet.Add(sr); n++;
+                        }
+                        Log("[mpbtex] on set=" + n + " skipped_has_mpb=" + skipped); return true;
+                    }
+                case "texswap":   // 진단: 보이는 장식 텍스처를 GPU 로 바이트 그대로 복사한 새 텍스처로 바꿔 끼움(on) / 원래로(off)
+                    {
+                        var mpb = new MaterialPropertyBlock();
+                        if (arg.Trim() == "free")
+                        {
+                            int d1 = 0; foreach (var c in texCopies.Values) if (c) { UnityEngine.Object.Destroy(c); d1++; }
+                            texCopies.Clear(); Log("[texswap] free destroyed=" + d1); return true;
+                        }
+                        if (arg.Trim() == "off" || arg.Trim() == "offkeep")
+                        {
+                            int r0 = 0;
+                            foreach (var kv in texSwapped) if (kv.Key) { kv.Key.GetPropertyBlock(mpb); mpb.SetTexture("_MainTex", kv.Value); kv.Key.SetPropertyBlock(mpb); r0++; }
+                            texSwapped.Clear();
+                            if (arg.Trim() == "offkeep") { Log("[texswap] offkeep restored=" + r0 + " copies_kept=" + texCopies.Count); return true; }
+                            int d0 = 0; foreach (var c in texCopies.Values) if (c) { UnityEngine.Object.Destroy(c); d0++; }
+                            texCopies.Clear(); Log("[texswap] off restored=" + r0 + " destroyed=" + d0); return true;
+                        }
+                        int n = 0, made = 0, bad = 0; long px = 0; var sw = System.Diagnostics.Stopwatch.StartNew();
+                        foreach (var sr in UnityEngine.Object.FindObjectsByType<SpriteRenderer>(FindObjectsInactive.Exclude, FindObjectsSortMode.None))
+                        {
+                            if (!sr || !sr.isVisible || !sr.sprite || !(sr.sprite.texture is Texture2D t) || !GpuCensus.IsDecoration(sr)) continue;
+                            if (!texCopies.TryGetValue(t, out var c))
+                            {
+                                try
+                                {
+                                    c = new Texture2D(t.width, t.height, t.graphicsFormat, t.mipmapCount, UnityEngine.Experimental.Rendering.TextureCreationFlags.None)
+                                    { filterMode = t.filterMode, wrapModeU = t.wrapModeU, wrapModeV = t.wrapModeV, anisoLevel = t.anisoLevel, mipMapBias = t.mipMapBias, name = t.name };
+                                    c.Apply(false, true);
+                                    Graphics.CopyTexture(t, c); made++; px += (long)t.width * t.height;
+                                }
+                                catch (Exception ex) { bad++; if (bad < 4) Log("[texswap] copy fail " + t.name + " " + t.graphicsFormat + " " + ex.Message); continue; }
+                                texCopies[t] = c;
+                            }
+                            texSwapped.Add(new KeyValuePair<SpriteRenderer, Texture>(sr, t));
+                            sr.GetPropertyBlock(mpb); mpb.SetTexture("_MainTex", c); sr.SetPropertyBlock(mpb); n++;
+                        }
+                        Log("[texswap] on renderers=" + n + " copies=" + made + " Mpx=" + (px / 1000000) + " fail=" + bad + " ms=" + sw.Elapsed.TotalMilliseconds.ToString("F1"));
+                        return true;
+                    }
+                case "texprio":   // 진단: DXGI 축출 우선순위. visible=MAX, 나머지 장식 텍스처=MIN (arg: on|normal)
+                    {
+                        bool normal = arg.Trim() == "normal";
+                        var vis = new HashSet<Texture>(); var all = new HashSet<Texture>();
+                        foreach (var sr in UnityEngine.Object.FindObjectsByType<SpriteRenderer>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+                        {
+                            if (!sr || !sr.sprite || !sr.sprite.texture || !GpuCensus.IsDecoration(sr)) continue;
+                            all.Add(sr.sprite.texture);
+                            if (sr.isVisible) vis.Add(sr.sprite.texture);
+                        }
+                        int hi = 0, lo = 0, fail = 0; var sw = System.Diagnostics.Stopwatch.StartNew(); string firstErr = null;
+                        foreach (var t in all)
+                        {
+                            uint pr = normal ? 0x78000000u : vis.Contains(t) ? 0xc8000000u : 0x28000000u;
+                            int hr = DxgiPriority.Set(t.GetNativeTexturePtr(), pr);
+                            if (hr != 0) { fail++; if (firstErr == null) firstErr = t.name + " hr=0x" + hr.ToString("X8"); }
+                            else if (pr == 0xc8000000u) hi++; else lo++;
+                        }
+                        Log("[texprio] " + (normal ? "normal" : "on") + " visibleMax=" + hi + " otherSet=" + lo + " fail=" + fail + " first=" + (firstErr ?? "-") + " ms=" + sw.Elapsed.TotalMilliseconds.ToString("F1"));
+                        return true;
+                    }
+                case "vramhold":   // 진단: <MB> 만큼 Texture2D(업로드)·RT(지우기) 를 만들어 들고 있기. vramhold <MB> [tex|rt] / vramhold free
+                    {
+                        var q = arg.Trim().Split(' ');
+                        if (q[0] == "free") { int d = 0; foreach (var o in vramHeld) if (o) { if (o is RenderTexture r1) r1.Release(); UnityEngine.Object.Destroy(o); d++; } vramHeld.Clear(); Log("[vramhold] free " + d); return true; }
+                        int mb = int.Parse(q[0]); bool tex = q.Length < 2 || q[1] == "tex"; var prev = RenderTexture.active; var sw = System.Diagnostics.Stopwatch.StartNew();
+                        for (int done = 0; done < mb; done += 16)
+                        {
+                            if (tex) { var t = new Texture2D(2048, 2048, TextureFormat.RGBA32, false); t.Apply(false, true); vramHeld.Add(t); }
+                            else { var rt = new RenderTexture(2048, 2048, 0, RenderTextureFormat.ARGB32); rt.Create(); RenderTexture.active = rt; GL.Clear(false, true, Color.clear); vramHeld.Add(rt); }
+                        }
+                        RenderTexture.active = prev;
+                        Log("[vramhold] " + (tex ? "tex" : "rt") + " MB=" + mb + " objects=" + vramHeld.Count + " ms=" + sw.Elapsed.TotalMilliseconds.ToString("F1"));
+                        return true;
+                    }
+                case "texcensus":   // 메모리에 있는 텍스처 종류별 개수·추정 크기, 이름별 상위
+                    {
+                        var all = Resources.FindObjectsOfTypeAll<Texture>();
+                        var byType = new Dictionary<string, long[]>(); var byName = new Dictionary<string, long[]>();
+                        foreach (var t in all)
+                        {
+                            if (!t) continue;
+                            long px = (long)t.width * t.height; string ty = t.GetType().Name;
+                            if (t is RenderTexture rt0) ty += rt0.useMipMap ? "(mip)" : "";
+                            if (!byType.TryGetValue(ty, out var a1)) byType[ty] = a1 = new long[2];
+                            a1[0]++; a1[1] += px;
+                            string nm = (t.name ?? "") + " " + t.width + "x" + t.height + " " + t.GetType().Name;
+                            if (!byName.TryGetValue(nm, out var a2)) byName[nm] = a2 = new long[2];
+                            a2[0]++; a2[1] += px;
+                        }
+                        Log("[texcensus] " + string.Join(" | ", byType.OrderByDescending(kv => kv.Value[1]).Select(kv => kv.Key + " n=" + kv.Value[0] + " Mpx=" + (kv.Value[1] / 1000000)))
+                            + " || top: " + string.Join(" | ", byName.OrderByDescending(kv => kv.Value[0]).Take(12).Select(kv => kv.Value[0] + "x " + kv.Key)));
+                        return true;
+                    }
+                case "decofx":   // 필터(CameraFilterPack)가 켜진 장식: UpdateShader 가 매 프레임 Blit+필터를 돈다
+                    {
+                        var byType = new Dictionary<string, int>(); int total = 0, visible = 0, meshOn = 0; long texels = 0;
+                        foreach (var vd in UnityEngine.Object.FindObjectsByType<scrVisualDecoration>(FindObjectsInactive.Exclude, FindObjectsSortMode.None))
+                        {
+                            if (!vd || vd.cfpCache == null) continue;
+                            var on = vd.cfpCache.Where(c => c && c.enabled).Select(c => c.GetType().Name.Replace("CameraFilterPack_", "")).ToArray();
+                            if (on.Length == 0) continue;
+                            total++;
+                            bool vis = vd.meshRenderer && vd.meshRenderer.enabled && vd.meshRenderer.gameObject.activeInHierarchy && vd.meshRenderer.isVisible;
+                            if (vd.meshRenderer && vd.meshRenderer.gameObject.activeInHierarchy) meshOn++;
+                            if (!vis) continue;
+                            visible++;
+                            var tex = vd.spriteRenderer && vd.spriteRenderer.sprite ? vd.spriteRenderer.sprite.texture : null;
+                            if (tex) texels += (long)tex.width * tex.height;
+                            string key = string.Join("+", on) + (tex ? " " + tex.width + "x" + tex.height : "");
+                            byType.TryGetValue(key, out int k); byType[key] = k + 1;
+                        }
+                        Log("[decofx] withFilters=" + total + " meshActive=" + meshOn + " visible=" + visible + " visibleTexels=" + texels + " | "
+                            + string.Join(" | ", byType.OrderByDescending(kv => kv.Value).Take(25).Select(kv => kv.Value + "x " + kv.Key)));
+                        return true;
+                    }
                 case "camfx":   // 켜진 카메라마다 OnRenderImage 를 가진 켜진 컴포넌트(화면 필터) 목록
                     {
                         var sb = new System.Text.StringBuilder();

@@ -273,6 +273,18 @@ namespace StutterFix
                     var sr = r as SpriteRenderer; string want = group.Substring(5);
                     pick = sr && sr.sprite && !r.forceRenderingOff && r.enabled && r.gameObject.activeInHierarchy && sr.sprite.name.IndexOf(want, StringComparison.OrdinalIgnoreCase) >= 0;
                 }
+                else if (group == "decomesh")
+                {
+                    // 필터가 켜진 장식의 MeshRenderer(UpdateShader 경로). 숨기면 isVisible=false 라 필터 Blit 도 멈춘다.
+                    var vd = r ? r.GetComponentInParent<scrVisualDecoration>() : null;
+                    pick = vd && r == vd.meshRenderer && r.enabled && r.gameObject.activeInHierarchy && !r.forceRenderingOff
+                        && vd.cfpCache != null && vd.cfpCache.Any(c => c && c.enabled);
+                }
+                else if (group.StartsWith("tex:", StringComparison.Ordinal))
+                {
+                    var sr = r as SpriteRenderer; string want = group.Substring(4);
+                    pick = sr && sr.sprite && sr.sprite.texture && !r.forceRenderingOff && r.enabled && r.gameObject.activeInHierarchy && sr.sprite.texture.name.IndexOf(want, StringComparison.OrdinalIgnoreCase) >= 0;
+                }
                 else if (group == "unowned-big") pick = r && GpuCensus.IsDecoration(r) && !r.forceRenderingOff && r.enabled && r.gameObject.activeInHierarchy && (r.bounds.size.x > 25f || r.bounds.size.y > 25f);
                 else pick = Select(group, r, 0);
                 if (!pick) continue;
@@ -300,7 +312,8 @@ namespace StutterFix
                         + " layer=" + r.sortingLayerName + " order=" + r.sortingOrder + " queue=" + (r.sharedMaterial ? r.sharedMaterial.renderQueue : 0));
                 }
             }
-            return "hidden=" + toggled.Count;
+            var mc = Camera.main;
+            return "hidden=" + toggled.Count + (mc ? " camOrtho=" + mc.orthographicSize.ToString("F2") + " camRot=" + mc.transform.eulerAngles.z.ToString("F1") : "");
         }
         static bool Select(string group, Renderer r, int decorationIndex)
         {
