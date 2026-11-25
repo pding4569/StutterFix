@@ -278,12 +278,23 @@ namespace StutterFix
                 if (!pick) continue;
                 toggled.Add(new Saved { Renderer = r, Off = r.forceRenderingOff }); r.forceRenderingOff = true;
             }
-            if (group.StartsWith("unowned", StringComparison.Ordinal))
+            if (group.StartsWith("unowned", StringComparison.Ordinal) || group == "tile2d" || group == "tile1d")
             {
                 foreach (var t in toggled.Take(60))
                 {
                     var r = t.Renderer; if (!r) continue;
                     var d = r.GetComponentInParent<scrDecoration>();
+                    if (group.StartsWith("tile", StringComparison.Ordinal))
+                    {
+                        var vd2 = d as scrVisualDecoration; var sr2 = r as SpriteRenderer; var tx = sr2 && sr2.sprite ? sr2.sprite.texture : null;
+                        var mm = r.sharedMaterial;
+                        Lg.I("[hidegroup] tileitem tex=" + (tx ? tx.name + " " + tx.width + "x" + tx.height + " fmt=" + tx.format + " wrap=" + tx.wrapMode + " filt=" + tx.filterMode : "-")
+                            + " repeat=" + (vd2 ? vd2.repeatX + "x" + vd2.repeatY : "-") + " srColorA=" + (sr2 ? sr2.color.a.ToString("F3") : "-")
+                            + " matColorA=" + (mm && mm.HasProperty("_Color") ? mm.color.a.ToString("F3") : "-") + " visible=" + r.isVisible
+                            + " bounds=" + r.bounds.size.x.ToString("F0") + "x" + r.bounds.size.y.ToString("F0") + " kw=" + (mm ? string.Join("+", mm.shaderKeywords) : "-")
+                            + " order=" + r.sortingLayerName + "/" + r.sortingOrder + " verts=" + (sr2 && sr2.sprite ? sr2.sprite.vertices.Length : 0));
+                        continue;
+                    }
                     Lg.I("[hidegroup] item name=" + r.name + " type=" + r.GetType().Name + " deco=" + (d ? d.GetType().Name + "#" + d.GetInstanceID() : "-")
                         + " bounds=" + r.bounds.size.x.ToString("F1") + "x" + r.bounds.size.y.ToString("F1") + " shader=" + (r.sharedMaterial && r.sharedMaterial.shader ? r.sharedMaterial.shader.name : "-")
                         + " layer=" + r.sortingLayerName + " order=" + r.sortingOrder + " queue=" + (r.sharedMaterial ? r.sharedMaterial.renderQueue : 0));
