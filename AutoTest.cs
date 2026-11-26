@@ -49,6 +49,7 @@ namespace StutterFix
         internal static volatile string Phase = "";
         private static void StartMemWatch()
         {
+            if (!Platform.IsWindows) return;
             int gen = ++memWatchGen;
             var t = new System.Threading.Thread(() =>
             {
@@ -255,7 +256,7 @@ namespace StutterFix
                         if (pickDone == 0) { pickMs.Clear(); pickHits = 0; }
                         var fp = lfp[(int)((long)pickDone * 7919 % lfp.Count)];
                         var q = fp.transform.position; cam.transform.position = new Vector3(q.x, q.y, -10f);
-                        SetCursorPos(Screen.width / 2, Screen.height / 2);
+                        if (Platform.IsWindows) SetCursorPos(Screen.width / 2, Screen.height / 2);
                         long t0 = System.Diagnostics.Stopwatch.GetTimestamp();
                         var r = pickMethod.Invoke(ed, null) as GameObject[];
                         pickMs.Add((float)((System.Diagnostics.Stopwatch.GetTimestamp() - t0) * 1000.0 / System.Diagnostics.Stopwatch.Frequency));
@@ -672,6 +673,7 @@ namespace StutterFix
                     return true;
                 case "alttab":
                     {
+                        if (!Platform.IsWindows) { Log("Alt+Tab 건너뜀 (Windows 전용)"); return true; }
                         // 옆 스레드가 <지연>초 뒤 Alt+Tab 으로 다른 창으로 갔다가 <머묾>초 뒤 Alt+Tab 으로 돌아온다(사람이 창을 오가는 것 흉내).
                         // 바로 다음 play 의 멈춤 동안 하려고. 글자 입력은 없다.
                         var parts = arg.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
@@ -787,6 +789,7 @@ namespace StutterFix
                     }
                 case "jiggle":
                     {
+                        if (!Platform.IsWindows) { Log("마우스 움직이기 건너뜀 (Windows 전용)"); return true; }
                         // 옆 스레드가 N초 동안 50ms 마다 마우스 커서를 몇 픽셀씩 움직인다(클릭 없음). 바로 다음 play 의 멈춤 동안
                         // 사람이 마우스를 건드린 것처럼 입력이 쌓이게 하려고. 끝나면 커서를 제자리로.
                         float sec; float.TryParse(arg, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out sec);
@@ -1640,6 +1643,7 @@ namespace StutterFix
         [System.Runtime.InteropServices.DllImport("user32.dll")] private static extern void keybd_event(byte vk, byte scan, uint flags, UIntPtr extra);
         private static void AltTab()
         {
+            if (!Platform.IsWindows) return;
             const byte VK_MENU = 0x12, VK_TAB = 0x09; const uint KEYUP = 2;
             keybd_event(VK_MENU, 0, 0, UIntPtr.Zero); System.Threading.Thread.Sleep(30);
             keybd_event(VK_TAB, 0, 0, UIntPtr.Zero); System.Threading.Thread.Sleep(30);

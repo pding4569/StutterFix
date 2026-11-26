@@ -21,9 +21,10 @@ namespace StutterFix
         [ThreadStatic] private static long dspTick;
         [ThreadStatic] private static long baseDspTick;
         internal static long Corrected,Skipped,AlreadyAsync;internal static double LastDelayMs;
-        internal static string Status=>!Enabled?"off":AsyncInputManager.isActive?"game-already-timestamped; correction=0":clock==null?"waiting":clock.Status;
+        internal static string Status=>!Enabled?"off":!Platform.IsWindows?"unsupported-os":AsyncInputManager.isActive?"game-already-timestamped; correction=0":clock==null?"waiting":clock.Status;
         public void Install(Harmony h)
         {
+            if(!Platform.IsWindows)return;
             keysField=typeof(RDInputType.MainStateCount).GetField("keys",AccessTools.all);
             oldClock=typeof(GCS).GetField("d_oldConductor",AccessTools.all);webClock=typeof(GCS).GetField("d_webglConductor",AccessTools.all);
             var poll=AccessTools.DeclaredMethod(typeof(RDInputType_Keyboard),"GetStateCountIgnoreActive",new[]{typeof(ButtonState)});
@@ -43,7 +44,7 @@ namespace StutterFix
         }
         internal static void Tick()
         {
-            if(!Enabled)return;
+            if(!Platform.IsWindows||!Enabled)return;
             try
             {
                 if(AsyncInputManager.isActive||!Hitch.Playing||!Application.isFocused||SettingsWindow.Open||Hotkey.Capturing)
@@ -146,7 +147,7 @@ namespace StutterFix
         }
 #endif
         private static void FocusChanged(bool focused){if(clock!=null)clock.Clear();sampleFrame=-1;usedFrame=-1;}
-        public void Uninstall(){Enabled=false;Application.focusChanged-=FocusChanged;if(clock!=null){clock.Dispose();clock=null;}sampleFrame=-1;correcting=false;}
+        public void Uninstall(){Enabled=false;if(!Platform.IsWindows)return;Application.focusChanged-=FocusChanged;if(clock!=null){clock.Dispose();clock=null;}sampleFrame=-1;correcting=false;}
     }
 
     // 게임 버전에 따라 AsyncInputManager.targetSongTick 이 long(3.4 알파)이거나 ulong(일반 버전)이다. 둘 다 컴파일·동작하게 한다.

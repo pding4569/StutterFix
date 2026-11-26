@@ -32,6 +32,7 @@ namespace StutterFix
         internal volatile bool Ready;internal string Status="off";internal long Received,Rejected;
         internal void Start()
         {
+            if(!Platform.IsWindows){Status="unsupported-os";return;}
             if(thread!=null)return;
             thread=new Thread(Run){IsBackground=true,Name="StutterFix RawInput clock"};thread.Start();
         }
@@ -111,7 +112,9 @@ namespace StutterFix
         internal void Clear(){keys.Clear();}
         public void Dispose()
         {
-            stopping=true;Ready=false;uint id=threadId;if(id!=0)try{PostThreadMessageW(id,0x12,UIntPtr.Zero,IntPtr.Zero);}catch{}
+            stopping=true;Ready=false;
+            if(!Platform.IsWindows)return;
+            uint id=threadId;if(id!=0)try{PostThreadMessageW(id,0x12,UIntPtr.Zero,IntPtr.Zero);}catch{}
             if(thread!=null&&thread!=Thread.CurrentThread)thread.Join(250);
             // Thread owns all native cleanup even if GetMessage has not returned yet.
         }

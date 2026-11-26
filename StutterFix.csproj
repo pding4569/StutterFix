@@ -29,6 +29,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="Platform.cs" />
     <Compile Include="StutterFix.cs" />
     <Compile Include="Lg.cs" />
     <Compile Include="HitchHistogram.cs" />
@@ -235,45 +236,52 @@
     <Compile Include="SceneReset.cs" />
     <Compile Include="TransitionFix.cs" />
     <!-- libdeflate 1.24 (MIT, native/libdeflate-LICENSE.txt): 압축 풀기만 넣어 MSVC x64 로 빌드한 것. 이미지 불러오기에서 zlib 대신 쓴다 -->
-    <EmbeddedResource Include="native/libdeflate.dll" LogicalName="StutterFix.libdeflate.dll" />
+    <EmbeddedResource Include="native/libdeflate.dll" LogicalName="StutterFix.libdeflate.dll" Condition="Exists('native/libdeflate.dll')" />
     <!-- 이 모드의 C 코드(native/sfnative/sfnative.c): PNG 필터 되돌리기, DXT 압축. native/build-sfnative.bat 로 빌드 -->
-    <EmbeddedResource Include="native/sfnative.dll" LogicalName="StutterFix.sfnative.dll" />
+    <EmbeddedResource Include="native/sfnative.dll" LogicalName="StutterFix.sfnative.dll" Condition="Exists('native/sfnative.dll')" />
     <!-- libjpeg-turbo 3.2.0 (BSD 계열, native/libjpeg-turbo-LICENSE.md): JPG 장식 이미지 풀기. native/build-turbojpeg.bat 로 빌드 -->
-    <EmbeddedResource Include="native/turbojpeg.dll" LogicalName="StutterFix.turbojpeg.dll" />
+    <EmbeddedResource Include="native/turbojpeg.dll" LogicalName="StutterFix.turbojpeg.dll" Condition="Exists('native/turbojpeg.dll')" />
+    <!-- Linux native shared libraries (optional, embedded when built/present) -->
+    <EmbeddedResource Include="native/libsfnative.so" LogicalName="StutterFix.libsfnative.so" Condition="Exists('native/libsfnative.so')" />
+    <EmbeddedResource Include="native/libdeflate.so" LogicalName="StutterFix.libdeflate.so" Condition="Exists('native/libdeflate.so')" />
+    <EmbeddedResource Include="native/libturbojpeg.so" LogicalName="StutterFix.libturbojpeg.so" Condition="Exists('native/libturbojpeg.so')" />
   </ItemGroup>
 
   <PropertyGroup>
-    <GameManaged>D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\A Dance of Fire and Ice_Data\Managed</GameManaged>
+    <GameManaged Condition="'$(GameManaged)' == '' And '$(OS)' == 'Windows_NT'">D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\A Dance of Fire and Ice_Data\Managed</GameManaged>
+    <GameManaged Condition="'$(GameManaged)' == '' And '$(OS)' != 'Windows_NT'">$(HOME)/.local/share/Steam/steamapps/common/A Dance of Fire and Ice/ADanceOfFireAndIce_Data/Managed</GameManaged>
+    <UmmDir Condition="'$(UmmDir)' == '' And Exists('$(GameManaged)/../../UnityModManager/UnityModManager.dll')">$(GameManaged)/../../UnityModManager</UmmDir>
+    <UmmDir Condition="'$(UmmDir)' == ''">$(GameManaged)/UnityModManager</UmmDir>
   </PropertyGroup>
 
   <ItemGroup>
     <Reference Include="UnityEngine">
-      <HintPath>$(GameManaged)\UnityEngine.dll</HintPath>
+      <HintPath>$(GameManaged)/UnityEngine.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine.CoreModule">
-      <HintPath>$(GameManaged)\UnityEngine.CoreModule.dll</HintPath>
+      <HintPath>$(GameManaged)/UnityEngine.CoreModule.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine.UnityWebRequestModule">
-      <HintPath>$(GameManaged)\UnityEngine.UnityWebRequestModule.dll</HintPath>
+      <HintPath>$(GameManaged)/UnityEngine.UnityWebRequestModule.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine.AssetBundleModule">
-      <HintPath>$(GameManaged)\UnityEngine.AssetBundleModule.dll</HintPath>
+      <HintPath>$(GameManaged)/UnityEngine.AssetBundleModule.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine.IMGUIModule">
-      <HintPath>$(GameManaged)\UnityEngine.IMGUIModule.dll</HintPath>
+      <HintPath>$(GameManaged)/UnityEngine.IMGUIModule.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine.CoreModule2" Condition="false" />
     <Reference Include="UnityEngine.InputLegacyModule">
-      <HintPath>$(GameManaged)\UnityEngine.InputLegacyModule.dll</HintPath>
+      <HintPath>$(GameManaged)/UnityEngine.InputLegacyModule.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine.ParticleSystemModule">
-      <HintPath>$(GameManaged)\UnityEngine.ParticleSystemModule.dll</HintPath>
+      <HintPath>$(GameManaged)/UnityEngine.ParticleSystemModule.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="SkyHook.Unity">
@@ -302,9 +310,11 @@
     </Reference>
     <Reference Include="UnityEngine.AudioModule">
       <HintPath>$(GameManaged)/UnityEngine.AudioModule.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine.ScreenCaptureModule">
       <HintPath>$(GameManaged)/UnityEngine.ScreenCaptureModule.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine.ImageConversionModule">
       <HintPath>$(GameManaged)/UnityEngine.ImageConversionModule.dll</HintPath>
@@ -315,7 +325,7 @@
       <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine.AnimationModule">
-      <HintPath>$(GameManaged)\UnityEngine.AnimationModule.dll</HintPath>
+      <HintPath>$(GameManaged)/UnityEngine.AnimationModule.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="RDTools">
@@ -327,20 +337,21 @@
       <Private>false</Private>
     </Reference>
     <Reference Include="DOTween">
-      <HintPath>$(GameManaged)\DOTween.dll</HintPath>
+      <HintPath>$(GameManaged)/DOTween.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="UnityModManager">
-      <HintPath>$(GameManaged)\UnityModManager\UnityModManager.dll</HintPath>
+      <HintPath>$(UmmDir)/UnityModManager.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="0Harmony">
-      <HintPath>$(GameManaged)\UnityModManager\0Harmony.dll</HintPath>
+      <HintPath>$(UmmDir)/0Harmony.dll</HintPath>
       <Private>false</Private>
     </Reference>
   </ItemGroup>
 
   <Target Name="CheckUiEncoding" AfterTargets="Build">
-    <Exec Command="py -3 &quot;$(MSBuildProjectDirectory)/tools/check-ui-encoding.py&quot;" WorkingDirectory="$(MSBuildProjectDirectory)" IgnoreExitCode="true" />
+    <Exec Command="py -3 &quot;$(MSBuildProjectDirectory)/tools/check-ui-encoding.py&quot;" WorkingDirectory="$(MSBuildProjectDirectory)" IgnoreExitCode="true" Condition="'$(OS)' == 'Windows_NT'" />
+    <Exec Command="python3 &quot;$(MSBuildProjectDirectory)/tools/check-ui-encoding.py&quot;" WorkingDirectory="$(MSBuildProjectDirectory)" IgnoreExitCode="true" Condition="'$(OS)' != 'Windows_NT'" />
   </Target>
 </Project>

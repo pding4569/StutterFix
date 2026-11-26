@@ -15,8 +15,16 @@ namespace StutterFix
             Store=null;if(!enabled)return;
             try
             {
-                if(Codec.Length==0)using(var sha=SHA256.Create())using(var stream=typeof(AssetDiskCache).Assembly.GetManifestResourceStream("StutterFix.sfnative.dll"))
-                    Codec=BitConverter.ToString(sha.ComputeHash(stream)).Replace("-","");
+                if(Codec.Length==0)
+                {
+                    string res=Platform.IsLinux?"StutterFix.libsfnative.so":"StutterFix.sfnative.dll";
+                    using(var sha=SHA256.Create())
+                    using(var stream=typeof(AssetDiskCache).Assembly.GetManifestResourceStream(res))
+                    {
+                        byte[] hash=stream!=null?sha.ComputeHash(stream):sha.ComputeHash(System.Text.Encoding.UTF8.GetBytes(res+":"+typeof(AssetDiskCache).Assembly.GetName().Version));
+                        Codec=BitConverter.ToString(hash).Replace("-","");
+                    }
+                }
                 // 기본 위치는 내장 드라이브(LocalApplicationData). 모드 폴더는 USB SSD(D:)일 수 있어 읽기·쓰기가 느리다.
                 if(string.IsNullOrWhiteSpace(directory))directory=Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),"StutterFix","asset-cache");
                 long quota=Math.Max(64,Math.Min(4096,megabytes))*1048576L;

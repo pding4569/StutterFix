@@ -20,6 +20,7 @@ namespace StutterFix
         internal static bool NtTimerOwned=>ntOwned;
         private static void ApplyNtTimer()
         {
+            if(!Platform.IsWindows)return;
             if(HalfMsTimer==ntOwned)return;
             try
             {
@@ -33,6 +34,7 @@ namespace StutterFix
         internal static bool TimerOwnedForFixture=>timer.Owned;
 #endif
         private static ProcessPriorityClass priorityBefore = ProcessPriorityClass.Normal;
+        private static bool priorityWarned;
 
         // ── 1. 게임 우선순위 ──
         // 백그라운드 프로그램(브라우저, 방송 프로그램, 업데이트)이 CPU 를 가져갈 때 게임이 먼저 돌게 한다.
@@ -40,6 +42,7 @@ namespace StutterFix
         private static void ApplyPriority()
         {
             if (Priority == priorityOn) return;
+            if (!Platform.IsWindows && Priority && priorityWarned) return;
             try
             {
                 // 끌 때는 "보통" 이 아니라 켜기 전 값으로 되돌린다 (Quartz 의 '프로세스 우선순위 높이기' 같은 다른 모드 설정을 덮지 않게)
@@ -49,7 +52,7 @@ namespace StutterFix
                 priorityOn = Priority;
                 Lg.I("[저사양] 게임 우선순위 " + (Priority ? "높음" : "원래대로 (" + priorityBefore + ")"));
             }
-            catch (Exception ex) { Lg.I("[저사양] 우선순위 바꾸기 실패: " + ex.Message); }
+            catch (Exception ex) { if (!Platform.IsWindows) priorityWarned = true; Lg.I("[저사양] 우선순위 바꾸기 실패: " + ex.Message); }
         }
 
         // ── 2. 윈도우 절전 제한 끄기 + 타이머 1ms ──
@@ -62,13 +65,14 @@ namespace StutterFix
         [DllImport("kernel32.dll")] private static extern IntPtr GetCurrentProcess();
         [DllImport("winmm.dll")] private static extern uint timeBeginPeriod(uint ms);
         [DllImport("winmm.dll")] private static extern uint timeEndPeriod(uint ms);
-        private static uint BeginTimerPeriod(uint ms)=>timeBeginPeriod(ms);
-        private static uint EndTimerPeriod(uint ms)=>timeEndPeriod(ms);
+        private static uint BeginTimerPeriod(uint ms)=>Platform.IsWindows?timeBeginPeriod(ms):0u;
+        private static uint EndTimerPeriod(uint ms)=>Platform.IsWindows?timeEndPeriod(ms):0u;
         private const int ProcessPowerThrottlingClass = 4;   // PROCESS_INFORMATION_CLASS.ProcessPowerThrottling
         private const uint ExecutionSpeed = 1;               // PROCESS_POWER_THROTTLING_EXECUTION_SPEED
 
         private static void ApplyThrottle()
         {
+            if (!Platform.IsWindows) return;
             ApplyNtTimer();
             if (NoThrottle == throttleOn && timerOn == NoThrottle) return;
             // Timer release must still run if the independent power API fails.

@@ -33,6 +33,7 @@ namespace StutterFix
 #if DEV || AUTOTEST
 if (Edition.Dev && AutoTest.Active) AutoTest.Sample(playing, ms, wait);
 #endif
+            if (!Platform.IsWindows) return;
 
             if (playing != wasPlaying)
             {
@@ -264,6 +265,7 @@ if (Edition.Dev && AutoTest.Active) AutoTest.Sample(playing, ms, wait);
 
         private static string Snapshot()
         {
+            if (!Platform.IsWindows) return "Windows 전용";
             var sb = new StringBuilder();
             IntPtr game = FindGameWindow();
             if (game == IntPtr.Zero) return "게임 창 못 찾음 | " + OtherGpu();
@@ -297,6 +299,7 @@ if (Edition.Dev && AutoTest.Active) AutoTest.Sample(playing, ms, wait);
         private static float overlayCheckedAt = -10f; private static string overlayCached;
         internal static string OverlayNamesCached()
         {
+            if (!Platform.IsWindows) return null;
             float now = UnityEngine.Time.realtimeSinceStartup;
             if (now - overlayCheckedAt < 3f) return overlayCached;
             overlayCheckedAt = now; overlayCached = null;
@@ -323,6 +326,7 @@ if (Edition.Dev && AutoTest.Active) AutoTest.Sample(playing, ms, wait);
 
         internal static IntPtr FindGameWindow()
         {
+            if (!Platform.IsWindows) return IntPtr.Zero;
             uint self = (uint)System.Diagnostics.Process.GetCurrentProcess().Id;
             IntPtr found = IntPtr.Zero;
             var cls = new StringBuilder(64);
@@ -357,6 +361,7 @@ if (Edition.Dev && AutoTest.Active) AutoTest.Sample(playing, ms, wait);
         // 권한이 모자라 Process 로 이름을 못 읽는 프로세스(dwm 등)는 제한된 조회로 실행 파일 이름만 읽는다
         private static string ImageName(uint pid)
         {
+            if (!Platform.IsWindows) return null;
             IntPtr hp = IntPtr.Zero;
             try
             {
@@ -385,6 +390,7 @@ if (Edition.Dev && AutoTest.Active) AutoTest.Sample(playing, ms, wait);
 
         private static bool Cloaked(IntPtr w)
         {
+            if (!Platform.IsWindows) return false;
             try { int c; return DwmGetWindowAttribute(w, DWMWA_CLOAKED, out c, 4) == 0 && c != 0; } catch { return false; }
         }
 
@@ -393,6 +399,7 @@ if (Edition.Dev && AutoTest.Active) AutoTest.Sample(playing, ms, wait);
         // StarDesk 를 끄자 화면 대기 1.7ms 판(186 FPS)이 사라지고 6판 모두 0ms, 280~293 FPS 가 됐다(2026-09-26).
         private static string OtherGpu()
         {
+            if (!Platform.IsWindows) return "GPU 사용 프로그램: Windows 전용";
             var pdh = new SystemMonitor.Pdh();
             try
             {

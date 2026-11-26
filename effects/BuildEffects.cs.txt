@@ -5,7 +5,7 @@ public static class BuildEffects {
  public static void Build() {
    string output=Path.GetFullPath("EffectsOutput");Directory.CreateDirectory(output);
    PlayerSettings.SetUseDefaultGraphicsAPIs(BuildTarget.StandaloneWindows64,false);
-   PlayerSettings.SetGraphicsAPIs(BuildTarget.StandaloneWindows64,new[]{UnityEngine.Rendering.GraphicsDeviceType.Direct3D11});
+   PlayerSettings.SetGraphicsAPIs(BuildTarget.StandaloneWindows64,new[]{UnityEngine.Rendering.GraphicsDeviceType.Direct3D11,UnityEngine.Rendering.GraphicsDeviceType.Vulkan,UnityEngine.Rendering.GraphicsDeviceType.OpenGLCore});
    AssetDatabase.ImportAsset("Assets/Effects/ScreenEffects.shader",ImportAssetOptions.ForceSynchronousImport|ImportAssetOptions.ForceUpdate);
    var shader=AssetDatabase.LoadAssetAtPath<Shader>("Assets/Effects/ScreenEffects.shader");
    if(shader!=null)foreach(var message in ShaderUtil.GetShaderMessages(shader))Debug.LogError(message.message+" line="+message.line);

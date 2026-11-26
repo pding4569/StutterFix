@@ -23,6 +23,7 @@ namespace StutterFix
         internal string LastAfterForFixture="";
         internal string SnapshotForFixture()
         {
+            if(!Platform.IsWindows)return "unsupported-os";
             if(!Owned)return "closed";
             Affinity a;return "tid="+GetThreadId(handle)+" priority="+GetThreadPriority(handle)+" mask="+(GetThreadGroupAffinity(handle,out a)?a.Mask.ToUInt64().ToString("X"):"unknown");
         }
@@ -31,7 +32,7 @@ namespace StutterFix
         {if(ownedHandle==IntPtr.Zero)throw new ArgumentException("Owned thread handle required");handle=ownedHandle;}
         internal bool Apply(bool priority,ulong mask)
         {
-            if(!Owned||priorityOwned||ownMask!=0)return false;
+            if(!Platform.IsWindows||!Owned||priorityOwned||ownMask!=0)return false;
             try
             {
                 if(WaitForSingleObject(handle,0)!=258)return false;
@@ -56,6 +57,7 @@ namespace StutterFix
         internal bool Restore()
         {
             if(!Owned)return true;
+            if(!Platform.IsWindows){handle=IntPtr.Zero;priorityOwned=false;ownMask=beforeMask=0;return true;}
             try
             {
                 uint state=WaitForSingleObject(handle,0);

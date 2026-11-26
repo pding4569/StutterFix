@@ -74,23 +74,41 @@ namespace StutterFix
         // 내용이 같으면 쓰지 않는다. 어떤 이유로든 못 불러오면 원래 zlib(DeflateStream) 길로 푼다.
         private static void LoadNative()
         {
-            string p = Extract("libdeflate.dll");
-            if (p == null) NativeInflate.Status = "모드 안에 DLL 없음"; else NativeInflate.Init(p);
-            Lg.I("[이미지] 빠른 압축 풀기(libdeflate): " + NativeInflate.Status);
-            p = Extract("sfnative.dll");
-            if (p == null) SfNative.Status = "모드 안에 DLL 없음"; else SfNative.Init(p);
-            Lg.I("[이미지] 네이티브 필터 되돌리기·DXT 압축(sfnative): " + SfNative.Status);
-            p = Extract("turbojpeg.dll");
-            if (p == null) TurboJpeg.Status = "모드 안에 DLL 없음"; else TurboJpeg.Init(p);
-            Lg.I("[이미지] JPG 풀기(libjpeg-turbo): " + TurboJpeg.Status);
+            if (Platform.IsWindows)
+            {
+                string p = Extract("libdeflate.dll");
+                if (p == null) NativeInflate.Status = "모드 안에 DLL 없음"; else NativeInflate.Init(p);
+                Lg.I("[이미지] 빠른 압축 풀기(libdeflate): " + NativeInflate.Status);
+                p = Extract("sfnative.dll");
+                if (p == null) SfNative.Status = "모드 안에 DLL 없음"; else SfNative.Init(p);
+                Lg.I("[이미지] 네이티브 필터 되돌리기·DXT 압축(sfnative): " + SfNative.Status);
+                p = Extract("turbojpeg.dll");
+                if (p == null) TurboJpeg.Status = "모드 안에 DLL 없음"; else TurboJpeg.Init(p);
+                Lg.I("[이미지] JPG 풀기(libjpeg-turbo): " + TurboJpeg.Status);
+                return;
+            }
+            if (Platform.IsLinux)
+            {
+                NativeInflate.Init(Extract("libdeflate.so"));
+                Lg.I("[이미지] 빠른 압축 풀기(libdeflate): " + NativeInflate.Status);
+                SfNative.Init(Extract("libsfnative.so"));
+                Lg.I("[이미지] 네이티브 필터 되돌리기·DXT 압축(sfnative): " + SfNative.Status);
+                TurboJpeg.Init(Extract("libturbojpeg.so"));
+                Lg.I("[이미지] JPG 풀기(libjpeg-turbo): " + TurboJpeg.Status);
+            }
         }
 
         // 이미지 미리 풀기를 꺼도 첫 판 FPS 떨어짐 막기(WindowGhost)가 sfnative 를 쓴다
         internal static void LoadSfNativeOnly()
         {
             if (SfNative.Ready) return;
-            string p = Extract("sfnative.dll");
-            if (p == null) SfNative.Status = "모드 안에 DLL 없음"; else SfNative.Init(p);
+            if (Platform.IsWindows)
+            {
+                string p = Extract("sfnative.dll");
+                if (p == null) SfNative.Status = "모드 안에 DLL 없음"; else SfNative.Init(p);
+                return;
+            }
+            if (Platform.IsLinux) SfNative.Init(Extract("libsfnative.so"));
         }
 
         // 모드 DLL 안에 넣어 둔 네이티브 DLL 을 모드 폴더에 꺼내 두고 그 경로를 돌려준다(없으면 null). 이미 같은 파일이면 쓰지 않는다.

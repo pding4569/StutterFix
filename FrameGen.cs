@@ -23,22 +23,23 @@ namespace StutterFix
         [DllImport("sfnative",CallingConvention=CallingConvention.Cdecl)] private static extern ulong sf_framegen_generated();
         [DllImport("sfnative",CallingConvention=CallingConvention.Cdecl)] private static extern ulong sf_framegen_shown();
         [DllImport("sfnative",CallingConvention=CallingConvention.Cdecl)] private static extern ulong sf_framegen_stat(int which);
+        private static bool NativeReady => Platform.IsWindows && SfNative.FrameGenReady;
         // 명시적 상태 명령에서만: 생성 기회를 원본 프레임이 잠가서 놓친 수 / 잠금 없이 놓친 수 / 출력 / 원본 시작 / 작업 스레드 대기(ms)
-        internal static string Scheduler() { try { if(!SfNative.FrameGenReady) return ""; return " missed_lock="+sf_framegen_stat(0)+" missed_timer="+sf_framegen_stat(1)+" outputs="+sf_framegen_stat(2)+" frame_begins="+sf_framegen_stat(3)+" worker_wait_ms="+sf_framegen_stat(4)/1000+" stalled="+sf_framegen_stat(5)+" early_sources="+sf_framegen_stat(6)+" sources_n="+sf_framegen_stat(7)+" interval_us_sum="+sf_framegen_stat(8)+" shown="+sf_framegen_stat(9)+" real_gpu_us="+sf_framegen_stat(10)+"/"+sf_framegen_stat(11)+" held="+sf_framegen_stat(12)+"/"+sf_framegen_stat(13)+"/"+sf_framegen_stat(14)+(RuntimeInitialized?" hints="+FrameGenRuntime.HintsSent+"/"+FrameGenRuntime.HintFrames:""); } catch(EntryPointNotFoundException) { return " scheduler=n/a"; } }
-        internal static string Describe() => "active="+active+" native_installed="+(SfNative.FrameGenReady?sf_framegen_installed():0)+
-            " sources="+(SfNative.FrameGenReady?sf_framegen_sources():0)+" generated="+(SfNative.FrameGenReady?sf_framegen_generated():0)+" runtime_initialized="+RuntimeInitialized+" status="+Status+Scheduler();
-        internal static int NativeOutputStatus => SfNative.FrameGenReady?sf_framegen_status():0;
+        internal static string Scheduler() { try { if(!NativeReady) return ""; return " missed_lock="+sf_framegen_stat(0)+" missed_timer="+sf_framegen_stat(1)+" outputs="+sf_framegen_stat(2)+" frame_begins="+sf_framegen_stat(3)+" worker_wait_ms="+sf_framegen_stat(4)/1000+" stalled="+sf_framegen_stat(5)+" early_sources="+sf_framegen_stat(6)+" sources_n="+sf_framegen_stat(7)+" interval_us_sum="+sf_framegen_stat(8)+" shown="+sf_framegen_stat(9)+" real_gpu_us="+sf_framegen_stat(10)+"/"+sf_framegen_stat(11)+" held="+sf_framegen_stat(12)+"/"+sf_framegen_stat(13)+"/"+sf_framegen_stat(14)+(RuntimeInitialized?" hints="+FrameGenRuntime.HintsSent+"/"+FrameGenRuntime.HintFrames:""); } catch(EntryPointNotFoundException) { return " scheduler=n/a"; } }
+        internal static string Describe() => "active="+active+" native_installed="+(NativeReady?sf_framegen_installed():0)+
+            " sources="+(NativeReady?sf_framegen_sources():0)+" generated="+(NativeReady?sf_framegen_generated():0)+" runtime_initialized="+RuntimeInitialized+" status="+Status+Scheduler();
+        internal static int NativeOutputStatus => NativeReady?sf_framegen_status():0;
         // Explicit state commands only; no extra per-frame instrumentation.
         internal static string DescribeStorage() => "refresh="+Main.Config.FrameGenRefresh+" "+(RuntimeInitialized?FrameGenRuntime.DescribeStorage():"deadline=False resting=False");
 #if DEV || AUTOTEST
-        internal static string DescribeConstantRing() => "requested="+Main.Config.FrameGenConstantRing+" supported="+(SfNative.FrameGenReady?sf_framegen_stat(17):0)+" writes="+(SfNative.FrameGenReady?sf_framegen_stat(15):0)+" fallbacks="+(SfNative.FrameGenReady?sf_framegen_stat(16):0);
+        internal static string DescribeConstantRing() => "requested="+Main.Config.FrameGenConstantRing+" supported="+(NativeReady?sf_framegen_stat(17):0)+" writes="+(NativeReady?sf_framegen_stat(15):0)+" fallbacks="+(NativeReady?sf_framegen_stat(16):0);
 #endif
         // Read existing atomic counters only when the monitor refreshes its text.
         // Never install an observation hook to count the default-OFF path.
         internal static bool TryOutputCount(out ulong count)
         {
             count=0;
-            if(!active || !Hitch.Playing || !SfNative.FrameGenReady) return false;
+            if(!active || !Hitch.Playing || !NativeReady) return false;
             // Pictures that reach the screen: one per refresh at most, not every Present (a second one for the same
             // refresh is replaced before it is shown, so counting it showed 240 FPS on a 165 Hz screen).
             count=sf_framegen_shown();
@@ -46,6 +47,7 @@ namespace StutterFix
         }
         internal static void Tick()
         {
+            if(!Platform.IsWindows) return;
             if(RuntimeInitialized && !FrameGenRuntime.TryCompleteUninstall()) return;
             if(quitting || displayChanging) return;
             bool requested=Main.Config.FrameGenOutside>=2 && Main.Config.FrameGenOutside<=8;
@@ -69,7 +71,7 @@ namespace StutterFix
         internal static void Shutdown()
         {
             research=false;
-            if(!active) return;
+            if(!Platform.IsWindows || !active) return;
             active=false;
             FrameGenRuntime.Uninstall();
         }
@@ -77,8 +79,8 @@ namespace StutterFix
         internal static bool DisplayChangeReady => !RuntimeInitialized || FrameGenRuntime.TryCompleteUninstall();
         internal static void EndDisplayChange() { displayChanging=false; }
         internal static void Quit() { quitting=true; Shutdown(); }
-        internal static void InstallResearch() { research=true; failed=false; Tick(); }
-        internal static void FinishResearch() { quitting=true; if(active) FrameGenRuntime.Finish(); }
+        internal static void InstallResearch() { if(!Platform.IsWindows) return; research=true; failed=false; Tick(); }
+        internal static void FinishResearch() { quitting=true; if(Platform.IsWindows && active) FrameGenRuntime.Finish(); }
     }
     // Experimental image interpolation between two completed filtered scenes.
     // Planet envelopes and UI use the nearer true frame; uncertain blocks do too.
@@ -203,7 +205,7 @@ namespace StutterFix
             loop.subSystemList=children.ToArray(); return loop;
         }
         internal static void Install() {
-            if(runner!=null) return;
+            if(!Platform.IsWindows || runner!=null) return;
             BallLayer.LoadSetting();
             if(SystemInfo.graphicsDeviceType!=GraphicsDeviceType.Direct3D11) throw new InvalidOperationException("D3D11에서 사용할 수 있습니다.");
             if(Marshal.SizeOf<Packet>()!=168) throw new InvalidOperationException("Outside packet ABI");
@@ -638,7 +640,7 @@ namespace StutterFix
             if(world!=null) { world.Release(); UnityEngine.Object.Destroy(world); } world=null; scene=null; texture=IntPtr.Zero;
         }
         internal static void Finish() {
-            if(finished || callback==IntPtr.Zero) return; finished=true; Camera.onPostRender-=PostRender; Camera.onPreRender-=PreRender;
+            if(!Platform.IsWindows || finished || callback==IntPtr.Zero) return; finished=true; Camera.onPostRender-=PostRender; Camera.onPreRender-=PreRender;
             if(Diagnostics) PlayerLoop.SetPlayerLoop(RemoveFrameStart(PlayerLoop.GetCurrentPlayerLoop()));
 #if FRAMEGEN_RESEARCH
             Camera.onPreCull-=EarlyWorld;
@@ -648,7 +650,7 @@ namespace StutterFix
             Issue(4,IntPtr.Zero); GL.Flush(); if(Diagnostics) Log("finish; missing real scenes="+missingScenes+" native status="+sf_framegen_status());
         }
         internal static void Uninstall() {
-            if(callback==IntPtr.Zero || uninstallPending) return; Finish();
+            if(!Platform.IsWindows || callback==IntPtr.Zero || uninstallPending) return; Finish();
             if(runner!=null) runner.StopAllCoroutines();
             // Never wait on the main/window thread: worker Present can need its
             // message pump. Retain packets/RTs until the render-event ACK arrives.
@@ -660,7 +662,7 @@ namespace StutterFix
             while(!TryCompleteUninstall()) yield return null;
         }
         internal static bool TryCompleteUninstall() {
-            if(!uninstallPending) return true;
+            if(!Platform.IsWindows || !uninstallPending) return true;
             if(sf_framegen_stopped()==0) return false;
             foreach(var p in packets) Marshal.FreeHGlobal(p);
             if(hintBufs!=null) { foreach(var h in hintBufs) Marshal.FreeHGlobal(h); hintBufs=null; }

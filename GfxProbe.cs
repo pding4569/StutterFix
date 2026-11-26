@@ -40,6 +40,7 @@ namespace StutterFix
         // 메인 스레드에서 부른다(장치 포인터가 스레드 로컬에 있다)
         private static bool Resolve()
         {
+            if (!Platform.IsWindows) { status = "Windows 전용"; return false; }
             if (device != 0) return true;
             if (status.Length > 0) return false;
             basePtr = (long)GetModuleHandleW("UnityPlayer.dll");
@@ -77,6 +78,7 @@ namespace StutterFix
         private static long dxgiLo, dxgiHi;
         internal static IntPtr MainSwapChain()
         {
+            if (!Platform.IsWindows) return IntPtr.Zero;
             try
             {
                 long sc = SwapChain();
@@ -99,6 +101,7 @@ namespace StutterFix
 
         internal static int DxgiMaxLatency()
         {
+            if (!Platform.IsWindows) return -1;
             try
             {
                 long sc = SwapChain(); long fn = VtblFn(sc, 0x100);
@@ -111,6 +114,7 @@ namespace StutterFix
 
         internal static string Snapshot()
         {
+            if (!Platform.IsWindows) return "[프레임 대기 상태] Windows 전용";
             try
             {
                 if (!Resolve()) return "[프레임 대기 상태] 못 읽음: " + status;

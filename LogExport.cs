@@ -73,7 +73,22 @@ namespace StutterFix
         {
             try
             {
-                if (File.Exists(LastPath)) System.Diagnostics.Process.Start("explorer.exe", "/select,\"" + LastPath + "\"");
+                if (string.IsNullOrEmpty(LastPath) || !File.Exists(LastPath)) return;
+                if (Platform.IsWindows)
+                {
+                    System.Diagnostics.Process.Start("explorer.exe", "/select,\"" + LastPath + "\"");
+                }
+                else if (Platform.IsLinux)
+                {
+                    string dir = Path.GetDirectoryName(LastPath);
+                    if (string.IsNullOrEmpty(dir) || !Directory.Exists(dir)) return;
+                    var psi = new System.Diagnostics.ProcessStartInfo("xdg-open", "\"" + dir.Replace("\\", "\\\\").Replace("\"", "\\\"") + "\"")
+                    {
+                        UseShellExecute = false,
+                        CreateNoWindow = true
+                    };
+                    System.Diagnostics.Process.Start(psi);
+                }
             }
             catch { }
         }
@@ -85,7 +100,9 @@ namespace StutterFix
                 string user = Environment.UserName;
                 if (!string.IsNullOrEmpty(user) && user.Length >= 2)
                 {
-                    s = s.Replace("\\Users\\" + user, "\\Users\\<사용자>").Replace("/Users/" + user, "/Users/<사용자>");
+                    s = s.Replace("\\Users\\" + user, "\\Users\\<사용자>")
+                         .Replace("/Users/" + user, "/Users/<사용자>")
+                         .Replace("/home/" + user, "/home/<사용자>");
                 }
             }
             catch { }

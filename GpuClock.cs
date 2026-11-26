@@ -33,6 +33,7 @@ namespace StutterFix
         internal static Sample Read()
         {
             var s = new Sample();
+            if (!Platform.IsWindows) return s;
             if (state == 0) Init();
             if (state != 1) return s;
             try
@@ -51,6 +52,7 @@ namespace StutterFix
         private static void Init()
         {
             state = -1;
+            if (!Platform.IsWindows) return;
             try
             {
                 string p = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), "nvml.dll");

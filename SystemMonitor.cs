@@ -1,4 +1,6 @@
 using System;
+using System.Globalization;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
 
@@ -27,7 +29,7 @@ namespace StutterFix
 
         internal static void Start()
         {
-            if (running) return;
+            if (running || (!Platform.IsWindows && !Platform.IsLinux)) return;
             running = true;
             thread = new Thread(Loop) { IsBackground = true, Name = "StutterFix.Monitor", Priority = ThreadPriority.BelowNormal };
             thread.Start();
@@ -42,6 +44,12 @@ namespace StutterFix
         }
 
         private static void Loop()
+        {
+            if (Platform.IsWindows) LoopWindows();
+            else if (Platform.IsLinux) LoopLinux();
+        }
+
+        private static void LoopWindows()
         {
             var pdh = new Pdh();
             try
@@ -110,6 +118,118 @@ namespace StutterFix
             finally { pdh.Close(); }
         }
 
+        private static void LoopLinux()
+        {
+            GpuAvailable = false;
+            try
+            {
+                ulong lastTotal = 0, lastIdle = 0, lastProc = 0;
+                bool hasCpu = false, hasProc = false;
+
+                while (running)
+                {
+                    ulong total, idle, dTotal = 0;
+                    bool gotCpu = TryReadLinuxCpu(out total, out idle);
+                    if (gotCpu)
+                    {
+                        if (hasCpu && total > lastTotal)
+                        {
+                            dTotal = total - lastTotal;
+                            ulong dIdle = idle >= lastIdle ? idle - lastIdle : 0;
+                            ulong busy = dTotal >= dIdle ? dTotal - dIdle : 0;
+                            CpuTotal = Clamp100(100.0 * busy / dTotal);
+                        }
+                        lastTotal = total; lastIdle = idle; hasCpu = true;
+                    }
+
+                    ulong proc;
+                    if (gotCpu && TryReadLinuxProcCpu(out proc))
+                    {
+                        if (hasProc && dTotal > 0 && proc >= lastProc)
+                            CpuGame = Clamp100(100.0 * (proc - lastProc) / dTotal);
+                        lastProc = proc; hasProc = true;
+                    }
+
+                    long memTotalKb, memAvailKb;
+                    if (MemoryBudget.TryReadLinuxMemInfoKb(out memTotalKb, out memAvailKb) && memTotalKb > 0)
+                    {
+                        RamTotalMB = memTotalKb / 1024f;
+                        RamLoad = Clamp100(100.0 * (memTotalKb - memAvailKb) / memTotalKb);
+                    }
+
+                    long rssKb;
+                    if (MemoryBudget.TryReadLinuxVmRssKb(out rssKb))
+                        RamGameMB = rssKb / 1024f;
+
+                    for (int i = 0; i < 10 && running; i++) Thread.Sleep(100);
+                }
+            }
+            catch { }
+        }
+
+        private static bool TryReadLinuxCpu(out ulong total, out ulong idle)
+        {
+            total = 0; idle = 0;
+            try
+            {
+                string line;
+                using (var r = new StreamReader("/proc/stat")) line = r.ReadLine();
+                if (string.IsNullOrEmpty(line) || !line.StartsWith("cpu ", StringComparison.Ordinal)) return false;
+                int i = 4, n = line.Length, col = 0;
+                while (i < n && col < 8)
+                {
+                    while (i < n && (line[i] == ' ' || line[i] == '\t')) i++;
+                    if (i >= n) break;
+                    int start = i;
+                    while (i < n && line[i] >= '0' && line[i] <= '9') i++;
+                    if (i == start) return false;
+                    ulong v;
+                    if (!ulong.TryParse(line.Substring(start, i - start), NumberStyles.None, CultureInfo.InvariantCulture, out v)) return false;
+                    total += v;
+                    if (col == 3 || col == 4) idle += v;
+                    col++;
+                }
+                return col >= 4;
+            }
+            catch { return false; }
+        }
+
+        private static bool TryReadLinuxProcCpu(out ulong procJiffies)
+        {
+            procJiffies = 0;
+            try
+            {
+                string line = File.ReadAllText("/proc/self/stat");
+                int rparen = line.LastIndexOf(')');
+                if (rparen < 0) return false;
+                int i = rparen + 1, n = line.Length, idx = 0;
+                ulong utime = 0, stime = 0;
+                bool gotU = false, gotS = false;
+                while (i < n && idx <= 12)
+                {
+                    while (i < n && line[i] <= ' ') i++;
+                    if (i >= n) break;
+                    int start = i;
+                    while (i < n && line[i] > ' ') i++;
+                    if (idx == 11)
+                    {
+                        if (!ulong.TryParse(line.Substring(start, i - start), NumberStyles.None, CultureInfo.InvariantCulture, out utime)) return false;
+                        gotU = true;
+                    }
+                    else if (idx == 12)
+                    {
+                        if (!ulong.TryParse(line.Substring(start, i - start), NumberStyles.None, CultureInfo.InvariantCulture, out stime)) return false;
+                        gotS = true;
+                    }
+                    idx++;
+                }
+                if (!gotU || !gotS) return false;
+                procJiffies = utime + stime;
+                return true;
+            }
+            catch { return false; }
+        }
+
         private static float Clamp100(double v) { return (float)Math.Max(0, Math.Min(100, v)); }
 
         // ── PDH (성능 카운터) ──────────────────────────────────────────
@@ -122,7 +242,7 @@ namespace StutterFix
 
             internal bool Open()
             {
-                if (IntPtr.Size != 8) return false;   // 항목 구조를 64비트 기준으로 읽는다
+                if (!Platform.IsWindows || IntPtr.Size != 8) return false;   // 항목 구조를 64비트 기준으로 읽는다
                 try
                 {
                     if (PdhOpenQuery(null, IntPtr.Zero, out query) != 0) return false;
@@ -136,12 +256,12 @@ namespace StutterFix
                 catch { return false; }   // pdh.dll 이 없거나 카운터가 없는 환경
             }
 
-            internal bool Collect() { return query != IntPtr.Zero && PdhCollectQueryData(query) == 0; }
+            internal bool Collect() { return Platform.IsWindows && query != IntPtr.Zero && PdhCollectQueryData(query) == 0; }
 
             // 카운터의 인스턴스마다 (이름, 값)을 넘긴다
             internal void ForEach(IntPtr counter, Action<string, double> each)
             {
-                if (counter == IntPtr.Zero) return;
+                if (!Platform.IsWindows || counter == IntPtr.Zero) return;
                 uint size = 0, count;
                 int r = PdhGetFormattedCounterArray(counter, PDH_FMT_DOUBLE | PDH_FMT_NOCAP100, ref size, out count, IntPtr.Zero);
                 if (r != PDH_MORE_DATA || size == 0) return;
@@ -167,7 +287,7 @@ namespace StutterFix
 
             internal void Close()
             {
-                try { if (query != IntPtr.Zero) PdhCloseQuery(query); } catch { }
+                try { if (Platform.IsWindows && query != IntPtr.Zero) PdhCloseQuery(query); } catch { }
                 query = IntPtr.Zero;
                 if (buffer != IntPtr.Zero) { Marshal.FreeHGlobal(buffer); buffer = IntPtr.Zero; bufferSize = 0; }
             }

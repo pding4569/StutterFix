@@ -40,6 +40,7 @@ namespace StutterFix
 
         internal static string Begin(string arg)
         {
+            if (!Platform.IsWindows) return "Windows 전용";
             if (run) return "이미 도는 중";
             int hz = 1000; int.TryParse((arg ?? "").Trim(), out hz); if (hz < 50 || hz > 4000) hz = 1000; hzUsed = hz;
             ips = new ulong[MaxSamples * Depth]; count = 0;
@@ -115,6 +116,7 @@ namespace StutterFix
         internal static string End() { return End(null); }
         internal static string End(string framesDir)
         {
+            if (!Platform.IsWindows) return "Windows 전용";
             if (!run && count == 0) return "시작 안 함";
             run = false; if (thread != null) thread.Join(2000); t1 = Stopwatch.GetTimestamp();
             try { CloseHandle(mainHandle); } catch { }

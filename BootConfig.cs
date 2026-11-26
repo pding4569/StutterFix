@@ -70,6 +70,7 @@ namespace StutterFix
         // 지금 boot.config 에 옛 방식 줄이 없고 원래(백업)에는 있었으면 최신 방식으로 바꿔 둔 상태다 (설정 처음 읽을 때 지금 상태를 따른다)
         internal static bool FlipNow()
         {
+            if (!Platform.IsWindows) return false;
             try
             {
                 if (!File.Exists(ConfigPath)) return false;
@@ -82,6 +83,7 @@ namespace StutterFix
 
         internal static void Apply(bool enable, bool flip, bool userChange = true)
         {
+            if (!Platform.IsWindows) flip = false;
             try
             {
                 string path = ConfigPath;
@@ -94,16 +96,19 @@ namespace StutterFix
                     string mode = SystemInfo.renderingThreadingMode.ToString();
                     runningJobs = mode.Contains("Jobified") || mode.Contains("Split");
                     runningMode = Value(lines, ModeKey);
-                    runningBitblt = Find(lines, BitbltKey) >= 0;
-                    foreach (string arg in Environment.GetCommandLineArgs())
+                    if (Platform.IsWindows)
                     {
-                        if (arg == "-force-d3d11-bitblt-model") runningBitblt = true;
-                        if (arg == "-force-d3d11-flip-model") runningBitblt = false;
+                        runningBitblt = Find(lines, BitbltKey) >= 0;
+                        foreach (string arg in Environment.GetCommandLineArgs())
+                        {
+                            if (arg == "-force-d3d11-bitblt-model") runningBitblt = true;
+                            if (arg == "-force-d3d11-flip-model") runningBitblt = false;
+                        }
                     }
                     captured = true;
                 }
                 bool outside = !userChange && ((enable && Find(lines, JobsKey) < 0)
-                    || (flip && Find(lines, BitbltKey) >= 0));
+                    || (Platform.IsWindows && flip && Find(lines, BitbltKey) >= 0));
                 if ((enable || flip) && !File.Exists(BackupPath)) File.Copy(path, BackupPath);
 
                 // 원래 값은 백업에서 가져온다. 백업이 없으면 바꾼 적이 없다는 뜻이다.
@@ -112,14 +117,17 @@ namespace StutterFix
                 {
                     var orig = new List<string>(File.ReadAllLines(BackupPath));
                     originalMode = Value(orig, ModeKey);
-                    originalBitblt = Value(orig, BitbltKey);
+                    if (Platform.IsWindows) originalBitblt = Value(orig, BitbltKey);
                 }
 
                 bool changed = false;
                 changed |= Set(lines, JobsKey, enable ? JobsValue : null);
                 if (originalMode != null) changed |= Set(lines, ModeKey, originalMode);   // 예전 버전이 3으로 바꿔 둔 것을 되돌린다
-                if (flip) changed |= Set(lines, BitbltKey, null);                         // 최신 방식: 옛 방식 줄을 뺀다
-                else if (File.Exists(BackupPath)) changed |= Set(lines, BitbltKey, originalBitblt);   // 원래대로 (원래 없었으면 없음)
+                if (Platform.IsWindows)
+                {
+                    if (flip) changed |= Set(lines, BitbltKey, null);                         // 최신 방식: 옛 방식 줄을 뺀다
+                    else if (File.Exists(BackupPath)) changed |= Set(lines, BitbltKey, originalBitblt);   // 원래대로 (원래 없었으면 없음)
+                }
 
                 // 줄 끝은 원래 파일 그대로(게임의 boot.config 는 LF). 예전에는 File.WriteAllLines 가 CRLF 로 바꿔 썼다.
                 // (옛 방식 화면 출력의 원인인지 확인했지만 아니었다: LF 로 되돌려도 같은 방식. 원래 모양을 지키려고 둔다.)
@@ -133,14 +141,14 @@ namespace StutterFix
                     File.WriteAllText(path, string.Join(nl, lines.ToArray()) + nl);
                     if (changed) wroteSettings = true;
                     bool pending = wroteSettings && (enable != runningJobs
-                        || (Find(lines, BitbltKey) >= 0) != runningBitblt
+                        || (Platform.IsWindows && (Find(lines, BitbltKey) >= 0) != runningBitblt)
                         || Value(lines, ModeKey) != runningMode);
                     if (pending && (!NeedsRestart || ResetByOutside != outside))
                         Lg.I("[그래픽 설정] 이번 실행은 boot.config 가 적용되지 않았습니다 (" + (outside ? "외부 초기화" : "사용자 변경") + ")");
                     NeedsRestart = pending;
                     ResetByOutside = pending && outside;
                     if (repair && !changed) Lg.I("boot.config 줄 끝을 원래대로(LF) 고침 (다음 실행부터 적용)");
-                    Lg.I("boot.config 수정: " + (enable ? JobsKey + "=" + JobsValue + " 추가" : JobsKey + " 제거") + ", 화면 출력 " + (flip ? "최신(Flip)" : "원래대로") + " (다음 실행부터 적용)");
+                    Lg.I("boot.config 수정: " + (enable ? JobsKey + "=" + JobsValue + " 추가" : JobsKey + " 제거") + (Platform.IsWindows ? ", 화면 출력 " + (flip ? "최신(Flip)" : "원래대로") : "") + " (다음 실행부터 적용)");
                     Status = Describe() + " | 다음 실행부터 적용됩니다";
                 }
                 else Status = Describe();

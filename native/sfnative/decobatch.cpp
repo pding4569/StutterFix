@@ -12,7 +12,14 @@ static float ease_value(int e, float t, float d)
     default: return 0;
     }
 }
-extern "C" __declspec(dllexport) int __cdecl sf_decobatch_step(int n, const int* ease, const int* key,
+#ifdef _WIN32
+#  define SF_DECOBATCH_API extern "C" __declspec(dllexport)
+#  define SF_DECOBATCH_CALL __cdecl
+#else
+#  define SF_DECOBATCH_API extern "C" __attribute__((visibility("default")))
+#  define SF_DECOBATCH_CALL
+#endif
+SF_DECOBATCH_API int SF_DECOBATCH_CALL sf_decobatch_step(int n, const int* ease, const int* key,
     const float* dur, float* pos, const float* start, const float* change,
     const float* over, const float* period, float* output, int* done, float td)
 {

@@ -51,12 +51,13 @@ namespace StutterFix
         private static int everyCount;
 
         // 아주 자주 불리는 곳(맵 파일 해석, 이벤트 읽기, 타일 만들기)용: 1024번에 한 번만 Tick
-        internal static void TickEvery() { if (ParallelDecode.OnWorker) return; if ((++everyCount & 1023) == 0) Tick(); }   // 작업 스레드(여러 코어로 이벤트 만들기)에서는 건너뜀
+        internal static void TickEvery() { if (!Platform.IsWindows || ParallelDecode.OnWorker) return; if ((++everyCount & 1023) == 0) Tick(); }   // 작업 스레드(여러 코어로 이벤트 만들기)에서는 건너뜀
 
         // 메인 스레드가 5초 넘게 확인하지 않던 단계에도 확인 자리를 더 둔다(2026-09-27 로그: 입력 큐 확인으로 바꾼 뒤에도 맵 불러오기 5.8초,
         // Play 0.3~0.5초 판정이 남았음 - 맵 파일 해석·이벤트 읽기, Play 앞쪽의 타일 다시 만들기 구간).
         internal static void Install(HarmonyLib.Harmony h)
         {
+            if (!Platform.IsWindows) return;
             ImagePrefetch.LoadSfNativeOnly();   // 멈춘 동안 화면 다시 내보내기
             FastJsonParser.Progress = TickEvery;
             DecodeFix.Progress = TickEvery;
@@ -69,7 +70,7 @@ namespace StutterFix
         // 긴 프레임 안에서 자주 불리는 곳에서 부른다. 짧은 프레임에서는 시각 비교만 한다.
         internal static void Tick()
         {
-            if (!KeepResponsive) return;
+            if (!Platform.IsWindows || !KeepResponsive) return;
             if (MainThread != -1 && Environment.CurrentManagedThreadId != MainThread) return;
             long now = System.Diagnostics.Stopwatch.GetTimestamp();
             int f;
@@ -98,10 +99,12 @@ namespace StutterFix
         // 입력 큐 확인만 (꺼내지 않음). 멈춘 창 판정 타이머가 다시 시작된다.
         private static long lastPeekTs;
         internal static uint MainNativeThread;
-        [DllImport("kernel32.dll")] internal static extern uint GetCurrentThreadId();
+        [DllImport("kernel32.dll", EntryPoint = "GetCurrentThreadId")] private static extern uint Win32GetCurrentThreadId();
+        internal static uint GetCurrentThreadId() { return Platform.IsWindows ? Win32GetCurrentThreadId() : 0u; }
         [DllImport("user32.dll")] private static extern uint GetWindowThreadProcessId(IntPtr hwnd, out uint pid);
         internal static bool PeekInput()
         {
+            if (!Platform.IsWindows) return false;
             try { MSG m; PeekMessageW(out m, IntPtr.Zero, 0, 0, PM_NOREMOVE | PM_NOYIELD | PM_QS_INPUT); Peeks++; System.Threading.Interlocked.Exchange(ref lastPeekTs, System.Diagnostics.Stopwatch.GetTimestamp()); return true; }
             catch { KeepResponsive = false; return false; }
         }
@@ -148,6 +151,7 @@ namespace StutterFix
         // 그래픽 스레드에 Present 한 번 부탁 (메인 스레드). 안 되면 false, 다시 안 되게 KeepPresent 를 끈다.
         internal static bool PresentOnce(int mode)
         {
+            if (!Platform.IsWindows) { KeepPresent = false; return false; }
             try
             {
                 if (!SfNative.Ready || !SfNative.PresentReady) { PresentStatus = SfNative.Ready ? "sfnative 가 예전 것 (게임을 다시 켜면 됨)" : "sfnative 없음: " + SfNative.Status; KeepPresent = false; return false; }
@@ -184,6 +188,7 @@ namespace StutterFix
         private static string shotError = "";
         private static void CheckScreen(bool first)
         {
+            if (!Platform.IsWindows) return;
             try
             {
                 if (first) { shots = shotsChanged = maxChanged = 0; shotError = ""; }
@@ -204,6 +209,7 @@ namespace StutterFix
         }
         private static int[] Grab(int x, int y, int w, int h, int[] into)
         {
+            if (!Platform.IsWindows) return null;
             var bi = new BITMAPINFOHEADER { size = 40, width = w, height = -h, planes = 1, bits = 32 };
             IntPtr screen = GetDC(IntPtr.Zero), mem = CreateCompatibleDC(screen), bits;
             IntPtr bmp = CreateDIBSection(screen, ref bi, 0, out bits, IntPtr.Zero, 0);
@@ -238,7 +244,7 @@ namespace StutterFix
         internal static int HungStarts;   // 멈춘 창 판정이 시작된 횟수 (개발자용 감시 스레드)
         internal static void StartWatch()
         {
-            if (watch != null) return;
+            if (!Platform.IsWindows || watch != null) return;
             watching = true;
             watch = new System.Threading.Thread(() =>
             {
@@ -269,7 +275,7 @@ namespace StutterFix
 
         internal static void Disable()
         {
-            if (Done) return;
+            if (!Platform.IsWindows || Done) return;
             try { DisableProcessWindowsGhosting(); Done = true; Status = "응답 없음 창 끔"; }
             catch (Exception ex) { Status = "응답 없음 창 끄기 실패: " + ex.Message; }
             Lg.I("[첫 판 FPS] " + Status);

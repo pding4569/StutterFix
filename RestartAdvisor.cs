@@ -202,28 +202,91 @@ namespace StutterFix
             try
             {
                 var me = Process.GetCurrentProcess();
-                string exe = me.MainModule.FileName;
                 var args = Environment.GetCommandLineArgs();
-                var sb = new System.Text.StringBuilder();
-                for (int i = 1; i < args.Length; i++) sb.Append(i > 1 ? " " : "").Append('"').Append(args[i].Replace("\"", "\\\"")).Append('"');
-                string q = exe.Replace("'", "''");
-                string argList = sb.ToString().Replace("'", "''");
-                string ps = "Wait-Process -Id " + me.Id + " -ErrorAction SilentlyContinue; Start-Process -FilePath '" + q + "'"
-                    + (argList.Length > 0 ? " -ArgumentList '" + argList + "'" : "") + " -WorkingDirectory '" + Path.GetDirectoryName(exe).Replace("'", "''") + "'";
-                var psi = new ProcessStartInfo("powershell.exe", "-NoProfile -WindowStyle Hidden -Command \"" + ps.Replace("\"", "\\\"") + "\"")
-                { UseShellExecute = false, CreateNoWindow = true, WindowStyle = ProcessWindowStyle.Hidden };
-                // 모드 로더(Doorstop, winhttp.dll)는 "이미 붙었음" 을 DOORSTOP_ 환경 변수로 남기고, 이 값은 게임이 띄운 프로세스로 물려진다.
-                // 그대로 두면 새로 켠 게임에서 Doorstop 이 이미 붙은 줄 알고 모드를 안 불러온다. 재시작용 프로세스에서는 지운다.
-                var keys = new List<string>();
-                foreach (System.Collections.DictionaryEntry kv in Environment.GetEnvironmentVariables()) { var k = kv.Key as string; if (k != null && k.StartsWith("DOORSTOP", StringComparison.OrdinalIgnoreCase)) keys.Add(k); }
-                foreach (var k in keys) psi.EnvironmentVariables.Remove(k);
-                Lg.I("[재시작] 지운 모드 로더 표시: " + (keys.Count > 0 ? string.Join(", ", keys.ToArray()) : "없음"));
+                string exe = null;
+                try { exe = me.MainModule != null ? me.MainModule.FileName : null; } catch { }
+                if (string.IsNullOrEmpty(exe) && args.Length > 0) exe = Path.GetFullPath(args[0]);
+                if (string.IsNullOrEmpty(exe)) throw new InvalidOperationException("Executable path unavailable");
+                string dir = Path.GetDirectoryName(exe);
+                if (string.IsNullOrEmpty(dir)) dir = Environment.CurrentDirectory;
+
+                ProcessStartInfo psi;
+                var removedKeys = new List<string>();
+                if (Platform.IsWindows)
+                {
+                    var sb = new System.Text.StringBuilder();
+                    for (int i = 1; i < args.Length; i++) sb.Append(i > 1 ? " " : "").Append('"').Append(args[i].Replace("\"", "\\\"")).Append('"');
+                    string q = exe.Replace("'", "''");
+                    string argList = sb.ToString().Replace("'", "''");
+                    string ps = "Wait-Process -Id " + me.Id + " -ErrorAction SilentlyContinue; Start-Process -FilePath '" + q + "'"
+                        + (argList.Length > 0 ? " -ArgumentList '" + argList + "'" : "") + " -WorkingDirectory '" + dir.Replace("'", "''") + "'";
+                    psi = new ProcessStartInfo("powershell.exe", "-NoProfile -WindowStyle Hidden -Command \"" + ps.Replace("\"", "\\\"") + "\"")
+                    { UseShellExecute = false, CreateNoWindow = true, WindowStyle = ProcessWindowStyle.Hidden };
+                    // 모드 로더(Doorstop, winhttp.dll)는 "이미 붙었음" 을 DOORSTOP_ 환경 변수로 남기고, 이 값은 게임이 띄운 프로세스로 물려진다.
+                    // 그대로 두면 새로 켠 게임에서 Doorstop 이 이미 붙은 줄 알고 모드를 안 불러온다. 재시작용 프로세스에서는 지운다.
+                    RemoveDoorstopEnv(psi, true, removedKeys);
+                }
+                else if (Platform.IsLinux)
+                {
+                    var argSb = new System.Text.StringBuilder();
+                    for (int i = 1; i < args.Length; i++) argSb.Append(' ').Append(ShQuote(args[i]));
+                    string runSh = Path.Combine(dir, "run.sh");
+                    bool useRunSh = File.Exists(runSh);
+                    string launch = useRunSh
+                        ? "/bin/sh " + ShQuote(runSh) + " " + ShQuote(exe) + argSb
+                        : ShQuote(exe) + argSb;
+                    string sh = "while kill -0 " + me.Id + " 2>/dev/null; do sleep 0.2; done; cd " + ShQuote(dir) + " && exec " + launch;
+                    psi = new ProcessStartInfo("/bin/sh", "-c \"" + sh.Replace("\\", "\\\\").Replace("\"", "\\\"") + "\"")
+                    { UseShellExecute = false, CreateNoWindow = true, WorkingDirectory = dir };
+                    RemoveDoorstopEnv(psi, useRunSh, removedKeys);
+                    if (useRunSh) StripDoorstopPreload(psi, removedKeys);
+                }
+                else
+                {
+                    Lg.I("[재시작] 이 OS에서는 자동 재시작을 지원하지 않습니다");
+                    return;
+                }
+
+                Lg.I("[재시작] 지운 모드 로더 표시: " + (removedKeys.Count > 0 ? string.Join(", ", removedKeys.ToArray()) : "없음"));
                 Process.Start(psi);
                 Lg.I("[재시작] 게임을 다시 켭니다");
                 try { Main.Config.Save(Main.Entry); } catch { }
                 Application.Quit();
             }
             catch (Exception ex) { Lg.I("[재시작] 실패: " + ex.Message); }
+        }
+
+        private static string ShQuote(string s)
+        {
+            return "'" + s.Replace("'", "'\"'\"'") + "'";
+        }
+
+        private static void RemoveDoorstopEnv(ProcessStartInfo psi, bool allDoorstop, List<string> removedKeys)
+        {
+            foreach (System.Collections.DictionaryEntry kv in Environment.GetEnvironmentVariables())
+            {
+                var k = kv.Key as string;
+                if (k == null) continue;
+                bool match = allDoorstop
+                    ? k.StartsWith("DOORSTOP", StringComparison.OrdinalIgnoreCase)
+                    : k.Equals("DOORSTOP_INITIALIZED", StringComparison.OrdinalIgnoreCase);
+                if (match) removedKeys.Add(k);
+            }
+            foreach (var k in removedKeys) psi.EnvironmentVariables.Remove(k);
+        }
+
+        private static void StripDoorstopPreload(ProcessStartInfo psi, List<string> removedKeys)
+        {
+            string ld = psi.EnvironmentVariables["LD_PRELOAD"];
+            if (string.IsNullOrEmpty(ld) || ld.IndexOf("libdoorstop", StringComparison.OrdinalIgnoreCase) < 0) return;
+            var kept = new List<string>();
+            foreach (var part in ld.Split(new[] { ':', ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries))
+            {
+                if (part.IndexOf("libdoorstop", StringComparison.OrdinalIgnoreCase) < 0) kept.Add(part);
+            }
+            if (kept.Count > 0) psi.EnvironmentVariables["LD_PRELOAD"] = string.Join(":", kept.ToArray());
+            else psi.EnvironmentVariables.Remove("LD_PRELOAD");
+            removedKeys.Add("LD_PRELOAD(libdoorstop)");
         }
     }
 }

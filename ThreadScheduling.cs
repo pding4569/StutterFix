@@ -28,6 +28,7 @@ namespace StutterFix
         {mode=value>=0&&value<=2?value:0;cores=performanceCores;avoidZero=avoidLogicalZero;}
         internal static void Tick()
         {
+            if(!Platform.IsWindows)return;
             int key=Hitch.Playing?mode+(cores?4:0)+(avoidZero?8:0):0;
             if(key==lastKey)return;
             if(UnityEngine.Time.unscaledTime<nextRestoreAttempt)return;
@@ -68,6 +69,7 @@ namespace StutterFix
         // Shared selection only. Applying/restoring remains owned by each lease.
         internal static ulong SelectMask(IntPtr thread,bool performanceCores,bool excludeZero,out string detail)
         {
+            if(!Platform.IsWindows){detail="unsupported-os";return 0;}
             detail="affinity=no-eligible-core";
             if(GetActiveProcessorGroupCount()!=1){detail="pcores=unsupported-groups";return 0;}
             GroupAffinity group;UIntPtr allowed,system;
@@ -102,6 +104,7 @@ namespace StutterFix
         }
         private static bool Restore()
         {
+            if(!Platform.IsWindows)return true;
             if(owner==0)return true;
             try
             {
@@ -124,10 +127,11 @@ namespace StutterFix
             }
             catch{Status="스레드 예약 복구 확인 안 됨";return false;}
         }
-        internal static void Shutdown(){mode=0;cores=avoidZero=false;if(Restore()){lastKey=-1;Status="꺼짐";}}
+        internal static void Shutdown(){mode=0;cores=avoidZero=false;if(!Platform.IsWindows){lastKey=-1;Status="꺼짐";return;}if(Restore()){lastKey=-1;Status="꺼짐";}}
 #if DEV || AUTOTEST
         internal static string Fixture()
         {
+            if(!Platform.IsWindows)return "unavailable=unsupported-os";
             if(Hitch.Playing)throw new InvalidOperationException("Thread fixture is menu-only");
             // Apply to an owned short-lived worker, never the game main/render thread.
             string result=null;var done=new System.Threading.ManualResetEvent(false);
