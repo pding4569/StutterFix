@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading;
 
@@ -22,7 +23,6 @@ namespace StutterFix
         internal static string Status = "안 불러옴";
         internal static long Images, Failures, Ticks;
 
-        [DllImport("kernel32", SetLastError = true, CharSet = CharSet.Unicode)] private static extern IntPtr LoadLibraryW(string path);
         [DllImport("turbojpeg", CallingConvention = CallingConvention.Cdecl)] private static extern IntPtr tj3Init(int initType);
         [DllImport("turbojpeg", CallingConvention = CallingConvention.Cdecl)] private static extern int tj3Set(IntPtr h, int param, int value);
         [DllImport("turbojpeg", CallingConvention = CallingConvention.Cdecl)] private static extern int tj3Get(IntPtr h, int param);
@@ -33,20 +33,80 @@ namespace StutterFix
         private const int TJPARAM_BOTTOMUP = 1, TJPARAM_JPEGWIDTH = 5, TJPARAM_JPEGHEIGHT = 6, TJPARAM_FASTUPSAMPLE = 9, TJPARAM_FASTDCT = 10;
         private const int TJPF_RGB = 0;
 
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] private delegate IntPtr InitFn(int initType);
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] private delegate int SetFn(IntPtr h, int param, int value);
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] private delegate int GetFn(IntPtr h, int param);
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] private delegate int HeaderFn(IntPtr h, byte* buf, UIntPtr size);
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] private delegate int Decompress8Fn(IntPtr h, byte* buf, UIntPtr size, byte* dst, int pitch, int pixelFormat);
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] private delegate void DestroyFn(IntPtr h);
+        private static InitFn fnInit;
+        private static SetFn fnSet;
+        private static GetFn fnGet;
+        private static HeaderFn fnHeader;
+        private static Decompress8Fn fnDecompress8;
+        private static DestroyFn fnDestroy;
+
+        [MethodImpl(MethodImplOptions.NoInlining)] private static IntPtr WinInit(int initType) { return tj3Init(initType); }
+        [MethodImpl(MethodImplOptions.NoInlining)] private static int WinSet(IntPtr h, int param, int value) { return tj3Set(h, param, value); }
+        [MethodImpl(MethodImplOptions.NoInlining)] private static int WinGet(IntPtr h, int param) { return tj3Get(h, param); }
+        [MethodImpl(MethodImplOptions.NoInlining)] private static int WinHeader(IntPtr h, byte* buf, UIntPtr size) { return tj3DecompressHeader(h, buf, size); }
+        [MethodImpl(MethodImplOptions.NoInlining)] private static int WinDecompress8(IntPtr h, byte* buf, UIntPtr size, byte* dst, int pitch, int pixelFormat) { return tj3Decompress8(h, buf, size, dst, pitch, pixelFormat); }
+        [MethodImpl(MethodImplOptions.NoInlining)] private static void WinDestroy(IntPtr h) { tj3Destroy(h); }
+
+        private static IntPtr TjInit(int initType) { return fnInit != null ? fnInit(initType) : WinInit(initType); }
+        private static int TjSet(IntPtr h, int param, int value) { return fnSet != null ? fnSet(h, param, value) : WinSet(h, param, value); }
+        private static int TjGet(IntPtr h, int param) { return fnGet != null ? fnGet(h, param) : WinGet(h, param); }
+        private static int TjDecompressHeader(IntPtr h, byte* buf, UIntPtr size) { return fnHeader != null ? fnHeader(h, buf, size) : WinHeader(h, buf, size); }
+        private static int TjDecompress8(IntPtr h, byte* buf, UIntPtr size, byte* dst, int pitch, int pixelFormat) { return fnDecompress8 != null ? fnDecompress8(h, buf, size, dst, pitch, pixelFormat) : WinDecompress8(h, buf, size, dst, pitch, pixelFormat); }
+        private static void TjDestroy(IntPtr h) { if (fnDestroy != null) fnDestroy(h); else WinDestroy(h); }
+        private static void ClearDelegates() { fnInit = null; fnSet = null; fnGet = null; fnHeader = null; fnDecompress8 = null; fnDestroy = null; }
+
         // 전체 경로로 먼저 올려 두면 DllImport("turbojpeg") 가 이미 올라온 것을 쓴다(libdeflate, sfnative 와 같은 방식).
         internal static void Init(string path)
         {
             if (Ready) return;
             try
             {
-                if (!File.Exists(path)) { Status = "DLL 없음"; return; }
-                if (LoadLibraryW(path) == IntPtr.Zero) { Status = "DLL 불러오기 실패 (" + Marshal.GetLastWin32Error() + ")"; return; }
-                var h = tj3Init(TJINIT_DECOMPRESS);
-                if (h == IntPtr.Zero) { Status = "해독기 만들기 실패"; return; }
-                tj3Destroy(h);
+                if (Platform.IsWindows)
+                {
+                    if (string.IsNullOrEmpty(path) || !File.Exists(path)) { Status = "DLL 없음"; return; }
+                    if (NativeLib.Load(path) == IntPtr.Zero) { Status = "DLL 불러오기 실패 (" + NativeLib.LastError() + ")"; return; }
+                }
+                else if (Platform.IsLinux)
+                {
+                    string modPath = Main.Entry != null ? Path.Combine(Main.Entry.Path, "libturbojpeg.so") : null;
+                    IntPtr lib;
+                    if (!string.IsNullOrEmpty(path) && File.Exists(path))
+                        lib = NativeLib.LoadAny(path, "libturbojpeg.so.0", "libturbojpeg.so");
+                    else if (!string.IsNullOrEmpty(modPath) && File.Exists(modPath))
+                        lib = NativeLib.LoadAny(modPath, "libturbojpeg.so.0", "libturbojpeg.so");
+                    else
+                        lib = NativeLib.LoadAny("libturbojpeg.so.0", "libturbojpeg.so");
+                    if (lib == IntPtr.Zero) { Status = "SO 불러오기 실패 (" + NativeLib.LastError() + ")"; return; }
+                    IntPtr pInit = NativeLib.GetSymbol(lib, "tj3Init");
+                    IntPtr pSet = NativeLib.GetSymbol(lib, "tj3Set");
+                    IntPtr pGet = NativeLib.GetSymbol(lib, "tj3Get");
+                    IntPtr pHeader = NativeLib.GetSymbol(lib, "tj3DecompressHeader");
+                    IntPtr pDecomp = NativeLib.GetSymbol(lib, "tj3Decompress8");
+                    IntPtr pDestroy = NativeLib.GetSymbol(lib, "tj3Destroy");
+                    if (pInit == IntPtr.Zero || pSet == IntPtr.Zero || pGet == IntPtr.Zero || pHeader == IntPtr.Zero || pDecomp == IntPtr.Zero || pDestroy == IntPtr.Zero)
+                    {
+                        Status = "심볼 없음"; return;
+                    }
+                    fnInit = (InitFn)Marshal.GetDelegateForFunctionPointer(pInit, typeof(InitFn));
+                    fnSet = (SetFn)Marshal.GetDelegateForFunctionPointer(pSet, typeof(SetFn));
+                    fnGet = (GetFn)Marshal.GetDelegateForFunctionPointer(pGet, typeof(GetFn));
+                    fnHeader = (HeaderFn)Marshal.GetDelegateForFunctionPointer(pHeader, typeof(HeaderFn));
+                    fnDecompress8 = (Decompress8Fn)Marshal.GetDelegateForFunctionPointer(pDecomp, typeof(Decompress8Fn));
+                    fnDestroy = (DestroyFn)Marshal.GetDelegateForFunctionPointer(pDestroy, typeof(DestroyFn));
+                }
+                else { Status = "미지원 OS"; return; }
+                var h = TjInit(TJINIT_DECOMPRESS);
+                if (h == IntPtr.Zero) { ClearDelegates(); Status = "해독기 만들기 실패"; return; }
+                TjDestroy(h);
                 Ready = true; Status = "사용 중";
             }
-            catch (Exception ex) { Ready = false; Status = "실패: " + ex.Message; }
+            catch (Exception ex) { Ready = false; ClearDelegates(); Status = "실패: " + ex.Message; }
         }
 
         internal static bool Available { get { return Ready && Enabled; } }
@@ -59,7 +119,7 @@ namespace StutterFix
         internal static void FreeThread()
         {
             if (handle == IntPtr.Zero) return;
-            try { tj3Destroy(handle); } catch { }
+            try { TjDestroy(handle); } catch { }
             handle = IntPtr.Zero;
         }
 
@@ -72,22 +132,22 @@ namespace StutterFix
             long t0 = Stopwatch.GetTimestamp();
             try
             {
-                if (handle == IntPtr.Zero) handle = tj3Init(TJINIT_DECOMPRESS);
+                if (handle == IntPtr.Zero) handle = TjInit(TJINIT_DECOMPRESS);
                 if (handle == IntPtr.Zero) return Fail();
                 fixed (byte* src = data)
                 {
-                    if (tj3DecompressHeader(handle, src, (UIntPtr)len) != 0) return Fail();
-                    int w = tj3Get(handle, TJPARAM_JPEGWIDTH), h = tj3Get(handle, TJPARAM_JPEGHEIGHT);
+                    if (TjDecompressHeader(handle, src, (UIntPtr)len) != 0) return Fail();
+                    int w = TjGet(handle, TJPARAM_JPEGWIDTH), h = TjGet(handle, TJPARAM_JPEGHEIGHT);
                     if (w <= 0 || h <= 0 || w > maxSide || h > maxSide) return Fail();
                     long n = (long)w * h * 3;
                     if (n > int.MaxValue) return Fail();   // LoadRawTextureData 는 int 크기
-                    tj3Set(handle, TJPARAM_BOTTOMUP, 1);
-                    tj3Set(handle, TJPARAM_FASTUPSAMPLE, 0);
-                    tj3Set(handle, TJPARAM_FASTDCT, 0);
+                    TjSet(handle, TJPARAM_BOTTOMUP, 1);
+                    TjSet(handle, TJPARAM_FASTUPSAMPLE, 0);
+                    TjSet(handle, TJPARAM_FASTDCT, 0);
                     IntPtr p;
                     try { p = Marshal.AllocHGlobal((IntPtr)n); } catch { return Fail(); }
                     // 0 이 아니면 오류이거나 경고(손상된 데이터 등): 둘 다 원래 방식으로
-                    if (tj3Decompress8(handle, src, (UIntPtr)len, (byte*)p, w * 3, TJPF_RGB) != 0) { Marshal.FreeHGlobal(p); return Fail(); }
+                    if (TjDecompress8(handle, src, (UIntPtr)len, (byte*)p, w * 3, TJPF_RGB) != 0) { Marshal.FreeHGlobal(p); return Fail(); }
                     width = w; height = h; pixels = p; size = n;
                     Interlocked.Increment(ref Images);
                     return true;

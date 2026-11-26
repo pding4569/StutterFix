@@ -37,12 +37,15 @@ namespace StutterFix
         public static bool Load(UnityModManager.ModEntry modEntry)
         {
             Entry = modEntry;
-            // 이 모드는 윈도우 전용이다(user32/kernel32/D3D11 직접 호출 수백 곳). 리눅스·맥의 원래(네이티브) 유니티에서는 EntryPointNotFoundException 으로 불러오기가 죽으므로
-            // 아무것도 설치하지 않고 이유만 알려 준다. (Wine/Proton 에서는 Application.platform 이 WindowsPlayer 라 그대로 동작)
-            if (Application.platform != RuntimePlatform.WindowsPlayer && Application.platform != RuntimePlatform.WindowsEditor)
+            // Windows / Linux 네이티브 지원. 그 외(macOS 등)는 아무것도 설치하지 않고 꺼 둔다.
+            bool supportedPlatform = Application.platform == RuntimePlatform.WindowsPlayer
+                || Application.platform == RuntimePlatform.WindowsEditor
+                || Application.platform == RuntimePlatform.LinuxPlayer
+                || Application.platform == RuntimePlatform.LinuxEditor;
+            if (!supportedPlatform || !Platform.IsSupported)
             {
-                Lg.W("StutterFix 는 Windows 전용입니다. 이 운영체제(" + Application.platform + ")에서는 아무것도 설치하지 않고 꺼 둡니다. / StutterFix is Windows-only; disabled on this OS (" + Application.platform + ").");
-                modEntry.OnGUI = e => GUILayout.Label("StutterFix 는 Windows 전용이라 이 운영체제(" + Application.platform + ")에서는 꺼져 있습니다. / StutterFix is Windows-only and is disabled on this OS.");
+                Lg.W("StutterFix 는 Windows/Linux 전용입니다. 이 운영체제(" + Application.platform + ")에서는 아무것도 설치하지 않고 꺼 둡니다. / StutterFix supports Windows and Linux only; disabled on this OS (" + Application.platform + ").");
+                modEntry.OnGUI = e => GUILayout.Label("StutterFix 는 Windows/Linux 전용이라 이 운영체제(" + Application.platform + ")에서는 꺼져 있습니다. / StutterFix supports Windows and Linux only and is disabled on this OS.");
                 return true;
             }
             Lg.Start();
@@ -81,14 +84,17 @@ namespace StutterFix
             ApplyConfig();
             if (Edition.Dev) LogLoadedCopies();
             InstallAll();
-            if (Config.FlipModel < 0) { Config.FlipModel = BootConfig.FlipNow() ? 1 : 0; try { Config.Save(modEntry); } catch { } }   // 처음: 지금 boot.config 상태를 따른다
-            BootConfig.Apply(Config.LegacyGfxJobs, Config.FlipModel == 1, false);
+            if (Platform.IsWindows && Config.FlipModel < 0) { Config.FlipModel = BootConfig.FlipNow() ? 1 : 0; try { Config.Save(modEntry); } catch { } }   // 처음: 지금 boot.config 상태를 따른다
+            BootConfig.Apply(Config.LegacyGfxJobs, Platform.IsWindows && Config.FlipModel == 1, false);
             Lg.I(BootConfig.Describe());
-            WindowGhost.MainThread = Environment.CurrentManagedThreadId;
-            WindowGhost.MainNativeThread = WindowGhost.GetCurrentThreadId();
-            WindowGhost.KeepResponsive = Config.NoGhosting;
-            if (Config.NoGhosting) WindowGhost.Disable();   // 첫 판 FPS 떨어짐 막기 (WindowGhost.cs)
-            if (Edition.Dev) WindowGhost.StartWatch();   // 윈도우의 멈춘 창 판정 기록
+            if (Platform.IsWindows)
+            {
+                WindowGhost.MainThread = Environment.CurrentManagedThreadId;
+                WindowGhost.MainNativeThread = WindowGhost.GetCurrentThreadId();
+                WindowGhost.KeepResponsive = Config.NoGhosting;
+                if (Config.NoGhosting) WindowGhost.Disable();   // 첫 판 FPS 떨어짐 막기 (WindowGhost.cs)
+                if (Edition.Dev) WindowGhost.StartWatch();   // 윈도우의 멈춘 창 판정 기록
+            }
             // (개발자용 시험) 모드 폴더의 파일로 멈춘 동안 화면 다시 내보내기를 바꾼다: present-keepalive 켬(효과 없어 기본은 끔), present-flip 보통 Present, present-screen-check 화면 비교
             if (Edition.Dev || Edition.AutoTest) DevPresentFlags(modEntry.Path);
             TightLate.Enabled = !System.IO.File.Exists(System.IO.Path.Combine(modEntry.Path, "tightlate-off"));
@@ -165,7 +171,7 @@ AllocProbe.Install(new HarmonyLib.Harmony("StutterFix.allocprobe"));
             // 모드를 끄면 게임 파일도 원래대로 돌려놓는다(다음 실행부터 원래 방식).
             // 다시 불러오기도 내부에서 끄기 -> 켜기를 거치므로 그때는 건드리지 않는다
             // (중간에 실패하면 legacy 줄이 빠진 채로 남았다).
-            if (!reloading) BootConfig.Apply(value && Config.LegacyGfxJobs, value && Config.FlipModel == 1);
+            if (!reloading) BootConfig.Apply(value && Config.LegacyGfxJobs, Platform.IsWindows && value && Config.FlipModel == 1);
             if (!reloading && !value) { try { RestoreFullscreen(); } catch { } }   // 모드를 끄면 독점 전체 화면도 원래대로
             return true;
         }
@@ -222,7 +228,7 @@ AllocProbe.Install(new HarmonyLib.Harmony("StutterFix.allocprobe"));
                 if(TagIndex.Enabled)OptimizationModules.Install(TagIndexModule.Instance);
                 if(MapProfiles.Enabled)OptimizationModules.Install(MapProfilesModule.Instance);
                 if(HitchHeatmap.Enabled)OptimizationModules.Install(HitchHeatmapModule.Instance);
-                if(FrameQueueDelay.Enabled)OptimizationModules.Install(FrameQueueDelay.Instance);
+                if(Platform.IsWindows && FrameQueueDelay.Enabled)OptimizationModules.Install(FrameQueueDelay.Instance);
                 Try(MaterialPropertyIds.Warm);
                 Precheck.Install(harmony);
                 DecoAnim.Install(harmony);
@@ -274,7 +280,7 @@ UiProf.Install(harmony);
                 RestartAdvisor.StartReopen();
                 PerfOverlay.Create();
                 Try(() => PerfOverlay.Install(harmony));
-                Try(() => WindowGhost.Install(harmony));   // 긴 전환 중 윈도우 멈춘 창 판정 막기 자리 더하기
+                if (Platform.IsWindows) Try(() => WindowGhost.Install(harmony));   // 긴 전환 중 윈도우 멈춘 창 판정 막기 자리 더하기
                 Try(() => BigLevel.Install(harmony));   // 타일이 아주 많은 맵 불러오기 (BigLevel.cs)
                 Try(() => AllocFix.Install(harmony));   // 곡 중 쓰레기 줄이기 (AllocFix.cs)
                 Try(() => ThumbCam.Install(harmony));   // 아무도 안 보는 썸네일 카메라 끄기 (ThumbCam.cs)
@@ -655,7 +661,7 @@ if (Edition.AutoTest && AutoTest.ReloadNow) { AutoTest.ReloadNow = false; Reques
 #if DEV || AUTOTEST
 AutoTest.Tick();
 #endif
-} FrameGen.Tick(); PcTune.Tick(); ThreadScheduling.Tick(); RenderThreadScheduling.Tick(); if(FrameQueueDelay.Enabled)FrameQueueDelay.Tick(); LowEnd.AutoTick(); LowEnd.MenuCapTick(); Updater.Tick(); TileCull.Tick(); LeakGuard.Tick(); Resilience.Tick(); if (!Hitch.Playing && Time.realtimeSinceStartup > 30f) Compat.LogSharedPatches(); Tk(1, ref q);
+} if (Platform.IsWindows) { FrameGen.Tick(); ThreadScheduling.Tick(); RenderThreadScheduling.Tick(); if (FrameQueueDelay.Enabled) FrameQueueDelay.Tick(); } PcTune.Tick(); LowEnd.AutoTick(); LowEnd.MenuCapTick(); Updater.Tick(); TileCull.Tick(); LeakGuard.Tick(); Resilience.Tick(); if (!Hitch.Playing && Time.realtimeSinceStartup > 30f) Compat.LogSharedPatches(); Tk(1, ref q);
             EffectBudget.Tick(); Tk(2, ref q);
             RecolorSplit.Tick(); Tk(3, ref q);
             FastBlend.Tick(); Tk(4, ref q);
@@ -840,12 +846,15 @@ BlendProbe.Tick();
             DecoAnim.FastCompact=Config.DecoFastCompact;
             AssetDiskCache.Configure(Config.AssetDiskCache,Config.AssetDiskCacheMB,Config.AssetDiskCachePath);
             MoveApply.EpsilonSkip=effective("MoveEpsilon",Config.MoveEpsilon);
-            NativeMotion.Configure(effective("NativeMotion",Config.NativeMotion),Config.NativeMotionArena,Config.NativeMotionPinArena);
+            NativeMotion.Configure(effective("NativeMotion",Config.NativeMotion),Config.NativeMotionArena,Platform.IsWindows&&Config.NativeMotionPinArena);
             TagIndex.Configure(effective("TagIndex",Config.TagIndex),Config.TagIndexNativePlans);
             MapProfiles.Configure(effective("MapProfiles",Config.MapProfilesEnabled));
-            ThreadScheduling.Configure(Config.ThreadSchedulingMode,Config.ThreadPerformanceCores,Config.ThreadAvoidLogicalZero);
-            RenderThreadScheduling.Configure(Config.ThreadRenderScheduling,Config.ThreadSchedulingMode,Config.ThreadPerformanceCores,Config.ThreadAvoidLogicalZero);
-            FrameQueueDelay.Enabled=effective("FrameQueueDelay",Config.FrameQueueDelay);
+            if(Platform.IsWindows)
+            {
+                ThreadScheduling.Configure(Config.ThreadSchedulingMode,Config.ThreadPerformanceCores,Config.ThreadAvoidLogicalZero);
+                RenderThreadScheduling.Configure(Config.ThreadRenderScheduling,Config.ThreadSchedulingMode,Config.ThreadPerformanceCores,Config.ThreadAvoidLogicalZero);
+            }
+            FrameQueueDelay.Enabled=Platform.IsWindows&&effective("FrameQueueDelay",Config.FrameQueueDelay);
             HitchHeatmap.Enabled=effective("HitchHeatmap",Config.HitchHeatmap);
             PhysicsPause.Enabled=Config.PhysicsPause;if(!PhysicsPause.Enabled)PhysicsPause.SongEnded();
             ParticleFix.CatchupOffscreen=effective("ParticleCatchup",Config.ParticleCatchup);
@@ -857,7 +866,7 @@ BlendProbe.Tick();
                 else OptimizationModules.Uninstall("profiles");
                 if(HitchHeatmap.Enabled)OptimizationModules.Install(HitchHeatmapModule.Instance);
                 else OptimizationModules.Uninstall("heatmap");
-                if(FrameQueueDelay.Enabled)OptimizationModules.Install(FrameQueueDelay.Instance);
+                if(Platform.IsWindows && FrameQueueDelay.Enabled)OptimizationModules.Install(FrameQueueDelay.Instance);
                 else OptimizationModules.Uninstall("input-frame-delay");
             }
         }
@@ -925,7 +934,7 @@ BlendProbe.Tick();
             bool floorAnim = E("FloorAnim", Config.FloorAnim);
             if (!floorAnim && global::StutterFix.FloorAnim.Enabled) global::StutterFix.FloorAnim.FinishAll();
             global::StutterFix.FloorAnim.Enabled = floorAnim;
-            LowEnd.Priority = Config.LowPriority; LowEnd.NoThrottle = Config.LowNoThrottle; LowEnd.HalfMsTimer = Config.TimerHalfMs; LowEnd.NoFft = Config.LowNoFft; LowEnd.RenderScalePct = low ? Mathf.Clamp(Config.LowRenderScale, 10, 100) : 100; LowEnd.SharpUpscale = Config.LowSharpUpscale; LowEnd.ImageCap = Config.LowImageCap; LowEnd.Sharpen = low && Config.LowSharpen; LowEnd.SharpenValue = Mathf.Clamp(Config.LowSharpenValue, 0.25f, 4f); HalfRender.Enabled = low && E("LowHalfRender", Config.LowHalfRender); LowEnd.AutoRes = low && Config.LowAutoRes; LowEnd.AutoTargetFps = Config.LowAutoFps; LowEnd.AutoMinPct = Mathf.Clamp(Config.LowAutoMin, 10, 100); LowEnd.MenuFps = Config.LowMenuFps; Fsr.Enabled = low && E("LowFsr", Config.LowFsr) && !Config.LowSharpUpscale;
+            LowEnd.Priority = Platform.IsWindows && Config.LowPriority; LowEnd.NoThrottle = Platform.IsWindows && Config.LowNoThrottle; LowEnd.HalfMsTimer = Platform.IsWindows && Config.TimerHalfMs; LowEnd.NoFft = Config.LowNoFft; LowEnd.RenderScalePct = low ? Mathf.Clamp(Config.LowRenderScale, 10, 100) : 100; LowEnd.SharpUpscale = Config.LowSharpUpscale; LowEnd.ImageCap = Config.LowImageCap; LowEnd.Sharpen = low && Config.LowSharpen; LowEnd.SharpenValue = Mathf.Clamp(Config.LowSharpenValue, 0.25f, 4f); HalfRender.Enabled = low && E("LowHalfRender", Config.LowHalfRender); LowEnd.AutoRes = low && Config.LowAutoRes; LowEnd.AutoTargetFps = Config.LowAutoFps; LowEnd.AutoMinPct = Mathf.Clamp(Config.LowAutoMin, 10, 100); LowEnd.MenuFps = Config.LowMenuFps; Fsr.Enabled = low && E("LowFsr", Config.LowFsr) && !Config.LowSharpUpscale;
             EffectBudget.BudgetMs = Config.LowSplit >= 2 ? 3f : Config.LowSplit == 1 ? 5f : 10f;
             RecolorSplit.ChunkTiles = Config.LowSplit >= 2 ? 120 : Config.LowSplit == 1 ? 200 : 400;
             bool fsplit = low && E("LowFloorSplit", Config.LowFloorSplit);

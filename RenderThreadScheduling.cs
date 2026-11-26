@@ -26,6 +26,7 @@ namespace StutterFix
         }
         internal static void Tick()
         {
+            if(!Platform.IsWindows)return;
             if(!enabled&&lease==null&&pending==0)return;
             int key=enabled&&Hitch.Playing?((mode==1?1:0)+(cores?4:0)+(avoidZero?8:0)):0;
             if(key==lastKey&&pending==0)return;
@@ -72,6 +73,7 @@ namespace StutterFix
         }
         private static bool Release()
         {
+            if(!Platform.IsWindows)return true;
             try
             {
                 if(pending!=0){sf_render_thread_capture_cancel_v1(pending);pending=0;}
@@ -88,7 +90,7 @@ namespace StutterFix
             catch{return false;}
         }
         internal static void Shutdown()
-        {enabled=false;if(Release()){lastKey=-1;Status="꺼짐";}else Status="렌더 스레드 복구 확인 안 됨";}
+        {enabled=false;if(!Platform.IsWindows){lastKey=-1;Status="꺼짐";return;}if(Release()){lastKey=-1;Status="꺼짐";}else Status="렌더 스레드 복구 확인 안 됨";}
 #if DEV || AUTOTEST
         internal static string FixtureState=>Status+" owned="+(lease!=null&&lease.Owned)+" pending="+pending+" requested="+enabled+" before=["+beforeFixture+"] current=["+(lease==null?"closed":lease.SnapshotForFixture())+"] restored=["+afterFixture+"]";
 #endif

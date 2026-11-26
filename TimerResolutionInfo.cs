@@ -7,6 +7,7 @@ namespace StutterFix
         [DllImport("ntdll.dll",ExactSpelling=true)]private static extern int NtQueryTimerResolution(out uint maximum,out uint minimum,out uint current);
         internal static string Read()
         {
+            if(!Platform.IsWindows)return "unsupported-os · requests_changed=0";
             try
             {
                 uint maximum,minimum,current;int status=NtQueryTimerResolution(out maximum,out minimum,out current);

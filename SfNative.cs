@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading;
 
@@ -23,8 +24,9 @@ namespace StutterFix
         internal static long UnfilterRows, DxtRows, DevChecks, DevMismatch;
         internal static string FirstMismatch = "";
 
-        [DllImport("kernel32", SetLastError = true, CharSet = CharSet.Unicode)] private static extern IntPtr LoadLibraryW(string path);
-        [DllImport("kernel32", CharSet = CharSet.Ansi)] private static extern IntPtr GetProcAddress(IntPtr mod, string name);
+        internal static IntPtr Handle;
+        internal static bool HasExport(string symbol) { return Handle != IntPtr.Zero && NativeLib.HasSymbol(Handle, symbol); }
+
         [DllImport("sfnative", CallingConvention = CallingConvention.Cdecl)] private static extern int sf_version();
         [DllImport("sfnative", CallingConvention = CallingConvention.Cdecl)] private static extern void sf_dxt_init();
         [DllImport("sfnative", CallingConvention = CallingConvention.Cdecl)] private static extern int sf_unfilter_to(byte* d, byte* s, byte* p, int n, int bpp, int filter);
@@ -43,11 +45,11 @@ namespace StutterFix
         // 긴 멈춤 동안 화면 다시 내보내기(WindowGhost.KeepPresenting): 그래픽 스레드에서 부를 함수 주소와 스왑체인, 결과 개수
         internal static bool PresentReady;
         internal static bool FrameGenReady;
-        internal static IntPtr PresentEvent(IntPtr swapChain) { if (!Ready || !PresentReady) return IntPtr.Zero; sf_set_swapchain(swapChain); return sf_present_event_ptr(); }
-        internal static int PresentCount { get { return Ready && PresentReady ? sf_present_count() : 0; } }
-        internal static int PresentFails { get { return Ready && PresentReady ? sf_present_fail_count() : 0; } }
-        internal static int PresentLastHr { get { return Ready && PresentReady ? sf_present_last_hr() : 0; } }
-        internal static int PresentRebinds { get { return Ready && PresentReady ? sf_present_rebind_count() : 0; } }
+        internal static IntPtr PresentEvent(IntPtr swapChain) { if (!Platform.IsWindows || !Ready || !PresentReady) return IntPtr.Zero; sf_set_swapchain(swapChain); return sf_present_event_ptr(); }
+        internal static int PresentCount { get { return Platform.IsWindows && Ready && PresentReady ? sf_present_count() : 0; } }
+        internal static int PresentFails { get { return Platform.IsWindows && Ready && PresentReady ? sf_present_fail_count() : 0; } }
+        internal static int PresentLastHr { get { return Platform.IsWindows && Ready && PresentReady ? sf_present_last_hr() : 0; } }
+        internal static int PresentRebinds { get { return Platform.IsWindows && Ready && PresentReady ? sf_present_rebind_count() : 0; } }
 
         // 전체 경로로 먼저 올려 두면 DllImport("sfnative") 가 이미 올라온 것을 쓴다(libdeflate 와 같은 방식).
         internal static void Init(string path)
@@ -55,21 +57,52 @@ namespace StutterFix
             if (Ready) return;
             try
             {
-                if (!File.Exists(path)) { Status = "DLL 없음"; return; }
-                IntPtr mod = LoadLibraryW(path);
-                if (mod == IntPtr.Zero) { Status = "DLL 불러오기 실패 (" + Marshal.GetLastWin32Error() + ")"; return; }
+                IntPtr mod;
+                if (Platform.IsWindows)
+                {
+                    if (string.IsNullOrEmpty(path) || !File.Exists(path)) { Status = "DLL 없음"; return; }
+                    mod = NativeLib.Load(path);
+                    if (mod == IntPtr.Zero) { Status = "DLL 불러오기 실패 (" + NativeLib.LastError() + ")"; return; }
+                }
+                else if (Platform.IsLinux)
+                {
+                    string modPath = Main.Entry != null ? Path.Combine(Main.Entry.Path, "libsfnative.so") : null;
+                    if (!string.IsNullOrEmpty(path) && File.Exists(path))
+                        mod = NativeLib.LoadAny(path, "libsfnative.so");
+                    else if (!string.IsNullOrEmpty(modPath) && File.Exists(modPath))
+                        mod = NativeLib.LoadAny(modPath, "libsfnative.so");
+                    else
+                        mod = NativeLib.Load("libsfnative.so");
+                    if (mod == IntPtr.Zero) { Status = "SO 불러오기 실패 (" + NativeLib.LastError() + ")"; return; }
+                }
+                else { Status = "미지원 OS"; return; }
+                Handle = mod;
                 // 화면 다시 내보내기 함수는 2.3.2 에 들어왔다. 게임이 예전 DLL 을 이미 올려 둔 채 모드만 다시 불러오면 없다.
-                PresentReady = GetProcAddress(mod, "sf_present_rebind_count") != IntPtr.Zero;
-                FrameGenReady = GetProcAddress(mod, "sf_framegen_setup") != IntPtr.Zero;
-                DownscaleReady = GetProcAddress(mod, "sf_downscale") != IntPtr.Zero;   // 2.5.1 (예전 DLL 이 올라와 있으면 C# 으로)
-                FuseReady = GetProcAddress(mod, "sf_unfilter_downscale") != IntPtr.Zero;
-                StreamReady = GetProcAddress(mod, "sf_png_shrink") != IntPtr.Zero;
-                int v = sf_version();
-                if (v != 1) { Status = "버전이 다름 (" + v + ")"; return; }
-                sf_dxt_init();
+                PresentReady = Platform.IsWindows && HasExport("sf_present_rebind_count");
+                FrameGenReady = Platform.IsWindows && HasExport("sf_framegen_setup");
+                DownscaleReady = HasExport("sf_downscale");   // 2.5.1 (예전 DLL 이 올라와 있으면 C# 으로)
+                FuseReady = HasExport("sf_unfilter_downscale");
+                StreamReady = HasExport("sf_png_shrink");
+                int v = InitCore();
+                if (v != 1) { ResetCapabilities(); Status = "버전이 다름 (" + v + ")"; return; }
                 Ready = true; Status = "사용 중";
             }
-            catch (Exception ex) { Ready = false; Status = "실패: " + ex.Message; }
+            catch (Exception ex) { Ready = false; ResetCapabilities(); Status = "실패: " + ex.Message; }
+        }
+
+        // Mono JIT가 Init 본문(NativeLib.LoadAny) 실행 전에 DllImport("sfnative") 를 미리 해석하지 않도록 분리한다.
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private static int InitCore()
+        {
+            int v = sf_version();
+            if (v == 1) sf_dxt_init();
+            return v;
+        }
+
+        private static void ResetCapabilities()
+        {
+            Handle = IntPtr.Zero;
+            PresentReady = FrameGenReady = DownscaleReady = FuseReady = StreamReady = false;
         }
 
         private static bool Use { get { return Ready && Enabled; } }

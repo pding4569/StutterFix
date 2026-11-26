@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace StutterFix
@@ -47,8 +48,6 @@ namespace StutterFix
             }
             catch{Reset();}
         }
-        [DllImport("kernel32.dll",CharSet=CharSet.Unicode)]private static extern IntPtr GetModuleHandleW(string name);
-        [DllImport("kernel32.dll",CharSet=CharSet.Ansi,ExactSpelling=true)]private static extern IntPtr GetProcAddress(IntPtr module,string name);
         [DllImport("sfnative",CallingConvention=CallingConvention.Cdecl)]private static extern IntPtr sf_alloc_aligned64_v1(UIntPtr bytes);
         [DllImport("sfnative",CallingConvention=CallingConvention.Cdecl)]private static extern void sf_free_aligned64_v1(IntPtr pointer);
         private static AlignedArena CreateArena()
@@ -64,16 +63,17 @@ namespace StutterFix
                 // ApplyConfig runs before image-module installation on a fresh start.
                 // The optional native arena depends on the DLL being initialized first.
                 if(!SfNative.Ready&&Main.Entry!=null)
-                    SfNative.Init(System.IO.Path.Combine(Main.Entry.Path,"sfnative.dll"));
-                if(SfNative.Available)
-                {
-                    var module=GetModuleHandleW("sfnative.dll");
-                    if(module!=IntPtr.Zero&&GetProcAddress(module,"sf_alloc_aligned64_v1")!=IntPtr.Zero&&GetProcAddress(module,"sf_free_aligned64_v1")!=IntPtr.Zero)
-                        return new AlignedArena(Capacity*5*sizeof(float),bytes=>sf_alloc_aligned64_v1(new UIntPtr((uint)bytes)),sf_free_aligned64_v1);
-                }
+                    SfNative.Init(System.IO.Path.Combine(Main.Entry.Path,Platform.IsLinux?"libsfnative.so":"sfnative.dll"));
+                if(SfNative.Available&&SfNative.HasExport("sf_alloc_aligned64_v1")&&SfNative.HasExport("sf_free_aligned64_v1"))
+                    return CreateNativeArena();
             }
             catch{}
             return new AlignedArena(Capacity*5*sizeof(float));
+        }
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private static AlignedArena CreateNativeArena()
+        {
+            return new AlignedArena(Capacity*5*sizeof(float),bytes=>sf_alloc_aligned64_v1(new UIntPtr((uint)bytes)),sf_free_aligned64_v1);
         }
         internal static bool Run(int count)
         {
@@ -93,7 +93,7 @@ namespace StutterFix
         // Call before gathering animation rows: calibration owns scratch rows.
         internal static bool EnsureCompatible()
         {
-            if(!Enabled||Failed||!SfNative.Available||!ZeroTween.CanEase)return false;
+            if(!Enabled||Failed||!SfNative.Available||!SfNative.HasExport("sf_motion_linear")||!ZeroTween.CanEase)return false;
             if(Compatible)return true;
             try
             {

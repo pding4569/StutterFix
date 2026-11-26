@@ -978,7 +978,7 @@ namespace StutterFix
         {
             var c = Main.Config;
             int on = (c.GcPause ? 1 : 0) + (c.EffectSplit ? 1 : 0) + (c.RecolorSplit ? 1 : 0) + (c.TweenGuard ? 1 : 0) + (c.SkipSameText ? 1 : 0) + (c.FilterTypeCache ? 1 : 0) + (c.FilterIdentity ? 1 : 0) + (c.MeshWarm ? 1 : 0) + (c.SoundWarm ? 1 : 0) + (c.JitWarm ? 1 : 0)
-                   + (c.ShaderWarm ? 1 : 0) + (c.FastBlend ? 1 : 0) + (c.SkipInvisible ? 1 : 0) + (c.LazyHidden ? 1 : 0) + (c.ZeroTween ? 1 : 0) + (c.InstantDirect ? 1 : 0) + (c.SkipSame ? 1 : 0) + (c.FastLoop ? 1 : 0) + (c.Precheck ? 1 : 0) + (c.DecoAnim ? 1 : 0) + (c.FloorAnim ? 1 : 0) + (c.MoveFinish ? 1 : 0) + (c.DormantSkip ? 1 : 0) + (c.ImagePrefetch ? 1 : 0) + (c.SkipAssetUnload ? 1 : 0) + (c.LegacyGfxJobs ? 1 : 0) + (c.NoGhosting ? 1 : 0) + (c.SkipIdleParticles ? 1 : 0) + (c.LeakFix ? 1 : 0) + (c.LoadCache ? 1 : 0);
+                   + (c.ShaderWarm ? 1 : 0) + (c.FastBlend ? 1 : 0) + (c.SkipInvisible ? 1 : 0) + (c.LazyHidden ? 1 : 0) + (c.ZeroTween ? 1 : 0) + (c.InstantDirect ? 1 : 0) + (c.SkipSame ? 1 : 0) + (c.FastLoop ? 1 : 0) + (c.Precheck ? 1 : 0) + (c.DecoAnim ? 1 : 0) + (c.FloorAnim ? 1 : 0) + (c.MoveFinish ? 1 : 0) + (c.DormantSkip ? 1 : 0) + (c.ImagePrefetch ? 1 : 0) + (c.SkipAssetUnload ? 1 : 0) + (c.LegacyGfxJobs ? 1 : 0) + (Platform.IsWindows && c.NoGhosting ? 1 : 0) + (c.SkipIdleParticles ? 1 : 0) + (c.LeakFix ? 1 : 0) + (c.LoadCache ? 1 : 0);
             string d = BootConfig.Describe();
             bool jobs = d.Contains("Jobified") || d.Contains("Split");
 
@@ -1177,10 +1177,13 @@ namespace StutterFix
                 ch |= Option("flooranim", ref c.FloorAnim, T("타일 애니메이션 직접 처리", "Tile move animations"),
                     T("길이가 있는 타일 이동(위치·회전·크기·불투명도)의 애니메이션을 DOTween 대신 모드가 돌립니다. 타일 수천 개를 한 번에 옮기는 효과가 시작될 때의 끊김을 줄입니다. 시간 누적, 이징, 끊기는 DOTween 과 똑같이 합니다.",
                       "Runs tile move animations (position, rotation, scale, opacity) in the mod instead of DOTween, reducing the hitch when an effect moves thousands of tiles at once. Timing, easing and kill behavior match DOTween."), null);
-                ch |= Option("timerhalf", ref c.TimerHalfMs, T("타이머 정밀도 0.5ms 요청", "0.5 ms timer resolution"),
-                    T("윈도우 타이머 정밀도를 0.5ms 까지 요청해 프레임 대기와 입력 처리가 덜 튀게 합니다. 기본 켬입니다. ISLC 같은 프로그램이 이미 0.5ms 로 고정해 둔 컴퓨터에서는 차이가 없습니다. 끄거나 게임을 끝내면 우리가 올린 요청만 내립니다.",
-                      "Requests 0.5 ms Windows timer resolution for steadier frame waits and input handling. On by default. No difference on PCs where a tool such as ISLC already pins it. Turning it off releases only our own request."),
-                    null);
+                if (Platform.IsWindows)
+                {
+                    ch |= Option("timerhalf", ref c.TimerHalfMs, T("타이머 정밀도 0.5ms 요청", "0.5 ms timer resolution"),
+                        T("윈도우 타이머 정밀도를 0.5ms 까지 요청해 프레임 대기와 입력 처리가 덜 튀게 합니다. 기본 켬입니다. ISLC 같은 프로그램이 이미 0.5ms 로 고정해 둔 컴퓨터에서는 차이가 없습니다. 끄거나 게임을 끝내면 우리가 올린 요청만 내립니다.",
+                          "Requests 0.5 ms Windows timer resolution for steadier frame waits and input handling. On by default. No difference on PCs where a tool such as ISLC already pins it. Turning it off releases only our own request."),
+                        null);
+                }
                 EndGroup();
                 SubHeading(T("맵 파일 캐시", "Level disk cache"), "");
                 BeginGroup();
@@ -1188,14 +1191,17 @@ namespace StutterFix
                     T("다시 여는 맵의 이미지 압축 결과와 JSON 해석 결과를 내장 드라이브(C:)에 저장합니다. 첫 열기는 캐시 쓰기로 약 0.1~1.2초 더 걸릴 수 있습니다. 두 번째 열기부터 약 1~2초 빨라지고 맵마다 1~2GB를 씁니다. 기본 최대 3GB이며 남은 공간이 모자라면 저절로 꺼지고 파일이 바뀌면 다시 만듭니다.",
                       "Stores compressed images and parsed JSON on the internal drive (C:) for revisits. Cache writes can add about 0.1–1.2 s to the first load. Opens ~1-2 s faster from the second time and uses 1-2 GB per heavy level. Default maximum 3 GB; turns itself off when free space is low and rebuilds changed files."), null);
                 EndGroup();
-                SubHeading(T("메인·렌더 스레드 우선순위", "Main and render thread priority"), "");
-                BeginGroup();
-                int threadMode = c.ThreadSchedulingMode == 0 ? 0 : 1;
-                if (Segment("threadmode", ref threadMode, new[] { T("끔", "Off"), T("우선순위", "Priority") })) { c.ThreadSchedulingMode = threadMode; ch = true; }
-                P(T("곡 중 메인·렌더 스레드 우선순위를 함께 높이면 끊김이 줄어듭니다. 곡 밖에서는 원래대로 복구합니다. 두 설정 모두 기본 켬이며 방송·녹화 프로그램이 CPU를 덜 받을 수 있습니다.", "Raising main and render thread priority together reduces hitches. Restores outside play. Both settings are on by default; streaming or recording apps may get less CPU time."), sDim);
-                ch |= Option("threadrender",ref c.ThreadRenderScheduling,T("렌더 스레드도 적용","Also apply to render thread"),
-                    T("위 우선순위·코어 선택을 렌더 스레드에도 적용하고 곡 밖·모드 내리기에서 복구합니다. 오디오 방식 예약은 메인 스레드에만 적용합니다. 우선순위와 함께 기본 켬입니다.","Applies the priority/core choices to the render thread; restores outside play and on unload. Audio-task registration applies to the main thread only. On by default together with priority."),null);
-                EndGroup();
+                if (Platform.IsWindows)
+                {
+                    SubHeading(T("메인·렌더 스레드 우선순위", "Main and render thread priority"), "");
+                    BeginGroup();
+                    int threadMode = c.ThreadSchedulingMode == 0 ? 0 : 1;
+                    if (Segment("threadmode", ref threadMode, new[] { T("끔", "Off"), T("우선순위", "Priority") })) { c.ThreadSchedulingMode = threadMode; ch = true; }
+                    P(T("곡 중 메인·렌더 스레드 우선순위를 함께 높이면 끊김이 줄어듭니다. 곡 밖에서는 원래대로 복구합니다. 두 설정 모두 기본 켬이며 방송·녹화 프로그램이 CPU를 덜 받을 수 있습니다.", "Raising main and render thread priority together reduces hitches. Restores outside play. Both settings are on by default; streaming or recording apps may get less CPU time."), sDim);
+                    ch |= Option("threadrender",ref c.ThreadRenderScheduling,T("렌더 스레드도 적용","Also apply to render thread"),
+                        T("위 우선순위·코어 선택을 렌더 스레드에도 적용하고 곡 밖·모드 내리기에서 복구합니다. 오디오 방식 예약은 메인 스레드에만 적용합니다. 우선순위와 함께 기본 켬입니다.","Applies the priority/core choices to the render thread; restores outside play and on unload. Audio-task registration applies to the main thread only. On by default together with priority."),null);
+                    EndGroup();
+                }
             }
             else if (sub == 1)
             {
@@ -1310,25 +1316,30 @@ namespace StutterFix
                       "Uses native SIMD for at least 512 linear position, rotation or opacity values. Other easing and decoration updates keep their existing order."), null);
                 ch |= Option("motionarena",ref c.NativeMotionArena,T("계산 버퍼를 비관리 메모리에 (실험)","Unmanaged arithmetic buffers (experimental)"),
                     T("숫자 계산 묶기의 버퍼 1.25MiB를 64바이트 정렬 영역에서 재사용합니다. 다른 게임 객체와 맵 데이터는 그대로입니다.","Reuses 1.25 MiB of 64-byte aligned storage for batched arithmetic. Other game objects and level data remain unchanged."),null,1,c.NativeMotion?null:T("장식 숫자 계산 묶기","Batch decoration arithmetic"));
-                ch |= Option("motionpin",ref c.NativeMotionPinArena,T("계산 버퍼를 RAM에 고정 (실험)","Lock arithmetic buffers in RAM (experimental)"),
-                    T("자기 소유 계산 버퍼 1.25MiB만 별도 페이지에 고정합니다. RAM 여유가 적거나 윈도우가 거부하면 기존 할당을 씁니다. 끄면 페이지와 작업 집합 설정을 복구합니다.","Locks only the owned 1.25 MiB arithmetic buffer in private pages. Keeps the previous allocation if RAM is low or Windows rejects it; disabling releases pages and restores owned working-set changes."),null,2,c.NativeMotion&&c.NativeMotionArena?null:T("비관리 계산 버퍼","Unmanaged arithmetic buffers"));
+                if (Platform.IsWindows)
+                    ch |= Option("motionpin",ref c.NativeMotionPinArena,T("계산 버퍼를 RAM에 고정 (실험)","Lock arithmetic buffers in RAM (experimental)"),
+                        T("자기 소유 계산 버퍼 1.25MiB만 별도 페이지에 고정합니다. RAM 여유가 적거나 윈도우가 거부하면 기존 할당을 씁니다. 끄면 페이지와 작업 집합 설정을 복구합니다.","Locks only the owned 1.25 MiB arithmetic buffer in private pages. Keeps the previous allocation if RAM is low or Windows rejects it; disabling releases pages and restores owned working-set changes."),null,2,c.NativeMotion&&c.NativeMotionArena?null:T("비관리 계산 버퍼","Unmanaged arithmetic buffers"));
                 ch |= Option("tagindex", ref c.TagIndex, T("장식 태그 색인 (실험)", "Decoration tag index (experimental)"),
                     T("재생 준비 때 태그에 번호를 붙여 반복 조회를 줄입니다. 태그 표의 변경을 감지할 수 없거나 표가 바뀌면 기존 조회를 씁니다.",
                       "Indexes tags at playback preparation. Falls back when table changes cannot be tracked or the table changes."), null);
                 ch |= Option("tagprimitive",ref c.TagIndexNativePlans,T("태그 번호를 비관리 메모리에 (실험)","Unmanaged tag numbers (experimental)"),T("태그 색인의 정수 번호만 최대 8MiB 영역에 보관합니다. 게임 객체 참조는 유지하며, 영역이 부족하거나 실패하면 기존 배열을 씁니다. GC·성능 개선은 확인 중입니다.","Stores only integer tag IDs in up to 8 MiB of unmanaged storage. Keeps game object references; uses arrays on capacity or allocation failure. GC/performance effects are under validation."),null,1,c.TagIndex?null:T("장식 태그 색인","Decoration tag index"));
-                ch |= Option("inputframewait",ref c.FrameQueueDelay,T("입력 프레임 대기 보정 (실험)","Input frame wait correction (experimental)"),
-                    T("키 메시지를 받은 뒤 게임이 확인할 때까지의 대기만 보정합니다. 게임의 비동기 입력을 쓰면 추가로 적용하지 않습니다. 지원되지 않는 입력은 그대로 처리하며 기본 꺼짐입니다.","Corrects only the wait between receiving a key message and the game checking it. Adds nothing when game async input is active. Keeps unsupported input unchanged; off by default."),null);
+                if (Platform.IsWindows)
+                    ch |= Option("inputframewait",ref c.FrameQueueDelay,T("입력 프레임 대기 보정 (실험)","Input frame wait correction (experimental)"),
+                        T("키 메시지를 받은 뒤 게임이 확인할 때까지의 대기만 보정합니다. 게임의 비동기 입력을 쓰면 추가로 적용하지 않습니다. 지원되지 않는 입력은 그대로 처리하며 기본 꺼짐입니다.","Corrects only the wait between receiving a key message and the game checking it. Adds nothing when game async input is active. Keeps unsupported input unchanged; off by default."),null);
                 ch |= Option("particlecatchup", ref c.ParticleCatchup, T("입자 복귀 따라잡기 (실험)", "Catch up returning particles (experimental)"),
                     T("화면 밖 입자 멈추기와 함께 사용하면 다시 보일 때 지난 시간을 따라잡습니다. 돌아오는 순간의 추가 비용은 확인 중입니다.",
                       "With offscreen particle pause, catches up elapsed time when particles return. Return-time cost is under validation."), null);
                 EndGroup();
                 SubHeading(T("스레드·물리 실험", "Thread and physics experiments"), "");
                 BeginGroup();
-                bool audioTask = c.ThreadSchedulingMode == 2;
-                if (Option("threadaudio", ref audioTask, T("메인 스레드 오디오 방식 예약 (실험)", "Main thread audio-task scheduling"),
-                    T("메인 스레드에 MMCSS 오디오 방식 예약을 씁니다. 단독 이득은 확인되지 않았습니다. 끄면 일반 우선순위로 돌아갑니다.", "Uses MMCSS audio-task scheduling on the main thread. Independent gains are unverified. Disabling returns to normal priority."), null)) { c.ThreadSchedulingMode = audioTask ? 2 : 1; ch = true; }
-                ch |= Option("threadpcores",ref c.ThreadPerformanceCores,T("고성능 코어만 사용 (실험)","Performance cores only (experimental)"),T("윈도우가 서로 다른 코어 등급을 알려줄 때만 메인 스레드에 적용합니다. 구분할 수 없으면 기존 배치를 유지합니다.","Restricts the main thread only when Windows reports heterogeneous core classes. Otherwise keeps the original placement."),null);
-                ch |= Option("threadavoidzero",ref c.ThreadAvoidLogicalZero,T("0번 논리 코어 제외 (실험)","Avoid logical CPU 0 (experimental)"),T("곡 중 메인 스레드의 허용 코어에서 0번만 뺍니다. 남는 코어가 없으면 적용하지 않으며 곡 밖에서 복구합니다. 인터럽트 감소나 성능 개선은 확인 안 됨입니다.","Excludes logical CPU 0 from the main thread during play. Keeps placement if no eligible core remains and restores outside play. Interrupt or performance improvements are unverified."),null);
+                if (Platform.IsWindows)
+                {
+                    bool audioTask = c.ThreadSchedulingMode == 2;
+                    if (Option("threadaudio", ref audioTask, T("메인 스레드 오디오 방식 예약 (실험)", "Main thread audio-task scheduling"),
+                        T("메인 스레드에 MMCSS 오디오 방식 예약을 씁니다. 단독 이득은 확인되지 않았습니다. 끄면 일반 우선순위로 돌아갑니다.", "Uses MMCSS audio-task scheduling on the main thread. Independent gains are unverified. Disabling returns to normal priority."), null)) { c.ThreadSchedulingMode = audioTask ? 2 : 1; ch = true; }
+                    ch |= Option("threadpcores",ref c.ThreadPerformanceCores,T("고성능 코어만 사용 (실험)","Performance cores only (experimental)"),T("윈도우가 서로 다른 코어 등급을 알려줄 때만 메인 스레드에 적용합니다. 구분할 수 없으면 기존 배치를 유지합니다.","Restricts the main thread only when Windows reports heterogeneous core classes. Otherwise keeps the original placement."),null);
+                    ch |= Option("threadavoidzero",ref c.ThreadAvoidLogicalZero,T("0번 논리 코어 제외 (실험)","Avoid logical CPU 0 (experimental)"),T("곡 중 메인 스레드의 허용 코어에서 0번만 뺍니다. 남는 코어가 없으면 적용하지 않으며 곡 밖에서 복구합니다. 인터럽트 감소나 성능 개선은 확인 안 됨입니다.","Excludes logical CPU 0 from the main thread during play. Keeps placement if no eligible core remains and restores outside play. Interrupt or performance improvements are unverified."),null);
+                }
                 ch |= Option("physicspause",ref c.PhysicsPause,T("곡 중 물리 시뮬레이션 중지 (실험)","Pause physics simulation during play (experimental)"),
                     T("게임은 물리 엔진의 움직임 계산을 쓰지 않고 판정 영역 질의만 씁니다. 곡 중에는 시뮬레이션 단계를 멈춰 CPU를 아낍니다. 충돌 콜백에 기대는 다른 모드는 멈출 수 있어 기본 꺼짐이며, 곡이 끝나면 원래 값으로 되돌립니다.",
                       "The game only uses physics queries, not simulation. Stops the simulation step during a song to save CPU. Mods relying on collision callbacks may stop working, so it is off by default; restored when the song ends."),
@@ -1854,6 +1865,8 @@ namespace StutterFix
                 BootConfig.Apply(v, c.FlipModel == 1);
                 Save();
             }
+            if (Platform.IsWindows)
+            {
             bool ghost = c.NoGhosting;
             if (Option("ghost", ref ghost, T("첫 판 FPS 떨어짐 막기", "Prevent first-run FPS drop"),
                 T("큰 맵에서 Play 를 누르고 곡이 시작되기까지 게임이 5초 넘게 멈추면, 윈도우가 게임 창을 '응답 없음' 창으로 바꿔치기합니다. 그 뒤로는 그 판 내내 프레임마다 1.7ms 를 더 기다려 FPS 가 크게 떨어졌습니다(Arche 약 320 -> 200 FPS, 죽고 다시 하면 정상). 이 게임에서만 '응답 없음' 창을 끕니다. 게임이 정말 멈췄을 때 '응답 없음' 표시가 안 뜨는 것 말고는 달라지는 것이 없습니다. 끄면 다음 실행부터 적용됩니다.",
@@ -1931,6 +1944,14 @@ namespace StutterFix
                 if (HalfRender.Enabled) P(T("'반만 그리기'가 켜져 있어 프레임 늘리기는 쉬고 있습니다. 두 방식 중 하나를 선택하세요.", "Frame increase is suspended while Half rendering is enabled. Choose one method."), sDim);
                 else if (FrameGen.Status.Length>0) P(FrameGen.Status, sDim);
             }
+            }
+            else
+            {
+                BeginRow();
+                P(T("Windows / D3D11 전용 그래픽 옵션(고스트 창 끄기, Flip 방식, 프레임 늘리기)은 Linux에서 숨겨집니다.",
+                    "Windows / D3D11-only graphics options (ghost window, Flip model, frame generation) are hidden on Linux."), sDim);
+                EndRow();
+            }
             bool exfs = c.ExpFullscreen == 1;
             if (Option("exfs", ref exfs, T("화면 지연 줄이기 (독점 전체 화면)", "Lower display latency (exclusive fullscreen)"),
                 T("전체 화면일 때 게임을 독점 전체 화면으로 바꿔, 윈도우가 화면을 한 번 더 합성하는 단계를 건너뜁니다. 측정(HELLO 2026, 165Hz): 프레임이 화면에 나오기까지 15.8 -> 7.9ms 로 절반, 평균 FPS 는 209 -> 187 로 조금 낮아집니다. 수직동기가 꺼져 있으면 화면이 가로로 찢어져 보일 수 있고, Alt+Tab 하면 게임이 최소화되며 켜고 끌 때 화면이 한 번 깜빡입니다. 창 모드에서는 아무것도 하지 않습니다.",
@@ -1958,7 +1979,7 @@ namespace StutterFix
             {
                 var rec = PcTune.RecommendLabels();
                 rows.Add(T("추천", "Suggested")); rows.Add(rec.Count > 0 ? string.Join(", ", rec.ToArray()) : T("지금 설정으로 충분합니다", "Current settings are fine"));
-                if (PcTune.Integrated && c.FlipModel != 1) { rows.Add(T("내장 그래픽", "Integrated GPU")); rows.Add(T("그래픽 페이지의 \"최신 화면 출력 방식\"(실험)도 권합니다. 윈도우가 화면을 한 번 더 복사하는 것을 줄여 메모리 대역을 아낍니다. 게임을 다시 켜야 적용됩니다.", "The Modern presentation option (experimental, Graphics page) is also suggested: it saves one full-screen copy per frame. Needs a restart.")); }
+                if (Platform.IsWindows && PcTune.Integrated && c.FlipModel != 1) { rows.Add(T("내장 그래픽", "Integrated GPU")); rows.Add(T("그래픽 페이지의 \"최신 화면 출력 방식\"(실험)도 권합니다. 윈도우가 화면을 한 번 더 복사하는 것을 줄여 메모리 대역을 아낍니다. 게임을 다시 켜야 적용됩니다.", "The Modern presentation option (experimental, Graphics page) is also suggested: it saves one full-screen copy per frame. Needs a restart.")); }
             }
             InfoCard(rows.ToArray());
             GUILayout.BeginHorizontal();
@@ -1981,14 +2002,17 @@ namespace StutterFix
             {
             SubHeading(T("컴퓨터", "System"), T("다른 프로그램보다 게임이 먼저 돌게 하고, 플레이 밖에서는 쉬게 합니다.", "Lets the game run ahead of other programs and rest outside of play."));
             BeginGroup();
-            ch |= Option("lowprio", ref c.LowPriority, T("게임 우선순위 높이기", "Higher game priority"),
-                T("브라우저, 방송 프로그램, 업데이트 같은 다른 프로그램이 CPU 를 쓸 때 게임이 먼저 돌게 합니다. 백그라운드 때문에 끊기는 컴퓨터에 효과가 있습니다. 게임을 끄거나 이 기능을 끄면 원래대로 돌아갑니다.",
-                  "Lets the game run ahead of browsers, streaming and updates when they compete for the CPU. Reverts when the game or this option is turned off."),
-                null);
-            ch |= Option("lowthrottle", ref c.LowNoThrottle, T("윈도우 절전 제한 끄기", "No Windows power throttling"),
-                T("윈도우 11 이 게임을 '효율 모드'로 느린 코어에 몰아넣지 않게 하고, 타이머 정밀도를 1ms 로 올려 프레임 간격이 덜 흔들리게 합니다. 노트북에 효과가 큽니다. 전기를 조금 더 씁니다.",
-                  "Keeps Windows 11 from putting the game in efficiency mode and raises the timer resolution to 1 ms for steadier frame pacing. Helps laptops most; uses slightly more power."),
-                null);
+            if (Platform.IsWindows)
+            {
+                ch |= Option("lowprio", ref c.LowPriority, T("게임 우선순위 높이기", "Higher game priority"),
+                    T("브라우저, 방송 프로그램, 업데이트 같은 다른 프로그램이 CPU 를 쓸 때 게임이 먼저 돌게 합니다. 백그라운드 때문에 끊기는 컴퓨터에 효과가 있습니다. 게임을 끄거나 이 기능을 끄면 원래대로 돌아갑니다.",
+                      "Lets the game run ahead of browsers, streaming and updates when they compete for the CPU. Reverts when the game or this option is turned off."),
+                    null);
+                ch |= Option("lowthrottle", ref c.LowNoThrottle, T("윈도우 절전 제한 끄기", "No Windows power throttling"),
+                    T("윈도우 11 이 게임을 '효율 모드'로 느린 코어에 몰아넣지 않게 하고, 타이머 정밀도를 1ms 로 올려 프레임 간격이 덜 흔들리게 합니다. 노트북에 효과가 큽니다. 전기를 조금 더 씁니다.",
+                      "Keeps Windows 11 from putting the game in efficiency mode and raises the timer resolution to 1 ms for steadier frame pacing. Helps laptops most; uses slightly more power."),
+                    null);
+            }
             BeginRow();
             GUILayout.Label(T("메뉴·에디터 FPS 제한", "Menu / editor FPS limit"), sBody);
             P(T("플레이 중이 아닐 때(메뉴, 에디터 편집, 맵 고르기) FPS 를 묶어 그래픽카드와 CPU 를 쉬게 합니다. 노트북은 발열이 줄어 플레이할 때 열 때문에 느려지는 일이 덜합니다. 곡을 시작하면 바로 원래 FPS 로 돌아가고, 맵을 불러오는 동안에는 묶지 않습니다. 수직동기가 켜져 있으면 적용되지 않습니다.",
@@ -2927,13 +2951,76 @@ namespace StutterFix
         }
 
         // ── 모양 만들기 ─────────────────────────────────────────────────
-        // 설정 창과 실시간 모니터가 같이 쓰는 글꼴 (윈도우의 Segoe UI + 맑은 고딕)
-        private static Font uiFont;
+        // 설정 창과 실시간 모니터가 같이 쓰는 글꼴
+        // 윈도우: OS 동적 글꼴(Segoe UI + 맑은 고딕)
+        // 리눅스: Unity 6 IMGUI(TextCore)는 m_FontData 가 없는 런타임/OS Font 에서
+        //         TryGetSystemFontReference(name, "Regular") 조회에 실패해 글자가 그려지지 않는다.
+        //         게임 자체 Resources 의 m_FontData 포함 Font 에셋(SourceHanSansK)을 우선 사용한다.
+        private static Font uiFont, uiFontBold;
+
+        private static Font LoadLinuxUiFont()
+        {
+            // 1. 게임 내장 m_FontData 포함 Unity Font 에셋 (한글+영문+기호, OS/배포판/컨테이너 무관)
+            var pairs = new[] {
+                new[] { "SourceHanSans/Korean/SourceHanSansK-Normal", "SourceHanSans/Korean/SourceHanSansK-Bold" },
+                new[] { "SourceHanSans/Korean/SourceHanSansK-Medium", "SourceHanSans/Korean/SourceHanSansK-Bold" },
+                new[] { "SourceHanSans/Latin/SourceSans3-Normal", "SourceHanSans/Latin/SourceSans3-Bold" }
+            };
+            for (int i = 0; i < pairs.Length; i++)
+            {
+                try
+                {
+                    var reg = Resources.Load<Font>(pairs[i][0]);
+                    if (reg != null)
+                    {
+                        uiFontBold = Resources.Load<Font>(pairs[i][1]);
+                        Lg.I("[UI] Linux 글꼴 선택(게임 리소스): " + reg.name + (uiFontBold != null ? " (+" + uiFontBold.name + ")" : ""));
+                        return reg;
+                    }
+                }
+                catch { }
+            }
+
+            // 2. 이미 메모리에 올라온 게임 Font 에셋 탐색 (리소스 경로 변경 대비)
+            try
+            {
+                var loaded = Resources.FindObjectsOfTypeAll<Font>();
+                if (loaded != null)
+                {
+                    string[] names = { "SourceHanSansK-Normal", "SourceHanSansK-Medium", "SourceSans3-Normal", "LiberationSans" };
+                    for (int n = 0; n < names.Length; n++)
+                    {
+                        for (int i = 0; i < loaded.Length; i++)
+                        {
+                            var f = loaded[i];
+                            if (f != null && f.dynamic && string.Equals(f.name, names[n], StringComparison.OrdinalIgnoreCase))
+                            {
+                                Lg.I("[UI] Linux 글꼴 선택(로드된 에셋): " + f.name);
+                                return f;
+                            }
+                        }
+                    }
+                }
+            }
+            catch { }
+
+            return null;
+        }
+
         internal static Font UiFont()
         {
             if (uiFont != null) return uiFont;
-            try { uiFont = Font.CreateDynamicFontFromOSFont(new[] { "Segoe UI", "Malgun Gothic", "Arial" }, 16); } catch { uiFont = null; }
-            if (uiFont == null) uiFont = GUI.skin.font;
+            if (Platform.IsWindows)
+            {
+                try { uiFont = Font.CreateDynamicFontFromOSFont(new[] { "Segoe UI", "Malgun Gothic", "Arial" }, 16); } catch { uiFont = null; }
+            }
+            else
+            {
+                uiFont = LoadLinuxUiFont();
+            }
+            if (uiFont == null) { try { uiFont = GUI.skin != null ? GUI.skin.font : null; } catch { } }
+            if (uiFont == null) { try { uiFont = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf"); } catch { } }
+            if (uiFont == null) { try { uiFont = Resources.GetBuiltinResource<Font>("Arial.ttf"); } catch { } }
             return uiFont;
         }
 
@@ -2963,7 +3050,7 @@ namespace StutterFix
                 {
                     if (f.FieldType != typeof(GUIStyle)) continue;
                     var s = f.GetValue(owner) as GUIStyle;
-                    if (s == null) continue;
+                    if (s == null || s.font == null) continue;
                     var ws = new GUIStyle(s) { wordWrap = false, richText = false };
                     var size = ws.CalcSize(gc);
                     GUI.Label(new Rect(0, 0, size.x, size.y), gc, ws);   // 투명하게 한 번 그린다
@@ -3106,6 +3193,21 @@ namespace StutterFix
             sScroll = new GUIStyle { fixedWidth = 4, margin = new RectOffset(14, 0, 0, 0), border = new RectOffset(2, 2, 2, 2) };
             sThumb = new GUIStyle { fixedWidth = 4, border = new RectOffset(2, 2, 2, 2) };
             sThumb.normal.background = Card(Hex(0x3A3A3D), Hex(0x3A3A3D), 2, 0, 0, 0f);
+
+            // 별도 Bold 글꼴 파일이 로드되었으면 Bold 스타일에 직접 연결
+            if (uiFontBold != null)
+            {
+                foreach (var fi in typeof(SettingsWindow).GetFields(System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic))
+                {
+                    if (fi.FieldType != typeof(GUIStyle)) continue;
+                    var st = fi.GetValue(this) as GUIStyle;
+                    if (st != null && st.font == font && st.fontStyle == FontStyle.Bold)
+                    {
+                        st.font = uiFontBold;
+                        st.fontStyle = FontStyle.Normal;
+                    }
+                }
+            }
         }
 
         private GUIStyle Label(int size, Color color, FontStyle style)
@@ -3120,7 +3222,7 @@ namespace StutterFix
 
         private GUIStyle Styled(Texture2D bg, int border)
         {
-            var s = new GUIStyle { font = font, richText = true };
+            var s = new GUIStyle { font = font, fontSize = 13, richText = true };
             s.normal.background = bg;
             s.border = new RectOffset(border, border, border, border);
             s.margin = new RectOffset(0, 0, 0, 0);

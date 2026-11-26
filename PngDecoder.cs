@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.IO.Compression;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace StutterFix
@@ -25,10 +26,27 @@ namespace StutterFix
         internal static bool Ready;
         internal static string Status = "안 불러옴";
 
-        [DllImport("kernel32", SetLastError = true, CharSet = CharSet.Unicode)] private static extern IntPtr LoadLibraryW(string path);
         [DllImport("libdeflate", CallingConvention = CallingConvention.Cdecl)] private static extern IntPtr libdeflate_alloc_decompressor();
         [DllImport("libdeflate", CallingConvention = CallingConvention.Cdecl)] private static extern void libdeflate_free_decompressor(IntPtr d);
         [DllImport("libdeflate", CallingConvention = CallingConvention.Cdecl)] private static extern int libdeflate_zlib_decompress(IntPtr d, byte* input, UIntPtr inLen, byte* output, UIntPtr outAvail, UIntPtr* actualOut);
+
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] private delegate IntPtr AllocFn();
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] private delegate void FreeFn(IntPtr d);
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] private delegate int DecompressFn(IntPtr d, byte* input, UIntPtr inLen, byte* output, UIntPtr outAvail, UIntPtr* actualOut);
+        private static AllocFn fnAlloc;
+        private static FreeFn fnFree;
+        private static DecompressFn fnDecompress;
+
+        [MethodImpl(MethodImplOptions.NoInlining)] private static IntPtr WinAlloc() { return libdeflate_alloc_decompressor(); }
+        [MethodImpl(MethodImplOptions.NoInlining)] private static void WinFree(IntPtr d) { libdeflate_free_decompressor(d); }
+        [MethodImpl(MethodImplOptions.NoInlining)] private static int WinDecompress(IntPtr d, byte* input, UIntPtr inLen, byte* output, UIntPtr outAvail, UIntPtr* actualOut) { return libdeflate_zlib_decompress(d, input, inLen, output, outAvail, actualOut); }
+
+        private static IntPtr AllocDecompressor() { return fnAlloc != null ? fnAlloc() : WinAlloc(); }
+        private static void FreeDecompressor(IntPtr d) { if (fnFree != null) fnFree(d); else WinFree(d); }
+        private static int ZlibDecompress(IntPtr d, byte* input, UIntPtr inLen, byte* output, UIntPtr outAvail, UIntPtr* actualOut)
+        {
+            return fnDecompress != null ? fnDecompress(d, input, inLen, output, outAvail, actualOut) : WinDecompress(d, input, inLen, output, outAvail, actualOut);
+        }
 
         // 전체 경로의 DLL 을 먼저 올려 두면, 이름으로 찾는 DllImport("libdeflate") 가 이미 올라온 것을 쓴다.
         internal static void Init(string dllPath)
@@ -36,14 +54,37 @@ namespace StutterFix
             if (Ready) return;
             try
             {
-                if (!File.Exists(dllPath)) { Status = "DLL 없음"; return; }
-                if (LoadLibraryW(dllPath) == IntPtr.Zero) { Status = "DLL 불러오기 실패 (" + Marshal.GetLastWin32Error() + ")"; return; }
-                var d = libdeflate_alloc_decompressor();
-                if (d == IntPtr.Zero) { Status = "해독기 만들기 실패"; return; }
-                libdeflate_free_decompressor(d);
+                if (Platform.IsWindows)
+                {
+                    if (string.IsNullOrEmpty(dllPath) || !File.Exists(dllPath)) { Status = "DLL 없음"; return; }
+                    if (NativeLib.Load(dllPath) == IntPtr.Zero) { Status = "DLL 불러오기 실패 (" + NativeLib.LastError() + ")"; return; }
+                }
+                else if (Platform.IsLinux)
+                {
+                    string modPath = Main.Entry != null ? Path.Combine(Main.Entry.Path, "libdeflate.so") : null;
+                    IntPtr h;
+                    if (!string.IsNullOrEmpty(dllPath) && File.Exists(dllPath))
+                        h = NativeLib.LoadAny(dllPath, "libdeflate.so.0", "libdeflate.so");
+                    else if (!string.IsNullOrEmpty(modPath) && File.Exists(modPath))
+                        h = NativeLib.LoadAny(modPath, "libdeflate.so.0", "libdeflate.so");
+                    else
+                        h = NativeLib.LoadAny("libdeflate.so.0", "libdeflate.so");
+                    if (h == IntPtr.Zero) { Status = "SO 불러오기 실패 (" + NativeLib.LastError() + ")"; return; }
+                    IntPtr pAlloc = NativeLib.GetSymbol(h, "libdeflate_alloc_decompressor");
+                    IntPtr pFree = NativeLib.GetSymbol(h, "libdeflate_free_decompressor");
+                    IntPtr pDecompress = NativeLib.GetSymbol(h, "libdeflate_zlib_decompress");
+                    if (pAlloc == IntPtr.Zero || pFree == IntPtr.Zero || pDecompress == IntPtr.Zero) { Status = "심볼 없음"; return; }
+                    fnAlloc = (AllocFn)Marshal.GetDelegateForFunctionPointer(pAlloc, typeof(AllocFn));
+                    fnFree = (FreeFn)Marshal.GetDelegateForFunctionPointer(pFree, typeof(FreeFn));
+                    fnDecompress = (DecompressFn)Marshal.GetDelegateForFunctionPointer(pDecompress, typeof(DecompressFn));
+                }
+                else { Status = "미지원 OS"; return; }
+                var d = AllocDecompressor();
+                if (d == IntPtr.Zero) { fnAlloc = null; fnFree = null; fnDecompress = null; Status = "해독기 만들기 실패"; return; }
+                FreeDecompressor(d);
                 Ready = true; Status = "사용 중";
             }
-            catch (Exception ex) { Ready = false; Status = "실패: " + ex.Message; }
+            catch (Exception ex) { Ready = false; fnAlloc = null; fnFree = null; fnDecompress = null; Status = "실패: " + ex.Message; }
         }
 
         // 스레드마다 해독기 하나와 풀 자리(네이티브 메모리) 하나를 둔다. 작업 스레드가 끝날 때 FreeThread 로 푼다.
@@ -57,7 +98,7 @@ namespace StutterFix
             if (!Ready || expected <= 0 || expected > int.MaxValue) return null;
             try
             {
-                if (dec == IntPtr.Zero) { dec = libdeflate_alloc_decompressor(); if (dec == IntPtr.Zero) return null; }
+                if (dec == IntPtr.Zero) { dec = AllocDecompressor(); if (dec == IntPtr.Zero) return null; }
                 if (cap < expected)
                 {
                     if (buf != IntPtr.Zero) Marshal.FreeHGlobal(buf);
@@ -67,7 +108,7 @@ namespace StutterFix
                 UIntPtr actual;
                 int r;
                 fixed (byte* src = zlibData)
-                    r = libdeflate_zlib_decompress(dec, src, (UIntPtr)len, (byte*)buf, (UIntPtr)expected, &actual);
+                    r = ZlibDecompress(dec, src, (UIntPtr)len, (byte*)buf, (UIntPtr)expected, &actual);
                 if (r != 0 || (long)actual.ToUInt64() != expected) return null;   // 0 = 성공, 크기도 정확히 같아야 함
                 return (byte*)buf;
             }
@@ -78,7 +119,7 @@ namespace StutterFix
         {
             try
             {
-                if (dec != IntPtr.Zero) { libdeflate_free_decompressor(dec); dec = IntPtr.Zero; }
+                if (dec != IntPtr.Zero) { FreeDecompressor(dec); dec = IntPtr.Zero; }
                 if (buf != IntPtr.Zero) { Marshal.FreeHGlobal(buf); buf = IntPtr.Zero; cap = 0; }
             }
             catch { }

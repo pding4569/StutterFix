@@ -10,6 +10,7 @@ namespace StutterFix
         internal static string OriginalSnapshot="unknown";
         internal static IntPtr Allocate(int bytes)
         {
+            if(!Platform.IsWindows){Status="off";return IntPtr.Zero;}
             lock(gate)
             {
                 if(lease!=null)return IntPtr.Zero;
@@ -22,6 +23,7 @@ namespace StutterFix
         internal static bool Owns(IntPtr pointer){lock(gate)return lease!=null&&lease.Pointer==pointer&&pointer!=IntPtr.Zero;}
         internal static void Release(IntPtr pointer)
         {
+            if(!Platform.IsWindows)return;
             lock(gate)
             {
                 if(lease==null||lease.Pointer!=pointer)return;
@@ -30,10 +32,11 @@ namespace StutterFix
         }
         internal static void RetryCleanup()
         {
+            if(!Platform.IsWindows)return;
             lock(gate){if(lease!=null){lease.Dispose();Status=lease.Status;if(lease.Released)lease=null;}}
         }
         internal static string WorkingSetSnapshot()
-        {try{WorkingSetBounds b;return new WindowsPages().GetWorkingSet(out b)?b.Minimum+"/"+b.Maximum+"/"+b.Flags:"unknown";}catch{return "unknown";}}
+        {if(!Platform.IsWindows)return "unknown";try{WorkingSetBounds b;return new WindowsPages().GetWorkingSet(out b)?b.Minimum+"/"+b.Maximum+"/"+b.Flags:"unknown";}catch{return "unknown";}}
         private sealed class WindowsPages:IPageLockApi
         {
             [StructLayout(LayoutKind.Sequential)]private struct MemoryStatus{internal uint Length,Load;internal ulong Total,Available,PageTotal,PageAvailable,VirtualTotal,VirtualAvailable,Extended;}

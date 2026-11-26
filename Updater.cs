@@ -41,6 +41,7 @@ namespace StutterFix
         // OnUpdate 에서 부른다
         internal static void Tick()
         {
+            if (!Platform.IsWindows) return;
             if (installState >= 2) InstallDone();
             if (Main.Config == null || Hitch.Playing) return;   // 곡 중에는 결과 처리도 새 요청도 하지 않는다
             if (req != null) { if (req.isDone) Finish(); return; }
@@ -55,6 +56,12 @@ namespace StutterFix
 
         internal static void Check()
         {
+            if (!Platform.IsWindows)
+            {
+                Status = SettingsWindow.T("Linux 빌드에서는 자동 업데이트를 사용하지 않습니다.", "Auto-update is disabled on Linux builds.");
+                Lg.I("[업데이트] " + Status);
+                return;
+            }
             if (req != null || Busy) return;
             try
             {
@@ -71,6 +78,11 @@ namespace StutterFix
 
         internal static void Download()
         {
+            if (!Platform.IsWindows)
+            {
+                Status = SettingsWindow.T("Linux 빌드에서는 자동 업데이트를 사용하지 않습니다.", "Auto-update is disabled on Linux builds.");
+                return;
+            }
             if (req != null || Busy || !Available || zipUrl.Length == 0) return;
             try
             {

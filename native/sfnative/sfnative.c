@@ -13,32 +13,74 @@
  * sf_dxt_encode_rows_ref is the scalar version it was checked against block by block.
  * Written for StutterFix (MIT). Build: native/build-sfnative.bat
  */
+#ifndef _WIN32
+#  define _POSIX_C_SOURCE 200112L
+#endif
 #include <stdint.h>
 #include <string.h>
 #include <stdlib.h>
-#include <malloc.h>
 #include <limits.h>
 #include <emmintrin.h>
-#define COBJMACROS
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
-#include <d3d11.h>
-
-#define SF_API __declspec(dllexport)
+#ifdef _WIN32
+#  include <malloc.h>
+#  define COBJMACROS
+#  define WIN32_LEAN_AND_MEAN
+#  include <windows.h>
+#  include <d3d11.h>
+#  define SF_API __declspec(dllexport)
+#else
+#  define SF_API __attribute__((visibility("default")))
+#endif
 
 SF_API int sf_version(void) { return 1; }
 
+#ifdef _WIN32
 #include "render_thread_capture.h"
+#endif
 
 /* Owned experimental SoA storage only. Never pass managed or driver-owned pointers to this free. */
 SF_API void *sf_alloc_aligned64_v1(size_t bytes)
 {
     if (!bytes || bytes > 64u * 1024u * 1024u) return NULL;
+#ifdef _WIN32
     return _aligned_malloc(bytes, 64);
+#else
+    void *pointer = NULL;
+    if (posix_memalign(&pointer, 64, bytes) != 0) return NULL;
+    return pointer;
+#endif
 }
-SF_API void sf_free_aligned64_v1(void *pointer) { _aligned_free(pointer); }
+SF_API void sf_free_aligned64_v1(void *pointer)
+{
+#ifdef _WIN32
+    _aligned_free(pointer);
+#else
+    free(pointer);
+#endif
+}
 
+#ifdef SF_NO_ISPC
+static void sf_motion_linear_ispc(const float *start, const float *change, const float *position,
+                                  const float *duration, float *output, int count, int rounding)
+{
+    for (int i = 0; i < count; i++)
+    {
+        float fraction = position[i] / duration[i];
+        if (rounding == 1)
+        {
+            double delta = (double)change[i] * (double)fraction;
+            output[i] = (float)((double)start[i] + delta);
+        }
+        else
+        {
+            float delta = change[i] * fraction;
+            output[i] = start[i] + delta;
+        }
+    }
+}
+#else
 extern void sf_motion_linear_ispc(const float*, const float*, const float*, const float*, float*, int, int);
+#endif
 SF_API int sf_motion_linear(const float *start, const float *change, const float *position,
                             const float *duration, float *output, int count, int rounding)
 {
@@ -682,6 +724,15 @@ static void encode_alpha(const uint8_t* p, uint8_t* dst)
     for (k = 0; k < 6; k++) dst[2 + k] = (uint8_t)(bits >> (8 * k));
 }
 
+#ifdef SF_NO_ISPC
+SF_API void sf_dxt_encode_rows_ref(const uint8_t* src, int w, int h, int layout, int dxt5, uint8_t* dst, int by0, int by1);
+
+/* layout: 0 = RGBA32, 1 = ARGB32, 2 = RGB24. Compresses block rows by0..by1-1; dst is the start of the whole output. */
+SF_API void sf_dxt_encode_rows(const uint8_t* src, int w, int h, int layout, int dxt5, uint8_t* dst, int by0, int by1)
+{
+    sf_dxt_encode_rows_ref(src, w, h, layout, dxt5, dst, by0, by1);
+}
+#else
 /* The same encoder in ISPC (sfdxt.ispc): one block per SIMD lane, SSE2 / SSE4 / AVX2 picked at run time. */
 extern void sf_dxt_rows_ispc(const uint8_t* src, int w, int h, int layout, int dxt5, uint8_t* dst, int by0, int by1,
                              const uint8_t* o5a, const uint8_t* o5b, const uint8_t* o6a, const uint8_t* o6b);
@@ -691,6 +742,7 @@ SF_API void sf_dxt_encode_rows(const uint8_t* src, int w, int h, int layout, int
 {
     sf_dxt_rows_ispc(src, w, h, layout, dxt5, dst, by0, by1, O5a, O5b, O6a, O6b);
 }
+#endif
 
 /* Scalar reference (the encoder before ISPC). Kept for the block-by-block comparison in the test harness. */
 SF_API void sf_dxt_encode_rows_ref(const uint8_t* src, int w, int h, int layout, int dxt5, uint8_t* dst, int by0, int by1)
@@ -716,6 +768,7 @@ SF_API void sf_dxt_encode_rows_ref(const uint8_t* src, int w, int h, int layout,
         }
 }
 
+#ifdef _WIN32
 /* ---------------------------------------------------------------- keep presenting during long freezes ----------------------------------------------------------------
  * When the game's main thread is stuck in one frame for several seconds (editor Play on a big level, level load), nothing is presented.
  * After a present gap of more than about 5 seconds the game stayed for the whole run in a state where every frame waited ~1.7 ms for the
@@ -764,3 +817,4 @@ SF_API long sf_present_count(void) { return g_presents; }
 SF_API long sf_present_fail_count(void) { return g_presentFails; }
 SF_API long sf_present_last_hr(void) { return g_lastHr; }
 SF_API long sf_present_rebind_count(void) { return g_rebinds; }
+#endif

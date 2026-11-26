@@ -19,6 +19,7 @@ namespace StutterFix {
         private int warmup;
         internal static void Start(string name) {
             if(name=="off"){Stop();return;}
+            if(!Platform.IsWindows || SystemInfo.graphicsDeviceType!=GraphicsDeviceType.Direct3D11){Lg.I("[화면효과GPU] Windows/D3D11 전용");return;}
             if(ScreenEffects.Enabled || FrameGen.Active)throw new Exception("GPU fixture는 화면 효과·프레임 늘리기를 끈 별도 판에서 실행하세요.");
             Stop(true);var scene=ScreenEffects.SceneTexture();if(scene==null || scene.width!=3440 || scene.height!=1440 || Screen.width!=3440 || Screen.height!=1440)throw new Exception("실제3440x1440 게임 그림·창 필요");
             var c=Configuration(name);
@@ -50,7 +51,7 @@ namespace StutterFix {
         }
         private void Issue(int id){command.Clear();command.IssuePluginEventAndData(callback,id,texture);Graphics.ExecuteCommandBuffer(command);}
         private void Update(){try{if(warmup>0){ScreenEffects.Benchmark(src,dst,config);if(--warmup==0)Issue(4);return;}Issue(1);ScreenEffects.Benchmark(src,dst,config);Issue(2);}catch(Exception e){Lg.I("[화면효과GPU] 실패: "+e.Message);Stop();}}
-        internal static void Report(){if(instance==null)return;ulong count=sf_effects_gpu_stat(0);Lg.I(FormattableString.Invariant($"[화면효과GPU] profile={instance.profile} samples={count} mean_ms={(count>0?(double)sf_effects_gpu_stat(1)/count/1e6:double.NaN):R} max_ms={(double)sf_effects_gpu_stat(2)/1e6:R} skipped={sf_effects_gpu_stat(3)} errors={sf_effects_gpu_stat(4)}"));}
+        internal static void Report(){if(!Platform.IsWindows||instance==null)return;ulong count=sf_effects_gpu_stat(0);Lg.I(FormattableString.Invariant($"[화면효과GPU] profile={instance.profile} samples={count} mean_ms={(count>0?(double)sf_effects_gpu_stat(1)/count/1e6:double.NaN):R} max_ms={(double)sf_effects_gpu_stat(2)/1e6:R} skipped={sf_effects_gpu_stat(3)} errors={sf_effects_gpu_stat(4)}"));}
         internal static void Stop(bool keepScene=false){if(instance!=null){Report();var r=instance;instance=null;r.enabled=false;r.Issue(3);r.command.Release();r.dst.Release();UnityEngine.Object.Destroy(r.dst);UnityEngine.Object.Destroy(r.gameObject);ScreenEffects.Apply();Fsr.Apply();}if(!keepScene&&frozen!=null){frozen.Release();UnityEngine.Object.Destroy(frozen);frozen=null;}}
     }
 }

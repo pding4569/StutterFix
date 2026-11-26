@@ -66,7 +66,10 @@ namespace StutterFix
             decorationIds.EnsureCapacity(Capacity);
             frames = checks = mismatch = nativeChecks = nativeMismatch = overflow = added = removed = 0;
             maintenanceTicks = managedTicks = nativeTicks = compareTicks = readTicks = maxMaintenance = 0;
-            peak = 0; first = nativeError = shadowError = ""; unsupported.Clear(); nativeOk = true; On = true;
+            peak = 0; first = nativeError = shadowError = ""; unsupported.Clear();
+            nativeOk = SfNative.Available && SfNative.HasExport("sf_decobatch_step");
+            if (!nativeOk) nativeError = SfNative.Available ? "sf_decobatch_step unavailable" : "sfnative unavailable";
+            On = true;
             // One initial adoption pass, outside measured frames. New starts enroll at Startup.
             foreach (var r in DecoAnim.ProbeRecords) if (r.Running && r.Started) Add(r);
             maintenanceTicks = maxMaintenance = 0;
@@ -186,6 +189,7 @@ namespace StutterFix
             long t = Stopwatch.GetTimestamp();
             ManagedStep(count, eases, keys, duration, position, start, change, managed, mdone, delta);
             managedTicks += Stopwatch.GetTimestamp() - t;
+            if (nativeOk && !SfNative.Available) { nativeOk = false; nativeError = "sfnative unavailable"; }
             if (nativeOk)
             {
                 t = Stopwatch.GetTimestamp();

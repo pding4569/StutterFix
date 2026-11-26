@@ -13,7 +13,11 @@
  */
 #include "libdeflate/lib/deflate_decompress.c"
 
-#define SF_API __declspec(dllexport)
+#ifdef _WIN32
+#  define SF_API __declspec(dllexport)
+#else
+#  define SF_API __attribute__((visibility("default")))
+#endif
 
 typedef int (*sf_sink_t)(void* ctx, const u8* p, size_t n);
 
@@ -42,12 +46,14 @@ typedef int (*sf_sink_t)(void* ctx, const u8* p, size_t n);
 #include "stream_template.h"
 
 /* the BMI2 build of the same loop, chosen at run time like libdeflate does */
-#if MSVC_PREREQ(1930) && defined(ARCH_X86_64)
+#if (defined(__GNUC__) || defined(__clang__) || MSVC_PREREQ(1930)) && defined(ARCH_X86_64)
 #  define SF_HAVE_BMI2 1
 #  define FUNCNAME sf_stream_bmi2
 #  define ATTRIBUTES _target_attribute("bmi2")
-#  define EXTRACT_VARBITS(word, count)  _bzhi_u64((word), (count))
-#  define EXTRACT_VARBITS8(word, count) _bzhi_u64((word), (count))
+#  ifndef __clang__
+#    define EXTRACT_VARBITS(word, count)  _bzhi_u64((word), (count))
+#    define EXTRACT_VARBITS8(word, count) _bzhi_u64((word), (count))
+#  endif
 #  include "stream_template.h"
 #endif
 
